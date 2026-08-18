@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { BrandLogo } from "../brand/BrandLogo";
 import { PlaneIcon, MenuIcon } from "../icons/icons";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 import { MobileMenu, NavItem } from "./MobileMenu";
@@ -37,25 +38,15 @@ export function SiteHeader({
   }));
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-atmosphere-twilight/85 border-b border-white/10 transition-all duration-200">
+    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-atmosphere-twilight/90 border-b border-white/10 transition-all duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        {/* Brand Logo */}
+        {/* Brand Logo Oficial */}
         <a
           href="/"
-          className="flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-brand-accent rounded-lg p-1"
+          className="flex items-center group focus:outline-none focus:ring-2 focus:ring-brand-accent rounded-lg p-1"
           aria-label={`${siteName} - Inicio`}
         >
-          <div className="w-10 h-10 rounded-xl bg-brand-accent flex items-center justify-center text-brand-navy shadow-sm group-hover:scale-105 transition-transform duration-200">
-            <PlaneIcon size={22} />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-sora font-extrabold text-xl tracking-tight text-white group-hover:text-brand-accent transition-colors">
-              {siteName}
-            </span>
-            <span className="font-inter text-[11px] text-atmosphere-sky tracking-wider uppercase font-medium">
-              Agencia de Viajes
-            </span>
-          </div>
+          <BrandLogo variant="light" className="h-8 sm:h-9 w-auto group-hover:scale-[1.02] transition-transform duration-200" />
         </a>
 
         {/* Desktop Navigation */}

@@ -10,23 +10,23 @@ export default async function PromotionsCatalogPage() {
   ]);
 
   return (
-    <main className="min-h-screen bg-atmosphere-twilight text-white flex flex-col items-center pt-24 pb-20">
+    <main className="min-h-screen bg-neutral-soft text-neutral-ink flex flex-col items-center pt-24 pb-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         
         {/* Page Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/15 shadow-sm backdrop-blur-md mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-neutral-border shadow-sm mb-4">
             <span className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
             <span className="font-sora text-xs font-bold uppercase tracking-[0.08em] text-brand-accent">
               Catálogo Completo
             </span>
           </div>
 
-          <h1 className="font-sora font-extrabold text-3xl sm:text-5xl text-white mb-4">
-            Todas nuestras <span className="text-brand-sunset">promociones y paquetes</span>
+          <h1 className="font-sora font-extrabold text-3xl sm:text-5xl text-brand-navy mb-4">
+            Todas nuestras <span className="text-brand-accent">promociones y paquetes</span>
           </h1>
 
-          <p className="font-inter text-atmosphere-sky text-base sm:text-lg leading-relaxed">
+          <p className="font-inter text-neutral-muted text-base sm:text-lg leading-relaxed">
             Descubre todas las opciones de viaje diseñadas a medida. Cotiza directamente con una asesora por WhatsApp con vuelos y hoteles incluidos.
           </p>
         </div>

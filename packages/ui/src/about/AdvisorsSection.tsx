@@ -15,24 +15,24 @@ export function AdvisorsSection({ advisors, className = "" }: AdvisorsSectionPro
   return (
     <section
       id="asesoras"
-      className={`relative w-full overflow-hidden bg-atmosphere-twilight py-16 sm:py-24 border-b border-white/10 text-white ${className}`}
+      className={`relative w-full overflow-hidden bg-white py-16 sm:py-24 border-b border-neutral-border text-neutral-ink ${className}`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/15 shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-soft border border-neutral-border shadow-sm">
             <span className="w-2 h-2 rounded-full bg-brand-accent" />
             <span className="font-sora text-xs font-bold uppercase tracking-[0.08em] text-brand-accent">
               Equipo de Expertas
             </span>
           </div>
 
-          <h2 className="font-sora font-extrabold text-3xl sm:text-5xl text-white">
+          <h2 className="font-sora font-extrabold text-3xl sm:text-5xl text-brand-navy">
             Conoce a tus Asesoras de Viaje
           </h2>
 
-          <p className="font-inter text-atmosphere-sky text-base sm:text-lg">
+          <p className="font-inter text-neutral-muted text-base sm:text-lg">
             Atención humana, recomendaciones de primera mano y total respaldo para que tu única tarea sea disfrutar.
           </p>
         </div>
@@ -47,7 +47,7 @@ export function AdvisorsSection({ advisors, className = "" }: AdvisorsSectionPro
             return (
               <div
                 key={advisor.id}
-                className="group relative rounded-3xl overflow-hidden bg-white/5 border border-white/10 hover:border-brand-accent/40 transition-all duration-300 flex flex-col justify-between"
+                className="group relative rounded-3xl overflow-hidden bg-white border border-neutral-border hover:border-brand-accent/40 shadow-card hover:shadow-hover transition-all duration-300 flex flex-col justify-between"
               >
                 {/* Photo & Role Header */}
                 <div className="relative w-full aspect-4/3 overflow-hidden bg-brand-navy">
@@ -56,7 +56,7 @@ export function AdvisorsSection({ advisors, className = "" }: AdvisorsSectionPro
                     alt={advisor.fullName}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-transparent to-transparent" />
                   
                   {/* Specialty Pill */}
                   <div className="absolute bottom-3 left-3 right-3">
@@ -69,23 +69,23 @@ export function AdvisorsSection({ advisors, className = "" }: AdvisorsSectionPro
                 {/* Details */}
                 <div className="p-6 space-y-4 flex-1 flex flex-col justify-between text-left">
                   <div className="space-y-1.5">
-                    <h3 className="font-sora font-bold text-xl text-white">
+                    <h3 className="font-sora font-bold text-xl text-brand-navy">
                       {advisor.fullName}
                     </h3>
-                    <p className="font-inter text-xs font-semibold text-brand-sunset">
+                    <p className="font-inter text-xs font-semibold text-brand-accent">
                       {advisor.roleTitle}
                     </p>
-                    <p className="font-inter text-xs sm:text-sm text-atmosphere-sky leading-relaxed pt-2">
+                    <p className="font-inter text-xs sm:text-sm text-neutral-muted leading-relaxed pt-2">
                       {advisor.bio}
                     </p>
                   </div>
 
                   {/* Direct WhatsApp Action */}
-                  <div className="pt-4 border-t border-white/10">
+                  <div className="pt-4 border-t border-neutral-border">
                     <WhatsAppButton
                       phone={phone}
                       message={message}
-                      className="w-full justify-center !py-2.5 text-xs font-bold"
+                      className="w-full justify-center !py-2.5 text-xs font-bold shadow-sm"
                     >
                       {`Consultar con ${advisor.fullName.split(" ")[0]}`}
                     </WhatsAppButton>

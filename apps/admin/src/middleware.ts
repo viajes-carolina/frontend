@@ -4,17 +4,19 @@ export function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
   // Content-Security-Policy (CSP)
+  const isHttps = request.nextUrl.protocol === "https:";
   const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-inline' 'unsafe-eval';
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     img-src 'self' data: blob: https:;
-    font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https: http:;
+    font-src 'self' data: https://fonts.gstatic.com;
+    connect-src 'self' https: http: ws: wss:;
     object-src 'none';
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'none';
+    ${isHttps ? "upgrade-insecure-requests;" : ""}
   `.replace(/\s{2,}/g, " ").trim();
 
   // Encabezados de Seguridad Estrictos (C15-SEC-01)

@@ -22,7 +22,7 @@ export default async function NosotrosPage() {
   ]);
 
   return (
-    <main className="w-full bg-brand-navy text-white min-h-screen">
+    <main className="w-full bg-neutral-soft text-neutral-ink min-h-screen">
       {/* 01. Hero & Stats */}
       <AboutHeroSection page={data.page} />
 

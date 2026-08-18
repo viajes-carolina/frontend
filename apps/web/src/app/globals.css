@@ -1,12 +1,14 @@
 @import "tailwindcss";
 @import "@vc/config/tailwind/theme.css";
 
-@source "../../**/*.{js,ts,jsx,tsx,mdx}";
-@source "../../../../packages/ui/src/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../";
+@source "../..";
+@source "../../../../packages/ui/src";
+@source "../../../../packages/config";
 
 :root {
-  background-color: var(--color-atmosphere-twilight);
-  color: var(--color-neutral-white);
+  background-color: var(--color-neutral-soft);
+  color: var(--color-neutral-ink);
   font-family: var(--font-inter);
 }
 
@@ -14,8 +16,8 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-color: var(--color-atmosphere-twilight);
-  color: var(--color-neutral-white);
+  background-color: var(--color-neutral-soft);
+  color: var(--color-neutral-ink);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }

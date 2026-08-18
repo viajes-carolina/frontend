@@ -31,11 +31,11 @@ export function ContactDirectBox({
 
   return (
     <div
-      className={`bg-white/5 border border-white/15 rounded-3xl p-6 sm:p-8 backdrop-blur-xl space-y-6 flex flex-col justify-between shadow-2xl ${className}`}
+      className={`bg-white border border-neutral-border rounded-3xl p-6 sm:p-8 shadow-card space-y-6 flex flex-col justify-between text-neutral-ink ${className}`}
     >
       <div className="space-y-6">
         {/* WhatsApp Hero Card */}
-        <div className="bg-gradient-to-br from-emerald-950/40 to-brand-navy border border-emerald-500/30 rounded-2xl p-6 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-atmosphere-twilight to-brand-navy border border-white/15 rounded-2xl p-6 relative overflow-hidden text-white shadow-md">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-2xl rounded-full pointer-events-none" />
           
           <div className="flex items-center gap-3 mb-3">
@@ -65,20 +65,20 @@ export function ContactDirectBox({
 
         {/* Channels Information */}
         <div className="space-y-4 pt-2">
-          <h4 className="font-sora font-bold text-sm text-white uppercase tracking-wider text-xs text-white/70">
+          <h4 className="font-sora font-bold text-xs text-neutral-muted uppercase tracking-wider">
             Canales y Ubicación
           </h4>
 
           {/* Teléfono */}
           <div className="flex items-start gap-3 text-sm">
-            <div className="p-2 rounded-lg bg-white/10 text-brand-accent shrink-0 mt-0.5">
+            <div className="p-2 rounded-lg bg-neutral-soft border border-neutral-border text-brand-accent shrink-0 mt-0.5 shadow-sm">
               <PhoneIcon size={16} />
             </div>
             <div>
-              <span className="block text-xs text-white/60 font-inter">Central Telefónica</span>
+              <span className="block text-xs text-neutral-muted font-inter">Central Telefónica</span>
               <a
                 href={`tel:${primaryPhone.replace(/\s+/g, "")}`}
-                className="font-inter text-sm font-medium text-white hover:text-brand-accent transition-colors"
+                className="font-inter text-sm font-medium text-brand-navy hover:text-brand-accent transition-colors"
               >
                 {primaryPhone}
               </a>
@@ -87,14 +87,14 @@ export function ContactDirectBox({
 
           {/* Email */}
           <div className="flex items-start gap-3 text-sm">
-            <div className="p-2 rounded-lg bg-white/10 text-brand-accent shrink-0 mt-0.5">
+            <div className="p-2 rounded-lg bg-neutral-soft border border-neutral-border text-brand-accent shrink-0 mt-0.5 shadow-sm">
               <MailIcon size={16} />
             </div>
             <div>
-              <span className="block text-xs text-white/60 font-inter">Correo Electrónico</span>
+              <span className="block text-xs text-neutral-muted font-inter">Correo Electrónico</span>
               <a
                 href={`mailto:${contactEmail}`}
-                className="font-inter text-sm font-medium text-white hover:text-brand-accent transition-colors"
+                className="font-inter text-sm font-medium text-brand-navy hover:text-brand-accent transition-colors"
               >
                 {contactEmail}
               </a>
@@ -103,23 +103,23 @@ export function ContactDirectBox({
 
           {/* Oficina */}
           <div className="flex items-start gap-3 text-sm">
-            <div className="p-2 rounded-lg bg-white/10 text-brand-accent shrink-0 mt-0.5">
+            <div className="p-2 rounded-lg bg-neutral-soft border border-neutral-border text-brand-accent shrink-0 mt-0.5 shadow-sm">
               <MapPinIcon size={16} />
             </div>
             <div>
-              <span className="block text-xs text-white/60 font-inter">Oficina en Miraflores</span>
-              <p className="font-inter text-sm font-medium text-white/90 leading-snug">
+              <span className="block text-xs text-neutral-muted font-inter">Oficina en Miraflores</span>
+              <p className="font-inter text-sm font-medium text-brand-navy leading-snug">
                 {officeAddress}
               </p>
             </div>
           </div>
 
           {/* Horarios */}
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-sunset block">
+          <div className="p-4 rounded-xl bg-neutral-soft border border-neutral-border space-y-1 shadow-sm">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-accent block">
               Horario de Atención
             </span>
-            <p className="font-inter text-xs text-white/80 leading-relaxed">
+            <p className="font-inter text-xs text-neutral-muted leading-relaxed">
               {officeHours}
             </p>
           </div>

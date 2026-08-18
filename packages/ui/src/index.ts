@@ -36,4 +36,5 @@ export * from "./search/SearchResultsView";
 export * from "./layout/SiteHeader";
 export * from "./layout/MobileMenu";
 export * from "./layout/Footer";
+export * from "./brand/BrandLogo";
 export * from "./icons/icons";

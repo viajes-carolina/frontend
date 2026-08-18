@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { BrandLogo } from "../brand/BrandLogo";
 import { PlaneIcon, MapPinIcon } from "../icons/icons";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 
@@ -46,19 +47,9 @@ export function Footer({
           
           {/* Column 1: Brand & Identity */}
           <div className="flex flex-col items-start space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-brand-accent flex items-center justify-center text-brand-navy shadow-sm">
-                <PlaneIcon size={22} />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-sora font-extrabold text-xl tracking-tight text-white">
-                  {siteName}
-                </span>
-                <span className="font-inter text-[11px] text-atmosphere-sky tracking-wider uppercase font-medium">
-                  Agencia de Viajes
-                </span>
-              </div>
-            </div>
+            <a href="/" className="focus:outline-none" aria-label="Viajes Carolina">
+              <BrandLogo variant="light" className="h-8 w-auto mb-2" />
+            </a>
 
             <p className="font-inter text-sm text-neutral-subtle leading-relaxed">
               {brandTagline}. Diseñamos viajes memorables y a medida con asesoría personalizada y acompañamiento en cada paso.

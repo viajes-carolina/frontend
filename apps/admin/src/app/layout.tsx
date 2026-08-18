@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Sora, Inter } from "next/font/google";
 import Link from "next/link";
-import { PlaneIcon } from "@vc/ui";
+import { PlaneIcon, BrandLogo } from "@vc/ui";
 import "./globals.css";
 
 const sora = Sora({
@@ -35,15 +35,12 @@ export default function RootLayout({
         {/* Sidebar */}
         <aside className="w-64 bg-brand-navy text-white flex flex-col justify-between shrink-0 p-6 border-r border-white/10">
           <div>
-            {/* Brand Logo */}
-            <div className="flex items-center gap-3 pb-6 border-b border-white/10">
-              <div className="w-9 h-9 rounded-xl bg-brand-accent flex items-center justify-center text-brand-navy">
-                <PlaneIcon size={20} />
-              </div>
-              <div>
-                <span className="font-sora font-bold text-base block">Viajes Carolina</span>
-                <span className="font-inter text-[10px] text-atmosphere-sky uppercase tracking-wider">Backoffice</span>
-              </div>
+            {/* Brand Logo Oficial */}
+            <div className="flex flex-col gap-2 pb-6 border-b border-white/10">
+              <BrandLogo variant="light" className="h-7 w-auto" />
+              <span className="font-inter text-[10px] text-atmosphere-sky uppercase tracking-wider font-semibold">
+                Panel Administrativo
+              </span>
             </div>
 
             {/* Menu */}

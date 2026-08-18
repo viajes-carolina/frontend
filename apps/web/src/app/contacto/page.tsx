@@ -18,7 +18,7 @@ export default async function ContactoPage() {
   ]);
 
   return (
-    <main className="w-full bg-brand-navy text-white min-h-screen">
+    <main className="w-full bg-neutral-soft text-neutral-ink min-h-screen">
       {/* 01. Contact Client Hero & Form Grid */}
       <ContactClientView contactData={contactData} />
 

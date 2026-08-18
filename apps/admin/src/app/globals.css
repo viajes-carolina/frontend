@@ -1,8 +1,10 @@
 @import "tailwindcss";
 @import "@vc/config/tailwind/theme.css";
 
-@source "../../**/*.{js,ts,jsx,tsx,mdx}";
-@source "../../../../packages/ui/src/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../";
+@source "../..";
+@source "../../../../packages/ui/src";
+@source "../../../../packages/config";
 
 :root {
   background-color: var(--color-neutral-soft);

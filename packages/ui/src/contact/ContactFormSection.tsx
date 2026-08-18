@@ -94,27 +94,27 @@ export function ContactFormSection({
 
   return (
     <div
-      className={`bg-white/5 border border-white/15 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl ${className}`}
+      className={`bg-white border border-neutral-border rounded-3xl p-6 sm:p-10 shadow-card text-neutral-ink ${className}`}
     >
       <div className="mb-8">
-        <h2 className="font-sora font-bold text-2xl sm:text-3xl text-white">
+        <h2 className="font-sora font-bold text-2xl sm:text-3xl text-brand-navy">
           {formTitle}
         </h2>
-        <p className="font-inter text-sm text-atmosphere-sky mt-2 leading-relaxed">
+        <p className="font-inter text-sm text-neutral-muted mt-2 leading-relaxed">
           {formSubtitle}
         </p>
       </div>
 
       {submittedSuccess ? (
-        <div className="py-12 px-6 text-center space-y-6 bg-emerald-950/30 border border-emerald-500/40 rounded-2xl animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/40 flex items-center justify-center mx-auto">
+        <div className="py-12 px-6 text-center space-y-6 bg-emerald-50 border border-emerald-300 rounded-2xl animate-fade-in">
+          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-300 flex items-center justify-center mx-auto">
             <CheckIcon size={32} />
           </div>
           <div className="space-y-2">
-            <h3 className="font-sora font-bold text-2xl text-white">
+            <h3 className="font-sora font-bold text-2xl text-brand-navy">
               ¡Mensaje Recibido con Éxito!
             </h3>
-            <p className="font-inter text-sm text-emerald-200/90 max-w-md mx-auto leading-relaxed">
+            <p className="font-inter text-sm text-neutral-muted max-w-md mx-auto leading-relaxed">
               Gracias, <strong>{formData.fullName}</strong>. Una de nuestras asesoras revisará tus requerimientos y te contactará por{" "}
               <strong>{formData.preferredContactChannel === "WHATSAPP" ? "WhatsApp" : formData.preferredContactChannel === "EMAIL" ? "Correo Electrónico" : "Llamada Telefónica"}</strong> en breve.
             </p>
@@ -126,7 +126,7 @@ export function ContactFormSection({
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           {errorMessage && (
-            <div className="p-4 rounded-xl bg-red-950/40 border border-red-500/40 text-red-200 text-xs font-inter leading-relaxed">
+            <div className="p-4 rounded-xl bg-red-50 border border-red-300 text-red-700 text-xs font-inter leading-relaxed">
               ⚠️ {errorMessage}
             </div>
           )}
@@ -134,7 +134,7 @@ export function ContactFormSection({
           {/* Row 1: Nombre & Email */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label className="block font-inter text-xs font-semibold text-white/90">
+              <label className="block font-inter text-xs font-semibold text-brand-navy">
                 Nombre Completo <span className="text-brand-accent">*</span>
               </label>
               <input
@@ -143,12 +143,12 @@ export function ContactFormSection({
                 value={formData.fullName}
                 onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 placeholder="Ej. Mariana Torres"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-neutral-soft border border-neutral-border text-brand-navy placeholder-neutral-muted text-sm focus:outline-none focus:bg-white focus:border-brand-accent transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="block font-inter text-xs font-semibold text-white/90">
+              <label className="block font-inter text-xs font-semibold text-brand-navy">
                 Correo Electrónico <span className="text-brand-accent">*</span>
               </label>
               <input
@@ -157,7 +157,7 @@ export function ContactFormSection({
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="ejemplo@correo.com"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-neutral-soft border border-neutral-border text-brand-navy placeholder-neutral-muted text-sm focus:outline-none focus:bg-white focus:border-brand-accent transition-colors"
               />
             </div>
           </div>
@@ -165,29 +165,29 @@ export function ContactFormSection({
           {/* Row 2: Teléfono & Destino */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label className="block font-inter text-xs font-semibold text-white/90">
-                Teléfono / WhatsApp <span className="text-white/50 text-[11px]">(Recomendado)</span>
+              <label className="block font-inter text-xs font-semibold text-brand-navy">
+                Teléfono / WhatsApp <span className="text-neutral-muted text-[11px]">(Recomendado)</span>
               </label>
               <input
                 type="tel"
                 value={formData.phone || ""}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+51 987 654 321"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-neutral-soft border border-neutral-border text-brand-navy placeholder-neutral-muted text-sm focus:outline-none focus:bg-white focus:border-brand-accent transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="block font-inter text-xs font-semibold text-white/90">
+              <label className="block font-inter text-xs font-semibold text-brand-navy">
                 Destino de Interés
               </label>
               <select
                 value={formData.destinationOfInterest}
                 onChange={(e) => setFormData({ ...formData, destinationOfInterest: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-brand-navy border border-white/20 text-white text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-neutral-soft border border-neutral-border text-brand-navy text-sm focus:outline-none focus:bg-white focus:border-brand-accent transition-colors"
               >
                 {POPULAR_DESTINATIONS.map((d) => (
-                  <option key={d} value={d} className="bg-brand-navy text-white">
+                  <option key={d} value={d} className="bg-white text-brand-navy">
                     {d}
                   </option>
                 ))}
@@ -198,7 +198,7 @@ export function ContactFormSection({
           {/* Row 3: Fecha Aprox & N° Viajeros */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="space-y-2">
-              <label className="block font-inter text-xs font-semibold text-white/90">
+              <label className="block font-inter text-xs font-semibold text-brand-navy">
                 Fecha Aproximada de Viaje
               </label>
               <input
@@ -206,12 +206,12 @@ export function ContactFormSection({
                 value={formData.travelDateApprox || ""}
                 onChange={(e) => setFormData({ ...formData, travelDateApprox: e.target.value })}
                 placeholder="Ej. Noviembre 2026 o Feriado de Fiestas"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-neutral-soft border border-neutral-border text-brand-navy placeholder-neutral-muted text-sm focus:outline-none focus:bg-white focus:border-brand-accent transition-colors"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="block font-inter text-xs font-semibold text-white/90">
+              <label className="block font-inter text-xs font-semibold text-brand-navy">
                 Número de Personas
               </label>
               <input
@@ -220,14 +220,14 @@ export function ContactFormSection({
                 max={50}
                 value={formData.travelersCount || 1}
                 onChange={(e) => setFormData({ ...formData, travelersCount: parseInt(e.target.value) || 1 })}
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:border-brand-accent transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-neutral-soft border border-neutral-border text-brand-navy placeholder-neutral-muted text-sm focus:outline-none focus:bg-white focus:border-brand-accent transition-colors"
               />
             </div>
           </div>
 
           {/* Preferred Channel */}
           <div className="space-y-2">
-            <label className="block font-inter text-xs font-semibold text-white/90">
+            <label className="block font-inter text-xs font-semibold text-brand-navy">
               ¿Cómo prefieres que te contactemos?
             </label>
             <div className="grid grid-cols-3 gap-3">
@@ -244,8 +244,8 @@ export function ContactFormSection({
                     onClick={() => setFormData({ ...formData, preferredContactChannel: c.key })}
                     className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-semibold font-inter transition-all ${
                       isSelected
-                        ? "bg-brand-accent/20 border-brand-accent text-brand-accent"
-                        : "bg-white/5 border-white/15 text-white/70 hover:border-white/30"
+                        ? "bg-brand-accent/15 border-brand-accent text-brand-navy font-bold shadow-sm"
+                        : "bg-neutral-soft border-neutral-border text-neutral-muted hover:border-neutral-subtle hover:text-brand-navy"
                     }`}
                   >
                     {c.icon}
@@ -258,7 +258,7 @@ export function ContactFormSection({
 
           {/* Mensaje */}
           <div className="space-y-2">
-            <label className="block font-inter text-xs font-semibold text-white/90">
+            <label className="block font-inter text-xs font-semibold text-brand-navy">
               Detalles o Dudas de tu Viaje <span className="text-brand-accent">*</span>
             </label>
             <textarea
@@ -267,17 +267,17 @@ export function ContactFormSection({
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               placeholder="Cuéntanos con quién viajas, qué tipo de alojamiento buscas, o cualquier detalle especial..."
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:border-brand-accent transition-colors resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-neutral-soft border border-neutral-border text-brand-navy placeholder-neutral-muted text-sm focus:outline-none focus:bg-white focus:border-brand-accent transition-colors resize-none"
             />
           </div>
 
           {/* Anti-Bot Turnstile Widget Placeholder / Indicator */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs text-white/70">
+          <div className="flex items-center justify-between p-3 rounded-xl bg-neutral-soft border border-neutral-border text-xs text-neutral-muted">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Protegido por Cloudflare Turnstile Anti-Bot</span>
             </div>
-            <span className="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">
+            <span className="text-[10px] uppercase tracking-wider text-emerald-600 font-bold">
               Verificado
             </span>
           </div>
@@ -289,9 +289,9 @@ export function ContactFormSection({
               id="consent-check"
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
-              className="mt-1 w-4 h-4 rounded border-white/30 text-brand-accent focus:ring-brand-accent"
+              className="mt-1 w-4 h-4 rounded border-neutral-border text-brand-accent focus:ring-brand-accent"
             />
-            <label htmlFor="consent-check" className="font-inter text-xs text-white/80 leading-relaxed cursor-pointer">
+            <label htmlFor="consent-check" className="font-inter text-xs text-neutral-muted leading-relaxed cursor-pointer">
               Autorizo a Viajes Carolina a utilizar mis datos de contacto únicamente para responder mi consulta y enviarme la propuesta solicitada.
             </label>
           </div>
@@ -304,7 +304,7 @@ export function ContactFormSection({
             disabled={isSubmitting}
             icon={<PlaneIcon size={18} />}
             iconPosition="right"
-            className="w-full justify-center !py-4 text-base font-bold shadow-2xl"
+            className="w-full justify-center !py-4 text-base font-bold shadow-md"
           >
             {isSubmitting ? "Enviando Solicitud..." : "Enviar Consulta de Viaje"}
           </Button>

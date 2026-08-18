@@ -23,7 +23,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main className="min-h-screen bg-atmosphere-twilight text-white flex flex-col items-center">
+    <main className="min-h-screen bg-neutral-soft text-neutral-ink flex flex-col items-center">
       {/* =========================================================================
           01 · Hero Section Dinámica (Figma: 01. Hero — Tu viaje comienza antes de despegar)
           ========================================================================= */}
