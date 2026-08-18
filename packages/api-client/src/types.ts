@@ -510,3 +510,27 @@ export interface PublicContactResponse {
   officeHours: string;
 }
 
+// Search DTOs (Corte 11)
+export type SearchResultType = "ALL" | "PROMOTION" | "BLOG_POST" | "INTENTION" | "DESTINATION";
+
+export interface SearchResultItemDTO {
+  entityType: "PROMOTION" | "BLOG_POST" | "INTENTION" | "DESTINATION" | string;
+  entityId: number;
+  entitySlug: string;
+  title: string;
+  subtitle: string;
+  metadataInfo?: string;
+  imageUrl?: string;
+  targetUrl: string;
+  badgeText?: string;
+  score?: number;
+}
+
+export interface GlobalSearchResponse {
+  query: string;
+  filterType: string;
+  total: number;
+  results: SearchResultItemDTO[];
+  suggestedQueries: string[];
+}
+

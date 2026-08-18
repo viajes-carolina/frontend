@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1787071103458,
+    "fullName": "Roberto Sánchez Test",
+    "email": "lead-1787071103287@ejemplo.com",
+    "phone": "+51 912 345 678",
+    "destinationOfInterest": "Punta Cana All Inclusive",
+    "travelDateApprox": "Noviembre 2026",
+    "travelersCount": 2,
+    "message": "Hola, queremos cotizar una luna de miel en Punta Cana con todo incluido.",
+    "preferredContactChannel": "WHATSAPP",
+    "status": "IN_PROGRESS",
+    "turnstileVerified": true,
+    "createdAt": "2026-08-18T16:38:23.458Z",
+    "updatedAt": "2026-08-18T16:38:23.719Z"
+  },
+  {
+    "id": 1,
+    "fullName": "Andrea Salazar",
+    "email": "andrea.salazar@gmail.com",
+    "phone": "+51998877665",
+    "destinationOfInterest": "Cartagena de Indias",
+    "travelDateApprox": "Noviembre 2026",
+    "travelersCount": 2,
+    "message": "Hola, me gustaría cotizar un viaje de 5 días para mi aniversario en Cartagena con hotel frente al mar.",
+    "preferredContactChannel": "WHATSAPP",
+    "status": "NEW",
+    "turnstileVerified": true,
+    "createdAt": "2026-08-18T10:00:00.000Z",
+    "updatedAt": "2026-08-18T10:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "fullName": "Jorge Villanueva",
+    "email": "jorge.villanueva@outlook.com",
+    "phone": "+51912345678",
+    "destinationOfInterest": "Cusco & Machu Picchu",
+    "travelDateApprox": "Diciembre 2026",
+    "travelersCount": 4,
+    "message": "Deseo cotizar paquete familiar para 2 adultos y 2 niños con tren turístico a Machu Picchu y excursión a Valle Sagrado.",
+    "preferredContactChannel": "WHATSAPP",
+    "status": "IN_PROGRESS",
+    "turnstileVerified": true,
+    "createdAt": "2026-08-17T15:00:00.000Z",
+    "updatedAt": "2026-08-17T15:00:00.000Z"
+  }
+]

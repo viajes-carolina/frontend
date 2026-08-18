@@ -70,6 +70,12 @@ async function runE2ETests() {
     assert(blogSlugHtml.includes("Guía Completa para Viajar a Cartagena") || blogSlugHtml.includes("Cartagena"), "HTML de Artículo individual contiene Título y Lectura (Corte 10)");
     assert(blogSlugHtml.includes("Carolina Zúñiga") || blogSlugHtml.includes("Especialista en Destinos"), "HTML de Artículo contiene Perfil de Autora (Corte 10)");
     assert(blogSlugHtml.includes("Hablar con una Asesora") || blogSlugHtml.includes("Diseñamos tu viaje a medida"), "HTML de Artículo contiene CTA Directo de WhatsApp (Corte 10)");
+
+    const searchRes = await fetch(`${BASE_WEB_URL}/buscar`);
+    assert(searchRes.status === 200, `Página pública Buscador /buscar responde HTTP 200 OK (${searchRes.status})`);
+    const searchHtml = await searchRes.text();
+    assert(searchHtml.includes("Buscador Global de Viajes") || searchHtml.includes("Explora Nuestro Catálogo") || searchHtml.includes("Búsqueda"), "HTML de Buscador contiene Hero y Barra de Búsqueda (Corte 11)");
+    assert(searchHtml.includes("Promociones") || searchHtml.includes("Cartagena") || searchHtml.includes("Cusco") || searchHtml.includes("Todos los Resultados"), "HTML de Buscador contiene Resultados Dinámicos iniciales (Corte 11)");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
@@ -604,8 +610,42 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Blog & CMS: ${err.message}`);
   }
 
-  // 13. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 13. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 13. Verificación de API Proxy & Motor de Búsqueda Global E2E (Corte 11: Búsqueda Trigram & Filtros)...
+  console.log("\n📦 13. Verificando API Proxy & Motor de Búsqueda Global E2E (Corte 11)...");
+  try {
+    // Búsqueda global general
+    const globalSearchRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/search?q=Cartagena&type=ALL`);
+    assert(globalSearchRes.status === 200, `GET /api/proxy/public/v1/search?q=Cartagena responde 200 OK (${globalSearchRes.status})`);
+    const globalSearchData = await globalSearchRes.json();
+    assert(Array.isArray(globalSearchData.results) && globalSearchData.results.length > 0, `Búsqueda global devuelve ${globalSearchData.results?.length || 0} resultados para "Cartagena"`);
+    assert(globalSearchData.results.some((r) => r.title.toLowerCase().includes("cartagena") || r.subtitle?.toLowerCase().includes("cartagena")), `Resultados contienen coincidencias relevantes para "Cartagena"`);
+
+    // Búsqueda filtrada por Promociones
+    const promoSearchRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/search?q=Cusco&type=PROMOTION`);
+    assert(promoSearchRes.status === 200, `GET /api/proxy/public/v1/search?q=Cusco&type=PROMOTION responde 200 OK (${promoSearchRes.status})`);
+    const promoSearchData = await promoSearchRes.json();
+    assert(Array.isArray(promoSearchData.results) && promoSearchData.results.length > 0, `Búsqueda de promociones devuelve ${promoSearchData.results?.length || 0} resultados`);
+    assert(promoSearchData.results.every((r) => r.entityType === "PROMOTION"), `Todos los resultados son de tipo PROMOTION`);
+
+    // Búsqueda filtrada por Blog
+    const blogSearchRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/search?q=Consejos&type=BLOG_POST`);
+    assert(blogSearchRes.status === 200, `GET /api/proxy/public/v1/search?q=Consejos&type=BLOG_POST responde 200 OK (${blogSearchRes.status})`);
+    const blogSearchData = await blogSearchRes.json();
+    assert(Array.isArray(blogSearchData.results) && blogSearchData.results.length > 0, `Búsqueda de blog devuelve ${blogSearchData.results?.length || 0} artículos`);
+    assert(blogSearchData.results.every((r) => r.entityType === "BLOG_POST"), `Todos los resultados son de tipo BLOG_POST`);
+
+    // Búsqueda de sugerencias iniciales
+    const initialSearchRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/search?q=&type=ALL&limit=10`);
+    assert(initialSearchRes.status === 200, `GET /api/proxy/public/v1/search (query vacía) responde 200 OK (${initialSearchRes.status})`);
+    const initialSearchData = await initialSearchRes.json();
+    assert(Array.isArray(initialSearchData.results) && initialSearchData.results.length > 0, `Sugerencias iniciales devuelven ${initialSearchData.results?.length || 0} items`);
+    assert(Array.isArray(initialSearchData.suggestedQueries) && initialSearchData.suggestedQueries.length > 0, `Tags sugeridos devueltos: ${initialSearchData.suggestedQueries?.length || 0} tags`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Búsqueda Global: ${err.message}`);
+  }
+
+  // 14. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 14. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

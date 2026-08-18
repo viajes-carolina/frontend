@@ -12,6 +12,7 @@ export interface SiteHeaderProps {
   whatsappMessage?: string;
   currentPath?: string;
   navItems?: NavItem[];
+  onOpenSearch?: () => void;
 }
 
 export function SiteHeader({
@@ -26,6 +27,7 @@ export function SiteHeader({
     { label: "Blog", href: "/blog" },
     { label: "Contacto", href: "/contacto" },
   ],
+  onOpenSearch,
 }: SiteHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -73,19 +75,50 @@ export function SiteHeader({
           ))}
         </nav>
 
-        {/* Desktop WhatsApp Action */}
-        <div className="hidden lg:flex items-center">
-          <WhatsAppButton
-            size="md"
-            phone={whatsappPhone}
-            message={whatsappMessage}
+        {/* Search & WhatsApp Actions */}
+        <div className="hidden md:flex items-center gap-3">
+          <a
+            href="/buscar"
+            onClick={(e) => {
+              if (onOpenSearch) {
+                e.preventDefault();
+                onOpenSearch();
+              }
+            }}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white/90 hover:text-white text-xs font-medium transition-all group"
+            aria-label="Buscar en la web"
           >
-            WhatsApp
-          </WhatsAppButton>
+            <svg className="w-4 h-4 text-white/70 group-hover:text-brand-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span className="hidden lg:inline">Buscar</span>
+            <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold text-white/60 bg-black/30 rounded border border-white/10">
+              ⌘K
+            </kbd>
+          </a>
+
+          <div className="hidden lg:flex items-center">
+            <WhatsAppButton
+              size="md"
+              phone={whatsappPhone}
+              message={whatsappMessage}
+            >
+              WhatsApp
+            </WhatsAppButton>
+          </div>
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="flex md:hidden items-center">
+        {/* Mobile Menu & Search Button */}
+        <div className="flex md:hidden items-center gap-2">
+          <a
+            href="/buscar"
+            className="p-2.5 rounded-xl bg-white/10 text-white hover:bg-white/15 active:scale-95 transition-all"
+            aria-label="Buscar"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </a>
           <button
             onClick={() => setIsMobileMenuOpen(true)}
             className="p-2.5 rounded-xl bg-white/10 text-white hover:bg-white/15 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-brand-accent cursor-pointer"

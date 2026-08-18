@@ -1,5 +1,57 @@
 [
   {
+    "id": 1787071106229,
+    "slug": "test-articulo-1787071106149",
+    "title": "Test Artículo E2E Nuevo Destino",
+    "summary": "Resumen de prueba automatizada para verificar el motor de CMS y persistencia.",
+    "contentMarkdown": "## Introducción al nuevo destino\n\nEste es un artículo creado automáticamente por el runner E2E.\n\n- Punto 1\n- Punto 2",
+    "categoryId": 1,
+    "categoryName": "Guías de Destinos",
+    "categorySlug": "guias-de-destinos",
+    "coverMediaId": 1,
+    "coverMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "authorName": "Carolina Zúñiga",
+    "readingTimeMinutes": 4,
+    "tags": [
+      "Test",
+      "E2E",
+      "Aventura"
+    ],
+    "status": "PUBLISHED",
+    "publishedAt": "2026-08-18T16:38:26.229Z",
+    "viewCount": 0,
+    "isFeatured": false,
+    "active": true,
+    "createdAt": "2026-08-18T16:38:26.229Z",
+    "updatedAt": "2026-08-18T16:38:26.229Z"
+  },
+  {
+    "id": 1787069904393,
+    "slug": "test-articulo-1787069904239",
+    "title": "Test Artículo E2E Nuevo Destino",
+    "summary": "Resumen de prueba automatizada para verificar el motor de CMS y persistencia.",
+    "contentMarkdown": "## Introducción al nuevo destino\n\nEste es un artículo creado automáticamente por el runner E2E.\n\n- Punto 1\n- Punto 2",
+    "categoryId": 1,
+    "categoryName": "Guías de Destinos",
+    "categorySlug": "guias-de-destinos",
+    "coverMediaId": 1,
+    "coverMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "authorName": "Carolina Zúñiga",
+    "readingTimeMinutes": 4,
+    "tags": [
+      "Test",
+      "E2E",
+      "Aventura"
+    ],
+    "status": "PUBLISHED",
+    "publishedAt": "2026-08-18T16:18:24.394Z",
+    "viewCount": 0,
+    "isFeatured": false,
+    "active": true,
+    "createdAt": "2026-08-18T16:18:24.394Z",
+    "updatedAt": "2026-08-18T16:18:24.394Z"
+  },
+  {
     "id": 1787069634031,
     "slug": "test-articulo-1787069633951",
     "title": "Test Artículo E2E Nuevo Destino",
@@ -75,7 +127,7 @@
     "viewCount": 342,
     "isFeatured": true,
     "active": true,
-    "updatedAt": "2026-08-18T16:13:54.135Z"
+    "updatedAt": "2026-08-18T16:38:26.304Z"
   },
   {
     "id": 2,

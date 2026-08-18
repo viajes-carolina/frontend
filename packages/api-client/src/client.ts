@@ -33,6 +33,8 @@ import {
   CreateOrUpdateBlogCategoryRequest,
   PublicBlogResponse,
   BlogPostDetailResponse,
+  GlobalSearchResponse,
+  SearchResultType,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -91,6 +93,7 @@ import {
   getMockMediaPage,
   updateMockMediaFocalPoint,
   DEFAULT_MEDIA_ASSETS,
+  getMockGlobalSearch,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -1089,7 +1092,30 @@ export class ViajesCarolinaApiClient {
     }
     deleteMockBlogCategory(id);
   }
+
+  // ==========================================
+  // Global Search API (Corte 11)
+  // ==========================================
+
+  async searchGlobal(query = "", type: SearchResultType = "ALL", limit = 20): Promise<GlobalSearchResponse> {
+    try {
+      const params = new URLSearchParams();
+      if (query.trim()) params.append("q", query.trim());
+      if (type && type !== "ALL") params.append("type", type);
+      params.append("limit", limit.toString());
+
+      const url = `public/v1/search?${params.toString()}`;
+      const res = await fetch(this.getEffectiveUrl(url), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockGlobalSearch(query, type, limit);
+  }
 }
 
 export const apiClient = new ViajesCarolinaApiClient();
+
 

@@ -22,6 +22,8 @@ export * from "./blog/BlogHeroSection";
 export * from "./blog/BlogCard";
 export * from "./blog/BlogFeaturedHero";
 export * from "./blog/BlogArticleContent";
+export * from "./search/GlobalSearchModal";
+export * from "./search/SearchResultsView";
 export * from "./layout/SiteHeader";
 export * from "./layout/MobileMenu";
 export * from "./layout/Footer";

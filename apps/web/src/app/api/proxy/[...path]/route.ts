@@ -37,6 +37,8 @@ import {
   BlogPostDTO,
   PublicBlogResponse,
   BlogPostDetailResponse,
+  SearchResultType,
+  getMockGlobalSearch,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -708,6 +710,15 @@ async function proxyOrFallback(
         totalPages: Math.ceil(filtered.length / 9),
       };
       return NextResponse.json(res, { status: 200 });
+    }
+
+    if (targetPath.includes("search")) {
+      const url = new URL(req.url);
+      const query = url.searchParams.get("q") || "";
+      const type = (url.searchParams.get("type") || "ALL") as SearchResultType;
+      const limit = parseInt(url.searchParams.get("limit") || "20", 10);
+      const searchRes = getMockGlobalSearch(query, type, limit);
+      return NextResponse.json(searchRes, { status: 200 });
     }
 
     return NextResponse.json({ status: "UP", mock: true }, { status: 200 });

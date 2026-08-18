@@ -33,6 +33,9 @@ import {
   CreateOrUpdateBlogPostRequest,
   PublicBlogResponse,
   BlogPostDetailResponse,
+  SearchResultItemDTO,
+  GlobalSearchResponse,
+  SearchResultType,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -1323,4 +1326,105 @@ export const MOCK_API_INFO: ApiInfoDTO = {
   architecture: "Hexagonal Architecture with Quarkus 3.x & Java 25 LTS",
   timestamp: "2026-08-18T00:00:00.000Z",
 };
+
+export function getMockGlobalSearch(query = "", type: SearchResultType = "ALL", limit = 20): GlobalSearchResponse {
+  const q = query.trim().toLowerCase();
+  const allResults: SearchResultItemDTO[] = [];
+
+  // 1. Promotions
+  if (type === "ALL" || type === "PROMOTION") {
+    MOCK_PROMOTIONS.filter((p) => p.active).forEach((p) => {
+      let score = 0;
+      if (!q) {
+        score = 1.0;
+      } else {
+        if (p.title.toLowerCase().includes(q)) score += 3.0;
+        if (p.destination.toLowerCase().includes(q)) score += 2.5;
+        if (p.summary.toLowerCase().includes(q)) score += 1.0;
+      }
+      if (score > 0) {
+        allResults.push({
+          entityType: "PROMOTION",
+          entityId: p.id,
+          entitySlug: p.slug,
+          title: p.title,
+          subtitle: p.summary,
+          metadataInfo: p.destination,
+          imageUrl: p.featuredMediaUrl || "/media/demo-cartagena-caribe.webp",
+          targetUrl: "/promociones",
+          badgeText: `USD ${p.priceUsd}`,
+          score,
+        });
+      }
+    });
+  }
+
+  // 2. Blog Posts
+  if (type === "ALL" || type === "BLOG_POST") {
+    MOCK_BLOG_POSTS.filter((b) => b.active && b.status === "PUBLISHED").forEach((b) => {
+      let score = 0;
+      if (!q) {
+        score = 1.0;
+      } else {
+        if (b.title.toLowerCase().includes(q)) score += 3.0;
+        if (b.summary.toLowerCase().includes(q)) score += 2.0;
+        if (b.tags.some((t) => t.toLowerCase().includes(q))) score += 1.5;
+      }
+      if (score > 0) {
+        allResults.push({
+          entityType: "BLOG_POST",
+          entityId: b.id,
+          entitySlug: b.slug,
+          title: b.title,
+          subtitle: b.summary,
+          metadataInfo: b.categoryName || "Blog",
+          imageUrl: b.coverMediaUrl || "/media/demo-cartagena-caribe.webp",
+          targetUrl: `/blog/${b.slug}`,
+          badgeText: `${b.readingTimeMinutes} min`,
+          score,
+        });
+      }
+    });
+  }
+
+  // 3. Travel Intentions
+  if (type === "ALL" || type === "INTENTION") {
+    MOCK_TRAVEL_INTENTIONS.filter((i) => i.active).forEach((i) => {
+      let score = 0;
+      if (!q) {
+        score = 1.0;
+      } else {
+        if (i.title.toLowerCase().includes(q)) score += 3.0;
+        if (i.tagline.toLowerCase().includes(q)) score += 2.0;
+        if (i.featuredDestinations.some((d) => d.toLowerCase().includes(q))) score += 2.5;
+      }
+      if (score > 0) {
+        allResults.push({
+          entityType: "INTENTION",
+          entityId: i.id,
+          entitySlug: i.slug,
+          title: i.title,
+          subtitle: i.tagline,
+          metadataInfo: "Experiencia de Viaje",
+          imageUrl: i.coverMediaUrl || "/media/demo-cartagena-caribe.webp",
+          targetUrl: "/#intenciones",
+          badgeText: i.iconName,
+          score,
+        });
+      }
+    });
+  }
+
+  allResults.sort((a, b) => (b.score || 0) - (a.score || 0));
+  const results = allResults.slice(0, limit);
+
+  return {
+    query,
+    filterType: type,
+    total: results.length,
+    results,
+    suggestedQueries: ["Cartagena", "Machu Picchu", "Punta Cana", "Playa & Relax", "Consejos de Viaje", "Cusco"],
+  };
+}
+
 

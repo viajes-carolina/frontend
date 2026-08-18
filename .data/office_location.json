@@ -10,8 +10,8 @@
   "longitude": -77.029876,
   "googleMapsUrl": "https://maps.google.com/?q=Miraflores,Lima,Peru",
   "scheduleWeekdays": "Lunes a Viernes: 9:00 AM – 7:00 PM",
-  "scheduleSaturdays": "Sábados: 9:00 AM – 5:00 PM",
+  "scheduleSaturdays": "Sábados: 9:00 AM – 4:00 PM",
   "active": true,
-  "revision": 19,
-  "updatedAt": "2026-08-18T07:17:32.625Z"
+  "revision": 20,
+  "updatedAt": "2026-08-18T16:38:19.937Z"
 }

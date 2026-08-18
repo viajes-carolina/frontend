@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "clientName": "Mariana & Gonzalo Torres",
+    "clientLocation": "Lima, Perú",
+    "tripDestination": "Luna de Miel en Punta Cana",
+    "comment": "Desde que escribimos por WhatsApp nos atendieron con muchísima paciencia. Nos recomendaron un resort espectacular y el check-in fue sin complicaciones. ¡Totalmente recomendadas!",
+    "rating": 5,
+    "avatarMediaId": 2,
+    "avatarMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "consentConfirmed": true,
+    "displayOrder": 1,
+    "active": true,
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "updatedAt": "2026-08-18T16:38:22.870Z"
+  },
+  {
+    "id": 2,
+    "clientName": "Carlos Mendoza",
+    "clientLocation": "Arequipa, Perú",
+    "tripDestination": "Vacaciones Familiares en Cartagena",
+    "comment": "Excelente asesoría de inicio a fin. Los vuelos, traslados y el hotel estuvieron perfectamente coordinados. Nos dio mucha seguridad tener asistencia durante el viaje.",
+    "rating": 5,
+    "avatarMediaId": 2,
+    "avatarMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "consentConfirmed": true,
+    "displayOrder": 2,
+    "active": true,
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "updatedAt": "2026-08-18T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "clientName": "Familia Quispe Valdivia",
+    "clientLocation": "Trujillo, Perú",
+    "tripDestination": "Cusco & Machu Picchu 5D/4N",
+    "comment": "Viajar con niños pequeños siempre es un reto, pero Viajes Carolina organizó los horarios de tren y entradas a la perfección. La experiencia en Machu Picchu fue inolvidable.",
+    "rating": 5,
+    "avatarMediaId": 3,
+    "avatarMediaUrl": "/media/demo-cusco-machupicchu.webp",
+    "consentConfirmed": true,
+    "displayOrder": 3,
+    "active": true,
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "updatedAt": "2026-08-18T00:00:00.000Z"
+  }
+]
