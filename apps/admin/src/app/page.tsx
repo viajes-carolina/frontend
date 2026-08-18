@@ -1,12 +1,14 @@
 import Link from "next/link";
-import { Button, PlaneIcon, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon } from "@vc/ui";
+import { Button, PlaneIcon, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon, ImageIcon } from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
-  const [siteSettings, office, promotions] = await Promise.all([
+  const [siteSettings, office, mediaData] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
-    apiClient.getPromotions(),
+    apiClient.getMediaList(0, 10),
   ]);
 
   return (
@@ -18,7 +20,7 @@ export default async function AdminDashboardPage() {
             Panel de Control · {siteSettings.siteName}
           </h1>
           <p className="font-inter text-neutral-muted text-sm mt-1">
-            Gestión centralizada de contenidos, identidad, oficina y publicaciones.
+            Gestión centralizada de contenidos, biblioteca de medios, identidad y oficina.
           </p>
         </div>
         <div className="flex gap-3">
@@ -32,8 +34,33 @@ export default async function AdminDashboardPage() {
 
       {/* Grid of Sections */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {/* Card: Identidad & WhatsApp */}
+        {/* Card: Biblioteca de Medios (Corte 3) */}
+        <Link
+          href="/medios"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-primary/60 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-brand-primary">
+                Corte 3 · Medios
+              </span>
+              <div className="p-2 rounded-xl bg-brand-primary/10 text-brand-primary">
+                <ImageIcon size={20} />
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-lg text-brand-navy group-hover:text-brand-primary transition-colors">
+              Biblioteca de Medios
+            </h3>
+            <p className="font-inter text-neutral-muted text-sm mt-2 leading-relaxed">
+              {mediaData.total || 0} activos optimizados en WebP con control de punto focal interactivo.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-brand-primary mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Abrir Galería &rarr;
+          </span>
+        </Link>
+
+        {/* Card: Identidad & WhatsApp (Corte 1) */}
         <Link
           href="/identidad"
           className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
@@ -59,7 +86,7 @@ export default async function AdminDashboardPage() {
           </span>
         </Link>
 
-        {/* Card: Oficina & Horarios */}
+        {/* Card: Oficina & Horarios (Corte 2) */}
         <Link
           href="/oficina"
           className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
@@ -84,30 +111,6 @@ export default async function AdminDashboardPage() {
             Editar Ubicación &rarr;
           </span>
         </Link>
-
-        {/* Card: Estado del Sistema */}
-        <div className="bg-white p-6 rounded-2xl border border-neutral-border shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs uppercase tracking-wider font-semibold text-emerald-600">
-                Arquitectura
-              </span>
-              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
-                <PlaneIcon size={20} />
-              </div>
-            </div>
-            <h3 className="font-sora font-bold text-lg text-brand-navy">
-              Quarkus 3.x & Next.js 15
-            </h3>
-            <p className="font-inter text-neutral-muted text-sm mt-2 leading-relaxed">
-              Hexagonal Backend + Next.js App Router Monorepo.
-            </p>
-          </div>
-          <span className="text-xs font-medium text-neutral-muted mt-4">
-            12 de 51 tareas completadas (23.5%)
-          </span>
-        </div>
-
       </div>
     </div>
   );

@@ -1,35 +1,119 @@
+// ==============================================================================
+// Viajes Carolina — Shared Data Transfer Objects (DTOs)
+// ==============================================================================
+
+export interface ApiInfoDTO {
+  name: string;
+  version: string;
+  status: string;
+  architecture: string;
+  timestamp: string;
+}
+
 export interface SiteSettingsDTO {
-  id: number;
+  id?: number;
   siteName: string;
-  brandTagline: string;
+  brandTagline?: string;
   contactEmail: string;
   primaryPhone: string;
-  whatsappPhone: string;
-  whatsappDefaultMessage: string;
+  logoMediaId?: number;
+  faviconMediaId?: number;
+  whatsappPhone?: string;
+  whatsappDefaultMessage?: string;
   facebookUrl?: string;
   instagramUrl?: string;
   tiktokUrl?: string;
-  logoMediaId?: number;
-  faviconMediaId?: number;
+  revision?: number;
+  updatedAt?: string;
+}
+
+export interface WhatsAppActionDTO {
+  actionCode: string;
+  label: string;
+  defaultMessageTemplate: string;
+}
+
+export interface PublicSiteResponse {
+  siteName: string;
+  brandTagline?: string;
+  contactEmail: string;
+  primaryPhone: string;
+  whatsappPhone?: string;
+  whatsappDisplayNumber?: string;
+  logoUrl?: string;
+  faviconUrl?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  tiktokUrl?: string;
+  actions: Record<string, string>;
 }
 
 export interface OfficeLocationDTO {
-  id: number;
+  id?: number;
   addressLine: string;
   district: string;
   city: string;
   country: string;
   postalCode?: string;
   referenceLandmark?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
   googleMapsUrl?: string;
-  embedMapsUrl?: string;
   scheduleWeekdays: string;
   scheduleSaturdays: string;
+  scheduleSundaysHolidays?: string;
   active: boolean;
-  revision: number;
+  revision?: number;
   updatedAt?: string;
+}
+
+export interface PublicOfficeResponse {
+  fullAddress: string;
+  district: string;
+  city: string;
+  country: string;
+  referenceLandmark?: string;
+  latitude: number;
+  longitude: number;
+  googleMapsUrl?: string;
+  scheduleWeekdays: string;
+  scheduleSaturdays: string;
+  scheduleSundaysHolidays?: string;
+  active: boolean;
+}
+
+// Media Assets DTOs
+export interface MediaAssetDTO {
+  id: number;
+  filename: string;
+  originalName: string;
+  mimeType: string;
+  fileSizeBytes: number;
+  width: number;
+  height: number;
+  focalX: number;
+  focalY: number;
+  altText?: string;
+  caption?: string;
+  storagePath: string;
+  variantsJson?: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MediaPageResponse {
+  items: MediaAssetDTO[];
+  total: number;
+  page: number;
+  size: number;
+}
+
+export interface UpdateMediaFocalPointRequest {
+  focalX: number;
+  focalY: number;
+  altText?: string;
+  caption?: string;
 }
 
 export interface PromotionDTO {
@@ -38,18 +122,17 @@ export interface PromotionDTO {
   title: string;
   destination: string;
   summary: string;
-  description?: string;
   priceUsd: number;
-  pricePen: number;
+  pricePen?: number;
   durationDays: number;
   durationNights: number;
   departureCity: string;
   validFrom: string;
   validUntil: string;
+  featuredMediaId?: number;
   isFeatured: boolean;
-  coverMediaId?: number;
-  inclusions?: string[];
-  exclusions?: string[];
+  inclusions: string[];
+  exclusions: string[];
 }
 
 export interface BlogPostDTO {
@@ -59,16 +142,8 @@ export interface BlogPostDTO {
   excerpt: string;
   content: string;
   category: string;
+  featuredMediaId?: number;
   publishedAt: string;
   readingTimeMinutes: number;
   authorName: string;
-  coverMediaId?: number;
-}
-
-export interface ApiInfoDTO {
-  name: string;
-  version: string;
-  status: string;
-  architecture: string;
-  timestamp: string;
 }

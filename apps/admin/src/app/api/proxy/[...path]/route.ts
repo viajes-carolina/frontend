@@ -4,6 +4,9 @@ import path from "node:path";
 import {
   DEFAULT_SITE_SETTINGS,
   DEFAULT_OFFICE_LOCATION,
+  DEFAULT_MEDIA_ASSETS,
+  getMockMediaPage,
+  updateMockMediaFocalPoint,
   MOCK_PROMOTIONS,
   MOCK_BLOG_POSTS,
   SiteSettingsDTO,
@@ -150,6 +153,16 @@ async function proxyOrFallback(
       return NextResponse.json(current, { status: 200 });
     }
 
+    if (targetPath.includes("media")) {
+      if (method === "PATCH") {
+        const idMatch = targetPath.match(/media\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const updated = updateMockMediaFocalPoint(id, (bodyJson as any) || { focalX: 50, focalY: 50 });
+        return NextResponse.json(updated || DEFAULT_MEDIA_ASSETS[0], { status: 200 });
+      }
+      return NextResponse.json(getMockMediaPage(), { status: 200 });
+    }
+
     if (targetPath.includes("promotions")) {
       return NextResponse.json(MOCK_PROMOTIONS, { status: 200 });
     }
@@ -174,6 +187,10 @@ export async function POST(req: NextRequest, context: { params: Promise<{ path: 
 }
 
 export async function PUT(req: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+  return proxyOrFallback(req, context.params);
+}
+
+export async function PATCH(req: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   return proxyOrFallback(req, context.params);
 }
 

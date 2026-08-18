@@ -36,7 +36,7 @@ async function runE2ETests() {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1, 2, 3)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
@@ -47,6 +47,9 @@ async function runE2ETests() {
 
     const oficinaRes = await fetch(`${BASE_ADMIN_URL}/oficina`);
     assert(oficinaRes.status === 200, `Módulo Oficina & Horarios responde con HTTP 200 OK (${oficinaRes.status})`);
+
+    const mediosRes = await fetch(`${BASE_ADMIN_URL}/medios`);
+    assert(mediosRes.status === 200, `Módulo Biblioteca de Medios responde con HTTP 200 OK (${mediosRes.status})`);
   } catch (err) {
     assert(false, `Error conectando a Panel Admin: ${err.message}`);
   }
@@ -117,8 +120,43 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Oficina: ${err.message}`);
   }
 
-  // 5. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 5. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 5. Verificación de API Proxy & Persistencia E2E (Corte 3: Biblioteca de Medios & Punto Focal)...
+  console.log("\n📦 5. Verificando API Proxy & Persistencia E2E (Corte 3: Medios & Punto Focal)...");
+  try {
+    const mediaGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/media?page=0&size=10`);
+    assert(mediaGet.status === 200, `GET /api/proxy/admin/v1/media responde 200 OK (${mediaGet.status})`);
+    const mediaData = await mediaGet.json();
+    assert(Array.isArray(mediaData.items) && mediaData.items.length > 0, `Biblioteca contiene activos: ${mediaData.items?.length || 0} activos`);
+
+    // Mutación E2E de Punto Focal en Activo #1
+    const testFocalX = 72.5;
+    const testFocalY = 28.0;
+    const focalPatch = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/media/1/focal-point`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        focalX: testFocalX,
+        focalY: testFocalY,
+        altText: "Hero Test Focal E2E",
+        caption: "Prueba automatizada de punto focal",
+      }),
+    });
+    assert(focalPatch.status === 200, `PATCH /api/proxy/admin/v1/media/1/focal-point responde 200 OK (${focalPatch.status})`);
+    const updatedMedia = await focalPatch.json();
+    assert(
+      Number(updatedMedia.focalX) === testFocalX,
+      `Punto focal X actualizado y persistido: ${updatedMedia.focalX}%`
+    );
+    assert(
+      Number(updatedMedia.focalY) === testFocalY,
+      `Punto focal Y actualizado y persistido: ${updatedMedia.focalY}%`
+    );
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Medios: ${err.message}`);
+  }
+
+  // 6. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 6. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

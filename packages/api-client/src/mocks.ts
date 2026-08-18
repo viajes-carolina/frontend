@@ -1,4 +1,13 @@
-import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
+import {
+  SiteSettingsDTO,
+  OfficeLocationDTO,
+  PromotionDTO,
+  BlogPostDTO,
+  ApiInfoDTO,
+  MediaAssetDTO,
+  MediaPageResponse,
+  UpdateMediaFocalPointRequest,
+} from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
   id: 1,
@@ -31,8 +40,84 @@ export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
 
+export const DEFAULT_MEDIA_ASSETS: MediaAssetDTO[] = [
+  {
+    id: 1,
+    filename: "demo-hero-travel.webp",
+    originalName: "hero-travel-banner.webp",
+    mimeType: "image/webp",
+    fileSizeBytes: 245800,
+    width: 1920,
+    height: 1080,
+    focalX: 50.0,
+    focalY: 40.0,
+    altText: "Paisaje de viaje y aventura en los Andes",
+    caption: "Vista panorámica de montaña y cielo despejado",
+    storagePath: "/media/demo-hero-travel.webp",
+    variantsJson: '{"thumb": "/media/demo-hero-travel-thumb.webp", "medium": "/media/demo-hero-travel-med.webp", "large": "/media/demo-hero-travel.webp"}',
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 2,
+    filename: "demo-cartagena-caribe.webp",
+    originalName: "cartagena-playa.webp",
+    mimeType: "image/webp",
+    fileSizeBytes: 184500,
+    width: 1200,
+    height: 800,
+    focalX: 60.0,
+    focalY: 50.0,
+    altText: "Calles coloniales y mar de Cartagena de Indias",
+    caption: "Cartagena de Indias al atardecer",
+    storagePath: "/media/demo-cartagena-caribe.webp",
+    variantsJson: '{"thumb": "/media/demo-cartagena-thumb.webp", "medium": "/media/demo-cartagena-med.webp"}',
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 3,
+    filename: "demo-cusco-machupicchu.webp",
+    originalName: "cusco-valle-sagrado.webp",
+    mimeType: "image/webp",
+    fileSizeBytes: 210400,
+    width: 1200,
+    height: 800,
+    focalX: 50.0,
+    focalY: 35.0,
+    altText: "Santuario Histórico de Machu Picchu y Valle Sagrado",
+    caption: "Machu Picchu bajo la luz de la mañana",
+    storagePath: "/media/demo-cusco-machupicchu.webp",
+    variantsJson: '{"thumb": "/media/demo-cusco-thumb.webp", "medium": "/media/demo-cusco-med.webp"}',
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 4,
+    filename: "demo-logo-viajes-carolina.webp",
+    originalName: "logo-vc-oficial.webp",
+    mimeType: "image/webp",
+    fileSizeBytes: 45200,
+    width: 600,
+    height: 200,
+    focalX: 50.0,
+    focalY: 50.0,
+    altText: "Logo Oficial de Viajes Carolina",
+    caption: "Logo corporativo",
+    storagePath: "/media/demo-logo-viajes-carolina.webp",
+    variantsJson: "{}",
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+];
+
 export let MOCK_SITE_SETTINGS: SiteSettingsDTO = { ...DEFAULT_SITE_SETTINGS };
 export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = { ...DEFAULT_OFFICE_LOCATION };
+export let MOCK_MEDIA_ASSETS: MediaAssetDTO[] = [...DEFAULT_MEDIA_ASSETS];
 
 export function getMockSiteSettings(): SiteSettingsDTO {
   return MOCK_SITE_SETTINGS;
@@ -58,6 +143,33 @@ export function updateMockOfficeLocation(updated: Partial<OfficeLocationDTO>): O
     updatedAt: new Date().toISOString(),
   };
   return MOCK_OFFICE_LOCATION;
+}
+
+export function getMockMediaPage(page = 0, size = 24): MediaPageResponse {
+  const start = page * size;
+  const items = MOCK_MEDIA_ASSETS.slice(start, start + size);
+  return {
+    items,
+    total: MOCK_MEDIA_ASSETS.length,
+    page,
+    size,
+  };
+}
+
+export function updateMockMediaFocalPoint(id: number, req: UpdateMediaFocalPointRequest): MediaAssetDTO | null {
+  const index = MOCK_MEDIA_ASSETS.findIndex((m) => m.id === id);
+  if (index === -1) return null;
+  const current = MOCK_MEDIA_ASSETS[index];
+  const updated: MediaAssetDTO = {
+    ...current,
+    focalX: req.focalX,
+    focalY: req.focalY,
+    altText: req.altText || current.altText,
+    caption: req.caption || current.caption,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_MEDIA_ASSETS[index] = updated;
+  return updated;
 }
 
 export const MOCK_PROMOTIONS: PromotionDTO[] = [

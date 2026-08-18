@@ -1,4 +1,13 @@
-import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
+import {
+  SiteSettingsDTO,
+  OfficeLocationDTO,
+  PromotionDTO,
+  BlogPostDTO,
+  ApiInfoDTO,
+  MediaAssetDTO,
+  MediaPageResponse,
+  UpdateMediaFocalPointRequest,
+} from "./types";
 import {
   MOCK_PROMOTIONS,
   MOCK_BLOG_POSTS,
@@ -7,6 +16,9 @@ import {
   updateMockSiteSettings,
   getMockOfficeLocation,
   updateMockOfficeLocation,
+  getMockMediaPage,
+  updateMockMediaFocalPoint,
+  DEFAULT_MEDIA_ASSETS,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -22,16 +34,14 @@ export class ViajesCarolinaApiClient {
   private useMocks: boolean;
 
   constructor(config?: ApiClientConfig) {
-    this.baseUrl = config?.baseUrl || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    this.baseUrl = config?.baseUrl || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080";
     this.useMocks = config?.useMocks ?? false;
   }
 
   private getEffectiveUrl(endpointPath: string): string {
-    // If running in browser, use the same-origin Next.js proxy route to bypass all CORS limitations
     if (typeof window !== "undefined") {
       return `/api/proxy/${endpointPath.replace(/^\//, "")}`;
     }
-    // If running in Node.js server (SSR / SSG), connect directly to backend
     return `${this.baseUrl}/api/${endpointPath.replace(/^\//, "")}`;
   }
 
@@ -49,11 +59,10 @@ export class ViajesCarolinaApiClient {
   }
 
   async getSiteSettings(): Promise<SiteSettingsDTO> {
-    // Always prioritize fresh network/proxy data
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/site"), {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/settings"), {
         cache: "no-store",
         signal: controller.signal,
       });
@@ -66,7 +75,6 @@ export class ViajesCarolinaApiClient {
         return data;
       }
     } catch {
-      // Network failed -> fallback to localStorage if available
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem(STORAGE_KEY_SETTINGS);
         if (stored) {
@@ -111,11 +119,10 @@ export class ViajesCarolinaApiClient {
   }
 
   async getOfficeLocation(): Promise<OfficeLocationDTO> {
-    // Always prioritize fresh network/proxy data
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/office"), {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/office"), {
         cache: "no-store",
         signal: controller.signal,
       });
@@ -128,7 +135,6 @@ export class ViajesCarolinaApiClient {
         return data;
       }
     } catch {
-      // Network failed -> fallback to localStorage if available
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem(STORAGE_KEY_OFFICE);
         if (stored) {
@@ -172,17 +178,123 @@ export class ViajesCarolinaApiClient {
     return updated;
   }
 
+  // ==========================================
+  // Media Assets API (Corte 3)
+  // ==========================================
+
+  async getMediaList(page = 0, size = 24, mimeType?: string): Promise<MediaPageResponse> {
+    try {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        size: size.toString(),
+        ...(mimeType ? { mimeType } : {}),
+      });
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/media?${queryParams.toString()}`), {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return getMockMediaPage(page, size);
+  }
+
+  async getMediaById(id: number): Promise<MediaAssetDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/media/${id}`), {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    const found = DEFAULT_MEDIA_ASSETS.find((m) => m.id === id);
+    if (found) return found;
+    throw new Error(`Activo multimedia no encontrado con ID: ${id}`);
+  }
+
+  async uploadMedia(file: File, altText?: string, caption?: string): Promise<MediaAssetDTO> {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (altText) formData.append("altText", altText);
+    if (caption) formData.append("caption", caption);
+
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/media/upload"), {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+
+    const mockAsset: MediaAssetDTO = {
+      id: Date.now(),
+      filename: `mock-${file.name}`,
+      originalName: file.name,
+      mimeType: file.type || "image/webp",
+      fileSizeBytes: file.size,
+      width: 1200,
+      height: 800,
+      focalX: 50.0,
+      focalY: 50.0,
+      altText: altText || file.name,
+      caption: caption || "",
+      storagePath: `/media/mock-${file.name}`,
+      variantsJson: "{}",
+      active: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    return mockAsset;
+  }
+
+  async updateMediaFocalPoint(id: number, payload: UpdateMediaFocalPointRequest): Promise<MediaAssetDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/media/${id}/focal-point`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    const mock = updateMockMediaFocalPoint(id, payload);
+    if (mock) return mock;
+    throw new Error(`Error al actualizar punto focal en activo: ${id}`);
+  }
+
+  async deleteMedia(id: number): Promise<void> {
+    try {
+      await fetch(this.getEffectiveUrl(`admin/v1/media/${id}`), {
+        method: "DELETE",
+      });
+    } catch {
+      // ignore
+    }
+  }
+
   async getPromotions(): Promise<PromotionDTO[]> {
     if (this.useMocks) return MOCK_PROMOTIONS;
     try {
       const res = await fetch(this.getEffectiveUrl("public/v1/promotions"), {
         cache: "no-store",
       });
-      if (!res.ok) return MOCK_PROMOTIONS;
-      return await res.json();
+      if (res.ok) return await res.json();
     } catch {
-      return MOCK_PROMOTIONS;
+      // fallback
     }
+    return MOCK_PROMOTIONS;
   }
 
   async getBlogPosts(): Promise<BlogPostDTO[]> {
@@ -191,11 +303,11 @@ export class ViajesCarolinaApiClient {
       const res = await fetch(this.getEffectiveUrl("public/v1/blog"), {
         cache: "no-store",
       });
-      if (!res.ok) return MOCK_BLOG_POSTS;
-      return await res.json();
+      if (res.ok) return await res.json();
     } catch {
-      return MOCK_BLOG_POSTS;
+      // fallback
     }
+    return MOCK_BLOG_POSTS;
   }
 }
 
