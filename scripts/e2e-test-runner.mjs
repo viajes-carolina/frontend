@@ -50,11 +50,18 @@ async function runE2ETests() {
     assert(nosotrosHtml.includes("Nuestra Historia") || nosotrosHtml.includes("Miraflores, Lima"), "HTML de Nosotros contiene Historia y Valores (Corte 8)");
     assert(nosotrosHtml.includes("Misión &amp; Visión") || nosotrosHtml.includes("Misión & Visión"), "HTML de Nosotros contiene Misión y Visión (Corte 8)");
     assert(nosotrosHtml.includes("Asesoras de Viaje") || nosotrosHtml.includes("Carolina Zúñiga") || nosotrosHtml.includes("Lucía Ramos"), "HTML de Nosotros contiene Asesoras con WhatsApp (Corte 8)");
+
+    const contactoRes = await fetch(`${BASE_WEB_URL}/contacto`);
+    assert(contactoRes.status === 200, `Página pública Contacto /contacto responde HTTP 200 OK (${contactoRes.status})`);
+    const contactoHtml = await contactoRes.text();
+    assert(contactoHtml.includes("Estamos para Ayudarte") || contactoHtml.includes("próximo destino"), "HTML de Contacto contiene Hero de Contacto (Corte 9)");
+    assert(contactoHtml.includes("Envíanos un Mensaje") || contactoHtml.includes("Nombre Completo"), "HTML de Contacto contiene Formulario con Validación Anti-Bot (Corte 9)");
+    assert(contactoHtml.includes("Atención Directa") || contactoHtml.includes("Escríbenos por WhatsApp"), "HTML de Contacto contiene Caja de Canales Directos & Oficina (Corte 9)");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 8)
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 9)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
@@ -74,6 +81,9 @@ async function runE2ETests() {
 
     const nosotrosAdminRes = await fetch(`${BASE_ADMIN_URL}/nosotros`);
     assert(nosotrosAdminRes.status === 200, `Módulo Nosotros & Asesoras responde con HTTP 200 OK (${nosotrosAdminRes.status})`);
+
+    const contactoAdminRes = await fetch(`${BASE_ADMIN_URL}/contacto`);
+    assert(contactoAdminRes.status === 200, `Módulo Contacto & Leads responde con HTTP 200 OK (${contactoAdminRes.status})`);
 
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
@@ -425,8 +435,79 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Nosotros & Asesoras: ${err.message}`);
   }
 
-  // 11. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 11. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 11. Verificación de API Proxy & Persistencia E2E (Corte 9: Contacto, Anti-Bot Turnstile & Leads)...
+  console.log("\n📦 11. Verificando API Proxy & Persistencia E2E (Corte 9: Contacto & Leads)...");
+  try {
+    const contactGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/contact`);
+    assert(contactGet.status === 200, `GET /api/proxy/public/v1/contact responde 200 OK (${contactGet.status})`);
+    const contactData = await contactGet.json();
+    assert(!!contactData.page && !!contactData.page.heroTitle, `Información de página Contacto presente: "${contactData.page?.heroTitle}"`);
+    assert(!!contactData.whatsappPhone, `Canal directo WhatsApp presente: "${contactData.whatsappPhone}"`);
+    assert(!!contactData.officeAddress, `Dirección física de atención presente: "${contactData.officeAddress}"`);
+
+    // Enviar nueva solicitud (Lead) con token Turnstile
+    const testLeadEmail = `lead-${Date.now()}@ejemplo.com`;
+    const inquiryPost = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/contact/inquiry`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: "Roberto Sánchez Test",
+        email: testLeadEmail,
+        phone: "+51 912 345 678",
+        destinationOfInterest: "Punta Cana All Inclusive",
+        travelDateApprox: "Noviembre 2026",
+        travelersCount: 2,
+        message: "Hola, queremos cotizar una luna de miel en Punta Cana con todo incluido.",
+        preferredContactChannel: "WHATSAPP",
+        turnstileToken: "mock-valid-turnstile-token",
+      }),
+    });
+    assert(inquiryPost.status === 201 || inquiryPost.status === 200, `POST /api/proxy/public/v1/contact/inquiry responde 201/200 OK (${inquiryPost.status})`);
+    const createdInquiry = await inquiryPost.json();
+    assert(createdInquiry.fullName === "Roberto Sánchez Test", `Lead creado con nombre correcto: "${createdInquiry.fullName}"`);
+    assert(createdInquiry.status === "NEW", `Estado inicial de lead es NEW: "${createdInquiry.status}"`);
+
+    // Listar solicitudes en el panel admin
+    const inquiriesGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/inquiries`);
+    assert(inquiriesGet.status === 200, `GET /api/proxy/admin/v1/inquiries responde 200 OK (${inquiriesGet.status})`);
+    const inquiriesList = await inquiriesGet.json();
+    assert(Array.isArray(inquiriesList) && inquiriesList.length > 0, `Bandeja de leads contiene ${inquiriesList.length} solicitudes`);
+
+    // Actualizar estado de lead a EN ATENCIÓN / CONTACTADO
+    const targetLeadId = createdInquiry.id || 1;
+    const statusPatch = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/inquiries/${targetLeadId}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "IN_PROGRESS" }),
+    });
+    assert(statusPatch.status === 200, `PATCH /api/proxy/admin/v1/inquiries/${targetLeadId}/status responde 200 OK (${statusPatch.status})`);
+    const updatedStatus = await statusPatch.json();
+    assert(updatedStatus.status === "IN_PROGRESS", `Estado de lead actualizado a IN_PROGRESS: "${updatedStatus.status}"`);
+
+    // Mutación de Configuración Editorial de Contacto
+    const testHeroBadge = "Estamos para Ayudarte";
+    const contactPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/contact`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        heroBadge: testHeroBadge,
+        heroTitle: "Hablemos de tu próximo destino soñado",
+        heroSubtitle: "Elige el medio que prefieras: conversemos por WhatsApp o completa el formulario.",
+        whatsappBoxTitle: "¿Prefieres atención inmediata?",
+        whatsappBoxSubtitle: "Nuestras asesoras responden en minutos para cotizar tu viaje.",
+        formTitle: "Envíanos un Mensaje",
+        formSubtitle: "Completa el formulario y te responderemos en menos de 24 horas.",
+      }),
+    });
+    assert(contactPut.status === 200, `PUT /api/proxy/admin/v1/contact responde 200 OK (${contactPut.status})`);
+    const updatedContact = await contactPut.json();
+    assert(updatedContact.heroBadge === testHeroBadge, `Configuración de página Contacto actualizada y persistida: "${updatedContact.heroBadge}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Contacto & Leads: ${err.message}`);
+  }
+
+  // 12. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 12. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");
