@@ -42,6 +42,12 @@ import {
   SubmitClaimRequest,
   UpdateClaimStatusRequest,
   ContactExploreLinkDTO,
+  AdminUserDTO,
+  LoginRequest,
+  LoginResponse,
+  CreateAdminUserRequest,
+  UpdateAdminUserRequest,
+  AuditLogDTO,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -108,6 +114,11 @@ import {
   getMockClaimByCode,
   submitMockClaim,
   updateMockClaimStatus,
+  loginMockAdmin,
+  getMockAdminUsers,
+  createMockAdminUser,
+  updateMockAdminUser,
+  getMockAuditLogs,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -1247,8 +1258,105 @@ export class ViajesCarolinaApiClient {
     }
     return getMockContactExploreLinks();
   }
+
+  // Auth & Governance (Corte 14)
+  async loginAdmin(req: LoginRequest): Promise<LoginResponse> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/auth/login"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return loginMockAdmin(req);
+  }
+
+  async logoutAdmin(): Promise<{ status: string }> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/auth/logout"), {
+        method: "POST",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return { status: "LOGGED_OUT" };
+  }
+
+  async getCurrentAdminUser(): Promise<AdminUserDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/auth/me"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAdminUsers()[0];
+  }
+
+  async getAdminUsers(): Promise<AdminUserDTO[]> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/users"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAdminUsers();
+  }
+
+  async createAdminUser(req: CreateAdminUserRequest): Promise<AdminUserDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/users"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return createMockAdminUser(req);
+  }
+
+  async updateAdminUser(id: number, req: UpdateAdminUserRequest): Promise<AdminUserDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/users/${id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockAdminUser(id, req);
+  }
+
+  async getAuditLogs(entityType?: string, limit?: number): Promise<AuditLogDTO[]> {
+    try {
+      const params = new URLSearchParams();
+      if (entityType && entityType !== "ALL") params.append("entityType", entityType);
+      if (limit) params.append("limit", String(limit));
+      const q = params.toString();
+      const url = q ? `admin/v1/audit-logs?${q}` : "admin/v1/audit-logs";
+      const res = await fetch(this.getEffectiveUrl(url), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAuditLogs(entityType, limit);
+  }
 }
 
 export const apiClient = new ViajesCarolinaApiClient();
+
 
 

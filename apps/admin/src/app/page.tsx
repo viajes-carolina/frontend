@@ -28,6 +28,8 @@ export default async function AdminDashboardPage() {
     inquiries,
     blogPosts,
     claims,
+    users,
+    auditLogs,
   ] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
@@ -40,6 +42,8 @@ export default async function AdminDashboardPage() {
     apiClient.getAdminInquiries(),
     apiClient.getAdminBlogPosts(),
     apiClient.getAdminClaims(),
+    apiClient.getAdminUsers(),
+    apiClient.getAuditLogs("ALL", 10),
   ]);
 
   const newInquiriesCount = inquiries.filter((i) => i.status === "NEW").length;
@@ -120,6 +124,58 @@ export default async function AdminDashboardPage() {
           </div>
           <span className="text-xs font-semibold text-amber-600 mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             Atender Reclamos &rarr;
+          </span>
+        </Link>
+
+        {/* Card: Usuarios & Roles RBAC (Corte 14) */}
+        <Link
+          href="/usuarios"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-purple-500/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-purple-600">
+                Corte 14 · Seguridad & RBAC
+              </span>
+              <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+                <span>🛡️</span>
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-purple-600 transition-colors">
+              Usuarios & Gobernanza
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {users.length} operadores registrados con permisos por rol y hashing Argon2id.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-purple-600 mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Gestionar Operadores &rarr;
+          </span>
+        </Link>
+
+        {/* Card: Bitácora de Auditoría (Corte 14) */}
+        <Link
+          href="/auditoria"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-blue-500/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-blue-600">
+                Corte 14 · Trazabilidad
+              </span>
+              <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                <span>📋</span>
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-blue-600 transition-colors">
+              Bitácora de Auditoría
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              Trazabilidad inmutable de mutaciones y accesos con hashing SHA-256 de IP.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-blue-600 mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Ver Registro de Eventos &rarr;
           </span>
         </Link>
         {/* Card: Contacto & Leads (Corte 9) */}

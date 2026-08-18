@@ -1,0 +1,77 @@
+[
+  {
+    "id": 1787080829668,
+    "username": "admin",
+    "action": "UPDATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787080829530",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787080829451\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-18T19:20:29.668Z"
+  },
+  {
+    "id": 1787080829534,
+    "username": "admin",
+    "action": "CREATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787080829530",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787080829451\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-18T19:20:29.534Z"
+  },
+  {
+    "id": 1787080828708,
+    "userId": 1,
+    "username": "admin",
+    "action": "LOGIN_SUCCESS",
+    "entityType": "AUTH",
+    "entityId": "1",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"admin\"}",
+    "createdAt": "2026-08-18T19:20:28.708Z"
+  },
+  {
+    "id": 1,
+    "userId": 1,
+    "username": "admin",
+    "action": "INITIAL_SYSTEM_BOOTSTRAP",
+    "entityType": "SYSTEM",
+    "entityId": "1",
+    "ipHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "detailsJson": "{\"message\": \"Sistema inicializado con gobernanza y roles RBAC\"}",
+    "createdAt": "2026-08-18T00:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "userId": 1,
+    "username": "admin",
+    "action": "UPDATE_SETTINGS",
+    "entityType": "SITE_SETTINGS",
+    "entityId": "1",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"siteName\": \"Viajes Carolina\", \"brandTagline\": \"El viaje comienza aquí\"}",
+    "createdAt": "2026-08-18T08:30:00.000Z"
+  },
+  {
+    "id": 3,
+    "userId": 2,
+    "username": "editor",
+    "action": "PUBLISH_PROMOTION",
+    "entityType": "PROMOTION",
+    "entityId": "1",
+    "ipHash": "b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef01",
+    "detailsJson": "{\"slug\": \"cartagena-donde-el-mar-te-espera\", \"priceUsd\": 429}",
+    "createdAt": "2026-08-18T09:45:00.000Z"
+  },
+  {
+    "id": 4,
+    "userId": 1,
+    "username": "admin",
+    "action": "UPDATE_CLAIM_STATUS",
+    "entityType": "CLAIM",
+    "entityId": "1",
+    "ipHash": "c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef012",
+    "detailsJson": "{\"claimCode\": \"REC-2026-0001\", \"status\": \"RESOLVED\"}",
+    "createdAt": "2026-08-18T11:20:00.000Z"
+  }
+]

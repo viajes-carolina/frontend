@@ -105,6 +105,19 @@ export default function RootLayout({
                 <span className="text-[10px] bg-amber-400 text-slate-900 font-bold px-1.5 py-0.5 rounded">Libro</span>
               </Link>
               <Link
+                href="/usuarios"
+                className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-between"
+              >
+                <span>Usuarios & Roles</span>
+                <span className="text-[10px] bg-purple-400 text-slate-950 font-bold px-1.5 py-0.5 rounded">RBAC</span>
+              </Link>
+              <Link
+                href="/auditoria"
+                className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Bitácora de Auditoría
+              </Link>
+              <Link
                 href="/medios"
                 className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               >

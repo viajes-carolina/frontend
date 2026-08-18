@@ -640,5 +640,61 @@ export interface CreateOrUpdateContactExploreLinkRequest {
   active?: boolean;
 }
 
+// Auth, RBAC & Governance DTOs (Corte 14)
+export interface AdminUserDTO {
+  id: number;
+  username: string;
+  email: string;
+  fullName: string;
+  role: "SUPER_ADMIN" | "CONTENT_EDITOR" | "ADVISOR" | string;
+  active: boolean;
+  lastLoginAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface LoginRequest {
+  usernameOrEmail: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  tokenType: string;
+  expiresInSeconds: number;
+  user: AdminUserDTO;
+}
+
+export interface CreateAdminUserRequest {
+  username: string;
+  email: string;
+  password: string;
+  fullName: string;
+  role?: string;
+  active?: boolean;
+}
+
+export interface UpdateAdminUserRequest {
+  username: string;
+  email: string;
+  password?: string;
+  fullName: string;
+  role?: string;
+  active?: boolean;
+}
+
+export interface AuditLogDTO {
+  id: number;
+  userId?: number;
+  username: string;
+  action: string;
+  entityType: string;
+  entityId?: string;
+  ipHash?: string;
+  detailsJson: string;
+  createdAt: string;
+}
+
+
 
 

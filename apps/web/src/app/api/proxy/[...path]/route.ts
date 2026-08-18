@@ -46,6 +46,11 @@ import {
   ClaimRecordDTO,
   DEFAULT_CONTACT_EXPLORE_LINKS,
   ContactExploreLinkDTO,
+  DEFAULT_ADMIN_USERS,
+  DEFAULT_AUDIT_LOGS,
+  AdminUserDTO,
+  AuditLogDTO,
+  LoginResponse,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -819,6 +824,156 @@ async function proxyOrFallback(
     if (targetPath.includes("explore-links")) {
       const current = readStoredJson<ContactExploreLinkDTO[]>("contact_explore_links.json", DEFAULT_CONTACT_EXPLORE_LINKS);
       return NextResponse.json(current.filter((l) => l.active), { status: 200 });
+    }
+
+    // Auth & Session (Corte 14)
+    if (targetPath.includes("auth/login")) {
+      const users = readStoredJson<AdminUserDTO[]>("admin_users.json", DEFAULT_ADMIN_USERS);
+      const ident = String(bodyJson?.usernameOrEmail || "").trim().toLowerCase();
+      const user = users.find((u) => u.username.toLowerCase() === ident || u.email.toLowerCase() === ident);
+
+      if (!user || !user.active) {
+        return NextResponse.json({ message: "Credenciales inválidas o cuenta de usuario inactiva." }, { status: 401 });
+      }
+
+      user.lastLoginAt = new Date().toISOString();
+      writeStoredJson("admin_users.json", users);
+
+      // Audit Log
+      const auditLogs = readStoredJson<AuditLogDTO[]>("audit_logs.json", DEFAULT_AUDIT_LOGS);
+      const newLog: AuditLogDTO = {
+        id: Date.now(),
+        userId: user.id,
+        username: user.username,
+        action: "LOGIN_SUCCESS",
+        entityType: "AUTH",
+        entityId: String(user.id),
+        ipHash: "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+        detailsJson: JSON.stringify({ username: user.username }),
+        createdAt: new Date().toISOString(),
+      };
+      writeStoredJson("audit_logs.json", [newLog, ...auditLogs]);
+
+      const loginRes: LoginResponse = {
+        token: `jwt-mock-${user.username}-${Date.now()}`,
+        tokenType: "Bearer",
+        expiresInSeconds: 86400,
+        user,
+      };
+
+      const res = NextResponse.json(loginRes, { status: 200 });
+      res.cookies.set("vc_admin_jwt", loginRes.token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+        maxAge: 86400,
+        path: "/",
+      });
+      return res;
+    }
+
+    if (targetPath.includes("auth/logout")) {
+      const res = NextResponse.json({ status: "LOGGED_OUT" }, { status: 200 });
+      res.cookies.delete("vc_admin_jwt");
+      return res;
+    }
+
+    if (targetPath.includes("auth/me")) {
+      const users = readStoredJson<AdminUserDTO[]>("admin_users.json", DEFAULT_ADMIN_USERS);
+      return NextResponse.json(users[0], { status: 200 });
+    }
+
+    // Users & RBAC (Corte 14)
+    if (targetPath.includes("users")) {
+      const users = readStoredJson<AdminUserDTO[]>("admin_users.json", DEFAULT_ADMIN_USERS);
+      if (method === "POST") {
+        const username = String(bodyJson?.username || "").trim().toLowerCase();
+        const email = String(bodyJson?.email || "").trim().toLowerCase();
+        const exists = users.some((u) => u.username.toLowerCase() === username || u.email.toLowerCase() === email);
+        if (exists) {
+          return NextResponse.json({ message: "El usuario o correo electrónico ya existe." }, { status: 409 });
+        }
+
+        const newUser: AdminUserDTO = {
+          id: Date.now(),
+          username,
+          email,
+          fullName: String(bodyJson?.fullName || "").trim(),
+          role: String(bodyJson?.role || "CONTENT_EDITOR"),
+          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        const updated = [...users, newUser];
+        writeStoredJson("admin_users.json", updated);
+
+        // Audit Log
+        const auditLogs = readStoredJson<AuditLogDTO[]>("audit_logs.json", DEFAULT_AUDIT_LOGS);
+        const newLog: AuditLogDTO = {
+          id: Date.now(),
+          username: "admin",
+          action: "CREATE_ADMIN_USER",
+          entityType: "USER",
+          entityId: String(newUser.id),
+          ipHash: "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+          detailsJson: JSON.stringify({ username: newUser.username, role: newUser.role }),
+          createdAt: new Date().toISOString(),
+        };
+        writeStoredJson("audit_logs.json", [newLog, ...auditLogs]);
+
+        return NextResponse.json(newUser, { status: 201 });
+      }
+
+      if (method === "PUT") {
+        const idMatch = targetPath.match(/users\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const idx = users.findIndex((u) => u.id === id);
+        if (idx !== -1) {
+          const updatedItem = {
+            ...users[idx],
+            username: bodyJson?.username ? String(bodyJson.username).trim().toLowerCase() : users[idx].username,
+            email: bodyJson?.email ? String(bodyJson.email).trim().toLowerCase() : users[idx].email,
+            fullName: bodyJson?.fullName ? String(bodyJson.fullName).trim() : users[idx].fullName,
+            role: bodyJson?.role ? String(bodyJson.role) : users[idx].role,
+            active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : users[idx].active,
+            updatedAt: new Date().toISOString(),
+          };
+          users[idx] = updatedItem as AdminUserDTO;
+          writeStoredJson("admin_users.json", users);
+
+          // Audit Log
+          const auditLogs = readStoredJson<AuditLogDTO[]>("audit_logs.json", DEFAULT_AUDIT_LOGS);
+          const newLog: AuditLogDTO = {
+            id: Date.now(),
+            username: "admin",
+            action: "UPDATE_ADMIN_USER",
+            entityType: "USER",
+            entityId: String(id),
+            ipHash: "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+            detailsJson: JSON.stringify({ username: updatedItem.username, role: updatedItem.role }),
+            createdAt: new Date().toISOString(),
+          };
+          writeStoredJson("audit_logs.json", [newLog, ...auditLogs]);
+
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+
+      return NextResponse.json(users, { status: 200 });
+    }
+
+    // Audit Logs (Corte 14)
+    if (targetPath.includes("audit-logs")) {
+      const logs = readStoredJson<AuditLogDTO[]>("audit_logs.json", DEFAULT_AUDIT_LOGS);
+      const url = new URL(req.url);
+      const entityType = url.searchParams.get("entityType");
+      const limit = parseInt(url.searchParams.get("limit") || "50", 10);
+      let list = logs;
+      if (entityType && entityType !== "ALL") {
+        list = list.filter((l) => l.entityType.toUpperCase() === entityType.toUpperCase());
+      }
+      return NextResponse.json(list.slice(0, limit), { status: 200 });
     }
 
     if (targetPath.includes("search")) {

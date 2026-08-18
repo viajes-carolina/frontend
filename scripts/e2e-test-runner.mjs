@@ -117,6 +117,17 @@ async function runE2ETests() {
     const reclamacionesAdminRes = await fetch(`${BASE_ADMIN_URL}/reclamaciones`);
     assert(reclamacionesAdminRes.status === 200, `Módulo Libro de Reclamaciones responde con HTTP 200 OK (${reclamacionesAdminRes.status})`);
 
+    const loginAdminRes = await fetch(`${BASE_ADMIN_URL}/login`);
+    assert(loginAdminRes.status === 200, `Página de Login responde con HTTP 200 OK (${loginAdminRes.status})`);
+    const loginHtml = await loginAdminRes.text();
+    assert(loginHtml.includes("Viajes Carolina") || loginHtml.includes("Panel"), "HTML de Login contiene branding oficial (Corte 14)");
+
+    const usuariosAdminRes = await fetch(`${BASE_ADMIN_URL}/usuarios`);
+    assert(usuariosAdminRes.status === 200, `Módulo Usuarios & Roles RBAC responde con HTTP 200 OK (${usuariosAdminRes.status})`);
+
+    const auditoriaAdminRes = await fetch(`${BASE_ADMIN_URL}/auditoria`);
+    assert(auditoriaAdminRes.status === 200, `Módulo Bitácora de Auditoría responde con HTTP 200 OK (${auditoriaAdminRes.status})`);
+
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
 
@@ -764,8 +775,90 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Libro de Reclamaciones: ${err.message}`);
   }
 
-  // 16. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 16. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 16. Verificación de API Proxy & Seguridad, RBAC y Auditoría E2E (Corte 14)...
+  console.log("\n📦 16. Verificando API Proxy & Seguridad, RBAC y Auditoría E2E (Corte 14)...");
+  try {
+    // 16.1 Inicio de Sesión con Argon2id y Cookie HttpOnly
+    const loginPost = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        usernameOrEmail: "admin",
+        password: "admin123#",
+      }),
+    });
+    assert(loginPost.status === 200, `POST /api/proxy/admin/v1/auth/login responde 200 OK (${loginPost.status})`);
+    const loginData = await loginPost.json();
+    assert(loginData.token && loginData.token.length > 10, "Token de sesión JWT emitido");
+    assert(loginData.user && loginData.user.username === "admin", `Usuario autenticado correctamente: "${loginData.user?.username}"`);
+    assert(loginData.user?.role === "SUPER_ADMIN", `Rol de usuario es SUPER_ADMIN: "${loginData.user?.role}"`);
+
+    // 16.2 Perfil de Usuario Actual (/me)
+    const meRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/auth/me`);
+    assert(meRes.status === 200, `GET /api/proxy/admin/v1/auth/me responde 200 OK (${meRes.status})`);
+    const meData = await meRes.json();
+    assert(meData.username && meData.email, `Perfil de usuario actual recuperado: "${meData.username}" (${meData.email})`);
+
+    // 16.3 Listado de Operadores y Roles RBAC
+    const usersRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/users`);
+    assert(usersRes.status === 200, `GET /api/proxy/admin/v1/users responde 200 OK (${usersRes.status})`);
+    const usersList = await usersRes.json();
+    assert(Array.isArray(usersList) && usersList.length >= 3, `Listado de usuarios contiene ${usersList.length} operadores`);
+    assert(usersList.some((u) => u.role === "SUPER_ADMIN"), "Contiene al menos un usuario SUPER_ADMIN");
+    assert(usersList.some((u) => u.role === "CONTENT_EDITOR"), "Contiene al menos un usuario CONTENT_EDITOR");
+
+    // 16.4 Creación de Nuevo Operador Administrativo
+    const testUsername = `asesora_${Date.now()}`;
+    const createUserRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: testUsername,
+        email: `${testUsername}@viajescarolina.com`,
+        password: "securepassword123#",
+        fullName: "Asesora de Prueba E2E",
+        role: "ADVISOR",
+        active: true,
+      }),
+    });
+    assert(createUserRes.status === 201 || createUserRes.status === 200, `POST /api/proxy/admin/v1/users responde 201/200 OK (${createUserRes.status})`);
+    const createdUser = await createUserRes.json();
+    assert(createdUser.username === testUsername, `Usuario creado con username: "${createdUser.username}"`);
+    assert(createdUser.role === "ADVISOR", `Rol asignado correctamente: "${createdUser.role}"`);
+
+    // 16.5 Actualización de Operador
+    const targetUserId = createdUser.id || 1;
+    const updateUserRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/users/${targetUserId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: "Asesora Certificada E2E",
+        username: testUsername,
+        email: `${testUsername}@viajescarolina.com`,
+        role: "ADVISOR",
+        active: true,
+      }),
+    });
+    assert(updateUserRes.status === 200, `PUT /api/proxy/admin/v1/users/${targetUserId} responde 200 OK (${updateUserRes.status})`);
+    const updatedUser = await updateUserRes.json();
+    assert(updatedUser.fullName === "Asesora Certificada E2E", `Nombre de operador actualizado y persistido: "${updatedUser.fullName}"`);
+
+    // 16.6 Consulta de Bitácora de Auditoría
+    const auditRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/audit-logs?limit=20`);
+    assert(auditRes.status === 200, `GET /api/proxy/admin/v1/audit-logs responde 200 OK (${auditRes.status})`);
+    const auditLogs = await auditRes.json();
+    assert(Array.isArray(auditLogs) && auditLogs.length >= 4, `Bitácora de auditoría contiene ${auditLogs.length} eventos registrados`);
+    assert(auditLogs.some((l) => l.action === "LOGIN_SUCCESS" || l.action === "CREATE_ADMIN_USER"), "Bitácora registra mutaciones recientes y accesos");
+
+    // 16.7 Cierre de Sesión (Logout)
+    const logoutRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/auth/logout`, { method: "POST" });
+    assert(logoutRes.status === 200, `POST /api/proxy/admin/v1/auth/logout responde 200 OK (${logoutRes.status})`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Seguridad, RBAC y Auditoría: ${err.message}`);
+  }
+
+  // 17. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 17. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

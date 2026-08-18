@@ -44,6 +44,12 @@ import {
   UpdateClaimStatusRequest,
   ContactExploreLinkDTO,
   CreateOrUpdateContactExploreLinkRequest,
+  AdminUserDTO,
+  LoginRequest,
+  LoginResponse,
+  CreateAdminUserRequest,
+  UpdateAdminUserRequest,
+  AuditLogDTO,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -1598,6 +1604,186 @@ export function updateMockClaimStatus(id: number, status: string, responseNotes?
   MOCK_CLAIM_RECORDS[index] = updated;
   return updated;
 }
+
+// Auth, Users & Governance Mock Data & Helpers (Corte 14)
+export const DEFAULT_ADMIN_USERS: AdminUserDTO[] = [
+  {
+    id: 1,
+    username: "admin",
+    email: "admin@viajescarolina.com",
+    fullName: "Administrador General",
+    role: "SUPER_ADMIN",
+    active: true,
+    lastLoginAt: "2026-08-18T12:00:00.000Z",
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 2,
+    username: "editor",
+    email: "editor@viajescarolina.com",
+    fullName: "Editor de Contenidos",
+    role: "CONTENT_EDITOR",
+    active: true,
+    lastLoginAt: "2026-08-18T10:30:00.000Z",
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 3,
+    username: "carolina",
+    email: "carolina@viajescarolina.com",
+    fullName: "Carolina Zúñiga",
+    role: "ADVISOR",
+    active: true,
+    lastLoginAt: "2026-08-18T09:15:00.000Z",
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+];
+
+export const DEFAULT_AUDIT_LOGS: AuditLogDTO[] = [
+  {
+    id: 1,
+    userId: 1,
+    username: "admin",
+    action: "INITIAL_SYSTEM_BOOTSTRAP",
+    entityType: "SYSTEM",
+    entityId: "1",
+    ipHash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    detailsJson: '{"message": "Sistema inicializado con gobernanza y roles RBAC"}',
+    createdAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 2,
+    userId: 1,
+    username: "admin",
+    action: "UPDATE_SETTINGS",
+    entityType: "SITE_SETTINGS",
+    entityId: "1",
+    ipHash: "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    detailsJson: '{"siteName": "Viajes Carolina", "brandTagline": "El viaje comienza aquí"}',
+    createdAt: "2026-08-18T08:30:00.000Z",
+  },
+  {
+    id: 3,
+    userId: 2,
+    username: "editor",
+    action: "PUBLISH_PROMOTION",
+    entityType: "PROMOTION",
+    entityId: "1",
+    ipHash: "b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef01",
+    detailsJson: '{"slug": "cartagena-donde-el-mar-te-espera", "priceUsd": 429}',
+    createdAt: "2026-08-18T09:45:00.000Z",
+  },
+  {
+    id: 4,
+    userId: 1,
+    username: "admin",
+    action: "UPDATE_CLAIM_STATUS",
+    entityType: "CLAIM",
+    entityId: "1",
+    ipHash: "c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef012",
+    detailsJson: '{"claimCode": "REC-2026-0001", "status": "RESOLVED"}',
+    createdAt: "2026-08-18T11:20:00.000Z",
+  },
+];
+
+export let MOCK_ADMIN_USERS: AdminUserDTO[] = [...DEFAULT_ADMIN_USERS];
+export let MOCK_AUDIT_LOGS: AuditLogDTO[] = [...DEFAULT_AUDIT_LOGS];
+
+export function loginMockAdmin(req: LoginRequest): LoginResponse {
+  const ident = req.usernameOrEmail.trim().toLowerCase();
+  const user = MOCK_ADMIN_USERS.find((u) => u.username.toLowerCase() === ident || u.email.toLowerCase() === ident);
+
+  if (!user || !user.active) {
+    throw new Error("Credenciales inválidas o cuenta de usuario inactiva.");
+  }
+
+  user.lastLoginAt = new Date().toISOString();
+
+  // Registrar auditoría de login
+  recordMockAuditLog("LOGIN_SUCCESS", "AUTH", String(user.id), JSON.stringify({ username: user.username }));
+
+  return {
+    token: `jwt-mock-${user.username}-${Date.now()}`,
+    tokenType: "Bearer",
+    expiresInSeconds: 86400,
+    user,
+  };
+}
+
+export function getMockAdminUsers(): AdminUserDTO[] {
+  return MOCK_ADMIN_USERS;
+}
+
+export function createMockAdminUser(req: CreateAdminUserRequest): AdminUserDTO {
+  const exists = MOCK_ADMIN_USERS.some(
+    (u) => u.username.toLowerCase() === req.username.toLowerCase() || u.email.toLowerCase() === req.email.toLowerCase()
+  );
+  if (exists) {
+    throw new Error("El usuario o correo electrónico ya se encuentra registrado.");
+  }
+
+  const newUser: AdminUserDTO = {
+    id: Date.now(),
+    username: req.username.trim().toLowerCase(),
+    email: req.email.trim().toLowerCase(),
+    fullName: req.fullName.trim(),
+    role: req.role || "CONTENT_EDITOR",
+    active: req.active ?? true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  MOCK_ADMIN_USERS.push(newUser);
+  recordMockAuditLog("CREATE_ADMIN_USER", "USER", String(newUser.id), JSON.stringify({ username: newUser.username, role: newUser.role }));
+  return newUser;
+}
+
+export function updateMockAdminUser(id: number, req: UpdateAdminUserRequest): AdminUserDTO {
+  const index = MOCK_ADMIN_USERS.findIndex((u) => u.id === id);
+  if (index === -1) throw new Error(`Usuario no encontrado con ID: ${id}`);
+  const current = MOCK_ADMIN_USERS[index];
+
+  const updated: AdminUserDTO = {
+    ...current,
+    username: req.username.trim().toLowerCase(),
+    email: req.email.trim().toLowerCase(),
+    fullName: req.fullName.trim(),
+    role: req.role ?? current.role,
+    active: req.active ?? current.active,
+    updatedAt: new Date().toISOString(),
+  };
+
+  MOCK_ADMIN_USERS[index] = updated;
+  recordMockAuditLog("UPDATE_ADMIN_USER", "USER", String(id), JSON.stringify({ username: updated.username, role: updated.role }));
+  return updated;
+}
+
+export function getMockAuditLogs(entityType?: string, limit: number = 50): AuditLogDTO[] {
+  let list = MOCK_AUDIT_LOGS;
+  if (entityType && entityType !== "ALL") {
+    list = list.filter((l) => l.entityType.toUpperCase() === entityType.toUpperCase());
+  }
+  return list.slice(0, limit);
+}
+
+export function recordMockAuditLog(action: string, entityType: string, entityId?: string, detailsJson: string = "{}"): AuditLogDTO {
+  const newLog: AuditLogDTO = {
+    id: Date.now(),
+    username: "admin",
+    action,
+    entityType,
+    entityId,
+    ipHash: "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    detailsJson,
+    createdAt: new Date().toISOString(),
+  };
+  MOCK_AUDIT_LOGS.unshift(newLog);
+  return newLog;
+}
+
 
 
 
