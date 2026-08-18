@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@import "@vc/config/tailwind/theme.css";
+
+:root {
+  background-color: var(--color-neutral-soft);
+  color: var(--color-neutral-ink);
+  font-family: var(--font-inter);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--color-neutral-soft);
+  color: var(--color-neutral-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sora);
+}
