@@ -34,8 +34,11 @@ export default async function RootLayout({
   ]);
 
   return (
-    <html lang="es" className={`${sora.variable} ${inter.variable}`}>
-      <body className="antialiased font-sans bg-atmosphere-twilight text-white selection:bg-brand-accent selection:text-brand-navy flex flex-col min-h-screen">
+    <html lang="es" className={`${sora.variable} ${inter.variable}`} suppressHydrationWarning>
+      <body
+        className="antialiased font-sans bg-atmosphere-twilight text-white selection:bg-brand-accent selection:text-brand-navy flex flex-col min-h-screen"
+        suppressHydrationWarning
+      >
         <HeaderWrapper settings={siteSettings} />
         <div className="flex-1">
           {children}

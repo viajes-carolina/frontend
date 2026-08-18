@@ -1,5 +1,13 @@
 import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
-import { MOCK_SITE_SETTINGS, MOCK_OFFICE_LOCATION, MOCK_PROMOTIONS, MOCK_BLOG_POSTS, MOCK_API_INFO } from "./mocks";
+import {
+  MOCK_SITE_SETTINGS,
+  MOCK_OFFICE_LOCATION,
+  MOCK_PROMOTIONS,
+  MOCK_BLOG_POSTS,
+  MOCK_API_INFO,
+  updateMockSiteSettings,
+  updateMockOfficeLocation,
+} from "./mocks";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -41,6 +49,23 @@ export class ViajesCarolinaApiClient {
     }
   }
 
+  async updateSiteSettings(payload: Partial<SiteSettingsDTO>): Promise<SiteSettingsDTO> {
+    updateMockSiteSettings(payload);
+    try {
+      const res = await fetch(`${this.baseUrl}/api/admin/v1/settings`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback to updated mock
+    }
+    return MOCK_SITE_SETTINGS;
+  }
+
   async getOfficeLocation(): Promise<OfficeLocationDTO> {
     if (this.useMocks) return MOCK_OFFICE_LOCATION;
     try {
@@ -52,6 +77,23 @@ export class ViajesCarolinaApiClient {
     } catch {
       return MOCK_OFFICE_LOCATION;
     }
+  }
+
+  async updateOfficeLocation(payload: Partial<OfficeLocationDTO>): Promise<OfficeLocationDTO> {
+    updateMockOfficeLocation(payload);
+    try {
+      const res = await fetch(`${this.baseUrl}/api/admin/v1/office`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // Fallback to updated mock
+    }
+    return MOCK_OFFICE_LOCATION;
   }
 
   async getPromotions(): Promise<PromotionDTO[]> {

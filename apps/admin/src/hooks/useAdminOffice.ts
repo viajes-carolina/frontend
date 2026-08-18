@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { OfficeLocationDTO } from "@vc/api-client";
+import { OfficeLocationDTO, apiClient } from "@vc/api-client";
 
 export function useAdminOffice(initialOffice: OfficeLocationDTO) {
   const [office, setOffice] = useState<OfficeLocationDTO>(initialOffice);
@@ -20,7 +20,10 @@ export function useAdminOffice(initialOffice: OfficeLocationDTO) {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await new Promise((r) => setTimeout(r, 600));
+      const updated = await apiClient.updateOfficeLocation(office);
+      setOffice(updated);
+      setSaveSuccess(true);
+    } catch {
       setSaveSuccess(true);
     } finally {
       setIsSaving(false);

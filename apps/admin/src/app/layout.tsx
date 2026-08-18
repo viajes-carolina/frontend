@@ -27,8 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${sora.variable} ${inter.variable}`}>
-      <body className="antialiased font-sans bg-neutral-soft text-neutral-ink flex min-h-screen">
+    <html lang="es" className={`${sora.variable} ${inter.variable}`} suppressHydrationWarning>
+      <body
+        className="antialiased font-sans bg-neutral-soft text-neutral-ink flex min-h-screen"
+        suppressHydrationWarning
+      >
         {/* Sidebar */}
         <aside className="w-64 bg-brand-navy text-white flex flex-col justify-between shrink-0 p-6 border-r border-white/10">
           <div>

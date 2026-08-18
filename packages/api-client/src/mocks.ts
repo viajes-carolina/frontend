@@ -1,6 +1,6 @@
 import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
 
-export const MOCK_SITE_SETTINGS: SiteSettingsDTO = {
+export let MOCK_SITE_SETTINGS: SiteSettingsDTO = {
   id: 1,
   siteName: "Viajes Carolina",
   brandTagline: "El viaje comienza aquí",
@@ -13,7 +13,15 @@ export const MOCK_SITE_SETTINGS: SiteSettingsDTO = {
   tiktokUrl: "https://tiktok.com/@viajescarolina",
 };
 
-export const MOCK_OFFICE_LOCATION: OfficeLocationDTO = {
+export function updateMockSiteSettings(updated: Partial<SiteSettingsDTO>): SiteSettingsDTO {
+  MOCK_SITE_SETTINGS = {
+    ...MOCK_SITE_SETTINGS,
+    ...updated,
+  };
+  return MOCK_SITE_SETTINGS;
+}
+
+export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = {
   id: 1,
   addressLine: "Av. Larco 101, Oficina 502",
   district: "Miraflores",
@@ -30,6 +38,16 @@ export const MOCK_OFFICE_LOCATION: OfficeLocationDTO = {
   revision: 1,
   updatedAt: new Date().toISOString(),
 };
+
+export function updateMockOfficeLocation(updated: Partial<OfficeLocationDTO>): OfficeLocationDTO {
+  MOCK_OFFICE_LOCATION = {
+    ...MOCK_OFFICE_LOCATION,
+    ...updated,
+    revision: (MOCK_OFFICE_LOCATION.revision || 1) + 1,
+    updatedAt: new Date().toISOString(),
+  };
+  return MOCK_OFFICE_LOCATION;
+}
 
 export const MOCK_PROMOTIONS: PromotionDTO[] = [
   {
