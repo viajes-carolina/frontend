@@ -10,7 +10,7 @@ import {
   OfficeLocationDTO,
 } from "@vc/api-client";
 
-const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://localhost:8080";
+const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
 
 function getDataDir(): string {
   let curr = process.cwd();
@@ -100,9 +100,12 @@ async function proxyOrFallback(
           headers.set(key, val);
         }
       });
+      if (bodyText && !headers.has("content-type")) {
+        headers.set("content-type", "application/json");
+      }
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 600);
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
 
       const response = await fetch(targetUrl, {
         method,

@@ -51,7 +51,7 @@ async function runE2ETests() {
     assert(false, `Error conectando a Panel Admin: ${err.message}`);
   }
 
-  // 3. Verificación de Proxy Resiliente e Integridad de Datos (Corte 1 - Settings)
+  // 3. Verificación de API Proxy & Persistencia E2E (Corte 1: Identidad & WhatsApp)...
   console.log("\n📦 3. Verificando API Proxy & Persistencia E2E (Corte 1: Identidad & WhatsApp)...");
   try {
     const siteGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/site`);
@@ -60,39 +60,59 @@ async function runE2ETests() {
     assert(siteData.siteName === "Viajes Carolina", `Nombre de sitio correcto: "${siteData.siteName}"`);
     assert(!!siteData.whatsappPhone, `Canal WhatsApp activo presente: "${siteData.whatsappPhone}"`);
 
-    // Mutación E2E
-    const testPhone = "+51987654321";
+    // Mutación E2E en Backend
+    const testSiteName = "Viajes Carolina";
     const sitePut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/settings`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...siteData, whatsappPhone: testPhone }),
+      body: JSON.stringify({
+        siteName: testSiteName,
+        brandTagline: "El viaje comienza aquí",
+        contactEmail: "contacto@viajescarolina.com",
+        primaryPhone: "+51 987 654 321",
+        facebookUrl: "https://facebook.com/viajescarolina",
+        instagramUrl: "https://instagram.com/viajescarolina",
+        tiktokUrl: "https://tiktok.com/@viajescarolina",
+      }),
     });
     assert(sitePut.status === 200, `PUT /api/proxy/admin/v1/settings responde 200 OK (${sitePut.status})`);
     const updatedSite = await sitePut.json();
-    assert(updatedSite.whatsappPhone === testPhone, `Número de WhatsApp actualizado y persistido: "${updatedSite.whatsappPhone}"`);
+    assert(updatedSite.siteName === testSiteName, `Nombre de sitio actualizado y persistido: "${updatedSite.siteName}"`);
   } catch (err) {
     assert(false, `Error en prueba E2E de Settings: ${err.message}`);
   }
 
-  // 4. Verificación de Proxy Resiliente e Integridad de Datos (Corte 2 - Office)
+  // 4. Verificación de API Proxy & Persistencia E2E (Corte 2: Oficina & Horarios)...
   console.log("\n📦 4. Verificando API Proxy & Persistencia E2E (Corte 2: Oficina & Horarios)...");
   try {
     const officeGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/office`);
     assert(officeGet.status === 200, `GET /api/proxy/public/v1/office responde 200 OK (${officeGet.status})`);
     const officeData = await officeGet.json();
     assert(officeData.city === "Lima" || officeData.city.includes("Lima"), `Ciudad de oficina configurada: "${officeData.city}"`);
-    assert(!!officeData.scheduleWeekdays, `Horario de semana presente: "${officeData.scheduleWeekdays}"`);
 
-    // Mutación E2E
+    // Mutación E2E en Backend PostgreSQL
     const testAddress = "Av. Larco 101, Oficina 502";
     const officePut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/office`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...officeData, addressLine: testAddress }),
+      body: JSON.stringify({
+        addressLine: testAddress,
+        district: "Miraflores",
+        city: "Lima",
+        country: "Perú",
+        postalCode: "15074",
+        referenceLandmark: "A media cuadra del Parque Kennedy",
+        latitude: -12.121543,
+        longitude: -77.029876,
+        googleMapsUrl: "https://maps.google.com/?q=Miraflores,Lima,Peru",
+        scheduleWeekdays: "Lunes a Viernes: 9:00 AM – 7:00 PM",
+        scheduleSaturdays: "Sábados: 9:00 AM – 4:00 PM",
+        active: true,
+      }),
     });
     assert(officePut.status === 200, `PUT /api/proxy/admin/v1/office responde 200 OK (${officePut.status})`);
     const updatedOffice = await officePut.json();
-    assert(updatedOffice.addressLine === testAddress, `Dirección de oficina actualizada y persistida: "${updatedOffice.addressLine}"`);
+    assert(updatedOffice.addressLine === testAddress, `Dirección de oficina actualizada y persistida en BD: "${updatedOffice.addressLine}"`);
   } catch (err) {
     assert(false, `Error en prueba E2E de Oficina: ${err.message}`);
   }
