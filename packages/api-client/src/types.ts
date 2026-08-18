@@ -13,6 +13,25 @@ export interface SiteSettingsDTO {
   faviconMediaId?: number;
 }
 
+export interface OfficeLocationDTO {
+  id: number;
+  addressLine: string;
+  district: string;
+  city: string;
+  country: string;
+  postalCode?: string;
+  referenceLandmark?: string;
+  latitude?: number;
+  longitude?: number;
+  googleMapsUrl?: string;
+  embedMapsUrl?: string;
+  scheduleWeekdays: string;
+  scheduleSaturdays: string;
+  active: boolean;
+  revision: number;
+  updatedAt?: string;
+}
+
 export interface PromotionDTO {
   id: number;
   slug: string;

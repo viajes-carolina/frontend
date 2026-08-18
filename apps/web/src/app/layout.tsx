@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Sora, Inter } from "next/font/google";
 import { apiClient } from "@vc/api-client";
 import { HeaderWrapper } from "../components/HeaderWrapper";
+import { FooterWrapper } from "../components/FooterWrapper";
 import "./globals.css";
 
 const sora = Sora({
@@ -27,7 +28,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteSettings = await apiClient.getSiteSettings();
+  const [siteSettings, office] = await Promise.all([
+    apiClient.getSiteSettings(),
+    apiClient.getOfficeLocation(),
+  ]);
 
   return (
     <html lang="es" className={`${sora.variable} ${inter.variable}`}>
@@ -36,6 +40,7 @@ export default async function RootLayout({
         <div className="flex-1">
           {children}
         </div>
+        <FooterWrapper settings={siteSettings} office={office} />
       </body>
     </html>
   );

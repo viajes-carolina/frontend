@@ -1,4 +1,4 @@
-import { SiteSettingsDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
+import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
 
 export const MOCK_SITE_SETTINGS: SiteSettingsDTO = {
   id: 1,
@@ -11,6 +11,24 @@ export const MOCK_SITE_SETTINGS: SiteSettingsDTO = {
   facebookUrl: "https://facebook.com/viajescarolina",
   instagramUrl: "https://instagram.com/viajescarolina",
   tiktokUrl: "https://tiktok.com/@viajescarolina",
+};
+
+export const MOCK_OFFICE_LOCATION: OfficeLocationDTO = {
+  id: 1,
+  addressLine: "Av. Larco 101, Oficina 502",
+  district: "Miraflores",
+  city: "Lima",
+  country: "Perú",
+  postalCode: "15074",
+  referenceLandmark: "A media cuadra del Parque Kennedy",
+  latitude: -12.1215430,
+  longitude: -77.0298760,
+  googleMapsUrl: "https://maps.google.com/?q=Miraflores,Lima,Peru",
+  scheduleWeekdays: "Lunes a Viernes: 9:00 AM – 7:00 PM",
+  scheduleSaturdays: "Sábados: 9:00 AM – 2:00 PM",
+  active: true,
+  revision: 1,
+  updatedAt: new Date().toISOString(),
 };
 
 export const MOCK_PROMOTIONS: PromotionDTO[] = [

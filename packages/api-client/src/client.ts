@@ -1,5 +1,5 @@
-import { SiteSettingsDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
-import { MOCK_SITE_SETTINGS, MOCK_PROMOTIONS, MOCK_BLOG_POSTS, MOCK_API_INFO } from "./mocks";
+import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
+import { MOCK_SITE_SETTINGS, MOCK_OFFICE_LOCATION, MOCK_PROMOTIONS, MOCK_BLOG_POSTS, MOCK_API_INFO } from "./mocks";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -38,6 +38,19 @@ export class ViajesCarolinaApiClient {
       return await res.json();
     } catch {
       return MOCK_SITE_SETTINGS;
+    }
+  }
+
+  async getOfficeLocation(): Promise<OfficeLocationDTO> {
+    if (this.useMocks) return MOCK_OFFICE_LOCATION;
+    try {
+      const res = await fetch(`${this.baseUrl}/api/public/v1/office`, {
+        next: { tags: ["office_location"], revalidate: 3600 },
+      });
+      if (!res.ok) return MOCK_OFFICE_LOCATION;
+      return await res.json();
+    } catch {
+      return MOCK_OFFICE_LOCATION;
     }
   }
 
