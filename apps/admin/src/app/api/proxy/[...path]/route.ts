@@ -8,6 +8,8 @@ import {
   DEFAULT_HOME_HERO,
   DEFAULT_TRAVEL_INTENTIONS,
   DEFAULT_PROMOTIONS,
+  DEFAULT_TESTIMONIALS,
+  DEFAULT_FAQS,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   MOCK_BLOG_POSTS,
@@ -16,6 +18,9 @@ import {
   HomeHeroDTO,
   TravelIntentionDTO,
   PromotionDTO,
+  TestimonialDTO,
+  FaqItemDTO,
+  PublicTrustResponse,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -133,6 +138,111 @@ async function proxyOrFallback(
     }
 
     // Graceful Offline / Dev Fallback with Disk Persistence
+    if (targetPath.includes("trust")) {
+      const tList = readStoredJson<TestimonialDTO[]>("testimonials.json", DEFAULT_TESTIMONIALS);
+      const fList = readStoredJson<FaqItemDTO[]>("faqs.json", DEFAULT_FAQS);
+      const res: PublicTrustResponse = {
+        testimonials: tList.filter((t) => t.active),
+        faqs: fList.filter((f) => f.active),
+      };
+      return NextResponse.json(res, { status: 200 });
+    }
+
+    if (targetPath.includes("testimonials")) {
+      const current = readStoredJson<TestimonialDTO[]>("testimonials.json", DEFAULT_TESTIMONIALS);
+      if (method === "POST") {
+        const newT: TestimonialDTO = {
+          id: Date.now(),
+          clientName: String(bodyJson?.clientName || "Cliente"),
+          clientLocation: bodyJson?.clientLocation ? String(bodyJson.clientLocation) : undefined,
+          tripDestination: String(bodyJson?.tripDestination || "Destino"),
+          comment: String(bodyJson?.comment || ""),
+          rating: Number(bodyJson?.rating || 5),
+          avatarMediaId: bodyJson?.avatarMediaId ? Number(bodyJson.avatarMediaId) : undefined,
+          avatarMediaUrl: "/media/demo-cartagena-caribe.webp",
+          consentConfirmed: bodyJson?.consentConfirmed !== undefined ? Boolean(bodyJson.consentConfirmed) : true,
+          displayOrder: bodyJson?.displayOrder ? Number(bodyJson.displayOrder) : current.length + 1,
+          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [...current, newT];
+        writeStoredJson("testimonials.json", updated);
+        return NextResponse.json(newT, { status: 201 });
+      }
+      if (method === "PUT") {
+        const idMatch = targetPath.match(/testimonials\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((t) => t.id === id);
+        if (index !== -1) {
+          const updatedItem = {
+            ...current[index],
+            ...(bodyJson || {}),
+            updatedAt: new Date().toISOString(),
+          };
+          current[index] = updatedItem as TestimonialDTO;
+          writeStoredJson("testimonials.json", current);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+      if (method === "DELETE") {
+        const idMatch = targetPath.match(/testimonials\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((t) => t.id === id);
+        if (index !== -1) {
+          current[index].active = false;
+          writeStoredJson("testimonials.json", current);
+        }
+        return new NextResponse(null, { status: 204 });
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
+    if (targetPath.includes("faq")) {
+      const current = readStoredJson<FaqItemDTO[]>("faqs.json", DEFAULT_FAQS);
+      if (method === "POST") {
+        const newF: FaqItemDTO = {
+          id: Date.now(),
+          question: String(bodyJson?.question || "¿Pregunta?"),
+          answer: String(bodyJson?.answer || "Respuesta"),
+          category: String(bodyJson?.category || "General"),
+          displayOrder: bodyJson?.displayOrder ? Number(bodyJson.displayOrder) : current.length + 1,
+          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [...current, newF];
+        writeStoredJson("faqs.json", updated);
+        return NextResponse.json(newF, { status: 201 });
+      }
+      if (method === "PUT") {
+        const idMatch = targetPath.match(/faq\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((f) => f.id === id);
+        if (index !== -1) {
+          const updatedItem = {
+            ...current[index],
+            ...(bodyJson || {}),
+            updatedAt: new Date().toISOString(),
+          };
+          current[index] = updatedItem as FaqItemDTO;
+          writeStoredJson("faqs.json", current);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+      if (method === "DELETE") {
+        const idMatch = targetPath.match(/faq\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((f) => f.id === id);
+        if (index !== -1) {
+          current[index].active = false;
+          writeStoredJson("faqs.json", current);
+        }
+        return new NextResponse(null, { status: 204 });
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
     if (targetPath.includes("promotions")) {
       const current = readStoredJson<PromotionDTO[]>("promotions.json", DEFAULT_PROMOTIONS);
       if (method === "POST") {

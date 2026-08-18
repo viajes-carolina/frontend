@@ -2,7 +2,7 @@
 
 import React from "react";
 
-export type ButtonVariant = "primary" | "secondary" | "whatsapp" | "outline" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "whatsapp" | "outline" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -44,6 +44,8 @@ export function Button({
       "border-2 border-brand-navy/20 text-brand-navy hover:border-brand-navy hover:bg-brand-navy/5 active:scale-[0.98] focus:ring-brand-navy",
     ghost:
       "text-brand-navy hover:bg-brand-navy/5 active:scale-[0.98] focus:ring-brand-navy",
+    danger:
+      "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 hover:border-rose-300 active:scale-[0.98] focus:ring-rose-500",
   }[variant];
 
   return (

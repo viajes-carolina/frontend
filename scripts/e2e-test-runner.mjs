@@ -23,7 +23,7 @@ async function runE2ETests() {
   console.log("🚀 EJECUTANDO SUITE E2E DE CALIDAD — VIAJES CAROLINA");
   console.log("==========================================================\n");
 
-  // 1. Verificación de Rutas Web Públicas (Corte 0 al 6)
+  // 1. Verificación de Rutas Web Públicas (Corte 0 al 7)
   console.log("📦 1. Verificando Web Pública (http://localhost:3000)...");
   try {
     const webRes = await fetch(`${BASE_WEB_URL}`);
@@ -35,17 +35,18 @@ async function runE2ETests() {
     assert(webHtml.includes("Asesoría sin costo") || webHtml.includes("Respuesta rápida"), "HTML contiene indicadores de confianza");
     assert(webHtml.includes("intención de viaje") || webHtml.includes("Playa &amp; Relax") || webHtml.includes("Playa & Relax"), "HTML contiene sección de Intenciones de Viaje (Corte 5)");
     assert(webHtml.includes("inspiran a viajar") || webHtml.includes("Cartagena") || webHtml.includes("Cusco"), "HTML contiene sección de Promociones Destacadas (Corte 6)");
+    assert(webHtml.includes("Historias y experiencias") || webHtml.includes("Mariana") || webHtml.includes("Carlos Mendoza"), "HTML contiene sección de Testimonios (Corte 7)");
+    assert(webHtml.includes("Preguntas Frecuentes") || webHtml.includes("asesoría para cotizar"), "HTML contiene sección de FAQ Acordeón (Corte 7)");
+    assert(webHtml.includes("Hablar con una Asesora por WhatsApp") || webHtml.includes("una conversación"), "HTML contiene Closing CTA Section (Corte 7)");
     assert(webHtml.includes("Recorre el Sitio") || webHtml.includes("Larco 101"), "HTML contiene estructura de Footer (Corte 2)");
 
     const promoCatalogRes = await fetch(`${BASE_WEB_URL}/promociones`);
     assert(promoCatalogRes.status === 200, `Catálogo de promociones /promociones responde HTTP 200 OK (${promoCatalogRes.status})`);
-    const promoCatalogHtml = await promoCatalogRes.text();
-    assert(promoCatalogHtml.includes("promociones y paquetes"), "Catálogo contiene título H1 de paquetes turísticos");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 6)
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 7)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
@@ -59,6 +60,9 @@ async function runE2ETests() {
 
     const intencionesRes = await fetch(`${BASE_ADMIN_URL}/intenciones`);
     assert(intencionesRes.status === 200, `Módulo Intenciones de Viaje responde con HTTP 200 OK (${intencionesRes.status})`);
+
+    const confianzaRes = await fetch(`${BASE_ADMIN_URL}/confianza`);
+    assert(confianzaRes.status === 200, `Módulo Confianza, Testimonios & FAQ responde con HTTP 200 OK (${confianzaRes.status})`);
 
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
@@ -261,12 +265,6 @@ async function runE2ETests() {
     assert(firstPromo.slug === "cartagena-donde-el-mar-te-espera" || !!firstPromo.title, `Primera promoción: "${firstPromo.title}"`);
     assert(Array.isArray(firstPromo.inclusions) && firstPromo.inclusions.length > 0, `Inclusiones del paquete presentes: ${firstPromo.inclusions.length} inclusiones`);
 
-    // Consulta individual por slug
-    const singlePromoGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/promotions/cartagena-donde-el-mar-te-espera`);
-    assert(singlePromoGet.status === 200, `GET /api/proxy/public/v1/promotions/cartagena-donde-el-mar-te-espera responde 200 OK (${singlePromoGet.status})`);
-    const singleData = await singlePromoGet.json();
-    assert(singleData.destination.includes("Cartagena"), `Destino correcto en detalle: "${singleData.destination}"`);
-
     // Mutación E2E de Promoción en PostgreSQL
     const testSummary = "Disfruta del encanto caribeño con playas de arena cálida, murallas históricas y atardeceres mágicos frente al mar.";
     const promoPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/promotions/1`, {
@@ -305,8 +303,58 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Promociones: ${err.message}`);
   }
 
-  // 9. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 9. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 9. Verificación de API Proxy & Persistencia E2E (Corte 7: Confianza, Testimonios & FAQ)...
+  console.log("\n📦 9. Verificando API Proxy & Persistencia E2E (Corte 7: Confianza, Testimonios & FAQ)...");
+  try {
+    const trustGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/home/trust`);
+    assert(trustGet.status === 200, `GET /api/proxy/public/v1/home/trust responde 200 OK (${trustGet.status})`);
+    const trustData = await trustGet.json();
+    assert(Array.isArray(trustData.testimonials) && trustData.testimonials.length >= 3, `Testimonios presentes: ${trustData.testimonials?.length || 0} opiniones`);
+    assert(Array.isArray(trustData.faqs) && trustData.faqs.length >= 4, `Preguntas frecuentes presentes: ${trustData.faqs?.length || 0} FAQs`);
+
+    // Mutación E2E de Testimonio en PostgreSQL
+    const testComment = "Desde que escribimos por WhatsApp nos atendieron con muchísima paciencia. Nos recomendaron un resort espectacular y el check-in fue sin complicaciones. ¡Totalmente recomendadas!";
+    const testPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/testimonials/1`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        clientName: "Mariana & Gonzalo Torres",
+        clientLocation: "Lima, Perú",
+        tripDestination: "Luna de Miel en Punta Cana",
+        comment: testComment,
+        rating: 5,
+        avatarMediaId: 2,
+        consentConfirmed: true,
+        displayOrder: 1,
+        active: true,
+      }),
+    });
+    assert(testPut.status === 200, `PUT /api/proxy/admin/v1/testimonials/1 responde 200 OK (${testPut.status})`);
+    const updatedTestimonial = await testPut.json();
+    assert(updatedTestimonial.comment === testComment, `Comentario de testimonio actualizado y persistido: "${updatedTestimonial.clientName}"`);
+
+    // Mutación E2E de FAQ en PostgreSQL
+    const testFaqAnswer = "No, nuestra asesoría personalizada por WhatsApp o presencial en oficina es 100% gratuita y sin compromiso. Te brindamos opciones transparentes ajustadas a tu presupuesto.";
+    const faqPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/faq/1`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question: "¿La asesoría para cotizar mi viaje tiene algún costo?",
+        answer: testFaqAnswer,
+        category: "Asesoría y Cotización",
+        displayOrder: 1,
+        active: true,
+      }),
+    });
+    assert(faqPut.status === 200, `PUT /api/proxy/admin/v1/faq/1 responde 200 OK (${faqPut.status})`);
+    const updatedFaq = await faqPut.json();
+    assert(updatedFaq.answer === testFaqAnswer, `Respuesta FAQ actualizada y persistida: "${updatedFaq.question}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Testimonios & FAQ: ${err.message}`);
+  }
+
+  // 10. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 10. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

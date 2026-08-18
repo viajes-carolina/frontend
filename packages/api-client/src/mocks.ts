@@ -12,6 +12,11 @@ import {
   UpdateHomeHeroRequest,
   TravelIntentionDTO,
   CreateOrUpdateTravelIntentionRequest,
+  TestimonialDTO,
+  CreateOrUpdateTestimonialRequest,
+  FaqItemDTO,
+  CreateOrUpdateFaqRequest,
+  PublicTrustResponse,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -265,6 +270,97 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
   },
 ];
 
+export const DEFAULT_TESTIMONIALS: TestimonialDTO[] = [
+  {
+    id: 1,
+    clientName: "Mariana & Gonzalo Torres",
+    clientLocation: "Lima, Perú",
+    tripDestination: "Luna de Miel en Punta Cana",
+    comment: "Desde que escribimos por WhatsApp nos atendieron con muchísima paciencia. Nos recomendaron un resort espectacular y el check-in fue sin complicaciones. ¡Totalmente recomendadas!",
+    rating: 5,
+    avatarMediaId: 2,
+    avatarMediaUrl: "/media/demo-cartagena-caribe.webp",
+    consentConfirmed: true,
+    displayOrder: 1,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 2,
+    clientName: "Carlos Mendoza",
+    clientLocation: "Arequipa, Perú",
+    tripDestination: "Vacaciones Familiares en Cartagena",
+    comment: "Excelente asesoría de inicio a fin. Los vuelos, traslados y el hotel estuvieron perfectamente coordinados. Nos dio mucha seguridad tener asistencia durante el viaje.",
+    rating: 5,
+    avatarMediaId: 2,
+    avatarMediaUrl: "/media/demo-cartagena-caribe.webp",
+    consentConfirmed: true,
+    displayOrder: 2,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 3,
+    clientName: "Familia Quispe Valdivia",
+    clientLocation: "Trujillo, Perú",
+    tripDestination: "Cusco & Machu Picchu 5D/4N",
+    comment: "Viajar con niños pequeños siempre es un reto, pero Viajes Carolina organizó los horarios de tren y entradas a la perfección. La experiencia en Machu Picchu fue inolvidable.",
+    rating: 5,
+    avatarMediaId: 3,
+    avatarMediaUrl: "/media/demo-cusco-machupicchu.webp",
+    consentConfirmed: true,
+    displayOrder: 3,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+];
+
+export const DEFAULT_FAQS: FaqItemDTO[] = [
+  {
+    id: 1,
+    question: "¿La asesoría para cotizar mi viaje tiene algún costo?",
+    answer: "No, nuestra asesoría personalizada por WhatsApp o presencial en oficina es 100% gratuita y sin compromiso. Te brindamos opciones transparentes ajustadas a tu presupuesto.",
+    category: "Asesoría y Cotización",
+    displayOrder: 1,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 2,
+    question: "¿Qué facilidades de pago aceptan?",
+    answer: "Aceptamos transferencias bancarias directas (BCP, BBVA, Interbank), tarjetas de crédito y débito (Visa, Mastercard, Amex) con opciones de cuotas sin intereses según tu entidad financiera.",
+    category: "Pagos y Métodos",
+    displayOrder: 2,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 3,
+    question: "¿Los paquetes incluyen boletos aéreos y equipaje?",
+    answer: "Sí, todos nuestros paquetes detallan explícitamente el tipo de tarifa aérea, equipaje en cabina o bodega incluido y traslados aeropuerto-hotel para que viajes sin sorpresas.",
+    category: "Paquetes y Servicios",
+    displayOrder: 3,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 4,
+    question: "¿Tienen oficina física donde pueda recibir asesoría personalizada?",
+    answer: "Sí, te esperamos en nuestra oficina en Av. Larco 101, Oficina 502, Miraflores, Lima (a media cuadra del Parque Kennedy). Atendemos de Lunes a Viernes de 9:00 AM a 7:00 PM y Sábados de 9:00 AM a 2:00 PM.",
+    category: "Oficina y Ubicación",
+    displayOrder: 4,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+];
+
 export const DEFAULT_MEDIA_ASSETS: MediaAssetDTO[] = [
   {
     id: 1,
@@ -346,6 +442,8 @@ export let MOCK_MEDIA_ASSETS: MediaAssetDTO[] = [...DEFAULT_MEDIA_ASSETS];
 export let MOCK_HOME_HERO: HomeHeroDTO = { ...DEFAULT_HOME_HERO };
 export let MOCK_TRAVEL_INTENTIONS: TravelIntentionDTO[] = [...DEFAULT_TRAVEL_INTENTIONS];
 export let MOCK_PROMOTIONS: PromotionDTO[] = [...DEFAULT_PROMOTIONS];
+export let MOCK_TESTIMONIALS: TestimonialDTO[] = [...DEFAULT_TESTIMONIALS];
+export let MOCK_FAQS: FaqItemDTO[] = [...DEFAULT_FAQS];
 
 export function getMockSiteSettings(): SiteSettingsDTO {
   return MOCK_SITE_SETTINGS;
@@ -531,6 +629,105 @@ export function deleteMockPromotion(id: number): void {
   if (index !== -1) {
     MOCK_PROMOTIONS[index].active = false;
   }
+}
+
+// Trust Mock Helpers (Corte 7)
+export function getMockPublicTrust(): PublicTrustResponse {
+  return {
+    testimonials: MOCK_TESTIMONIALS.filter((t) => t.active),
+    faqs: MOCK_FAQS.filter((f) => f.active),
+  };
+}
+
+export function getMockTestimonials(): TestimonialDTO[] {
+  return MOCK_TESTIMONIALS;
+}
+
+export function createMockTestimonial(req: CreateOrUpdateTestimonialRequest): TestimonialDTO {
+  const newT: TestimonialDTO = {
+    id: Date.now(),
+    clientName: req.clientName,
+    clientLocation: req.clientLocation,
+    tripDestination: req.tripDestination,
+    comment: req.comment,
+    rating: req.rating || 5,
+    avatarMediaId: req.avatarMediaId,
+    avatarMediaUrl: "/media/demo-cartagena-caribe.webp",
+    consentConfirmed: req.consentConfirmed ?? true,
+    displayOrder: req.displayOrder || MOCK_TESTIMONIALS.length + 1,
+    active: req.active ?? true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_TESTIMONIALS.push(newT);
+  return newT;
+}
+
+export function updateMockTestimonial(id: number, req: CreateOrUpdateTestimonialRequest): TestimonialDTO {
+  const index = MOCK_TESTIMONIALS.findIndex((t) => t.id === id);
+  if (index === -1) throw new Error(`Testimonio no encontrado con ID: ${id}`);
+  const current = MOCK_TESTIMONIALS[index];
+  const updated: TestimonialDTO = {
+    ...current,
+    clientName: req.clientName,
+    clientLocation: req.clientLocation,
+    tripDestination: req.tripDestination,
+    comment: req.comment,
+    rating: req.rating,
+    avatarMediaId: req.avatarMediaId,
+    consentConfirmed: req.consentConfirmed ?? current.consentConfirmed,
+    displayOrder: req.displayOrder ?? current.displayOrder,
+    active: req.active ?? current.active,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_TESTIMONIALS[index] = updated;
+  return updated;
+}
+
+export function deleteMockTestimonial(id: number): void {
+  const index = MOCK_TESTIMONIALS.findIndex((t) => t.id === id);
+  if (index !== -1) MOCK_TESTIMONIALS[index].active = false;
+}
+
+export function getMockFaqs(): FaqItemDTO[] {
+  return MOCK_FAQS;
+}
+
+export function createMockFaq(req: CreateOrUpdateFaqRequest): FaqItemDTO {
+  const newF: FaqItemDTO = {
+    id: Date.now(),
+    question: req.question,
+    answer: req.answer,
+    category: req.category || "General",
+    displayOrder: req.displayOrder || MOCK_FAQS.length + 1,
+    active: req.active ?? true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_FAQS.push(newF);
+  return newF;
+}
+
+export function updateMockFaq(id: number, req: CreateOrUpdateFaqRequest): FaqItemDTO {
+  const index = MOCK_FAQS.findIndex((f) => f.id === id);
+  if (index === -1) throw new Error(`FAQ no encontrado con ID: ${id}`);
+  const current = MOCK_FAQS[index];
+  const updated: FaqItemDTO = {
+    ...current,
+    question: req.question,
+    answer: req.answer,
+    category: req.category ?? current.category,
+    displayOrder: req.displayOrder ?? current.displayOrder,
+    active: req.active ?? current.active,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_FAQS[index] = updated;
+  return updated;
+}
+
+export function deleteMockFaq(id: number): void {
+  const index = MOCK_FAQS.findIndex((f) => f.id === id);
+  if (index !== -1) MOCK_FAQS[index].active = false;
 }
 
 export function getMockMediaPage(page = 0, size = 24): MediaPageResponse {

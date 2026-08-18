@@ -12,6 +12,11 @@ import {
   UpdateHomeHeroRequest,
   TravelIntentionDTO,
   CreateOrUpdateTravelIntentionRequest,
+  TestimonialDTO,
+  CreateOrUpdateTestimonialRequest,
+  FaqItemDTO,
+  CreateOrUpdateFaqRequest,
+  PublicTrustResponse,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -35,6 +40,15 @@ import {
   createMockPromotion,
   updateMockPromotion,
   deleteMockPromotion,
+  getMockPublicTrust,
+  getMockTestimonials,
+  createMockTestimonial,
+  updateMockTestimonial,
+  deleteMockTestimonial,
+  getMockFaqs,
+  createMockFaq,
+  updateMockFaq,
+  deleteMockFaq,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   DEFAULT_MEDIA_ASSETS,
@@ -45,6 +59,7 @@ const STORAGE_KEY_OFFICE = "vc_office_location";
 const STORAGE_KEY_HERO = "vc_home_hero";
 const STORAGE_KEY_INTENTIONS = "vc_travel_intentions";
 const STORAGE_KEY_PROMOTIONS = "vc_promotions";
+const STORAGE_KEY_TRUST = "vc_trust_data";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -467,6 +482,130 @@ export class ViajesCarolinaApiClient {
       // fallback
     }
     deleteMockPromotion(id);
+  }
+
+  // ==========================================
+  // Trust: Testimonials & FAQ API (Corte 7)
+  // ==========================================
+
+  async getPublicTrust(): Promise<PublicTrustResponse> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(this.getEffectiveUrl("public/v1/home/trust"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return getMockPublicTrust();
+  }
+
+  async getTestimonials(): Promise<TestimonialDTO[]> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/testimonials"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockTestimonials();
+  }
+
+  async createTestimonial(payload: CreateOrUpdateTestimonialRequest): Promise<TestimonialDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/testimonials"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return createMockTestimonial(payload);
+  }
+
+  async updateTestimonial(id: number, payload: CreateOrUpdateTestimonialRequest): Promise<TestimonialDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/testimonials/${id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockTestimonial(id, payload);
+  }
+
+  async deleteTestimonial(id: number): Promise<void> {
+    try {
+      await fetch(this.getEffectiveUrl(`admin/v1/testimonials/${id}`), {
+        method: "DELETE",
+      });
+    } catch {
+      // fallback
+    }
+    deleteMockTestimonial(id);
+  }
+
+  async getFaqs(): Promise<FaqItemDTO[]> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/faq"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockFaqs();
+  }
+
+  async createFaq(payload: CreateOrUpdateFaqRequest): Promise<FaqItemDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/faq"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return createMockFaq(payload);
+  }
+
+  async updateFaq(id: number, payload: CreateOrUpdateFaqRequest): Promise<FaqItemDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/faq/${id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockFaq(id, payload);
+  }
+
+  async deleteFaq(id: number): Promise<void> {
+    try {
+      await fetch(this.getEffectiveUrl(`admin/v1/faq/${id}`), {
+        method: "DELETE",
+      });
+    } catch {
+      // fallback
+    }
+    deleteMockFaq(id);
   }
 
   // ==========================================

@@ -1,14 +1,23 @@
-import { HeroSection, JourneyConnector, IntentionsSection, PromotionsSection } from "@vc/ui";
+import {
+  HeroSection,
+  JourneyConnector,
+  IntentionsSection,
+  PromotionsSection,
+  TestimonialsSection,
+  FaqSection,
+  ClosingCtaSection,
+} from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [siteSettings, homeHero, intentions, promotions] = await Promise.all([
+  const [siteSettings, homeHero, intentions, promotions, trustData] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getHomeHero(),
     apiClient.getTravelIntentions(),
     apiClient.getFeaturedPromotions(),
+    apiClient.getPublicTrust(),
   ]);
 
   return (
@@ -19,7 +28,7 @@ export default async function HomePage() {
       <HeroSection hero={homeHero} settings={siteSettings} />
 
       {/* =========================================================================
-          02 · Journey Connector (Figma: 06 — Journey Connector)
+          02 · Journey Connector
           ========================================================================= */}
       <div className="w-full max-w-5xl px-4 my-6">
         <JourneyConnector />
@@ -49,13 +58,34 @@ export default async function HomePage() {
         <JourneyConnector />
       </div>
 
-      {/* Continue journey cue */}
-      <div className="flex flex-col items-center gap-2 pb-16 opacity-70 hover:opacity-100 transition-opacity">
-        <div className="w-0.5 h-8 bg-gradient-to-b from-transparent to-brand-sunset" />
-        <span className="font-sora text-[10px] font-bold tracking-[0.15em] text-brand-sunset uppercase">
-          Sigue bajando · El viaje recién comienza
-        </span>
+      {/* =========================================================================
+          07 · Testimonios y Experiencias de Clientes (Figma: 04. Confianza y Testimonios)
+          ========================================================================= */}
+      <TestimonialsSection testimonials={trustData.testimonials} />
+
+      {/* =========================================================================
+          08 · Journey Connector
+          ========================================================================= */}
+      <div className="w-full max-w-5xl px-4 my-6">
+        <JourneyConnector />
       </div>
+
+      {/* =========================================================================
+          09 · Preguntas Frecuentes FAQ (Figma: 05. Preguntas Frecuentes)
+          ========================================================================= */}
+      <FaqSection faqs={trustData.faqs} settings={siteSettings} />
+
+      {/* =========================================================================
+          10 · Journey Connector
+          ========================================================================= */}
+      <div className="w-full max-w-5xl px-4 my-6">
+        <JourneyConnector />
+      </div>
+
+      {/* =========================================================================
+          11 · Cierre y Gran Llamado a la Acción (Figma: 07. Conversación Final)
+          ========================================================================= */}
+      <ClosingCtaSection settings={siteSettings} />
     </main>
   );
 }

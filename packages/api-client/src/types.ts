@@ -242,6 +242,59 @@ export interface CreateOrUpdatePromotionRequest {
   active?: boolean;
 }
 
+// Trust: Testimonials & FAQ DTOs (Corte 7)
+export interface TestimonialDTO {
+  id: number;
+  clientName: string;
+  clientLocation?: string;
+  tripDestination: string;
+  comment: string;
+  rating: number;
+  avatarMediaId?: number;
+  avatarMediaUrl?: string;
+  consentConfirmed: boolean;
+  displayOrder: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateOrUpdateTestimonialRequest {
+  clientName: string;
+  clientLocation?: string;
+  tripDestination: string;
+  comment: string;
+  rating: number;
+  avatarMediaId?: number;
+  consentConfirmed?: boolean;
+  displayOrder?: number;
+  active?: boolean;
+}
+
+export interface FaqItemDTO {
+  id: number;
+  question: string;
+  answer: string;
+  category?: string;
+  displayOrder: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateOrUpdateFaqRequest {
+  question: string;
+  answer: string;
+  category?: string;
+  displayOrder?: number;
+  active?: boolean;
+}
+
+export interface PublicTrustResponse {
+  testimonials: TestimonialDTO[];
+  faqs: FaqItemDTO[];
+}
+
 export interface BlogPostDTO {
   id: number;
   slug: string;

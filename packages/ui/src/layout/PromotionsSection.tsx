@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { PromotionDTO, SiteSettingsDTO } from "@vc/api-client";
 import { PromotionCard } from "../cards/PromotionCard";
 import { Button } from "../primitives/Button";
@@ -55,7 +54,7 @@ export function PromotionsSection({
           </div>
 
           {showViewAllButton && (
-            <Link href="/promociones">
+            <a href="/promociones">
               <Button
                 variant="secondary"
                 size="md"
@@ -64,7 +63,7 @@ export function PromotionsSection({
               >
                 Ver todas las promociones
               </Button>
-            </Link>
+            </a>
           )}
         </div>
 

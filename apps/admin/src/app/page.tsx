@@ -1,17 +1,19 @@
 import Link from "next/link";
-import { Button, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon, ImageIcon, PlaneIcon, CompassIcon, SunIcon } from "@vc/ui";
+import { Button, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon, ImageIcon, PlaneIcon, CompassIcon, SunIcon, StarIcon } from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [siteSettings, office, mediaData, homeHero, intentions, promotions] = await Promise.all([
+  const [siteSettings, office, mediaData, homeHero, intentions, promotions, testimonials, faqs] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
     apiClient.getMediaList(0, 10),
     apiClient.getHomeHero(),
     apiClient.getAdminTravelIntentions(),
     apiClient.getAdminPromotions(),
+    apiClient.getTestimonials(),
+    apiClient.getFaqs(),
   ]);
 
   return (
@@ -23,7 +25,7 @@ export default async function AdminDashboardPage() {
             Panel de Control · {siteSettings.siteName}
           </h1>
           <p className="font-inter text-neutral-muted text-sm mt-1">
-            Gestión centralizada de contenidos, promociones, intenciones de viaje, medios e identidad.
+            Gestión centralizada de contenidos, testimonios, FAQ, promociones, medios e identidad.
           </p>
         </div>
         <div className="flex gap-3">
@@ -112,6 +114,32 @@ export default async function AdminDashboardPage() {
           </div>
           <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             Gestionar Intenciones &rarr;
+          </span>
+        </Link>
+
+        {/* Card: Confianza, Testimonios & FAQ (Corte 7) */}
+        <Link
+          href="/confianza"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-amber-500/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-amber-600">
+                Corte 7 · Confianza
+              </span>
+              <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
+                <StarIcon size={20} />
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-amber-600 transition-colors">
+              Testimonios & FAQ
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {testimonials.length} testimonios verificados y {faqs.length} preguntas frecuentes.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-amber-600 mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Gestionar Confianza &rarr;
           </span>
         </Link>
 
