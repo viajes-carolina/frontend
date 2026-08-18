@@ -9,6 +9,9 @@ import {
   updateMockOfficeLocation,
 } from "./mocks";
 
+const STORAGE_KEY_SETTINGS = "vc_site_settings";
+const STORAGE_KEY_OFFICE = "vc_office_location";
+
 export interface ApiClientConfig {
   baseUrl?: string;
   useMocks?: boolean;
@@ -37,20 +40,40 @@ export class ViajesCarolinaApiClient {
   }
 
   async getSiteSettings(): Promise<SiteSettingsDTO> {
-    if (this.useMocks) return MOCK_SITE_SETTINGS;
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(STORAGE_KEY_SETTINGS);
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {
+          // fallback
+        }
+      }
+    }
+
     try {
       const res = await fetch(`${this.baseUrl}/api/public/v1/site`, {
         next: { tags: ["site_settings"], revalidate: 3600 },
       });
-      if (!res.ok) return MOCK_SITE_SETTINGS;
-      return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof window !== "undefined") {
+          localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(data));
+        }
+        return data;
+      }
     } catch {
-      return MOCK_SITE_SETTINGS;
+      // Backend not running
     }
+    return MOCK_SITE_SETTINGS;
   }
 
   async updateSiteSettings(payload: Partial<SiteSettingsDTO>): Promise<SiteSettingsDTO> {
-    updateMockSiteSettings(payload);
+    const updated = updateMockSiteSettings(payload);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(updated));
+    }
+
     try {
       const res = await fetch(`${this.baseUrl}/api/admin/v1/settings`, {
         method: "PUT",
@@ -58,29 +81,53 @@ export class ViajesCarolinaApiClient {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (typeof window !== "undefined") {
+          localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(data));
+        }
+        return data;
       }
     } catch {
-      // Fallback to updated mock
+      // Offline fallback
     }
-    return MOCK_SITE_SETTINGS;
+    return updated;
   }
 
   async getOfficeLocation(): Promise<OfficeLocationDTO> {
-    if (this.useMocks) return MOCK_OFFICE_LOCATION;
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(STORAGE_KEY_OFFICE);
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {
+          // fallback
+        }
+      }
+    }
+
     try {
       const res = await fetch(`${this.baseUrl}/api/public/v1/office`, {
         next: { tags: ["office_location"], revalidate: 3600 },
       });
-      if (!res.ok) return MOCK_OFFICE_LOCATION;
-      return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof window !== "undefined") {
+          localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(data));
+        }
+        return data;
+      }
     } catch {
-      return MOCK_OFFICE_LOCATION;
+      // Backend not running
     }
+    return MOCK_OFFICE_LOCATION;
   }
 
   async updateOfficeLocation(payload: Partial<OfficeLocationDTO>): Promise<OfficeLocationDTO> {
-    updateMockOfficeLocation(payload);
+    const updated = updateMockOfficeLocation(payload);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(updated));
+    }
+
     try {
       const res = await fetch(`${this.baseUrl}/api/admin/v1/office`, {
         method: "PUT",
@@ -88,12 +135,16 @@ export class ViajesCarolinaApiClient {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        return await res.json();
+        const data = await res.json();
+        if (typeof window !== "undefined") {
+          localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(data));
+        }
+        return data;
       }
     } catch {
-      // Fallback to updated mock
+      // Offline fallback
     }
-    return MOCK_OFFICE_LOCATION;
+    return updated;
   }
 
   async getPromotions(): Promise<PromotionDTO[]> {

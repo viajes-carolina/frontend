@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Footer } from "@vc/ui";
 import { SiteSettingsDTO, OfficeLocationDTO } from "@vc/api-client";
 
@@ -6,7 +9,51 @@ export interface FooterWrapperProps {
   office: OfficeLocationDTO;
 }
 
-export function FooterWrapper({ settings, office }: FooterWrapperProps) {
+export function FooterWrapper({ settings: initialSettings, office: initialOffice }: FooterWrapperProps) {
+  const [settings, setSettings] = useState<SiteSettingsDTO>(initialSettings);
+  const [office, setOffice] = useState<OfficeLocationDTO>(initialOffice);
+
+  useEffect(() => {
+    // Check localStorage on mount
+    const storedSettings = localStorage.getItem("vc_site_settings");
+    if (storedSettings) {
+      try {
+        setSettings(JSON.parse(storedSettings));
+      } catch {
+        // ignore
+      }
+    }
+
+    const storedOffice = localStorage.getItem("vc_office_location");
+    if (storedOffice) {
+      try {
+        setOffice(JSON.parse(storedOffice));
+      } catch {
+        // ignore
+      }
+    }
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "vc_site_settings" && e.newValue) {
+        try {
+          setSettings(JSON.parse(e.newValue));
+        } catch {
+          // ignore
+        }
+      }
+      if (e.key === "vc_office_location" && e.newValue) {
+        try {
+          setOffice(JSON.parse(e.newValue));
+        } catch {
+          // ignore
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   return (
     <Footer
       siteName={settings.siteName}
