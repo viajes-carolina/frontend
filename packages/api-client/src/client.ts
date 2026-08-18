@@ -26,10 +26,19 @@ export class ViajesCarolinaApiClient {
     this.useMocks = config?.useMocks ?? false;
   }
 
+  private getEffectiveUrl(endpointPath: string): string {
+    // If running in browser, use the same-origin Next.js proxy route to bypass all CORS limitations
+    if (typeof window !== "undefined") {
+      return `/api/proxy/${endpointPath.replace(/^\//, "")}`;
+    }
+    // If running in Node.js server (SSR / SSG), connect directly to backend
+    return `${this.baseUrl}/api/${endpointPath.replace(/^\//, "")}`;
+  }
+
   async getInfo(): Promise<ApiInfoDTO> {
     if (this.useMocks) return MOCK_API_INFO;
     try {
-      const res = await fetch(`${this.baseUrl}/api/public/v1/info`, {
+      const res = await fetch(this.getEffectiveUrl("public/v1/info"), {
         next: { revalidate: 60 },
       });
       if (!res.ok) return MOCK_API_INFO;
@@ -52,7 +61,7 @@ export class ViajesCarolinaApiClient {
     }
 
     try {
-      const res = await fetch(`${this.baseUrl}/api/public/v1/site`, {
+      const res = await fetch(this.getEffectiveUrl("public/v1/site"), {
         next: { tags: ["site_settings"], revalidate: 3600 },
       });
       if (res.ok) {
@@ -75,7 +84,7 @@ export class ViajesCarolinaApiClient {
     }
 
     try {
-      const res = await fetch(`${this.baseUrl}/api/admin/v1/settings`, {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/settings"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -106,7 +115,7 @@ export class ViajesCarolinaApiClient {
     }
 
     try {
-      const res = await fetch(`${this.baseUrl}/api/public/v1/office`, {
+      const res = await fetch(this.getEffectiveUrl("public/v1/office"), {
         next: { tags: ["office_location"], revalidate: 3600 },
       });
       if (res.ok) {
@@ -129,7 +138,7 @@ export class ViajesCarolinaApiClient {
     }
 
     try {
-      const res = await fetch(`${this.baseUrl}/api/admin/v1/office`, {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/office"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -150,7 +159,7 @@ export class ViajesCarolinaApiClient {
   async getPromotions(): Promise<PromotionDTO[]> {
     if (this.useMocks) return MOCK_PROMOTIONS;
     try {
-      const res = await fetch(`${this.baseUrl}/api/public/v1/promotions`, {
+      const res = await fetch(this.getEffectiveUrl("public/v1/promotions"), {
         next: { tags: ["promotions"], revalidate: 3600 },
       });
       if (!res.ok) return MOCK_PROMOTIONS;
@@ -163,7 +172,7 @@ export class ViajesCarolinaApiClient {
   async getBlogPosts(): Promise<BlogPostDTO[]> {
     if (this.useMocks) return MOCK_BLOG_POSTS;
     try {
-      const res = await fetch(`${this.baseUrl}/api/public/v1/blog`, {
+      const res = await fetch(this.getEffectiveUrl("public/v1/blog"), {
         next: { tags: ["blog"], revalidate: 3600 },
       });
       if (!res.ok) return MOCK_BLOG_POSTS;
