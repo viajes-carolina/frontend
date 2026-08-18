@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { PlaneIcon, WhatsAppIcon, MapPinIcon } from "../icons/icons";
+import { PlaneIcon, MapPinIcon } from "../icons/icons";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 
 export interface FooterProps {
