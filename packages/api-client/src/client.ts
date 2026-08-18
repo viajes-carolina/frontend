@@ -1,7 +1,5 @@
 import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
 import {
-  DEFAULT_SITE_SETTINGS,
-  DEFAULT_OFFICE_LOCATION,
   MOCK_PROMOTIONS,
   MOCK_BLOG_POSTS,
   MOCK_API_INFO,
@@ -51,20 +49,10 @@ export class ViajesCarolinaApiClient {
   }
 
   async getSiteSettings(): Promise<SiteSettingsDTO> {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(STORAGE_KEY_SETTINGS);
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch {
-          // fallback
-        }
-      }
-    }
-
+    // Always prioritize fresh network/proxy data
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 600);
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
       const res = await fetch(this.getEffectiveUrl("public/v1/site"), {
         cache: "no-store",
         signal: controller.signal,
@@ -78,20 +66,25 @@ export class ViajesCarolinaApiClient {
         return data;
       }
     } catch {
-      // Backend not running / fallback
+      // Network failed -> fallback to localStorage if available
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem(STORAGE_KEY_SETTINGS);
+        if (stored) {
+          try {
+            return JSON.parse(stored);
+          } catch {
+            // ignore
+          }
+        }
+      }
     }
     return getMockSiteSettings();
   }
 
   async updateSiteSettings(payload: Partial<SiteSettingsDTO>): Promise<SiteSettingsDTO> {
-    const updated = updateMockSiteSettings(payload);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(updated));
-    }
-
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 600);
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
       const res = await fetch(this.getEffectiveUrl("admin/v1/settings"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -109,24 +102,19 @@ export class ViajesCarolinaApiClient {
     } catch {
       // Offline fallback
     }
+
+    const updated = updateMockSiteSettings(payload);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(updated));
+    }
     return updated;
   }
 
   async getOfficeLocation(): Promise<OfficeLocationDTO> {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(STORAGE_KEY_OFFICE);
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch {
-          // fallback
-        }
-      }
-    }
-
+    // Always prioritize fresh network/proxy data
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 600);
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
       const res = await fetch(this.getEffectiveUrl("public/v1/office"), {
         cache: "no-store",
         signal: controller.signal,
@@ -140,20 +128,25 @@ export class ViajesCarolinaApiClient {
         return data;
       }
     } catch {
-      // Backend not running / fallback
+      // Network failed -> fallback to localStorage if available
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem(STORAGE_KEY_OFFICE);
+        if (stored) {
+          try {
+            return JSON.parse(stored);
+          } catch {
+            // ignore
+          }
+        }
+      }
     }
     return getMockOfficeLocation();
   }
 
   async updateOfficeLocation(payload: Partial<OfficeLocationDTO>): Promise<OfficeLocationDTO> {
-    const updated = updateMockOfficeLocation(payload);
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(updated));
-    }
-
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 600);
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
       const res = await fetch(this.getEffectiveUrl("admin/v1/office"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -170,6 +163,11 @@ export class ViajesCarolinaApiClient {
       }
     } catch {
       // Offline fallback
+    }
+
+    const updated = updateMockOfficeLocation(payload);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(updated));
     }
     return updated;
   }

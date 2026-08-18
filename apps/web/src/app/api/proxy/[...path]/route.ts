@@ -11,11 +11,38 @@ import {
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://localhost:8080";
-const DATA_DIR = path.resolve(process.cwd(), "..", "..", ".data");
+
+function getDataDir(): string {
+  let curr = process.cwd();
+  for (let i = 0; i < 4; i++) {
+    const candidate = path.join(curr, ".data");
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+    const pkgJson = path.join(curr, "package.json");
+    if (fs.existsSync(pkgJson)) {
+      try {
+        const pkg = JSON.parse(fs.readFileSync(pkgJson, "utf-8"));
+        if (pkg.name === "viajes-carolina-monorepo") {
+          const target = path.join(curr, ".data");
+          if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
+          return target;
+        }
+      } catch {
+        // ignore
+      }
+    }
+    const parent = path.dirname(curr);
+    if (parent === curr) break;
+    curr = parent;
+  }
+  return path.resolve(process.cwd(), ".data");
+}
 
 function readStoredJson<T>(filename: string, fallback: T): T {
   try {
-    const filePath = path.join(DATA_DIR, filename);
+    const dataDir = getDataDir();
+    const filePath = path.join(dataDir, filename);
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, "utf-8");
       return JSON.parse(content) as T;
@@ -28,10 +55,11 @@ function readStoredJson<T>(filename: string, fallback: T): T {
 
 function writeStoredJson<T>(filename: string, data: T): void {
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+    const dataDir = getDataDir();
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
     }
-    const filePath = path.join(DATA_DIR, filename);
+    const filePath = path.join(dataDir, filename);
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
   } catch {
     // ignore
