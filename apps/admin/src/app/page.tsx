@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { Button, PlaneIcon, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon, ImageIcon } from "@vc/ui";
+import { Button, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon, ImageIcon, PlaneIcon } from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [siteSettings, office, mediaData] = await Promise.all([
+  const [siteSettings, office, mediaData, homeHero] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
     apiClient.getMediaList(0, 10),
+    apiClient.getHomeHero(),
   ]);
 
   return (
@@ -33,7 +34,33 @@ export default async function AdminDashboardPage() {
       </header>
 
       {/* Grid of Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Card: Inicio & Hero (Corte 4) */}
+        <Link
+          href="/inicio"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-brand-accent">
+                Corte 4 · Inicio
+              </span>
+              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent">
+                <PlaneIcon size={20} />
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
+              Hero Principal
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              "{homeHero.titleHighlight} {homeHero.titleAccent}"
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Editar Hero &rarr;
+          </span>
+        </Link>
+
         {/* Card: Biblioteca de Medios (Corte 3) */}
         <Link
           href="/medios"
@@ -48,11 +75,11 @@ export default async function AdminDashboardPage() {
                 <ImageIcon size={20} />
               </div>
             </div>
-            <h3 className="font-sora font-bold text-lg text-brand-navy group-hover:text-brand-primary transition-colors">
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-primary transition-colors">
               Biblioteca de Medios
             </h3>
-            <p className="font-inter text-neutral-muted text-sm mt-2 leading-relaxed">
-              {mediaData.total || 0} activos optimizados en WebP con control de punto focal interactivo.
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {mediaData.total || 0} activos optimizados en WebP.
             </p>
           </div>
           <span className="text-xs font-semibold text-brand-primary mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
@@ -74,11 +101,11 @@ export default async function AdminDashboardPage() {
                 <WhatsAppIcon size={20} />
               </div>
             </div>
-            <h3 className="font-sora font-bold text-lg text-brand-navy group-hover:text-brand-accent transition-colors">
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
               Canal WhatsApp & Marca
             </h3>
-            <p className="font-inter text-neutral-muted text-sm mt-2 leading-relaxed">
-              Número E.164 activo: <span className="font-semibold text-brand-navy">{siteSettings.whatsappPhone}</span>.
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {siteSettings.whatsappPhone}
             </p>
           </div>
           <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
@@ -100,11 +127,11 @@ export default async function AdminDashboardPage() {
                 <MapPinIcon size={20} />
               </div>
             </div>
-            <h3 className="font-sora font-bold text-lg text-brand-navy group-hover:text-brand-accent transition-colors">
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
               Oficina & Horarios
             </h3>
-            <p className="font-inter text-neutral-muted text-sm mt-2 leading-relaxed">
-              {office.addressLine}, {office.district}.
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {office.district}, {office.city}
             </p>
           </div>
           <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">

@@ -23,7 +23,7 @@ async function runE2ETests() {
   console.log("🚀 EJECUTANDO SUITE E2E DE CALIDAD — VIAJES CAROLINA");
   console.log("==========================================================\n");
 
-  // 1. Verificación de Rutas Web Públicas (Corte 0, Corte 1, Corte 2)
+  // 1. Verificación de Rutas Web Públicas (Corte 0, 1, 2, 3, 4)
   console.log("📦 1. Verificando Web Pública (http://localhost:3000)...");
   try {
     const webRes = await fetch(`${BASE_WEB_URL}`);
@@ -31,16 +31,21 @@ async function runE2ETests() {
     const webHtml = await webRes.text();
     assert(webHtml.includes("Viajes Carolina"), "HTML contiene nombre de marca 'Viajes Carolina'");
     assert(webHtml.includes("Tu viaje comienza"), "HTML contiene titular H1 de Figma Hero");
+    assert(webHtml.includes("Cuéntame tu viaje"), "HTML contiene CTA principal de WhatsApp");
+    assert(webHtml.includes("Asesoría sin costo") || webHtml.includes("Respuesta rápida"), "HTML contiene indicadores de confianza");
     assert(webHtml.includes("Recorre el Sitio") || webHtml.includes("Larco 101"), "HTML contiene estructura de Footer (Corte 2)");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1, 2, 3)
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1, 2, 3, 4)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
     assert(adminRes.status === 200, `Admin Dashboard responde con HTTP 200 OK (${adminRes.status})`);
+
+    const inicioRes = await fetch(`${BASE_ADMIN_URL}/inicio`);
+    assert(inicioRes.status === 200, `Módulo Inicio & Hero responde con HTTP 200 OK (${inicioRes.status})`);
 
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
@@ -155,8 +160,48 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Medios: ${err.message}`);
   }
 
-  // 6. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 6. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 6. Verificación de API Proxy & Persistencia E2E (Corte 4: Home Hero)...
+  console.log("\n📦 6. Verificando API Proxy & Persistencia E2E (Corte 4: Home Hero)...");
+  try {
+    const heroGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/home/hero`);
+    assert(heroGet.status === 200, `GET /api/proxy/public/v1/home/hero responde 200 OK (${heroGet.status})`);
+    const heroData = await heroGet.json();
+    assert(heroData.titleHighlight === "Tu viaje comienza", `Título principal del Hero: "${heroData.titleHighlight}"`);
+    assert(Array.isArray(heroData.trustIndicators) && heroData.trustIndicators.length === 3, `Indicadores de confianza: ${heroData.trustIndicators.length} pilares`);
+
+    // Mutación E2E de Home Hero en PostgreSQL
+    const testBadge = "Empieza con una conversación";
+    const heroPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/home/hero`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        badgeText: testBadge,
+        titleHighlight: "Tu viaje comienza",
+        titleAccent: "antes de despegar",
+        description: "Desde la primera idea hasta tu regreso, una asesora te acompaña con opciones claras, atención humana y respaldo en cada etapa.",
+        whatsappCtaText: "Cuéntame tu viaje",
+        whatsappMessageOverride: "Hola Viajes Carolina, quiero empezar a planear mi próximo viaje.",
+        secondaryCtaText: "Explorar promociones",
+        secondaryCtaUrl: "#promociones",
+        trustIndicators: ["Asesoría sin costo", "Respuesta rápida", "Acompañamiento real"],
+        backgroundMediaId: 1,
+        featuredCardBadge: "Próxima Parada · Cusco",
+        featuredCardTitle: "Machu Picchu & Valle Sagrado",
+        featuredCardSubtitle: "Experiencia personalizada de 5 días / 4 noches",
+        featuredCardPricePen: 1922.00,
+        featuredCardOrigin: "Desde Lima",
+        featuredCardMediaId: 3,
+      }),
+    });
+    assert(heroPut.status === 200, `PUT /api/proxy/admin/v1/home/hero responde 200 OK (${heroPut.status})`);
+    const updatedHero = await heroPut.json();
+    assert(updatedHero.badgeText === testBadge, `Insignia de Hero actualizada y persistida: "${updatedHero.badgeText}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Home Hero: ${err.message}`);
+  }
+
+  // 7. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 7. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

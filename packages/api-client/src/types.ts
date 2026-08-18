@@ -82,7 +82,7 @@ export interface PublicOfficeResponse {
   active: boolean;
 }
 
-// Media Assets DTOs
+// Media Assets DTOs (Corte 3)
 export interface MediaAssetDTO {
   id: number;
   filename: string;
@@ -114,6 +114,52 @@ export interface UpdateMediaFocalPointRequest {
   focalY: number;
   altText?: string;
   caption?: string;
+}
+
+// Home Hero DTOs (Corte 4)
+export interface HomeHeroDTO {
+  id?: number;
+  badgeText: string;
+  titleHighlight: string;
+  titleAccent: string;
+  description: string;
+  whatsappCtaText: string;
+  whatsappMessageOverride?: string;
+  secondaryCtaText?: string;
+  secondaryCtaUrl?: string;
+  trustIndicators: string[];
+  backgroundMediaId?: number;
+  backgroundMediaUrl?: string;
+  backgroundFocalX?: number;
+  backgroundFocalY?: number;
+  featuredCardBadge?: string;
+  featuredCardTitle?: string;
+  featuredCardSubtitle?: string;
+  featuredCardPricePen?: number;
+  featuredCardOrigin?: string;
+  featuredCardMediaId?: number;
+  featuredCardMediaUrl?: string;
+  revision?: number;
+  updatedAt?: string;
+}
+
+export interface UpdateHomeHeroRequest {
+  badgeText: string;
+  titleHighlight: string;
+  titleAccent: string;
+  description: string;
+  whatsappCtaText: string;
+  whatsappMessageOverride?: string;
+  secondaryCtaText?: string;
+  secondaryCtaUrl?: string;
+  trustIndicators: string[];
+  backgroundMediaId?: number;
+  featuredCardBadge?: string;
+  featuredCardTitle?: string;
+  featuredCardSubtitle?: string;
+  featuredCardPricePen?: number;
+  featuredCardOrigin?: string;
+  featuredCardMediaId?: number;
 }
 
 export interface PromotionDTO {

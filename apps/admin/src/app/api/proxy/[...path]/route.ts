@@ -5,12 +5,14 @@ import {
   DEFAULT_SITE_SETTINGS,
   DEFAULT_OFFICE_LOCATION,
   DEFAULT_MEDIA_ASSETS,
+  DEFAULT_HOME_HERO,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   MOCK_PROMOTIONS,
   MOCK_BLOG_POSTS,
   SiteSettingsDTO,
   OfficeLocationDTO,
+  HomeHeroDTO,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -128,6 +130,21 @@ async function proxyOrFallback(
     }
 
     // Graceful Offline / Dev Fallback with Disk Persistence
+    if (targetPath.includes("hero")) {
+      const current = readStoredJson<HomeHeroDTO>("home_hero.json", DEFAULT_HOME_HERO);
+      if (method === "PUT" || method === "POST") {
+        const updated = {
+          ...current,
+          ...(bodyJson || {}),
+          revision: (current.revision || 1) + 1,
+          updatedAt: new Date().toISOString(),
+        };
+        writeStoredJson("home_hero.json", updated);
+        return NextResponse.json(updated, { status: 200 });
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
     if (targetPath.includes("settings") || targetPath.includes("site")) {
       const current = readStoredJson<SiteSettingsDTO>("site_settings.json", DEFAULT_SITE_SETTINGS);
       if (method === "PUT" || method === "POST") {

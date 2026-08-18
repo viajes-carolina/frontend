@@ -7,6 +7,8 @@ import {
   MediaAssetDTO,
   MediaPageResponse,
   UpdateMediaFocalPointRequest,
+  HomeHeroDTO,
+  UpdateHomeHeroRequest,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -36,6 +38,32 @@ export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
   scheduleWeekdays: "Lunes a Viernes: 9:00 AM – 7:00 PM",
   scheduleSaturdays: "Sábados: 9:00 AM – 2:00 PM",
   active: true,
+  revision: 1,
+  updatedAt: "2026-08-18T00:00:00.000Z",
+};
+
+export const DEFAULT_HOME_HERO: HomeHeroDTO = {
+  id: 1,
+  badgeText: "Empieza con una conversación",
+  titleHighlight: "Tu viaje comienza",
+  titleAccent: "antes de despegar",
+  description: "Desde la primera idea hasta tu regreso, una asesora te acompaña con opciones claras, atención humana y respaldo en cada etapa.",
+  whatsappCtaText: "Cuéntame tu viaje",
+  whatsappMessageOverride: "Hola Viajes Carolina, quiero empezar a planear mi próximo viaje.",
+  secondaryCtaText: "Explorar promociones",
+  secondaryCtaUrl: "#promociones",
+  trustIndicators: ["Asesoría sin costo", "Respuesta rápida", "Acompañamiento real"],
+  backgroundMediaId: 1,
+  backgroundMediaUrl: "/media/demo-hero-travel.webp",
+  backgroundFocalX: 50.0,
+  backgroundFocalY: 40.0,
+  featuredCardBadge: "Próxima Parada · Cusco",
+  featuredCardTitle: "Machu Picchu & Valle Sagrado",
+  featuredCardSubtitle: "Experiencia personalizada de 5 días / 4 noches",
+  featuredCardPricePen: 1922,
+  featuredCardOrigin: "Desde Lima",
+  featuredCardMediaId: 3,
+  featuredCardMediaUrl: "/media/demo-cusco-machupicchu.webp",
   revision: 1,
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
@@ -118,6 +146,7 @@ export const DEFAULT_MEDIA_ASSETS: MediaAssetDTO[] = [
 export let MOCK_SITE_SETTINGS: SiteSettingsDTO = { ...DEFAULT_SITE_SETTINGS };
 export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = { ...DEFAULT_OFFICE_LOCATION };
 export let MOCK_MEDIA_ASSETS: MediaAssetDTO[] = [...DEFAULT_MEDIA_ASSETS];
+export let MOCK_HOME_HERO: HomeHeroDTO = { ...DEFAULT_HOME_HERO };
 
 export function getMockSiteSettings(): SiteSettingsDTO {
   return MOCK_SITE_SETTINGS;
@@ -143,6 +172,20 @@ export function updateMockOfficeLocation(updated: Partial<OfficeLocationDTO>): O
     updatedAt: new Date().toISOString(),
   };
   return MOCK_OFFICE_LOCATION;
+}
+
+export function getMockHomeHero(): HomeHeroDTO {
+  return MOCK_HOME_HERO;
+}
+
+export function updateMockHomeHero(updated: Partial<HomeHeroDTO>): HomeHeroDTO {
+  MOCK_HOME_HERO = {
+    ...MOCK_HOME_HERO,
+    ...updated,
+    revision: (MOCK_HOME_HERO.revision || 1) + 1,
+    updatedAt: new Date().toISOString(),
+  };
+  return MOCK_HOME_HERO;
 }
 
 export function getMockMediaPage(page = 0, size = 24): MediaPageResponse {
