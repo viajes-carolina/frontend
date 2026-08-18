@@ -10,6 +10,8 @@ import {
   DEFAULT_PROMOTIONS,
   DEFAULT_TESTIMONIALS,
   DEFAULT_FAQS,
+  DEFAULT_ABOUT_PAGE,
+  DEFAULT_ADVISORS,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   MOCK_BLOG_POSTS,
@@ -21,6 +23,9 @@ import {
   TestimonialDTO,
   FaqItemDTO,
   PublicTrustResponse,
+  AboutPageDTO,
+  TravelAdvisorDTO,
+  PublicAboutResponse,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -138,6 +143,81 @@ async function proxyOrFallback(
     }
 
     // Graceful Offline / Dev Fallback with Disk Persistence
+    if (targetPath === "public/v1/about" || (targetPath.includes("about") && targetPath.includes("public"))) {
+      const p = readStoredJson<AboutPageDTO>("about_page.json", DEFAULT_ABOUT_PAGE);
+      const adv = readStoredJson<TravelAdvisorDTO[]>("advisors.json", DEFAULT_ADVISORS);
+      const res: PublicAboutResponse = {
+        page: p,
+        advisors: adv.filter((a) => a.active),
+      };
+      return NextResponse.json(res, { status: 200 });
+    }
+
+    if (targetPath.includes("advisors")) {
+      const current = readStoredJson<TravelAdvisorDTO[]>("advisors.json", DEFAULT_ADVISORS);
+      if (method === "POST") {
+        const newA: TravelAdvisorDTO = {
+          id: Date.now(),
+          fullName: String(bodyJson?.fullName || "Nueva Asesora"),
+          roleTitle: String(bodyJson?.roleTitle || "Asesora"),
+          specialty: String(bodyJson?.specialty || "Destinos"),
+          bio: String(bodyJson?.bio || ""),
+          photoMediaId: bodyJson?.photoMediaId ? Number(bodyJson.photoMediaId) : undefined,
+          photoMediaUrl: "/media/demo-cartagena-caribe.webp",
+          whatsappPhone: String(bodyJson?.whatsappPhone || "+51987654321"),
+          whatsappMessageTemplate: String(bodyJson?.whatsappMessageTemplate || ""),
+          displayOrder: bodyJson?.displayOrder ? Number(bodyJson.displayOrder) : current.length + 1,
+          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [...current, newA];
+        writeStoredJson("advisors.json", updated);
+        return NextResponse.json(newA, { status: 201 });
+      }
+      if (method === "PUT") {
+        const idMatch = targetPath.match(/advisors\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((a) => a.id === id);
+        if (index !== -1) {
+          const updatedItem = {
+            ...current[index],
+            ...(bodyJson || {}),
+            updatedAt: new Date().toISOString(),
+          };
+          current[index] = updatedItem as TravelAdvisorDTO;
+          writeStoredJson("advisors.json", current);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+      if (method === "DELETE") {
+        const idMatch = targetPath.match(/advisors\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((a) => a.id === id);
+        if (index !== -1) {
+          current[index].active = false;
+          writeStoredJson("advisors.json", current);
+        }
+        return new NextResponse(null, { status: 204 });
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
+    if (targetPath.includes("about")) {
+      const current = readStoredJson<AboutPageDTO>("about_page.json", DEFAULT_ABOUT_PAGE);
+      if (method === "PUT" || method === "POST") {
+        const updated = {
+          ...current,
+          ...(bodyJson || {}),
+          revision: (current.revision || 1) + 1,
+          updatedAt: new Date().toISOString(),
+        };
+        writeStoredJson("about_page.json", updated);
+        return NextResponse.json(updated, { status: 200 });
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
     if (targetPath.includes("trust")) {
       const tList = readStoredJson<TestimonialDTO[]>("testimonials.json", DEFAULT_TESTIMONIALS);
       const fList = readStoredJson<FaqItemDTO[]>("faqs.json", DEFAULT_FAQS);

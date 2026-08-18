@@ -17,6 +17,11 @@ import {
   FaqItemDTO,
   CreateOrUpdateFaqRequest,
   PublicTrustResponse,
+  AboutPageDTO,
+  UpdateAboutPageRequest,
+  TravelAdvisorDTO,
+  CreateOrUpdateAdvisorRequest,
+  PublicAboutResponse,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -49,6 +54,13 @@ import {
   createMockFaq,
   updateMockFaq,
   deleteMockFaq,
+  getMockPublicAbout,
+  getMockAdminAbout,
+  updateMockAdminAbout,
+  getMockAdminAdvisors,
+  createMockAdvisor,
+  updateMockAdvisor,
+  deleteMockAdvisor,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   DEFAULT_MEDIA_ASSETS,
@@ -60,6 +72,7 @@ const STORAGE_KEY_HERO = "vc_home_hero";
 const STORAGE_KEY_INTENTIONS = "vc_travel_intentions";
 const STORAGE_KEY_PROMOTIONS = "vc_promotions";
 const STORAGE_KEY_TRUST = "vc_trust_data";
+const STORAGE_KEY_ABOUT = "vc_about_page";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -606,6 +619,105 @@ export class ViajesCarolinaApiClient {
       // fallback
     }
     deleteMockFaq(id);
+  }
+
+  // ==========================================
+  // About Us & Advisors API (Corte 8)
+  // ==========================================
+
+  async getPublicAbout(): Promise<PublicAboutResponse> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(this.getEffectiveUrl("public/v1/about"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return getMockPublicAbout();
+  }
+
+  async getAdminAbout(): Promise<AboutPageDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/about"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAdminAbout();
+  }
+
+  async updateAdminAbout(payload: UpdateAboutPageRequest): Promise<AboutPageDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/about"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockAdminAbout(payload);
+  }
+
+  async getAdminAdvisors(): Promise<TravelAdvisorDTO[]> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/advisors"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAdminAdvisors();
+  }
+
+  async createAdvisor(payload: CreateOrUpdateAdvisorRequest): Promise<TravelAdvisorDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/advisors"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return createMockAdvisor(payload);
+  }
+
+  async updateAdvisor(id: number, payload: CreateOrUpdateAdvisorRequest): Promise<TravelAdvisorDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/advisors/${id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockAdvisor(id, payload);
+  }
+
+  async deleteAdvisor(id: number): Promise<void> {
+    try {
+      await fetch(this.getEffectiveUrl(`admin/v1/advisors/${id}`), {
+        method: "DELETE",
+      });
+    } catch {
+      // fallback
+    }
+    deleteMockAdvisor(id);
   }
 
   // ==========================================

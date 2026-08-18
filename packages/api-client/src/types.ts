@@ -295,6 +295,83 @@ export interface PublicTrustResponse {
   faqs: FaqItemDTO[];
 }
 
+// About Us & Advisors DTOs (Corte 8)
+export interface AboutPageDTO {
+  id?: number;
+  heroBadge: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroMediaId?: number;
+  heroMediaUrl?: string;
+  storyTitle: string;
+  storyBody: string;
+  storyMediaId?: number;
+  storyMediaUrl?: string;
+  missionTitle: string;
+  missionBody: string;
+  visionTitle: string;
+  visionBody: string;
+  values: string[];
+  experienceYears: number;
+  happyTravelers: number;
+  destinationsCount: number;
+  satisfactionRatePercent: number;
+  revision?: number;
+  updatedAt?: string;
+}
+
+export interface UpdateAboutPageRequest {
+  heroBadge: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroMediaId?: number;
+  storyTitle: string;
+  storyBody: string;
+  storyMediaId?: number;
+  missionTitle: string;
+  missionBody: string;
+  visionTitle: string;
+  visionBody: string;
+  values: string[];
+  experienceYears: number;
+  happyTravelers: number;
+  destinationsCount: number;
+  satisfactionRatePercent: number;
+}
+
+export interface TravelAdvisorDTO {
+  id: number;
+  fullName: string;
+  roleTitle: string;
+  specialty: string;
+  bio: string;
+  photoMediaId?: number;
+  photoMediaUrl?: string;
+  whatsappPhone?: string;
+  whatsappMessageTemplate?: string;
+  displayOrder: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateOrUpdateAdvisorRequest {
+  fullName: string;
+  roleTitle: string;
+  specialty: string;
+  bio: string;
+  photoMediaId?: number;
+  whatsappPhone?: string;
+  whatsappMessageTemplate?: string;
+  displayOrder?: number;
+  active?: boolean;
+}
+
+export interface PublicAboutResponse {
+  page: AboutPageDTO;
+  advisors: TravelAdvisorDTO[];
+}
+
 export interface BlogPostDTO {
   id: number;
   slug: string;

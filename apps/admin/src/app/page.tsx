@@ -143,6 +143,32 @@ export default async function AdminDashboardPage() {
           </span>
         </Link>
 
+        {/* Card: Nosotros & Asesoras (Corte 8) */}
+        <Link
+          href="/nosotros"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-brand-accent">
+                Corte 8 · Nosotros
+              </span>
+              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent">
+                <CompassIcon size={20} />
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
+              Nosotros & Asesoras
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              Historia institucional, misión, visión y equipo de asesoras.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Gestionar Nosotros &rarr;
+          </span>
+        </Link>
+
         {/* Card: Biblioteca de Medios (Corte 3) */}
         <Link
           href="/medios"

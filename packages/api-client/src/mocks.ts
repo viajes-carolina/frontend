@@ -17,6 +17,11 @@ import {
   FaqItemDTO,
   CreateOrUpdateFaqRequest,
   PublicTrustResponse,
+  AboutPageDTO,
+  UpdateAboutPageRequest,
+  TravelAdvisorDTO,
+  CreateOrUpdateAdvisorRequest,
+  PublicAboutResponse,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -361,6 +366,78 @@ export const DEFAULT_FAQS: FaqItemDTO[] = [
   },
 ];
 
+export const DEFAULT_ABOUT_PAGE: AboutPageDTO = {
+  id: 1,
+  heroBadge: "Conoce Nuestra Esencia",
+  heroTitle: "Más de 12 años transformando viajes en recuerdos inolvidables",
+  heroSubtitle: "Somos una agencia peruana apasionada por diseñar experiencias turísticas personalizadas, con atención cálida y respaldo antes, durante y después de tu viaje.",
+  heroMediaId: 1,
+  heroMediaUrl: "/media/demo-hero-travel.webp",
+  storyTitle: "Nuestra Historia",
+  storyBody: "Viajes Carolina nació con el propósito de devolver la calidez humana y la tranquilidad a la planificación de viajes. Lo que comenzó como un sueño familiar hoy es una agencia boutique consolidada en Miraflores, Lima, con un equipo de asesoras especializadas que cuidan cada detalle de tu itinerario.",
+  storyMediaId: 3,
+  storyMediaUrl: "/media/demo-cusco-machupicchu.webp",
+  missionTitle: "Nuestra Misión",
+  missionBody: "Brindar asesoría turística experta, honesta y personalizada, garantizando experiencias de viaje seguras y memorables que superen las expectativas de cada familia y viajero.",
+  visionTitle: "Nuestra Visión",
+  visionBody: "Ser la agencia de viajes boutique referente en el Perú por nuestra excelencia en el servicio al cliente, innovación y acompañamiento constante.",
+  values: ["Atención humana y cálida", "Transparencia sin letra chica", "Acompañamiento 24/7", "Pasión por los detalles"],
+  experienceYears: 12,
+  happyTravelers: 15000,
+  destinationsCount: 85,
+  satisfactionRatePercent: 99,
+  revision: 1,
+  updatedAt: "2026-08-18T00:00:00.000Z",
+};
+
+export const DEFAULT_ADVISORS: TravelAdvisorDTO[] = [
+  {
+    id: 1,
+    fullName: "Carolina Zúñiga",
+    roleTitle: "Fundadora & Directora de Experiencias",
+    specialty: "Destinos Internacionales & Lunas de Miel",
+    bio: "Más de 15 años diseñando itinerarios de ensueño en el Caribe y Europa. Apasionada por hacer de cada viaje una experiencia irrepetible.",
+    photoMediaId: 2,
+    photoMediaUrl: "/media/demo-cartagena-caribe.webp",
+    whatsappPhone: "+51987654321",
+    whatsappMessageTemplate: "Hola Carolina, me gustaría una asesoría personalizada contigo para planificar mi viaje.",
+    displayOrder: 1,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 2,
+    fullName: "Lucía Ramos",
+    roleTitle: "Asesora Senior de Viajes",
+    specialty: "Caribe, Resorts All-Inclusive & Cruceros",
+    bio: "Especialista en vacaciones familiares y escapadas de relax. Conoce al detalle los mejores resorts de Punta Cana, Cancún y Cartagena.",
+    photoMediaId: 2,
+    photoMediaUrl: "/media/demo-cartagena-caribe.webp",
+    whatsappPhone: "+51987654321",
+    whatsappMessageTemplate: "Hola Lucía, deseo cotizar un paquete al Caribe y recibir tu recomendación de resorts.",
+    displayOrder: 2,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 3,
+    fullName: "Valeria Gómez",
+    roleTitle: "Especialista en Destinos Nacionales",
+    specialty: "Cusco, Selva Amazónica & Trekking",
+    bio: "Guía experta en las maravillas del Perú. Diseña rutas culturales y de aventura con los mejores horarios y operadores certificados.",
+    photoMediaId: 3,
+    photoMediaUrl: "/media/demo-cusco-machupicchu.webp",
+    whatsappPhone: "+51987654321",
+    whatsappMessageTemplate: "Hola Valeria, me interesa cotizar un viaje a Cusco / Selva peruana con tu asesoría.",
+    displayOrder: 3,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+];
+
 export const DEFAULT_MEDIA_ASSETS: MediaAssetDTO[] = [
   {
     id: 1,
@@ -444,6 +521,8 @@ export let MOCK_TRAVEL_INTENTIONS: TravelIntentionDTO[] = [...DEFAULT_TRAVEL_INT
 export let MOCK_PROMOTIONS: PromotionDTO[] = [...DEFAULT_PROMOTIONS];
 export let MOCK_TESTIMONIALS: TestimonialDTO[] = [...DEFAULT_TESTIMONIALS];
 export let MOCK_FAQS: FaqItemDTO[] = [...DEFAULT_FAQS];
+export let MOCK_ABOUT_PAGE: AboutPageDTO = { ...DEFAULT_ABOUT_PAGE };
+export let MOCK_ADVISORS: TravelAdvisorDTO[] = [...DEFAULT_ADVISORS];
 
 export function getMockSiteSettings(): SiteSettingsDTO {
   return MOCK_SITE_SETTINGS;
@@ -728,6 +807,78 @@ export function updateMockFaq(id: number, req: CreateOrUpdateFaqRequest): FaqIte
 export function deleteMockFaq(id: number): void {
   const index = MOCK_FAQS.findIndex((f) => f.id === id);
   if (index !== -1) MOCK_FAQS[index].active = false;
+}
+
+// About Us & Advisors Mock Helpers (Corte 8)
+export function getMockPublicAbout(): PublicAboutResponse {
+  return {
+    page: MOCK_ABOUT_PAGE,
+    advisors: MOCK_ADVISORS.filter((a) => a.active),
+  };
+}
+
+export function getMockAdminAbout(): AboutPageDTO {
+  return MOCK_ABOUT_PAGE;
+}
+
+export function updateMockAdminAbout(req: UpdateAboutPageRequest): AboutPageDTO {
+  MOCK_ABOUT_PAGE = {
+    ...MOCK_ABOUT_PAGE,
+    ...req,
+    revision: (MOCK_ABOUT_PAGE.revision || 1) + 1,
+    updatedAt: new Date().toISOString(),
+  };
+  return MOCK_ABOUT_PAGE;
+}
+
+export function getMockAdminAdvisors(): TravelAdvisorDTO[] {
+  return MOCK_ADVISORS;
+}
+
+export function createMockAdvisor(req: CreateOrUpdateAdvisorRequest): TravelAdvisorDTO {
+  const newAdvisor: TravelAdvisorDTO = {
+    id: Date.now(),
+    fullName: req.fullName,
+    roleTitle: req.roleTitle,
+    specialty: req.specialty,
+    bio: req.bio,
+    photoMediaId: req.photoMediaId,
+    photoMediaUrl: "/media/demo-cartagena-caribe.webp",
+    whatsappPhone: req.whatsappPhone || "+51987654321",
+    whatsappMessageTemplate: req.whatsappMessageTemplate || `Hola ${req.fullName}, deseo asesoría personalizada para mi viaje.`,
+    displayOrder: req.displayOrder || MOCK_ADVISORS.length + 1,
+    active: req.active ?? true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_ADVISORS.push(newAdvisor);
+  return newAdvisor;
+}
+
+export function updateMockAdvisor(id: number, req: CreateOrUpdateAdvisorRequest): TravelAdvisorDTO {
+  const index = MOCK_ADVISORS.findIndex((a) => a.id === id);
+  if (index === -1) throw new Error(`Asesora no encontrada con ID: ${id}`);
+  const current = MOCK_ADVISORS[index];
+  const updated: TravelAdvisorDTO = {
+    ...current,
+    fullName: req.fullName,
+    roleTitle: req.roleTitle,
+    specialty: req.specialty,
+    bio: req.bio,
+    photoMediaId: req.photoMediaId,
+    whatsappPhone: req.whatsappPhone || current.whatsappPhone,
+    whatsappMessageTemplate: req.whatsappMessageTemplate || current.whatsappMessageTemplate,
+    displayOrder: req.displayOrder ?? current.displayOrder,
+    active: req.active ?? current.active,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_ADVISORS[index] = updated;
+  return updated;
+}
+
+export function deleteMockAdvisor(id: number): void {
+  const index = MOCK_ADVISORS.findIndex((a) => a.id === id);
+  if (index !== -1) MOCK_ADVISORS[index].active = false;
 }
 
 export function getMockMediaPage(page = 0, size = 24): MediaPageResponse {
