@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OfficeLocationDTO, apiClient } from "@vc/api-client";
 
 export function useAdminOffice(initialOffice: OfficeLocationDTO) {
   const [office, setOffice] = useState<OfficeLocationDTO>(initialOffice);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    // Refresh with latest data on mount
+    apiClient.getOfficeLocation().then((fresh) => {
+      if (fresh) setOffice(fresh);
+    });
+  }, []);
 
   const updateField = (field: keyof OfficeLocationDTO, value: string | number | boolean) => {
     setOffice((prev) => ({

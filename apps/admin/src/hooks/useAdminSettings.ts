@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SiteSettingsDTO, apiClient } from "@vc/api-client";
 
 export function useAdminSettings(initialSettings: SiteSettingsDTO) {
   const [settings, setSettings] = useState<SiteSettingsDTO>(initialSettings);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    // Refresh with latest data on mount
+    apiClient.getSiteSettings().then((fresh) => {
+      if (fresh) setSettings(fresh);
+    });
+  }, []);
 
   const updateField = (field: keyof SiteSettingsDTO, value: string | number) => {
     setSettings((prev) => ({

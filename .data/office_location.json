@@ -3,15 +3,15 @@
   "addressLine": "Av. Larco 101, Oficina 502",
   "district": "Miraflores",
   "city": "Lima",
-  "country": "Perú",
+  "country": "Per�",
   "postalCode": "15074",
   "referenceLandmark": "A media cuadra del Parque Kennedy",
   "latitude": -12.121543,
   "longitude": -77.029876,
   "googleMapsUrl": "https://maps.google.com/?q=Miraflores,Lima,Peru",
-  "scheduleWeekdays": "Lunes a Viernes: 9:00 AM – 7:00 PM",
-  "scheduleSaturdays": "Sábados: 9:00 AM – 4:00 PM",
+  "scheduleWeekdays": "Lunes a Viernes: 9:00 AM - 7:00 PM",
+  "scheduleSaturdays": "S�bados: 9:00 AM - 4:00 PM",
   "active": true,
-  "revision": 10,
-  "updatedAt": "2026-08-18T07:02:45.738Z"
+  "revision": 15,
+  "updatedAt": "2026-08-18T07:10:06.905Z"
 }

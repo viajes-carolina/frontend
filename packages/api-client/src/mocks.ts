@@ -31,7 +31,6 @@ export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
 
-// Global isomorphic in-memory state
 export let MOCK_SITE_SETTINGS: SiteSettingsDTO = { ...DEFAULT_SITE_SETTINGS };
 export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = { ...DEFAULT_OFFICE_LOCATION };
 
