@@ -22,6 +22,12 @@ import {
   TravelAdvisorDTO,
   CreateOrUpdateAdvisorRequest,
   PublicAboutResponse,
+  ContactPageDTO,
+  UpdateContactPageRequest,
+  SubmitContactInquiryRequest,
+  ContactInquiryDTO,
+  UpdateInquiryStatusRequest,
+  PublicContactResponse,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -922,6 +928,120 @@ export const MOCK_BLOG_POSTS: BlogPostDTO[] = [
   },
 ];
 
+export const DEFAULT_CONTACT_PAGE: ContactPageDTO = {
+  id: 1,
+  heroBadge: "Estamos para Ayudarte",
+  heroTitle: "Hablemos de tu próximo destino soñado",
+  heroSubtitle: "Déjanos tus datos o escríbenos directamente por WhatsApp. Una de nuestras asesoras te responderá con una propuesta personalizada.",
+  whatsappBoxTitle: "¿Prefieres atención inmediata?",
+  whatsappBoxSubtitle: "Escríbenos por WhatsApp y una asesora experta te atenderá en minutos en horario de oficina.",
+  formTitle: "Envíanos un mensaje",
+  formSubtitle: "Completa el formulario y te enviaremos una cotización detallada a tu correo o WhatsApp.",
+  revision: 1,
+  updatedAt: "2026-08-18T00:00:00.000Z",
+};
+
+export const DEFAULT_INQUIRIES: ContactInquiryDTO[] = [
+  {
+    id: 1,
+    fullName: "Andrea Salazar",
+    email: "andrea.salazar@gmail.com",
+    phone: "+51998877665",
+    destinationOfInterest: "Cartagena de Indias",
+    travelDateApprox: "Noviembre 2026",
+    travelersCount: 2,
+    message: "Hola, me gustaría cotizar un viaje de 5 días para mi aniversario en Cartagena con hotel frente al mar.",
+    preferredContactChannel: "WHATSAPP",
+    status: "NEW",
+    turnstileVerified: true,
+    createdAt: "2026-08-18T10:00:00.000Z",
+    updatedAt: "2026-08-18T10:00:00.000Z",
+  },
+  {
+    id: 2,
+    fullName: "Jorge Villanueva",
+    email: "jorge.villanueva@outlook.com",
+    phone: "+51912345678",
+    destinationOfInterest: "Cusco & Machu Picchu",
+    travelDateApprox: "Diciembre 2026",
+    travelersCount: 4,
+    message: "Deseo cotizar paquete familiar para 2 adultos y 2 niños con tren turístico a Machu Picchu y excursión a Valle Sagrado.",
+    preferredContactChannel: "WHATSAPP",
+    status: "IN_PROGRESS",
+    turnstileVerified: true,
+    createdAt: "2026-08-17T15:00:00.000Z",
+    updatedAt: "2026-08-17T15:00:00.000Z",
+  },
+];
+
+export let MOCK_CONTACT_PAGE: ContactPageDTO = { ...DEFAULT_CONTACT_PAGE };
+export let MOCK_INQUIRIES: ContactInquiryDTO[] = [...DEFAULT_INQUIRIES];
+
+export function getMockPublicContact(): PublicContactResponse {
+  return {
+    page: MOCK_CONTACT_PAGE,
+    primaryPhone: MOCK_SITE_SETTINGS.primaryPhone,
+    whatsappPhone: MOCK_SITE_SETTINGS.whatsappPhone || "+51987654321",
+    contactEmail: MOCK_SITE_SETTINGS.contactEmail,
+    officeAddress: `${MOCK_OFFICE_LOCATION.addressLine}, ${MOCK_OFFICE_LOCATION.district}, ${MOCK_OFFICE_LOCATION.city}`,
+    officeHours: MOCK_OFFICE_LOCATION.scheduleWeekdays,
+  };
+}
+
+export function submitMockContactInquiry(req: SubmitContactInquiryRequest): ContactInquiryDTO {
+  const newInquiry: ContactInquiryDTO = {
+    id: Date.now(),
+    fullName: req.fullName,
+    email: req.email,
+    phone: req.phone,
+    destinationOfInterest: req.destinationOfInterest,
+    travelDateApprox: req.travelDateApprox,
+    travelersCount: req.travelersCount || 1,
+    message: req.message,
+    preferredContactChannel: req.preferredContactChannel || "WHATSAPP",
+    status: "NEW",
+    turnstileVerified: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_INQUIRIES.unshift(newInquiry);
+  return newInquiry;
+}
+
+export function getMockAdminContact(): ContactPageDTO {
+  return MOCK_CONTACT_PAGE;
+}
+
+export function updateMockAdminContact(req: UpdateContactPageRequest): ContactPageDTO {
+  MOCK_CONTACT_PAGE = {
+    ...MOCK_CONTACT_PAGE,
+    ...req,
+    revision: (MOCK_CONTACT_PAGE.revision || 1) + 1,
+    updatedAt: new Date().toISOString(),
+  };
+  return MOCK_CONTACT_PAGE;
+}
+
+export function getMockAdminInquiries(statusFilter?: string): ContactInquiryDTO[] {
+  if (statusFilter && statusFilter !== "ALL") {
+    return MOCK_INQUIRIES.filter((i) => i.status === statusFilter);
+  }
+  return MOCK_INQUIRIES;
+}
+
+export function updateMockInquiryStatus(id: number, status: string): ContactInquiryDTO {
+  const index = MOCK_INQUIRIES.findIndex((i) => i.id === id);
+  if (index === -1) throw new Error(`Solicitud no encontrada con ID: ${id}`);
+  const current = MOCK_INQUIRIES[index];
+  const updated: ContactInquiryDTO = {
+    ...current,
+    status,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_INQUIRIES[index] = updated;
+  return updated;
+}
+
 export const MOCK_API_INFO: ApiInfoDTO = {
   name: "Viajes Carolina API (Mock)",
   version: "1.0.0",
@@ -929,3 +1049,4 @@ export const MOCK_API_INFO: ApiInfoDTO = {
   architecture: "Hexagonal Architecture with Quarkus 3.x & Java 25 LTS",
   timestamp: "2026-08-18T00:00:00.000Z",
 };
+

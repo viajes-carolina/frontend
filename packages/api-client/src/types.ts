@@ -384,3 +384,69 @@ export interface BlogPostDTO {
   readingTimeMinutes: number;
   authorName: string;
 }
+
+// Contact Page & Inquiry DTOs (Corte 9)
+export interface ContactPageDTO {
+  id?: number;
+  heroBadge: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  whatsappBoxTitle: string;
+  whatsappBoxSubtitle: string;
+  formTitle: string;
+  formSubtitle: string;
+  revision?: number;
+  updatedAt?: string;
+}
+
+export interface UpdateContactPageRequest {
+  heroBadge: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  whatsappBoxTitle: string;
+  whatsappBoxSubtitle: string;
+  formTitle: string;
+  formSubtitle: string;
+}
+
+export interface ContactInquiryDTO {
+  id: number;
+  fullName: string;
+  email: string;
+  phone?: string;
+  destinationOfInterest?: string;
+  travelDateApprox?: string;
+  travelersCount: number;
+  message: string;
+  preferredContactChannel: string; // 'WHATSAPP', 'EMAIL', 'PHONE'
+  status: string; // 'NEW', 'IN_PROGRESS', 'CONTACTED', 'ARCHIVED'
+  turnstileVerified: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SubmitContactInquiryRequest {
+  fullName: string;
+  email: string;
+  phone?: string;
+  destinationOfInterest?: string;
+  travelDateApprox?: string;
+  travelersCount?: number;
+  message: string;
+  preferredContactChannel?: string;
+  turnstileToken?: string;
+}
+
+export interface UpdateInquiryStatusRequest {
+  status: string;
+}
+
+export interface PublicContactResponse {
+  page: ContactPageDTO;
+  primaryPhone: string;
+  whatsappPhone: string;
+  contactEmail: string;
+  officeAddress: string;
+  officeHours: string;
+}
+

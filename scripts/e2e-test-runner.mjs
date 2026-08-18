@@ -23,7 +23,7 @@ async function runE2ETests() {
   console.log("🚀 EJECUTANDO SUITE E2E DE CALIDAD — VIAJES CAROLINA");
   console.log("==========================================================\n");
 
-  // 1. Verificación de Rutas Web Públicas (Corte 0 al 7)
+  // 1. Verificación de Rutas Web Públicas (Cortes 0 al 8)
   console.log("📦 1. Verificando Web Pública (http://localhost:3000)...");
   try {
     const webRes = await fetch(`${BASE_WEB_URL}`);
@@ -42,11 +42,19 @@ async function runE2ETests() {
 
     const promoCatalogRes = await fetch(`${BASE_WEB_URL}/promociones`);
     assert(promoCatalogRes.status === 200, `Catálogo de promociones /promociones responde HTTP 200 OK (${promoCatalogRes.status})`);
+
+    const nosotrosRes = await fetch(`${BASE_WEB_URL}/nosotros`);
+    assert(nosotrosRes.status === 200, `Página pública Nosotros /nosotros responde HTTP 200 OK (${nosotrosRes.status})`);
+    const nosotrosHtml = await nosotrosRes.text();
+    assert(nosotrosHtml.includes("Conoce Nuestra Esencia") || nosotrosHtml.includes("transformando viajes"), "HTML de Nosotros contiene Hero y Estadísticas (Corte 8)");
+    assert(nosotrosHtml.includes("Nuestra Historia") || nosotrosHtml.includes("Miraflores, Lima"), "HTML de Nosotros contiene Historia y Valores (Corte 8)");
+    assert(nosotrosHtml.includes("Misión &amp; Visión") || nosotrosHtml.includes("Misión & Visión"), "HTML de Nosotros contiene Misión y Visión (Corte 8)");
+    assert(nosotrosHtml.includes("Asesoras de Viaje") || nosotrosHtml.includes("Carolina Zúñiga") || nosotrosHtml.includes("Lucía Ramos"), "HTML de Nosotros contiene Asesoras con WhatsApp (Corte 8)");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 7)
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 8)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
@@ -63,6 +71,9 @@ async function runE2ETests() {
 
     const confianzaRes = await fetch(`${BASE_ADMIN_URL}/confianza`);
     assert(confianzaRes.status === 200, `Módulo Confianza, Testimonios & FAQ responde con HTTP 200 OK (${confianzaRes.status})`);
+
+    const nosotrosAdminRes = await fetch(`${BASE_ADMIN_URL}/nosotros`);
+    assert(nosotrosAdminRes.status === 200, `Módulo Nosotros & Asesoras responde con HTTP 200 OK (${nosotrosAdminRes.status})`);
 
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
@@ -353,8 +364,69 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Testimonios & FAQ: ${err.message}`);
   }
 
-  // 10. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 10. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 10. Verificación de API Proxy & Persistencia E2E (Corte 8: Nosotros, Historia, Misión & Asesoras)...
+  console.log("\n📦 10. Verificando API Proxy & Persistencia E2E (Corte 8: Nosotros & Asesoras)...");
+  try {
+    const aboutGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/about`);
+    assert(aboutGet.status === 200, `GET /api/proxy/public/v1/about responde 200 OK (${aboutGet.status})`);
+    const aboutData = await aboutGet.json();
+    assert(!!aboutData.page && aboutData.page.experienceYears >= 12, `Información de página Nosotros presente: ${aboutData.page?.experienceYears} años exp`);
+    assert(Array.isArray(aboutData.advisors) && aboutData.advisors.length >= 3, `Asesoras de viaje activas: ${aboutData.advisors?.length || 0} asesoras`);
+
+    // Mutación E2E de Nosotros Page en PostgreSQL
+    const testHeroTitle = "Más de 12 años transformando viajes en recuerdos inolvidables";
+    const aboutPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/about`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        heroBadge: "Conoce Nuestra Esencia",
+        heroTitle: testHeroTitle,
+        heroSubtitle: "Somos una agencia peruana apasionada por diseñar experiencias turísticas personalizadas, con atención cálida y respaldo antes, durante y después de tu viaje.",
+        heroMediaId: 1,
+        storyTitle: "Nuestra Historia",
+        storyBody: "Viajes Carolina nació con el propósito de devolver la calidez humana y la tranquilidad a la planificación de viajes.",
+        storyMediaId: 3,
+        missionTitle: "Nuestra Misión",
+        missionBody: "Brindar asesoría turística experta, honesta y personalizada, garantizando experiencias de viaje seguras y memorables.",
+        visionTitle: "Nuestra Visión",
+        visionBody: "Ser la agencia de viajes boutique referente en el Perú por nuestra excelencia en el servicio al cliente, innovación y acompañamiento constante.",
+        values: ["Atención humana y cálida", "Transparencia sin letra chica", "Acompañamiento 24/7", "Pasión por los detalles"],
+        experienceYears: 12,
+        happyTravelers: 15000,
+        destinationsCount: 85,
+        satisfactionRatePercent: 99,
+      }),
+    });
+    assert(aboutPut.status === 200, `PUT /api/proxy/admin/v1/about responde 200 OK (${aboutPut.status})`);
+    const updatedAbout = await aboutPut.json();
+    assert(updatedAbout.heroTitle === testHeroTitle, `Título de página Nosotros actualizado y persistido: "${updatedAbout.heroTitle}"`);
+
+    // Mutación E2E de Asesora en PostgreSQL
+    const testBio = "Más de 15 años diseñando itinerarios de ensueño en el Caribe y Europa. Apasionada por hacer de cada viaje una experiencia irrepetible.";
+    const advisorPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/advisors/1`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: "Carolina Zúñiga",
+        roleTitle: "Fundadora & Directora de Experiencias",
+        specialty: "Destinos Internacionales & Lunas de Miel",
+        bio: testBio,
+        photoMediaId: 2,
+        whatsappPhone: "+51987654321",
+        whatsappMessageTemplate: "Hola Carolina, me gustaría una asesoría personalizada contigo para planificar mi viaje.",
+        displayOrder: 1,
+        active: true,
+      }),
+    });
+    assert(advisorPut.status === 200, `PUT /api/proxy/admin/v1/advisors/1 responde 200 OK (${advisorPut.status})`);
+    const updatedAdvisor = await advisorPut.json();
+    assert(updatedAdvisor.bio === testBio, `Biografía de asesora actualizada y persistida: "${updatedAdvisor.fullName}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Nosotros & Asesoras: ${err.message}`);
+  }
+
+  // 11. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 11. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

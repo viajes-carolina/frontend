@@ -12,6 +12,8 @@ import {
   DEFAULT_FAQS,
   DEFAULT_ABOUT_PAGE,
   DEFAULT_ADVISORS,
+  DEFAULT_CONTACT_PAGE,
+  DEFAULT_INQUIRIES,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   MOCK_BLOG_POSTS,
@@ -26,6 +28,9 @@ import {
   AboutPageDTO,
   TravelAdvisorDTO,
   PublicAboutResponse,
+  ContactPageDTO,
+  ContactInquiryDTO,
+  PublicContactResponse,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -143,6 +148,76 @@ async function proxyOrFallback(
     }
 
     // Graceful Offline / Dev Fallback with Disk Persistence
+    if (targetPath === "public/v1/contact" || (targetPath.includes("contact") && targetPath.includes("public") && !targetPath.includes("inquiry"))) {
+      const p = readStoredJson<ContactPageDTO>("contact_page.json", DEFAULT_CONTACT_PAGE);
+      const settings = readStoredJson<SiteSettingsDTO>("site_settings.json", DEFAULT_SITE_SETTINGS);
+      const office = readStoredJson<OfficeLocationDTO>("office_location.json", DEFAULT_OFFICE_LOCATION);
+      const res: PublicContactResponse = {
+        page: p,
+        primaryPhone: settings.primaryPhone,
+        whatsappPhone: settings.whatsappPhone || "+51987654321",
+        contactEmail: settings.contactEmail,
+        officeAddress: `${office.addressLine}, ${office.district}, ${office.city}`,
+        officeHours: office.scheduleWeekdays,
+      };
+      return NextResponse.json(res, { status: 200 });
+    }
+
+    if (targetPath.includes("inquir") || targetPath.includes("inquiry")) {
+      const current = readStoredJson<ContactInquiryDTO[]>("inquiries.json", DEFAULT_INQUIRIES);
+      if (method === "POST") {
+        const newInq: ContactInquiryDTO = {
+          id: Date.now(),
+          fullName: String(bodyJson?.fullName || "Lead"),
+          email: String(bodyJson?.email || "correo@ejemplo.com"),
+          phone: bodyJson?.phone ? String(bodyJson.phone) : undefined,
+          destinationOfInterest: bodyJson?.destinationOfInterest ? String(bodyJson.destinationOfInterest) : undefined,
+          travelDateApprox: bodyJson?.travelDateApprox ? String(bodyJson.travelDateApprox) : undefined,
+          travelersCount: bodyJson?.travelersCount ? Number(bodyJson.travelersCount) : 1,
+          message: String(bodyJson?.message || ""),
+          preferredContactChannel: String(bodyJson?.preferredContactChannel || "WHATSAPP"),
+          status: "NEW",
+          turnstileVerified: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [newInq, ...current];
+        writeStoredJson("inquiries.json", updated);
+        return NextResponse.json(newInq, { status: 201 });
+      }
+      if (method === "PATCH") {
+        const idMatch = targetPath.match(/inquiries\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((i) => i.id === id);
+        if (index !== -1) {
+          const updatedItem = {
+            ...current[index],
+            status: String(bodyJson?.status || current[index].status),
+            updatedAt: new Date().toISOString(),
+          };
+          current[index] = updatedItem as ContactInquiryDTO;
+          writeStoredJson("inquiries.json", current);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
+    if (targetPath.includes("contact")) {
+      const current = readStoredJson<ContactPageDTO>("contact_page.json", DEFAULT_CONTACT_PAGE);
+      if (method === "PUT" || method === "POST") {
+        const updated = {
+          ...current,
+          ...(bodyJson || {}),
+          revision: (current.revision || 1) + 1,
+          updatedAt: new Date().toISOString(),
+        };
+        writeStoredJson("contact_page.json", updated);
+        return NextResponse.json(updated, { status: 200 });
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
     if (targetPath === "public/v1/about" || (targetPath.includes("about") && targetPath.includes("public"))) {
       const p = readStoredJson<AboutPageDTO>("about_page.json", DEFAULT_ABOUT_PAGE);
       const adv = readStoredJson<TravelAdvisorDTO[]>("advisors.json", DEFAULT_ADVISORS);

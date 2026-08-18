@@ -1,11 +1,32 @@
 import Link from "next/link";
-import { Button, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon, ImageIcon, PlaneIcon, CompassIcon, SunIcon, StarIcon } from "@vc/ui";
+import {
+  Button,
+  MapPinIcon,
+  WhatsAppIcon,
+  ArrowUpRightIcon,
+  ImageIcon,
+  PlaneIcon,
+  CompassIcon,
+  SunIcon,
+  StarIcon,
+  MailIcon,
+} from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [siteSettings, office, mediaData, homeHero, intentions, promotions, testimonials, faqs] = await Promise.all([
+  const [
+    siteSettings,
+    office,
+    mediaData,
+    homeHero,
+    intentions,
+    promotions,
+    testimonials,
+    faqs,
+    inquiries,
+  ] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
     apiClient.getMediaList(0, 10),
@@ -14,7 +35,10 @@ export default async function AdminDashboardPage() {
     apiClient.getAdminPromotions(),
     apiClient.getTestimonials(),
     apiClient.getFaqs(),
+    apiClient.getAdminInquiries(),
   ]);
+
+  const newInquiriesCount = inquiries.filter((i) => i.status === "NEW").length;
 
   return (
     <div className="min-h-screen p-8 max-w-6xl mx-auto space-y-8">
@@ -25,7 +49,7 @@ export default async function AdminDashboardPage() {
             Panel de Control · {siteSettings.siteName}
           </h1>
           <p className="font-inter text-neutral-muted text-sm mt-1">
-            Gestión centralizada de contenidos, testimonios, FAQ, promociones, medios e identidad.
+            Gestión centralizada de contenidos, testimonios, FAQ, promociones, medios, leads e identidad.
           </p>
         </div>
         <div className="flex gap-3">
@@ -39,6 +63,35 @@ export default async function AdminDashboardPage() {
 
       {/* Grid of Sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Card: Contacto & Leads (Corte 9) */}
+        <Link
+          href="/contacto"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-brand-accent">
+                Corte 9 · Leads & Consultas
+              </span>
+              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent relative">
+                <MailIcon size={20} />
+                {newInquiriesCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+                )}
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
+              Bandeja de Consultas
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {inquiries.length} solicitudes recibidas ({newInquiriesCount} nuevas por atender).
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Ver Bandeja de Leads &rarr;
+          </span>
+        </Link>
+
         {/* Card: Inicio & Hero (Corte 4) */}
         <Link
           href="/inicio"

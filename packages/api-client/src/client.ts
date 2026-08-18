@@ -22,6 +22,12 @@ import {
   TravelAdvisorDTO,
   CreateOrUpdateAdvisorRequest,
   PublicAboutResponse,
+  ContactPageDTO,
+  UpdateContactPageRequest,
+  SubmitContactInquiryRequest,
+  ContactInquiryDTO,
+  UpdateInquiryStatusRequest,
+  PublicContactResponse,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -61,6 +67,12 @@ import {
   createMockAdvisor,
   updateMockAdvisor,
   deleteMockAdvisor,
+  getMockPublicContact,
+  getMockAdminContact,
+  updateMockAdminContact,
+  getMockAdminInquiries,
+  submitMockContactInquiry,
+  updateMockInquiryStatus,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   DEFAULT_MEDIA_ASSETS,
@@ -826,6 +838,99 @@ export class ViajesCarolinaApiClient {
     }
   }
 
+  // ==========================================
+  // Contact & Inquiries API (Corte 9)
+  // ==========================================
+
+  async getPublicContact(): Promise<PublicContactResponse> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(this.getEffectiveUrl("public/v1/contact"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return getMockPublicContact();
+  }
+
+  async submitContactInquiry(payload: SubmitContactInquiryRequest): Promise<ContactInquiryDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("public/v1/contact/inquiry"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return submitMockContactInquiry(payload);
+  }
+
+  async getAdminContact(): Promise<ContactPageDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/contact"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAdminContact();
+  }
+
+  async updateAdminContact(payload: UpdateContactPageRequest): Promise<ContactPageDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/contact"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockAdminContact(payload);
+  }
+
+  async getAdminInquiries(status?: string): Promise<ContactInquiryDTO[]> {
+    try {
+      const url = status && status !== "ALL"
+        ? `admin/v1/inquiries?status=${encodeURIComponent(status)}`
+        : "admin/v1/inquiries";
+      const res = await fetch(this.getEffectiveUrl(url), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAdminInquiries(status);
+  }
+
+  async updateInquiryStatus(id: number, status: string): Promise<ContactInquiryDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/inquiries/${id}/status`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockInquiryStatus(id, status);
+  }
+
   async getBlogPosts(): Promise<BlogPostDTO[]> {
     if (this.useMocks) return MOCK_BLOG_POSTS;
     try {
@@ -841,3 +946,4 @@ export class ViajesCarolinaApiClient {
 }
 
 export const apiClient = new ViajesCarolinaApiClient();
+
