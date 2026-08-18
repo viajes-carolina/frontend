@@ -42,90 +42,96 @@ async function proxyOrFallback(
   req: NextRequest,
   params: Promise<{ path: string[] }>
 ) {
-  const { path: routeParams } = await params;
-  const targetPath = routeParams.join("/");
-  const targetUrl = `${BACKEND_URL}/api/${targetPath}`;
-  const method = req.method;
+  try {
+    const resolvedParams = params ? await params : { path: [] };
+    const routeParams = Array.isArray(resolvedParams?.path) ? resolvedParams.path : [];
+    const targetPath = routeParams.join("/");
+    const targetUrl = `${BACKEND_URL}/api/${targetPath}`;
+    const method = req.method;
 
-  // Read request body safely once
-  let bodyText: string | undefined = undefined;
-  let bodyJson: Record<string, unknown> | undefined = undefined;
+    // Read request body safely once
+    let bodyText: string | undefined = undefined;
+    let bodyJson: Record<string, unknown> | undefined = undefined;
 
-  if (["POST", "PUT", "PATCH"].includes(method)) {
+    if (["POST", "PUT", "PATCH"].includes(method)) {
+      try {
+        bodyText = await req.text();
+        if (bodyText) {
+          bodyJson = JSON.parse(bodyText);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    // Try real Quarkus backend first if online
     try {
-      bodyText = await req.text();
-      if (bodyText) {
-        bodyJson = JSON.parse(bodyText);
+      const headers = new Headers();
+      req.headers.forEach((val, key) => {
+        if (!["host", "connection", "content-length"].includes(key.toLowerCase())) {
+          headers.set(key, val);
+        }
+      });
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600);
+
+      const response = await fetch(targetUrl, {
+        method,
+        headers,
+        body: bodyText,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        return NextResponse.json(data, { status: response.status });
       }
     } catch {
-      // ignore
+      // Backend offline / dev fallback
     }
-  }
 
-  // Try real Quarkus backend first if online
-  try {
-    const headers = new Headers();
-    req.headers.forEach((val, key) => {
-      if (!["host", "connection", "content-length"].includes(key.toLowerCase())) {
-        headers.set(key, val);
+    // Graceful Offline / Dev Fallback with Disk Persistence
+    if (targetPath.includes("settings") || targetPath.includes("site")) {
+      const current = readStoredJson<SiteSettingsDTO>("site_settings.json", DEFAULT_SITE_SETTINGS);
+      if (method === "PUT" || method === "POST") {
+        const updated = { ...current, ...(bodyJson || {}) };
+        writeStoredJson("site_settings.json", updated);
+        return NextResponse.json(updated, { status: 200 });
       }
-    });
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 600);
-
-    const response = await fetch(targetUrl, {
-      method,
-      headers,
-      body: bodyText,
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (response.ok) {
-      const data = await response.json();
-      return NextResponse.json(data, { status: response.status });
+      return NextResponse.json(current, { status: 200 });
     }
-  } catch {
-    // Backend offline / dev fallback
-  }
 
-  // Graceful Offline / Dev Fallback with Disk Persistence
-  if (targetPath.includes("settings") || targetPath.includes("site")) {
-    const current = readStoredJson<SiteSettingsDTO>("site_settings.json", DEFAULT_SITE_SETTINGS);
-    if (method === "PUT" || method === "POST") {
-      const updated = { ...current, ...(bodyJson || {}) };
-      writeStoredJson("site_settings.json", updated);
-      return NextResponse.json(updated, { status: 200 });
+    if (targetPath.includes("office")) {
+      const current = readStoredJson<OfficeLocationDTO>("office_location.json", DEFAULT_OFFICE_LOCATION);
+      if (method === "PUT" || method === "POST") {
+        const updated = {
+          ...current,
+          ...(bodyJson || {}),
+          revision: (current.revision || 1) + 1,
+          updatedAt: new Date().toISOString(),
+        };
+        writeStoredJson("office_location.json", updated);
+        return NextResponse.json(updated, { status: 200 });
+      }
+      return NextResponse.json(current, { status: 200 });
     }
-    return NextResponse.json(current, { status: 200 });
-  }
 
-  if (targetPath.includes("office")) {
-    const current = readStoredJson<OfficeLocationDTO>("office_location.json", DEFAULT_OFFICE_LOCATION);
-    if (method === "PUT" || method === "POST") {
-      const updated = {
-        ...current,
-        ...(bodyJson || {}),
-        revision: (current.revision || 1) + 1,
-        updatedAt: new Date().toISOString(),
-      };
-      writeStoredJson("office_location.json", updated);
-      return NextResponse.json(updated, { status: 200 });
+    if (targetPath.includes("promotions")) {
+      return NextResponse.json(MOCK_PROMOTIONS, { status: 200 });
     }
-    return NextResponse.json(current, { status: 200 });
-  }
 
-  if (targetPath.includes("promotions")) {
-    return NextResponse.json(MOCK_PROMOTIONS, { status: 200 });
-  }
+    if (targetPath.includes("blog")) {
+      return NextResponse.json(MOCK_BLOG_POSTS, { status: 200 });
+    }
 
-  if (targetPath.includes("blog")) {
-    return NextResponse.json(MOCK_BLOG_POSTS, { status: 200 });
+    return NextResponse.json({ status: "UP", mock: true }, { status: 200 });
+  } catch (error) {
+    console.error("API proxy error:", error);
+    return NextResponse.json(DEFAULT_SITE_SETTINGS, { status: 200 });
   }
-
-  return NextResponse.json({ status: "UP", mock: true }, { status: 200 });
 }
 
 export async function GET(req: NextRequest, context: { params: Promise<{ path: string[] }> }) {

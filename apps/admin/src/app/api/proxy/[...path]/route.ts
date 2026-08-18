@@ -42,10 +42,12 @@ async function proxyOrFallback(
   req: NextRequest,
   params: Promise<{ path: string[] }>
 ) {
-  const { path: routeParams } = await params;
-  const targetPath = routeParams.join("/");
-  const targetUrl = `${BACKEND_URL}/api/${targetPath}`;
-  const method = req.method;
+  try {
+    const resolvedParams = params ? await params : { path: [] };
+    const routeParams = Array.isArray(resolvedParams?.path) ? resolvedParams.path : [];
+    const targetPath = routeParams.join("/");
+    const targetUrl = `${BACKEND_URL}/api/${targetPath}`;
+    const method = req.method;
 
   // Read request body safely once
   let bodyText: string | undefined = undefined;
@@ -125,7 +127,11 @@ async function proxyOrFallback(
     return NextResponse.json(MOCK_BLOG_POSTS, { status: 200 });
   }
 
-  return NextResponse.json({ status: "UP", mock: true }, { status: 200 });
+    return NextResponse.json({ status: "UP", mock: true }, { status: 200 });
+  } catch (error) {
+    console.error("API proxy error:", error);
+    return NextResponse.json(DEFAULT_SITE_SETTINGS, { status: 200 });
+  }
 }
 
 export async function GET(req: NextRequest, context: { params: Promise<{ path: string[] }> }) {

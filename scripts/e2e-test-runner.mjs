@@ -97,6 +97,35 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Oficina: ${err.message}`);
   }
 
+  // 5. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 5. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  try {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const sharedPkgs = ["packages/ui", "packages/config", "packages/api-client"];
+    const forbiddenNodeModules = ["node:fs", "node:path", "node:crypto", "node:os", "node:child_process", "node:net", "node:http", "fs", "path", "crypto", "child_process"];
+    
+    let violationFound = false;
+    for (const pkg of sharedPkgs) {
+      const pkgPath = path.resolve(process.cwd(), pkg);
+      if (fs.existsSync(pkgPath)) {
+        const pkgJson = JSON.parse(fs.readFileSync(path.join(pkgPath, "package.json"), "utf-8"));
+        const deps = Object.keys(pkgJson.dependencies || {});
+        for (const dep of deps) {
+          if (forbiddenNodeModules.includes(dep)) {
+            violationFound = true;
+            assert(false, `Paquete ${pkg} contiene dependencia nativa prohibida de Node.js: ${dep}`);
+          }
+        }
+      }
+    }
+    if (!violationFound) {
+      assert(true, "Cero dependencias nativas de Node.js en packages/ui, packages/config y packages/api-client");
+    }
+  } catch (err) {
+    assert(false, `Error en Purity Check: ${err.message}`);
+  }
+
   // Resumen Final
   console.log("\n==========================================================");
   console.log(`📊 RESULTADOS DE PRUEBAS E2E: ${passedCount} PASADAS, ${failedCount} FALLIDAS`);
