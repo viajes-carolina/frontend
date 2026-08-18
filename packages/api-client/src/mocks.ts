@@ -1,41 +1,4 @@
-import fs from "fs";
-import path from "path";
 import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
-
-const DATA_DIR = path.resolve(process.cwd(), "..", "..", ".data");
-
-function getFilePath(filename: string): string {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-  } catch {
-    // In browser or restricted env
-  }
-  return path.join(DATA_DIR, filename);
-}
-
-function readJsonFile<T>(filename: string, fallback: T): T {
-  try {
-    const filePath = getFilePath(filename);
-    if (fs.existsSync(filePath)) {
-      const raw = fs.readFileSync(filePath, "utf-8");
-      return JSON.parse(raw) as T;
-    }
-  } catch {
-    // Fallback to in-memory
-  }
-  return fallback;
-}
-
-function writeJsonFile<T>(filename: string, data: T): void {
-  try {
-    const filePath = getFilePath(filename);
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
-  } catch {
-    // Fallback in non-node env
-  }
-}
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
   id: 1,
@@ -65,41 +28,38 @@ export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
   scheduleSaturdays: "Sábados: 9:00 AM – 2:00 PM",
   active: true,
   revision: 1,
-  updatedAt: new Date().toISOString(),
+  updatedAt: "2026-08-18T00:00:00.000Z",
 };
 
+// Global isomorphic in-memory state
+export let MOCK_SITE_SETTINGS: SiteSettingsDTO = { ...DEFAULT_SITE_SETTINGS };
+export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = { ...DEFAULT_OFFICE_LOCATION };
+
 export function getMockSiteSettings(): SiteSettingsDTO {
-  return readJsonFile<SiteSettingsDTO>("site_settings.json", DEFAULT_SITE_SETTINGS);
+  return MOCK_SITE_SETTINGS;
 }
 
 export function updateMockSiteSettings(updated: Partial<SiteSettingsDTO>): SiteSettingsDTO {
-  const current = getMockSiteSettings();
-  const merged = {
-    ...current,
+  MOCK_SITE_SETTINGS = {
+    ...MOCK_SITE_SETTINGS,
     ...updated,
   };
-  writeJsonFile("site_settings.json", merged);
-  return merged;
+  return MOCK_SITE_SETTINGS;
 }
 
 export function getMockOfficeLocation(): OfficeLocationDTO {
-  return readJsonFile<OfficeLocationDTO>("office_location.json", DEFAULT_OFFICE_LOCATION);
+  return MOCK_OFFICE_LOCATION;
 }
 
 export function updateMockOfficeLocation(updated: Partial<OfficeLocationDTO>): OfficeLocationDTO {
-  const current = getMockOfficeLocation();
-  const merged = {
-    ...current,
+  MOCK_OFFICE_LOCATION = {
+    ...MOCK_OFFICE_LOCATION,
     ...updated,
-    revision: (current.revision || 1) + 1,
+    revision: (MOCK_OFFICE_LOCATION.revision || 1) + 1,
     updatedAt: new Date().toISOString(),
   };
-  writeJsonFile("office_location.json", merged);
-  return merged;
+  return MOCK_OFFICE_LOCATION;
 }
-
-export const MOCK_SITE_SETTINGS = DEFAULT_SITE_SETTINGS;
-export const MOCK_OFFICE_LOCATION = DEFAULT_OFFICE_LOCATION;
 
 export const MOCK_PROMOTIONS: PromotionDTO[] = [
   {
@@ -157,5 +117,5 @@ export const MOCK_API_INFO: ApiInfoDTO = {
   version: "1.0.0",
   status: "UP",
   architecture: "Hexagonal Architecture with Quarkus 3.x & Java 25 LTS",
-  timestamp: new Date().toISOString(),
+  timestamp: "2026-08-18T00:00:00.000Z",
 };

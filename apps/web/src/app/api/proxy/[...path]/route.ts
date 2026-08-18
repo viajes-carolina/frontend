@@ -1,21 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
+import fs from "node:fs";
+import path from "node:path";
 import {
-  getMockSiteSettings,
-  updateMockSiteSettings,
-  getMockOfficeLocation,
-  updateMockOfficeLocation,
+  DEFAULT_SITE_SETTINGS,
+  DEFAULT_OFFICE_LOCATION,
   MOCK_PROMOTIONS,
   MOCK_BLOG_POSTS,
+  SiteSettingsDTO,
+  OfficeLocationDTO,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://localhost:8080";
+const DATA_DIR = path.resolve(process.cwd(), "..", "..", ".data");
+
+function readStoredJson<T>(filename: string, fallback: T): T {
+  try {
+    const filePath = path.join(DATA_DIR, filename);
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, "utf-8");
+      return JSON.parse(content) as T;
+    }
+  } catch {
+    // fallback
+  }
+  return fallback;
+}
+
+function writeStoredJson<T>(filename: string, data: T): void {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    const filePath = path.join(DATA_DIR, filename);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+  } catch {
+    // ignore
+  }
+}
 
 async function proxyOrFallback(
   req: NextRequest,
   params: Promise<{ path: string[] }>
 ) {
-  const { path } = await params;
-  const targetPath = path.join("/");
+  const { path: routeParams } = await params;
+  const targetPath = routeParams.join("/");
   const targetUrl = `${BACKEND_URL}/api/${targetPath}`;
   const method = req.method;
 
@@ -65,19 +93,28 @@ async function proxyOrFallback(
 
   // Graceful Offline / Dev Fallback with Disk Persistence
   if (targetPath.includes("settings") || targetPath.includes("site")) {
+    const current = readStoredJson<SiteSettingsDTO>("site_settings.json", DEFAULT_SITE_SETTINGS);
     if (method === "PUT" || method === "POST") {
-      const updated = updateMockSiteSettings(bodyJson || {});
+      const updated = { ...current, ...(bodyJson || {}) };
+      writeStoredJson("site_settings.json", updated);
       return NextResponse.json(updated, { status: 200 });
     }
-    return NextResponse.json(getMockSiteSettings(), { status: 200 });
+    return NextResponse.json(current, { status: 200 });
   }
 
   if (targetPath.includes("office")) {
+    const current = readStoredJson<OfficeLocationDTO>("office_location.json", DEFAULT_OFFICE_LOCATION);
     if (method === "PUT" || method === "POST") {
-      const updated = updateMockOfficeLocation(bodyJson || {});
+      const updated = {
+        ...current,
+        ...(bodyJson || {}),
+        revision: (current.revision || 1) + 1,
+        updatedAt: new Date().toISOString(),
+      };
+      writeStoredJson("office_location.json", updated);
       return NextResponse.json(updated, { status: 200 });
     }
-    return NextResponse.json(getMockOfficeLocation(), { status: 200 });
+    return NextResponse.json(current, { status: 200 });
   }
 
   if (targetPath.includes("promotions")) {
