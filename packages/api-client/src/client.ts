@@ -1,11 +1,13 @@
 import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
 import {
-  MOCK_SITE_SETTINGS,
-  MOCK_OFFICE_LOCATION,
+  DEFAULT_SITE_SETTINGS,
+  DEFAULT_OFFICE_LOCATION,
   MOCK_PROMOTIONS,
   MOCK_BLOG_POSTS,
   MOCK_API_INFO,
+  getMockSiteSettings,
   updateMockSiteSettings,
+  getMockOfficeLocation,
   updateMockOfficeLocation,
 } from "./mocks";
 
@@ -39,7 +41,7 @@ export class ViajesCarolinaApiClient {
     if (this.useMocks) return MOCK_API_INFO;
     try {
       const res = await fetch(this.getEffectiveUrl("public/v1/info"), {
-        next: { revalidate: 60 },
+        cache: "no-store",
       });
       if (!res.ok) return MOCK_API_INFO;
       return await res.json();
@@ -61,9 +63,13 @@ export class ViajesCarolinaApiClient {
     }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600);
       const res = await fetch(this.getEffectiveUrl("public/v1/site"), {
-        next: { tags: ["site_settings"], revalidate: 3600 },
+        cache: "no-store",
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       if (res.ok) {
         const data = await res.json();
         if (typeof window !== "undefined") {
@@ -72,9 +78,9 @@ export class ViajesCarolinaApiClient {
         return data;
       }
     } catch {
-      // Backend not running
+      // Backend not running / fallback
     }
-    return MOCK_SITE_SETTINGS;
+    return getMockSiteSettings();
   }
 
   async updateSiteSettings(payload: Partial<SiteSettingsDTO>): Promise<SiteSettingsDTO> {
@@ -84,11 +90,15 @@ export class ViajesCarolinaApiClient {
     }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600);
       const res = await fetch(this.getEffectiveUrl("admin/v1/settings"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       if (res.ok) {
         const data = await res.json();
         if (typeof window !== "undefined") {
@@ -115,9 +125,13 @@ export class ViajesCarolinaApiClient {
     }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600);
       const res = await fetch(this.getEffectiveUrl("public/v1/office"), {
-        next: { tags: ["office_location"], revalidate: 3600 },
+        cache: "no-store",
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       if (res.ok) {
         const data = await res.json();
         if (typeof window !== "undefined") {
@@ -126,9 +140,9 @@ export class ViajesCarolinaApiClient {
         return data;
       }
     } catch {
-      // Backend not running
+      // Backend not running / fallback
     }
-    return MOCK_OFFICE_LOCATION;
+    return getMockOfficeLocation();
   }
 
   async updateOfficeLocation(payload: Partial<OfficeLocationDTO>): Promise<OfficeLocationDTO> {
@@ -138,11 +152,15 @@ export class ViajesCarolinaApiClient {
     }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600);
       const res = await fetch(this.getEffectiveUrl("admin/v1/office"), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       if (res.ok) {
         const data = await res.json();
         if (typeof window !== "undefined") {
@@ -160,7 +178,7 @@ export class ViajesCarolinaApiClient {
     if (this.useMocks) return MOCK_PROMOTIONS;
     try {
       const res = await fetch(this.getEffectiveUrl("public/v1/promotions"), {
-        next: { tags: ["promotions"], revalidate: 3600 },
+        cache: "no-store",
       });
       if (!res.ok) return MOCK_PROMOTIONS;
       return await res.json();
@@ -173,7 +191,7 @@ export class ViajesCarolinaApiClient {
     if (this.useMocks) return MOCK_BLOG_POSTS;
     try {
       const res = await fetch(this.getEffectiveUrl("public/v1/blog"), {
-        next: { tags: ["blog"], revalidate: 3600 },
+        cache: "no-store",
       });
       if (!res.ok) return MOCK_BLOG_POSTS;
       return await res.json();

@@ -15,7 +15,7 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
     <form onSubmit={handleSave} className="space-y-8 max-w-4xl">
       {saveSuccess && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3">
-          <CheckIcon size={20} className="text-emerald-600" />
+          <CheckIcon size={20} className="text-emerald-600 shrink-0" />
           <span className="font-medium text-sm">Datos de la oficina física guardados y sincronizados con el footer y página de contacto.</span>
         </div>
       )}
@@ -141,7 +141,7 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
       </div>
 
       <div className="flex justify-end gap-4">
-        <Button variant="primary" size="md" disabled={isSaving}>
+        <Button variant="primary" size="md" disabled={isSaving} type="submit">
           {isSaving ? "Guardando..." : "Guardar Oficina"}
         </Button>
       </div>
