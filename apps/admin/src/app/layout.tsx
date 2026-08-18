@@ -61,6 +61,12 @@ export default function RootLayout({
                 Inicio & Hero
               </Link>
               <Link
+                href="/intenciones"
+                className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                Intenciones de Viaje
+              </Link>
+              <Link
                 href="/medios"
                 className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               >

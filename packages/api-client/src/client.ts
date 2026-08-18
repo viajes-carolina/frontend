@@ -9,6 +9,8 @@ import {
   UpdateMediaFocalPointRequest,
   HomeHeroDTO,
   UpdateHomeHeroRequest,
+  TravelIntentionDTO,
+  CreateOrUpdateTravelIntentionRequest,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -20,6 +22,11 @@ import {
   updateMockOfficeLocation,
   getMockHomeHero,
   updateMockHomeHero,
+  getMockTravelIntentions,
+  getMockAdminTravelIntentions,
+  createMockTravelIntention,
+  updateMockTravelIntention,
+  deleteMockTravelIntention,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   DEFAULT_MEDIA_ASSETS,
@@ -28,6 +35,7 @@ import {
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
 const STORAGE_KEY_OFFICE = "vc_office_location";
 const STORAGE_KEY_HERO = "vc_home_hero";
+const STORAGE_KEY_INTENTIONS = "vc_travel_intentions";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -245,6 +253,98 @@ export class ViajesCarolinaApiClient {
       localStorage.setItem(STORAGE_KEY_HERO, JSON.stringify(updated));
     }
     return updated;
+  }
+
+  // ==========================================
+  // Travel Intentions API (Corte 5)
+  // ==========================================
+
+  async getTravelIntentions(): Promise<TravelIntentionDTO[]> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(this.getEffectiveUrl("public/v1/home/intentions"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof window !== "undefined") {
+          localStorage.setItem(STORAGE_KEY_INTENTIONS, JSON.stringify(data));
+        }
+        return data;
+      }
+    } catch {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem(STORAGE_KEY_INTENTIONS);
+        if (stored) {
+          try {
+            return JSON.parse(stored);
+          } catch {
+            // ignore
+          }
+        }
+      }
+    }
+    return getMockTravelIntentions();
+  }
+
+  async getAdminTravelIntentions(): Promise<TravelIntentionDTO[]> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/intentions"), {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return getMockAdminTravelIntentions();
+  }
+
+  async createTravelIntention(payload: CreateOrUpdateTravelIntentionRequest): Promise<TravelIntentionDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/intentions"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return createMockTravelIntention(payload);
+  }
+
+  async updateTravelIntention(id: number, payload: CreateOrUpdateTravelIntentionRequest): Promise<TravelIntentionDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/intentions/${id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return updateMockTravelIntention(id, payload);
+  }
+
+  async deleteTravelIntention(id: number): Promise<void> {
+    try {
+      await fetch(this.getEffectiveUrl(`admin/v1/intentions/${id}`), {
+        method: "DELETE",
+      });
+    } catch {
+      // fallback
+    }
+    deleteMockTravelIntention(id);
   }
 
   // ==========================================

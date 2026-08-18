@@ -5,6 +5,7 @@ export * from "./primitives/FocalPointPicker";
 export * from "./primitives/MediaPickerModal";
 export * from "./journey/JourneyConnector";
 export * from "./layout/HeroSection";
+export * from "./layout/IntentionsSection";
 export * from "./layout/SiteHeader";
 export * from "./layout/MobileMenu";
 export * from "./layout/Footer";

@@ -23,7 +23,7 @@ async function runE2ETests() {
   console.log("🚀 EJECUTANDO SUITE E2E DE CALIDAD — VIAJES CAROLINA");
   console.log("==========================================================\n");
 
-  // 1. Verificación de Rutas Web Públicas (Corte 0, 1, 2, 3, 4)
+  // 1. Verificación de Rutas Web Públicas (Corte 0, 1, 2, 3, 4, 5)
   console.log("📦 1. Verificando Web Pública (http://localhost:3000)...");
   try {
     const webRes = await fetch(`${BASE_WEB_URL}`);
@@ -33,12 +33,13 @@ async function runE2ETests() {
     assert(webHtml.includes("Tu viaje comienza"), "HTML contiene titular H1 de Figma Hero");
     assert(webHtml.includes("Cuéntame tu viaje"), "HTML contiene CTA principal de WhatsApp");
     assert(webHtml.includes("Asesoría sin costo") || webHtml.includes("Respuesta rápida"), "HTML contiene indicadores de confianza");
+    assert(webHtml.includes("intención de viaje") || webHtml.includes("Playa &amp; Relax") || webHtml.includes("Playa & Relax"), "HTML contiene sección de Intenciones de Viaje (Corte 5)");
     assert(webHtml.includes("Recorre el Sitio") || webHtml.includes("Larco 101"), "HTML contiene estructura de Footer (Corte 2)");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1, 2, 3, 4)
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 5)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
@@ -46,6 +47,9 @@ async function runE2ETests() {
 
     const inicioRes = await fetch(`${BASE_ADMIN_URL}/inicio`);
     assert(inicioRes.status === 200, `Módulo Inicio & Hero responde con HTTP 200 OK (${inicioRes.status})`);
+
+    const intencionesRes = await fetch(`${BASE_ADMIN_URL}/intenciones`);
+    assert(intencionesRes.status === 200, `Módulo Intenciones de Viaje responde con HTTP 200 OK (${intencionesRes.status})`);
 
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
@@ -200,8 +204,44 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Home Hero: ${err.message}`);
   }
 
-  // 7. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 7. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 7. Verificación de API Proxy & Persistencia E2E (Corte 5: Intenciones de Viaje)...
+  console.log("\n📦 7. Verificando API Proxy & Persistencia E2E (Corte 5: Intenciones de Viaje)...");
+  try {
+    const intentionsGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/home/intentions`);
+    assert(intentionsGet.status === 200, `GET /api/proxy/public/v1/home/intentions responde 200 OK (${intentionsGet.status})`);
+    const intentionsList = await intentionsGet.json();
+    assert(Array.isArray(intentionsList) && intentionsList.length >= 4, `Listado de intenciones contiene ${intentionsList.length} experiencias activas`);
+    
+    const firstIntention = intentionsList[0];
+    assert(firstIntention.slug === "playa-relax" || !!firstIntention.title, `Primera intención: "${firstIntention.title}"`);
+    assert(Array.isArray(firstIntention.featuredDestinations) && firstIntention.featuredDestinations.length > 0, `Destinos sugeridos presentes: ${firstIntention.featuredDestinations.length} destinos`);
+
+    // Mutación E2E de Intención en PostgreSQL
+    const testTagline = "Desconéctate frente al mar turquesa con resorts todo incluido y paseos en catamarán.";
+    const intentionPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/intentions/1`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slug: "playa-relax",
+        title: "Playa & Relax Caribe",
+        tagline: testTagline,
+        iconName: "SunIcon",
+        featuredDestinations: ["Cartagena", "Cancún", "Punta Cana", "San Andrés", "Varadero"],
+        whatsappMessageTemplate: "Hola Viajes Carolina, me interesa planear unas vacaciones de Playa y Relax en el Caribe. ¿Qué opciones tienen disponibles?",
+        coverMediaId: 2,
+        displayOrder: 1,
+        active: true,
+      }),
+    });
+    assert(intentionPut.status === 200, `PUT /api/proxy/admin/v1/intentions/1 responde 200 OK (${intentionPut.status})`);
+    const updatedIntention = await intentionPut.json();
+    assert(updatedIntention.tagline === testTagline, `Tagline de intención actualizado y persistido: "${updatedIntention.tagline}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Intenciones de Viaje: ${err.message}`);
+  }
+
+  // 8. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 8. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

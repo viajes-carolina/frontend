@@ -6,6 +6,7 @@ import {
   DEFAULT_OFFICE_LOCATION,
   DEFAULT_MEDIA_ASSETS,
   DEFAULT_HOME_HERO,
+  DEFAULT_TRAVEL_INTENTIONS,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   MOCK_PROMOTIONS,
@@ -13,6 +14,7 @@ import {
   SiteSettingsDTO,
   OfficeLocationDTO,
   HomeHeroDTO,
+  TravelIntentionDTO,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -130,6 +132,58 @@ async function proxyOrFallback(
     }
 
     // Graceful Offline / Dev Fallback with Disk Persistence
+    if (targetPath.includes("intentions")) {
+      const current = readStoredJson<TravelIntentionDTO[]>("travel_intentions.json", DEFAULT_TRAVEL_INTENTIONS);
+      if (method === "POST") {
+        const newIntention: TravelIntentionDTO = {
+          id: Date.now(),
+          slug: String(bodyJson?.slug || `intent-${Date.now()}`),
+          title: String(bodyJson?.title || "Nueva Intención"),
+          tagline: String(bodyJson?.tagline || ""),
+          iconName: String(bodyJson?.iconName || "SunIcon"),
+          featuredDestinations: Array.isArray(bodyJson?.featuredDestinations) ? (bodyJson?.featuredDestinations as string[]) : [],
+          whatsappMessageTemplate: String(bodyJson?.whatsappMessageTemplate || ""),
+          coverMediaId: bodyJson?.coverMediaId ? Number(bodyJson.coverMediaId) : undefined,
+          coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+          coverFocalX: 50.0,
+          coverFocalY: 50.0,
+          displayOrder: bodyJson?.displayOrder ? Number(bodyJson.displayOrder) : current.length + 1,
+          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [...current, newIntention];
+        writeStoredJson("travel_intentions.json", updated);
+        return NextResponse.json(newIntention, { status: 201 });
+      }
+      if (method === "PUT") {
+        const idMatch = targetPath.match(/intentions\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((i) => i.id === id);
+        if (index !== -1) {
+          const updatedItem = {
+            ...current[index],
+            ...(bodyJson || {}),
+            updatedAt: new Date().toISOString(),
+          };
+          current[index] = updatedItem as TravelIntentionDTO;
+          writeStoredJson("travel_intentions.json", current);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+      if (method === "DELETE") {
+        const idMatch = targetPath.match(/intentions\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((i) => i.id === id);
+        if (index !== -1) {
+          current[index].active = false;
+          writeStoredJson("travel_intentions.json", current);
+        }
+        return new NextResponse(null, { status: 204 });
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
     if (targetPath.includes("hero")) {
       const current = readStoredJson<HomeHeroDTO>("home_hero.json", DEFAULT_HOME_HERO);
       if (method === "PUT" || method === "POST") {

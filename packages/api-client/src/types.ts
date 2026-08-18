@@ -162,6 +162,37 @@ export interface UpdateHomeHeroRequest {
   featuredCardMediaId?: number;
 }
 
+// Travel Intentions DTOs (Corte 5)
+export interface TravelIntentionDTO {
+  id: number;
+  slug: string;
+  title: string;
+  tagline: string;
+  iconName: string;
+  featuredDestinations: string[];
+  whatsappMessageTemplate: string;
+  coverMediaId?: number;
+  coverMediaUrl?: string;
+  coverFocalX?: number;
+  coverFocalY?: number;
+  displayOrder: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateOrUpdateTravelIntentionRequest {
+  slug: string;
+  title: string;
+  tagline: string;
+  iconName?: string;
+  featuredDestinations: string[];
+  whatsappMessageTemplate: string;
+  coverMediaId?: number;
+  displayOrder?: number;
+  active?: boolean;
+}
+
 export interface PromotionDTO {
   id: number;
   slug: string;

@@ -9,6 +9,8 @@ import {
   UpdateMediaFocalPointRequest,
   HomeHeroDTO,
   UpdateHomeHeroRequest,
+  TravelIntentionDTO,
+  CreateOrUpdateTravelIntentionRequest,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -67,6 +69,77 @@ export const DEFAULT_HOME_HERO: HomeHeroDTO = {
   revision: 1,
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
+
+export const DEFAULT_TRAVEL_INTENTIONS: TravelIntentionDTO[] = [
+  {
+    id: 1,
+    slug: "playa-relax",
+    title: "Playa & Relax Caribe",
+    tagline: "Desconéctate frente al mar turquesa con resorts todo incluido y paseos en catamarán.",
+    iconName: "SunIcon",
+    featuredDestinations: ["Cartagena", "Cancún", "Punta Cana", "San Andrés", "Varadero"],
+    whatsappMessageTemplate: "Hola Viajes Carolina, me interesa planear unas vacaciones de Playa y Relax en el Caribe. ¿Qué opciones tienen disponibles?",
+    coverMediaId: 2,
+    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    coverFocalX: 60.0,
+    coverFocalY: 50.0,
+    displayOrder: 1,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 2,
+    slug: "cultura-maravillas",
+    title: "Cultura & Maravillas",
+    tagline: "Conéctate con la historia milenaria, ciudadelas ancestrales y gastronomía única.",
+    iconName: "LandmarkIcon",
+    featuredDestinations: ["Cusco & Machu Picchu", "Arequipa & Cañón del Colca", "Puno & Lago Titicaca"],
+    whatsappMessageTemplate: "Hola Viajes Carolina, deseo cotizar un viaje cultural a Cusco y maravillas del Perú. ¿Me podrían asesorar?",
+    coverMediaId: 3,
+    coverMediaUrl: "/media/demo-cusco-machupicchu.webp",
+    coverFocalX: 50.0,
+    coverFocalY: 35.0,
+    displayOrder: 2,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 3,
+    slug: "luna-de-miel",
+    title: "Lunas de Miel & Romance",
+    tagline: "Experiencias íntimas y exclusivas diseñadas al detalle para celebrar el amor.",
+    iconName: "HeartIcon",
+    featuredDestinations: ["Riviera Maya", "Bora Bora", "Aruba", "Paracas Deluxe"],
+    whatsappMessageTemplate: "Hola Viajes Carolina, estamos buscando un paquete especial de Luna de Miel. ¿Qué destinos románticos recomiendan?",
+    coverMediaId: 2,
+    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    coverFocalX: 60.0,
+    coverFocalY: 50.0,
+    displayOrder: 3,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 4,
+    slug: "aventura-naturaleza",
+    title: "Aventura & Naturaleza",
+    tagline: "Trekking, selva amazónica, avistamiento de fauna y paisajes sobrecogedores.",
+    iconName: "CompassIcon",
+    featuredDestinations: ["Iquitos & Amazonas", "Huaraz & Cordillera Blanca", "Tarapoto & Cataratas"],
+    whatsappMessageTemplate: "Hola Viajes Carolina, busco un paquete de aventura y ecoturismo. ¿Cuáles son las mejores alternativas?",
+    coverMediaId: 1,
+    coverMediaUrl: "/media/demo-hero-travel.webp",
+    coverFocalX: 72.5,
+    coverFocalY: 28.0,
+    displayOrder: 4,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+];
 
 export const DEFAULT_MEDIA_ASSETS: MediaAssetDTO[] = [
   {
@@ -147,6 +220,7 @@ export let MOCK_SITE_SETTINGS: SiteSettingsDTO = { ...DEFAULT_SITE_SETTINGS };
 export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = { ...DEFAULT_OFFICE_LOCATION };
 export let MOCK_MEDIA_ASSETS: MediaAssetDTO[] = [...DEFAULT_MEDIA_ASSETS];
 export let MOCK_HOME_HERO: HomeHeroDTO = { ...DEFAULT_HOME_HERO };
+export let MOCK_TRAVEL_INTENTIONS: TravelIntentionDTO[] = [...DEFAULT_TRAVEL_INTENTIONS];
 
 export function getMockSiteSettings(): SiteSettingsDTO {
   return MOCK_SITE_SETTINGS;
@@ -186,6 +260,66 @@ export function updateMockHomeHero(updated: Partial<HomeHeroDTO>): HomeHeroDTO {
     updatedAt: new Date().toISOString(),
   };
   return MOCK_HOME_HERO;
+}
+
+export function getMockTravelIntentions(): TravelIntentionDTO[] {
+  return MOCK_TRAVEL_INTENTIONS.filter((i) => i.active);
+}
+
+export function getMockAdminTravelIntentions(): TravelIntentionDTO[] {
+  return MOCK_TRAVEL_INTENTIONS;
+}
+
+export function createMockTravelIntention(req: CreateOrUpdateTravelIntentionRequest): TravelIntentionDTO {
+  const newIntention: TravelIntentionDTO = {
+    id: Date.now(),
+    slug: req.slug,
+    title: req.title,
+    tagline: req.tagline,
+    iconName: req.iconName || "SunIcon",
+    featuredDestinations: req.featuredDestinations,
+    whatsappMessageTemplate: req.whatsappMessageTemplate,
+    coverMediaId: req.coverMediaId,
+    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    coverFocalX: 50.0,
+    coverFocalY: 50.0,
+    displayOrder: req.displayOrder || MOCK_TRAVEL_INTENTIONS.length + 1,
+    active: req.active ?? true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_TRAVEL_INTENTIONS.push(newIntention);
+  return newIntention;
+}
+
+export function updateMockTravelIntention(id: number, req: CreateOrUpdateTravelIntentionRequest): TravelIntentionDTO {
+  const index = MOCK_TRAVEL_INTENTIONS.findIndex((i) => i.id === id);
+  if (index === -1) {
+    throw new Error(`Intención no encontrada con ID: ${id}`);
+  }
+  const current = MOCK_TRAVEL_INTENTIONS[index];
+  const updated: TravelIntentionDTO = {
+    ...current,
+    slug: req.slug,
+    title: req.title,
+    tagline: req.tagline,
+    iconName: req.iconName || current.iconName,
+    featuredDestinations: req.featuredDestinations,
+    whatsappMessageTemplate: req.whatsappMessageTemplate,
+    coverMediaId: req.coverMediaId,
+    displayOrder: req.displayOrder ?? current.displayOrder,
+    active: req.active ?? current.active,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_TRAVEL_INTENTIONS[index] = updated;
+  return updated;
+}
+
+export function deleteMockTravelIntention(id: number): void {
+  const index = MOCK_TRAVEL_INTENTIONS.findIndex((i) => i.id === id);
+  if (index !== -1) {
+    MOCK_TRAVEL_INTENTIONS[index].active = false;
+  }
 }
 
 export function getMockMediaPage(page = 0, size = 24): MediaPageResponse {

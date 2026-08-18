@@ -1,12 +1,13 @@
-import { HeroSection, JourneyConnector } from "@vc/ui";
+import { HeroSection, JourneyConnector, IntentionsSection } from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [siteSettings, homeHero] = await Promise.all([
+  const [siteSettings, homeHero, intentions] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getHomeHero(),
+    apiClient.getTravelIntentions(),
   ]);
 
   return (
@@ -18,6 +19,18 @@ export default async function HomePage() {
 
       {/* =========================================================================
           02 · Journey Connector (Figma: 06 — Journey Connector)
+          ========================================================================= */}
+      <div className="w-full max-w-5xl px-4 my-6">
+        <JourneyConnector />
+      </div>
+
+      {/* =========================================================================
+          03 · Intenciones de Viaje (Figma: 02. Intenciones de Viaje)
+          ========================================================================= */}
+      <IntentionsSection intentions={intentions} settings={siteSettings} />
+
+      {/* =========================================================================
+          04 · Journey Connector
           ========================================================================= */}
       <div className="w-full max-w-5xl px-4 my-6">
         <JourneyConnector />
