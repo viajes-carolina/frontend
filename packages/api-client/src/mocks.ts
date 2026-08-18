@@ -36,6 +36,9 @@ import {
   SearchResultItemDTO,
   GlobalSearchResponse,
   SearchResultType,
+  HomeBlogInspirationDTO,
+  UpdateHomeBlogInspirationRequest,
+  PublicHomeBlogInspirationResponse,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -1426,5 +1429,40 @@ export function getMockGlobalSearch(query = "", type: SearchResultType = "ALL", 
     suggestedQueries: ["Cartagena", "Machu Picchu", "Punta Cana", "Playa & Relax", "Consejos de Viaje", "Cusco"],
   };
 }
+
+// Home Blog Inspiration Mocks (Corte 12)
+export const DEFAULT_HOME_BLOG_INSPIRATION: HomeBlogInspirationDTO = {
+  id: 1,
+  badgeText: "Inspiración para tu viaje",
+  titleHighlight: "Consejos y guías",
+  titleAccent: "para explorar el mundo",
+  subtitle: "Descubre recomendaciones de viaje, mejores temporadas, qué empacar y secretos locales de la mano de nuestras asesoras expertas.",
+  ctaText: "Ver todos los artículos del blog",
+  ctaUrl: "/blog",
+  postsLimit: 3,
+  active: true,
+  createdAt: "2026-08-18T00:00:00.000Z",
+  updatedAt: "2026-08-18T00:00:00.000Z",
+};
+
+export let MOCK_HOME_BLOG_INSPIRATION: HomeBlogInspirationDTO = { ...DEFAULT_HOME_BLOG_INSPIRATION };
+
+export function getMockHomeBlogInspiration(): PublicHomeBlogInspirationResponse {
+  const posts = MOCK_BLOG_POSTS.filter((p) => p.active && p.status === "PUBLISHED").slice(0, MOCK_HOME_BLOG_INSPIRATION.postsLimit || 3);
+  return {
+    config: MOCK_HOME_BLOG_INSPIRATION,
+    posts,
+  };
+}
+
+export function updateMockHomeBlogInspiration(req: UpdateHomeBlogInspirationRequest): HomeBlogInspirationDTO {
+  MOCK_HOME_BLOG_INSPIRATION = {
+    ...MOCK_HOME_BLOG_INSPIRATION,
+    ...req,
+    updatedAt: new Date().toISOString(),
+  };
+  return MOCK_HOME_BLOG_INSPIRATION;
+}
+
 
 

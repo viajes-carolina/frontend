@@ -39,6 +39,9 @@ import {
   BlogPostDetailResponse,
   SearchResultType,
   getMockGlobalSearch,
+  DEFAULT_HOME_BLOG_INSPIRATION,
+  HomeBlogInspirationDTO,
+  PublicHomeBlogInspirationResponse,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -520,6 +523,29 @@ async function proxyOrFallback(
         return new NextResponse(null, { status: 204 });
       }
       return NextResponse.json(current, { status: 200 });
+    }
+
+    if (targetPath.includes("blog-inspiration")) {
+      const config = readStoredJson<HomeBlogInspirationDTO>("home_blog_inspiration.json", DEFAULT_HOME_BLOG_INSPIRATION);
+      if (method === "PUT" || method === "POST") {
+        const updated = {
+          ...config,
+          ...(bodyJson || {}),
+          updatedAt: new Date().toISOString(),
+        };
+        writeStoredJson("home_blog_inspiration.json", updated);
+        return NextResponse.json(updated, { status: 200 });
+      }
+      if (targetPath.includes("public")) {
+        const posts = readStoredJson<BlogPostDTO[]>("blog_posts.json", DEFAULT_BLOG_POSTS);
+        const activePosts = posts.filter((p) => p.active && p.status === "PUBLISHED").slice(0, config.postsLimit || 3);
+        const res: PublicHomeBlogInspirationResponse = {
+          config,
+          posts: activePosts,
+        };
+        return NextResponse.json(res, { status: 200 });
+      }
+      return NextResponse.json(config, { status: 200 });
     }
 
     if (targetPath.includes("hero")) {

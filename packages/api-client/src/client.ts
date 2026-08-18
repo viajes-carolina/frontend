@@ -35,6 +35,9 @@ import {
   BlogPostDetailResponse,
   GlobalSearchResponse,
   SearchResultType,
+  HomeBlogInspirationDTO,
+  UpdateHomeBlogInspirationRequest,
+  PublicHomeBlogInspirationResponse,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -94,6 +97,8 @@ import {
   updateMockMediaFocalPoint,
   DEFAULT_MEDIA_ASSETS,
   getMockGlobalSearch,
+  getMockHomeBlogInspiration,
+  updateMockHomeBlogInspiration,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -1113,6 +1118,52 @@ export class ViajesCarolinaApiClient {
       // fallback
     }
     return getMockGlobalSearch(query, type, limit);
+  }
+
+  // ==========================================
+  // Home Blog Inspiration API (Corte 12)
+  // ==========================================
+
+  async getPublicHomeBlogInspiration(): Promise<PublicHomeBlogInspirationResponse> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(this.getEffectiveUrl("public/v1/home/blog-inspiration"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockHomeBlogInspiration();
+  }
+
+  async getAdminHomeBlogInspiration(): Promise<HomeBlogInspirationDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/home/blog-inspiration"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockHomeBlogInspiration().config;
+  }
+
+  async updateAdminHomeBlogInspiration(payload: UpdateHomeBlogInspirationRequest): Promise<HomeBlogInspirationDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/home/blog-inspiration"), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockHomeBlogInspiration(payload);
   }
 }
 

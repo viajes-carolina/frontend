@@ -644,8 +644,48 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Búsqueda Global: ${err.message}`);
   }
 
-  // 14. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 14. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 14. Verificación de API Proxy & Inspiración desde Blog E2E (Corte 12: Blog Inspiration en Home)...
+  console.log("\n📦 14. Verificando API Proxy & Inspiración desde Blog E2E (Corte 12)...");
+  try {
+    // Public Blog Inspiration
+    const publicInspirationRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/home/blog-inspiration`);
+    assert(publicInspirationRes.status === 200, `GET /api/proxy/public/v1/home/blog-inspiration responde 200 OK (${publicInspirationRes.status})`);
+    const publicInspirationData = await publicInspirationRes.json();
+    assert(publicInspirationData && publicInspirationData.config, `Respuesta contiene objeto config`);
+    assert(Array.isArray(publicInspirationData.posts) && publicInspirationData.posts.length > 0, `Respuesta contiene lista de ${publicInspirationData.posts?.length || 0} artículos para Home`);
+    assert(publicInspirationData.posts.every((p) => p.title && p.slug), `Todos los artículos de inspiración contienen título y slug`);
+
+    // Admin Blog Inspiration
+    const adminInspirationRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/home/blog-inspiration`);
+    assert(adminInspirationRes.status === 200, `GET /api/proxy/admin/v1/home/blog-inspiration responde 200 OK (${adminInspirationRes.status})`);
+    const adminInspirationData = await adminInspirationRes.json();
+    assert(adminInspirationData.badgeText !== undefined, `Configuración admin contiene badgeText: "${adminInspirationData.badgeText}"`);
+
+    // Update Blog Inspiration
+    const testSubtitle = `Descubre recomendaciones exclusivas actualizadas el ${new Date().toISOString()}`;
+    const updateInspirationRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/home/blog-inspiration`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        badgeText: "Inspiración para tu viaje",
+        titleHighlight: "Consejos y guías",
+        titleAccent: "para explorar el mundo",
+        subtitle: testSubtitle,
+        ctaText: "Ver todos los artículos del blog",
+        ctaUrl: "/blog",
+        postsLimit: 3,
+        active: true,
+      }),
+    });
+    assert(updateInspirationRes.status === 200, `PUT /api/proxy/admin/v1/home/blog-inspiration responde 200 OK (${updateInspirationRes.status})`);
+    const updatedInspirationData = await updateInspirationRes.json();
+    assert(updatedInspirationData.subtitle === testSubtitle, `Subtítulo de inspiración actualizado y persistido: "${updatedInspirationData.subtitle}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Inspiración desde Blog: ${err.message}`);
+  }
+
+  // 15. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 15. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

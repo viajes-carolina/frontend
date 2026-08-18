@@ -3,6 +3,7 @@ import {
   JourneyConnector,
   IntentionsSection,
   PromotionsSection,
+  BlogInspirationSection,
   TestimonialsSection,
   FaqSection,
   ClosingCtaSection,
@@ -12,11 +13,12 @@ import { apiClient } from "@vc/api-client";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [siteSettings, homeHero, intentions, promotions, trustData] = await Promise.all([
+  const [siteSettings, homeHero, intentions, promotions, blogInspiration, trustData] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getHomeHero(),
     apiClient.getTravelIntentions(),
     apiClient.getFeaturedPromotions(),
+    apiClient.getPublicHomeBlogInspiration(),
     apiClient.getPublicTrust(),
   ]);
 
@@ -59,7 +61,19 @@ export default async function HomePage() {
       </div>
 
       {/* =========================================================================
-          07 · Testimonios y Experiencias de Clientes (Figma: 04. Confianza y Testimonios)
+          07 · Inspiración desde Blog (Figma: 06. Inspiración para tu viaje)
+          ========================================================================= */}
+      <BlogInspirationSection config={blogInspiration.config} posts={blogInspiration.posts} />
+
+      {/* =========================================================================
+          08 · Journey Connector
+          ========================================================================= */}
+      <div className="w-full max-w-5xl px-4 my-6">
+        <JourneyConnector />
+      </div>
+
+      {/* =========================================================================
+          09 · Testimonios y Experiencias de Clientes (Figma: 04. Confianza y Testimonios)
           ========================================================================= */}
       <TestimonialsSection testimonials={trustData.testimonials} />
 

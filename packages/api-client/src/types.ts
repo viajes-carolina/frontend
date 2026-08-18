@@ -534,3 +534,35 @@ export interface GlobalSearchResponse {
   suggestedQueries: string[];
 }
 
+// Home Blog Inspiration DTOs (Corte 12)
+export interface HomeBlogInspirationDTO {
+  id?: number;
+  badgeText: string;
+  titleHighlight: string;
+  titleAccent: string;
+  subtitle: string;
+  ctaText: string;
+  ctaUrl: string;
+  postsLimit: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateHomeBlogInspirationRequest {
+  badgeText: string;
+  titleHighlight: string;
+  titleAccent: string;
+  subtitle: string;
+  ctaText: string;
+  ctaUrl: string;
+  postsLimit?: number;
+  active?: boolean;
+}
+
+export interface PublicHomeBlogInspirationResponse {
+  config: HomeBlogInspirationDTO;
+  posts: BlogPostDTO[];
+}
+
+

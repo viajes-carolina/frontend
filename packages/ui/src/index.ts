@@ -8,6 +8,7 @@ export * from "./cards/PromotionCard";
 export * from "./layout/HeroSection";
 export * from "./layout/IntentionsSection";
 export * from "./layout/PromotionsSection";
+export * from "./layout/BlogInspirationSection";
 export * from "./trust/TestimonialsSection";
 export * from "./trust/FaqSection";
 export * from "./trust/ClosingCtaSection";

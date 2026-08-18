@@ -1,23 +1,26 @@
 import { apiClient } from "@vc/api-client";
-import { HeroForm } from "./HeroForm";
+import { InicioClientWrapper } from "./InicioClientWrapper";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomeHeroAdminPage() {
-  const hero = await apiClient.getHomeHero();
+  const [hero, inspiration] = await Promise.all([
+    apiClient.getHomeHero(),
+    apiClient.getAdminHomeBlogInspiration(),
+  ]);
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
       <div className="mb-8">
         <h1 className="font-sora font-extrabold text-3xl text-brand-navy">
-          Inicio · Hero Principal y Primera Conversación
+          Inicio · Contenido y Secciones de Portada
         </h1>
         <p className="font-inter text-neutral-muted text-sm mt-1">
-          Administra los titulares, llamados a la acción de WhatsApp, propuesta de valor y fotografías de la cabecera principal.
+          Administra los llamados a la acción, propuesta de valor, hero principal y la sección de inspiración desde el blog.
         </p>
       </div>
 
-      <HeroForm initialHero={hero} />
+      <InicioClientWrapper hero={hero} inspiration={inspiration} />
     </div>
   );
 }
