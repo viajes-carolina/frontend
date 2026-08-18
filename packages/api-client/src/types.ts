@@ -695,6 +695,22 @@ export interface AuditLogDTO {
   createdAt: string;
 }
 
+// Publishing & ISR DTOs (Corte 15)
+export interface PublishRequestDTO {
+  target?: "ALL" | "HOME" | "PROMOTIONS" | "BLOG" | "ABOUT" | "CONTACT" | string;
+  customTags?: string[];
+  reason?: string;
+}
+
+export interface PublishResponseDTO {
+  status: "SUCCESS" | "READY" | "ERROR" | string;
+  revalidatedTags: string[];
+  publishedAt: string;
+  triggeredBy: string;
+  message: string;
+}
+
+
 
 
 

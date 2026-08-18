@@ -178,6 +178,32 @@ export default async function AdminDashboardPage() {
             Ver Registro de Eventos &rarr;
           </span>
         </Link>
+
+        {/* Card: Publicación ISR & Caché (Corte 15) */}
+        <Link
+          href="/publicacion"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-emerald-500/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-emerald-600">
+                Corte 15 · Despliegue & ISR
+              </span>
+              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                <span>🚀</span>
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-emerald-600 transition-colors">
+              Publicación On-Demand
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              Invalida la caché de Next.js y actualiza el sitio en vivo sin redeploy.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-emerald-600 mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Control de Caché &rarr;
+          </span>
+        </Link>
         {/* Card: Contacto & Leads (Corte 9) */}
         <Link
           href="/contacto"

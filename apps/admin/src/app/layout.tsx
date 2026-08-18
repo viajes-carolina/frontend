@@ -118,6 +118,13 @@ export default function RootLayout({
                 Bitácora de Auditoría
               </Link>
               <Link
+                href="/publicacion"
+                className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-between"
+              >
+                <span>Publicación ISR</span>
+                <span className="text-[10px] bg-emerald-400 text-slate-950 font-bold px-1.5 py-0.5 rounded">Caché</span>
+              </Link>
+              <Link
                 href="/medios"
                 className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               >

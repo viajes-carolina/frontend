@@ -48,6 +48,8 @@ import {
   CreateAdminUserRequest,
   UpdateAdminUserRequest,
   AuditLogDTO,
+  PublishRequestDTO,
+  PublishResponseDTO,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -119,6 +121,8 @@ import {
   createMockAdminUser,
   updateMockAdminUser,
   getMockAuditLogs,
+  getMockPublishingStatus,
+  publishMockContent,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -1354,9 +1358,37 @@ export class ViajesCarolinaApiClient {
     }
     return getMockAuditLogs(entityType, limit);
   }
+
+  // Publishing & ISR (Corte 15)
+  async triggerPublish(req: PublishRequestDTO): Promise<PublishResponseDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/publish"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(req),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return publishMockContent(req);
+  }
+
+  async getPublishingStatus(): Promise<PublishResponseDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/status"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockPublishingStatus();
+  }
 }
 
 export const apiClient = new ViajesCarolinaApiClient();
+
 
 
 

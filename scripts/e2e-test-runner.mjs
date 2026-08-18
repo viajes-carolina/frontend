@@ -128,6 +128,9 @@ async function runE2ETests() {
     const auditoriaAdminRes = await fetch(`${BASE_ADMIN_URL}/auditoria`);
     assert(auditoriaAdminRes.status === 200, `Módulo Bitácora de Auditoría responde con HTTP 200 OK (${auditoriaAdminRes.status})`);
 
+    const publicacionAdminRes = await fetch(`${BASE_ADMIN_URL}/publicacion`);
+    assert(publicacionAdminRes.status === 200, `Módulo Publicación ISR & Control de Caché responde con HTTP 200 OK (${publicacionAdminRes.status})`);
+
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
 
@@ -857,8 +860,69 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Seguridad, RBAC y Auditoría: ${err.message}`);
   }
 
-  // 17. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 17. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 17. Verificación de Publicación On-Demand ISR, Draft Previews y Hardening de Seguridad (Corte 15)...
+  console.log("\n📦 17. Verificando Publicación On-Demand ISR, Draft Previews y Hardening (Corte 15)...");
+  try {
+    // 17.1 Revalidación On-Demand ISR vía Webhook (GET & POST)
+    const revalidateGet = await fetch(`${BASE_WEB_URL}/api/revalidate?secret=vc-secret-isr-key-2026&path=/`);
+    assert(revalidateGet.status === 200, `GET /api/revalidate responde 200 OK (${revalidateGet.status})`);
+    const revalidateGetData = await revalidateGet.json();
+    assert(revalidateGetData.revalidated === true, "Caché de página raíz revalidada on-demand");
+
+    const revalidatePost = await fetch(`${BASE_WEB_URL}/api/revalidate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: "vc-secret-isr-key-2026",
+        tags: ["home", "promotions", "blog"],
+      }),
+    });
+    assert(revalidatePost.status === 200, `POST /api/revalidate con tags responde 200 OK (${revalidatePost.status})`);
+    const revalidatePostData = await revalidatePost.json();
+    assert(revalidatePostData.revalidated === true, "Revalidación tag-based completada");
+    assert(Array.isArray(revalidatePostData.revalidatedPaths) && revalidatePostData.revalidatedPaths.length >= 3, `Rutas revalidadas: ${revalidatePostData.revalidatedPaths?.length}`);
+
+    // 17.2 Protección contra accesos no autorizados a revalidación
+    const unauthorizedReval = await fetch(`${BASE_WEB_URL}/api/revalidate?secret=wrong-key`);
+    assert(unauthorizedReval.status === 401, `Acceso no autorizado a /api/revalidate rechazado con 401 (${unauthorizedReval.status})`);
+
+    // 17.3 Modo Borrador (Draft Mode Preview)
+    const draftRes = await fetch(`${BASE_WEB_URL}/api/draft?secret=vc-secret-isr-key-2026&path=/`, { redirect: "manual" });
+    assert(draftRes.status === 307 || draftRes.status === 302 || draftRes.status === 200, `Endpoint /api/draft habilita previsualización y responde con redirección (${draftRes.status})`);
+
+    // 17.4 Estado y Disparo de Publicación desde API Proxy / Panel Admin
+    const pubStatusRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/publishing/status`);
+    assert(pubStatusRes.status === 200, `GET /api/proxy/admin/v1/publishing/status responde 200 OK (${pubStatusRes.status})`);
+    const pubStatus = await pubStatusRes.json();
+    assert(pubStatus.status === "READY" || pubStatus.status === "SUCCESS", `Estado del motor de publicación es "${pubStatus.status}"`);
+
+    const triggerPubRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/publishing/publish`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        target: "ALL",
+        reason: "Validación automatizada de suite E2E en Corte 15",
+      }),
+    });
+    assert(triggerPubRes.status === 200, `POST /api/proxy/admin/v1/publishing/publish responde 200 OK (${triggerPubRes.status})`);
+    const triggerPubData = await triggerPubRes.json();
+    assert(triggerPubData.status === "SUCCESS", `Publicación ISR global ejecutada con éxito: "${triggerPubData.status}"`);
+    assert(Array.isArray(triggerPubData.revalidatedTags) && triggerPubData.revalidatedTags.length >= 5, `Revalidadas ${triggerPubData.revalidatedTags?.length} rutas de portal`);
+
+    // 17.5 Hardening de Seguridad HTTP (CSP, HSTS, X-Content-Type-Options, X-Frame-Options)
+    const webHomeRes = await fetch(`${BASE_WEB_URL}`);
+    const csp = webHomeRes.headers.get("content-security-policy");
+    const nosniff = webHomeRes.headers.get("x-content-type-options");
+    const frameOptions = webHomeRes.headers.get("x-frame-options");
+    assert(csp && csp.includes("default-src"), "Cabecera Content-Security-Policy configurada en Web Pública");
+    assert(nosniff === "nosniff", `Cabecera X-Content-Type-Options es nosniff: "${nosniff}"`);
+    assert(frameOptions === "SAMEORIGIN", `Cabecera X-Frame-Options es SAMEORIGIN: "${frameOptions}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Publicación ISR y Hardening: ${err.message}`);
+  }
+
+  // 18. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 18. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

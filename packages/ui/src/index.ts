@@ -26,6 +26,7 @@ export * from "./claims/ClaimLookupSection";
 export * from "./auth/LoginCard";
 export * from "./governance/UsersTable";
 export * from "./governance/AuditLogsViewer";
+export * from "./governance/PublishingManagerCard";
 export * from "./blog/BlogHeroSection";
 export * from "./blog/BlogCard";
 export * from "./blog/BlogFeaturedHero";

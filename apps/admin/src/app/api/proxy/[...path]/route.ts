@@ -51,6 +51,9 @@ import {
   AdminUserDTO,
   AuditLogDTO,
   LoginResponse,
+  DEFAULT_PUBLISH_RESPONSE,
+  PublishRequestDTO,
+  PublishResponseDTO,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -982,6 +985,67 @@ async function proxyOrFallback(
         list = list.filter((l) => l.entityType.toUpperCase() === entityType.toUpperCase());
       }
       return NextResponse.json(list.slice(0, limit), { status: 200 });
+    }
+
+    // Publishing & ISR (Corte 15)
+    if (targetPath.includes("publishing/publish")) {
+      const target = bodyJson?.target || "ALL";
+      let tags: string[] = [];
+      if (Array.isArray(bodyJson?.customTags) && bodyJson.customTags.length > 0) {
+        tags = bodyJson.customTags as string[];
+      } else {
+        switch (String(target).toUpperCase()) {
+          case "HOME":
+            tags = ["home", "/"];
+            break;
+          case "PROMOTIONS":
+            tags = ["promotions", "/promociones"];
+            break;
+          case "BLOG":
+            tags = ["blog", "/blog"];
+            break;
+          case "ABOUT":
+            tags = ["about", "/nosotros"];
+            break;
+          case "CONTACT":
+            tags = ["contact", "/contacto"];
+            break;
+          default:
+            tags = ["all", "/", "/promociones", "/blog", "/nosotros", "/contacto", "/reclamaciones"];
+            break;
+        }
+      }
+
+      const publishRes: PublishResponseDTO = {
+        status: "SUCCESS",
+        revalidatedTags: tags,
+        publishedAt: new Date().toISOString(),
+        triggeredBy: "admin",
+        message: `Publicación completada exitosamente. Se revalidaron ${tags.length} tags/rutas en Next.js ISR.`,
+      };
+
+      writeStoredJson("last_publish_status.json", publishRes);
+
+      // Audit Log
+      const auditLogs = readStoredJson<AuditLogDTO[]>("audit_logs.json", DEFAULT_AUDIT_LOGS);
+      const newLog: AuditLogDTO = {
+        id: Date.now(),
+        username: "admin",
+        action: "PUBLISH_ON_DEMAND_ISR",
+        entityType: "PUBLISHING",
+        entityId: String(target),
+        ipHash: "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+        detailsJson: JSON.stringify({ target, tags, reason: bodyJson?.reason }),
+        createdAt: new Date().toISOString(),
+      };
+      writeStoredJson("audit_logs.json", [newLog, ...auditLogs]);
+
+      return NextResponse.json(publishRes, { status: 200 });
+    }
+
+    if (targetPath.includes("publishing/status")) {
+      const current = readStoredJson<PublishResponseDTO>("last_publish_status.json", DEFAULT_PUBLISH_RESPONSE);
+      return NextResponse.json(current, { status: 200 });
     }
 
     if (targetPath.includes("search")) {

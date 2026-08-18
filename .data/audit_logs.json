@@ -1,5 +1,77 @@
 [
   {
+    "id": 1787081977484,
+    "username": "admin",
+    "action": "PUBLISH_ON_DEMAND_ISR",
+    "entityType": "PUBLISHING",
+    "entityId": "ALL",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"target\":\"ALL\",\"tags\":[\"all\",\"/\",\"/promociones\",\"/blog\",\"/nosotros\",\"/contacto\",\"/reclamaciones\"],\"reason\":\"Validación automatizada de suite E2E en Corte 15\"}",
+    "createdAt": "2026-08-18T19:39:37.484Z"
+  },
+  {
+    "id": 1787081970949,
+    "username": "admin",
+    "action": "UPDATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787081970790",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787081970650\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-18T19:39:30.949Z"
+  },
+  {
+    "id": 1787081970795,
+    "username": "admin",
+    "action": "CREATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787081970790",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787081970650\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-18T19:39:30.795Z"
+  },
+  {
+    "id": 1787081970384,
+    "userId": 1,
+    "username": "admin",
+    "action": "LOGIN_SUCCESS",
+    "entityType": "AUTH",
+    "entityId": "1",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"admin\"}",
+    "createdAt": "2026-08-18T19:39:30.384Z"
+  },
+  {
+    "id": 1787080889299,
+    "username": "admin",
+    "action": "UPDATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787080889226",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787080889173\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-18T19:21:29.299Z"
+  },
+  {
+    "id": 1787080889230,
+    "username": "admin",
+    "action": "CREATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787080889226",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787080889173\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-18T19:21:29.231Z"
+  },
+  {
+    "id": 1787080888687,
+    "userId": 1,
+    "username": "admin",
+    "action": "LOGIN_SUCCESS",
+    "entityType": "AUTH",
+    "entityId": "1",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"admin\"}",
+    "createdAt": "2026-08-18T19:21:28.687Z"
+  },
+  {
     "id": 1787080829668,
     "username": "admin",
     "action": "UPDATE_ADMIN_USER",

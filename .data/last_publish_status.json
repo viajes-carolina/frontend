@@ -1,0 +1,15 @@
+{
+  "status": "SUCCESS",
+  "revalidatedTags": [
+    "all",
+    "/",
+    "/promociones",
+    "/blog",
+    "/nosotros",
+    "/contacto",
+    "/reclamaciones"
+  ],
+  "publishedAt": "2026-08-18T19:39:37.480Z",
+  "triggeredBy": "admin",
+  "message": "Publicación completada exitosamente. Se revalidaron 7 tags/rutas en Next.js ISR."
+}

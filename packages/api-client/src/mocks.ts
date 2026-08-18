@@ -50,6 +50,8 @@ import {
   CreateAdminUserRequest,
   UpdateAdminUserRequest,
   AuditLogDTO,
+  PublishRequestDTO,
+  PublishResponseDTO,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -1783,6 +1785,64 @@ export function recordMockAuditLog(action: string, entityType: string, entityId?
   MOCK_AUDIT_LOGS.unshift(newLog);
   return newLog;
 }
+
+// Publishing & ISR Mock Helpers (Corte 15)
+export const DEFAULT_PUBLISH_RESPONSE: PublishResponseDTO = {
+  status: "READY",
+  revalidatedTags: ["all", "home", "promotions", "blog", "about", "contact", "reclamaciones"],
+  publishedAt: "2026-08-18T00:00:00.000Z",
+  triggeredBy: "SYSTEM",
+  message: "Motor de publicación ISR On-Demand activo y en espera de eventos.",
+};
+
+export let MOCK_LAST_PUBLISH: PublishResponseDTO = { ...DEFAULT_PUBLISH_RESPONSE };
+
+export function getMockPublishingStatus(): PublishResponseDTO {
+  return MOCK_LAST_PUBLISH;
+}
+
+export function publishMockContent(req: PublishRequestDTO): PublishResponseDTO {
+  const target = req.target || "ALL";
+  let tags: string[] = [];
+
+  if (req.customTags && req.customTags.length > 0) {
+    tags = req.customTags;
+  } else {
+    switch (target.toUpperCase()) {
+      case "HOME":
+        tags = ["home", "/"];
+        break;
+      case "PROMOTIONS":
+        tags = ["promotions", "/promociones"];
+        break;
+      case "BLOG":
+        tags = ["blog", "/blog"];
+        break;
+      case "ABOUT":
+        tags = ["about", "/nosotros"];
+        break;
+      case "CONTACT":
+        tags = ["contact", "/contacto"];
+        break;
+      default:
+        tags = ["all", "/", "/promociones", "/blog", "/nosotros", "/contacto", "/reclamaciones"];
+        break;
+    }
+  }
+
+  const response: PublishResponseDTO = {
+    status: "SUCCESS",
+    revalidatedTags: tags,
+    publishedAt: new Date().toISOString(),
+    triggeredBy: "admin",
+    message: `Publicación completada exitosamente. Se revalidaron ${tags.length} tags/rutas en Next.js ISR.`,
+  };
+
+  MOCK_LAST_PUBLISH = response;
+  recordMockAuditLog("PUBLISH_ON_DEMAND_ISR", "PUBLISHING", target, JSON.stringify({ target, tags, reason: req.reason }));
+  return response;
+}
+
 
 
 
