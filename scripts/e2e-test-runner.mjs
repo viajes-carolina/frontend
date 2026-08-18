@@ -23,7 +23,7 @@ async function runE2ETests() {
   console.log("🚀 EJECUTANDO SUITE E2E DE CALIDAD — VIAJES CAROLINA");
   console.log("==========================================================\n");
 
-  // 1. Verificación de Rutas Web Públicas (Corte 0, 1, 2, 3, 4, 5)
+  // 1. Verificación de Rutas Web Públicas (Corte 0 al 6)
   console.log("📦 1. Verificando Web Pública (http://localhost:3000)...");
   try {
     const webRes = await fetch(`${BASE_WEB_URL}`);
@@ -34,12 +34,18 @@ async function runE2ETests() {
     assert(webHtml.includes("Cuéntame tu viaje"), "HTML contiene CTA principal de WhatsApp");
     assert(webHtml.includes("Asesoría sin costo") || webHtml.includes("Respuesta rápida"), "HTML contiene indicadores de confianza");
     assert(webHtml.includes("intención de viaje") || webHtml.includes("Playa &amp; Relax") || webHtml.includes("Playa & Relax"), "HTML contiene sección de Intenciones de Viaje (Corte 5)");
+    assert(webHtml.includes("inspiran a viajar") || webHtml.includes("Cartagena") || webHtml.includes("Cusco"), "HTML contiene sección de Promociones Destacadas (Corte 6)");
     assert(webHtml.includes("Recorre el Sitio") || webHtml.includes("Larco 101"), "HTML contiene estructura de Footer (Corte 2)");
+
+    const promoCatalogRes = await fetch(`${BASE_WEB_URL}/promociones`);
+    assert(promoCatalogRes.status === 200, `Catálogo de promociones /promociones responde HTTP 200 OK (${promoCatalogRes.status})`);
+    const promoCatalogHtml = await promoCatalogRes.text();
+    assert(promoCatalogHtml.includes("promociones y paquetes"), "Catálogo contiene título H1 de paquetes turísticos");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 5)
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 6)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
@@ -47,6 +53,9 @@ async function runE2ETests() {
 
     const inicioRes = await fetch(`${BASE_ADMIN_URL}/inicio`);
     assert(inicioRes.status === 200, `Módulo Inicio & Hero responde con HTTP 200 OK (${inicioRes.status})`);
+
+    const promoRes = await fetch(`${BASE_ADMIN_URL}/promociones`);
+    assert(promoRes.status === 200, `Módulo Promociones & Paquetes responde con HTTP 200 OK (${promoRes.status})`);
 
     const intencionesRes = await fetch(`${BASE_ADMIN_URL}/intenciones`);
     assert(intencionesRes.status === 200, `Módulo Intenciones de Viaje responde con HTTP 200 OK (${intencionesRes.status})`);
@@ -240,8 +249,64 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Intenciones de Viaje: ${err.message}`);
   }
 
-  // 8. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 8. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 8. Verificación de API Proxy & Persistencia E2E (Corte 6: Promociones & Paquetes)...
+  console.log("\n📦 8. Verificando API Proxy & Persistencia E2E (Corte 6: Promociones & Paquetes)...");
+  try {
+    const promoGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/promotions/featured`);
+    assert(promoGet.status === 200, `GET /api/proxy/public/v1/promotions/featured responde 200 OK (${promoGet.status})`);
+    const promoList = await promoGet.json();
+    assert(Array.isArray(promoList) && promoList.length >= 4, `Listado de promociones destacadas contiene ${promoList.length} paquetes`);
+
+    const firstPromo = promoList[0];
+    assert(firstPromo.slug === "cartagena-donde-el-mar-te-espera" || !!firstPromo.title, `Primera promoción: "${firstPromo.title}"`);
+    assert(Array.isArray(firstPromo.inclusions) && firstPromo.inclusions.length > 0, `Inclusiones del paquete presentes: ${firstPromo.inclusions.length} inclusiones`);
+
+    // Consulta individual por slug
+    const singlePromoGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/promotions/cartagena-donde-el-mar-te-espera`);
+    assert(singlePromoGet.status === 200, `GET /api/proxy/public/v1/promotions/cartagena-donde-el-mar-te-espera responde 200 OK (${singlePromoGet.status})`);
+    const singleData = await singlePromoGet.json();
+    assert(singleData.destination.includes("Cartagena"), `Destino correcto en detalle: "${singleData.destination}"`);
+
+    // Mutación E2E de Promoción en PostgreSQL
+    const testSummary = "Disfruta del encanto caribeño con playas de arena cálida, murallas históricas y atardeceres mágicos frente al mar.";
+    const promoPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/promotions/1`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slug: "cartagena-donde-el-mar-te-espera",
+        title: "Cartagena: Donde el mar te espera",
+        destination: "Cartagena de Indias, Colombia",
+        summary: testSummary,
+        priceUsd: 429.00,
+        pricePen: 1590.00,
+        durationDays: 4,
+        durationNights: 3,
+        departureCity: "Lima",
+        validFrom: "2026-08-18",
+        validUntil: "2027-02-14",
+        featuredMediaId: 2,
+        isFeatured: true,
+        inclusions: [
+          "Vuelos ida y vuelta con equipaje",
+          "Hotel 4 estrellas con desayuno buffet",
+          "Traslados aeropuerto - hotel - aeropuerto",
+          "Tour en lancha a Islas del Rosario"
+        ],
+        exclusions: ["Gastos no especificados", "Tarjeta de asistencia médica opcional"],
+        whatsappMessageTemplate: 'Hola Viajes Carolina, me interesa la promoción "Cartagena: Donde el mar te espera" desde USD 429. ¿Tienen fechas disponibles?',
+        displayOrder: 1,
+        active: true,
+      }),
+    });
+    assert(promoPut.status === 200, `PUT /api/proxy/admin/v1/promotions/1 responde 200 OK (${promoPut.status})`);
+    const updatedPromo = await promoPut.json();
+    assert(updatedPromo.summary === testSummary, `Resumen de promoción actualizado y persistido: "${updatedPromo.summary}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Promociones: ${err.message}`);
+  }
+
+  // 9. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 9. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

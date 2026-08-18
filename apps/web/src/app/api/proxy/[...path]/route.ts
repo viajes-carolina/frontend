@@ -7,14 +7,15 @@ import {
   DEFAULT_MEDIA_ASSETS,
   DEFAULT_HOME_HERO,
   DEFAULT_TRAVEL_INTENTIONS,
+  DEFAULT_PROMOTIONS,
   getMockMediaPage,
   updateMockMediaFocalPoint,
-  MOCK_PROMOTIONS,
   MOCK_BLOG_POSTS,
   SiteSettingsDTO,
   OfficeLocationDTO,
   HomeHeroDTO,
   TravelIntentionDTO,
+  PromotionDTO,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -132,6 +133,70 @@ async function proxyOrFallback(
     }
 
     // Graceful Offline / Dev Fallback with Disk Persistence
+    if (targetPath.includes("promotions")) {
+      const current = readStoredJson<PromotionDTO[]>("promotions.json", DEFAULT_PROMOTIONS);
+      if (method === "POST") {
+        const newPromo: PromotionDTO = {
+          id: Date.now(),
+          slug: String(bodyJson?.slug || `promo-${Date.now()}`),
+          title: String(bodyJson?.title || "Nueva Promoción"),
+          destination: String(bodyJson?.destination || "Destino"),
+          summary: String(bodyJson?.summary || ""),
+          priceUsd: Number(bodyJson?.priceUsd || 499),
+          pricePen: bodyJson?.pricePen ? Number(bodyJson.pricePen) : Number(bodyJson?.priceUsd || 499) * 3.7,
+          durationDays: Number(bodyJson?.durationDays || 4),
+          durationNights: Number(bodyJson?.durationNights || 3),
+          departureCity: String(bodyJson?.departureCity || "Lima"),
+          validFrom: String(bodyJson?.validFrom || new Date().toISOString().split("T")[0]),
+          validUntil: String(bodyJson?.validUntil || new Date(Date.now() + 180 * 86400000).toISOString().split("T")[0]),
+          featuredMediaId: bodyJson?.featuredMediaId ? Number(bodyJson.featuredMediaId) : undefined,
+          featuredMediaUrl: "/media/demo-cartagena-caribe.webp",
+          featuredMediaFocalX: 50.0,
+          featuredMediaFocalY: 50.0,
+          isFeatured: bodyJson?.isFeatured !== undefined ? Boolean(bodyJson.isFeatured) : true,
+          inclusions: Array.isArray(bodyJson?.inclusions) ? (bodyJson?.inclusions as string[]) : [],
+          exclusions: Array.isArray(bodyJson?.exclusions) ? (bodyJson?.exclusions as string[]) : [],
+          whatsappMessageTemplate: String(bodyJson?.whatsappMessageTemplate || ""),
+          displayOrder: bodyJson?.displayOrder ? Number(bodyJson.displayOrder) : current.length + 1,
+          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [...current, newPromo];
+        writeStoredJson("promotions.json", updated);
+        return NextResponse.json(newPromo, { status: 201 });
+      }
+      if (method === "PUT") {
+        const idMatch = targetPath.match(/promotions\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((p) => p.id === id);
+        if (index !== -1) {
+          const updatedItem = {
+            ...current[index],
+            ...(bodyJson || {}),
+            updatedAt: new Date().toISOString(),
+          };
+          current[index] = updatedItem as PromotionDTO;
+          writeStoredJson("promotions.json", current);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+      if (method === "DELETE") {
+        const idMatch = targetPath.match(/promotions\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const index = current.findIndex((p) => p.id === id);
+        if (index !== -1) {
+          current[index].active = false;
+          writeStoredJson("promotions.json", current);
+        }
+        return new NextResponse(null, { status: 204 });
+      }
+      if (targetPath.includes("featured")) {
+        return NextResponse.json(current.filter((p) => p.isFeatured && p.active), { status: 200 });
+      }
+      return NextResponse.json(current, { status: 200 });
+    }
+
     if (targetPath.includes("intentions")) {
       const current = readStoredJson<TravelIntentionDTO[]>("travel_intentions.json", DEFAULT_TRAVEL_INTENTIONS);
       if (method === "POST") {
@@ -232,10 +297,6 @@ async function proxyOrFallback(
         return NextResponse.json(updated || DEFAULT_MEDIA_ASSETS[0], { status: 200 });
       }
       return NextResponse.json(getMockMediaPage(), { status: 200 });
-    }
-
-    if (targetPath.includes("promotions")) {
-      return NextResponse.json(MOCK_PROMOTIONS, { status: 200 });
     }
 
     if (targetPath.includes("blog")) {

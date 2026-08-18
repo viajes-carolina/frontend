@@ -2,6 +2,7 @@ import {
   SiteSettingsDTO,
   OfficeLocationDTO,
   PromotionDTO,
+  CreateOrUpdatePromotionRequest,
   BlogPostDTO,
   ApiInfoDTO,
   MediaAssetDTO,
@@ -141,6 +142,129 @@ export const DEFAULT_TRAVEL_INTENTIONS: TravelIntentionDTO[] = [
   },
 ];
 
+export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
+  {
+    id: 1,
+    slug: "cartagena-donde-el-mar-te-espera",
+    title: "Cartagena: Donde el mar te espera",
+    destination: "Cartagena de Indias, Colombia",
+    summary: "Disfruta del encanto caribeño con playas de arena cálida, murallas históricas y atardeceres mágicos frente al mar.",
+    priceUsd: 429,
+    pricePen: 1590,
+    durationDays: 4,
+    durationNights: 3,
+    departureCity: "Lima",
+    validFrom: "2026-08-18",
+    validUntil: "2027-02-14",
+    featuredMediaId: 2,
+    featuredMediaUrl: "/media/demo-cartagena-caribe.webp",
+    featuredMediaFocalX: 60.0,
+    featuredMediaFocalY: 50.0,
+    isFeatured: true,
+    inclusions: [
+      "Vuelos ida y vuelta con equipaje",
+      "Hotel 4 estrellas con desayuno buffet",
+      "Traslados aeropuerto - hotel - aeropuerto",
+      "Tour en lancha a Islas del Rosario",
+    ],
+    exclusions: ["Gastos no especificados", "Tarjeta de asistencia médica opcional"],
+    whatsappMessageTemplate:
+      'Hola Viajes Carolina, me interesa la promoción "Cartagena: Donde el mar te espera" desde USD 429. ¿Tienen fechas disponibles?',
+    displayOrder: 1,
+    active: true,
+  },
+  {
+    id: 2,
+    slug: "cusco-magico-y-machu-picchu",
+    title: "Cusco Mágico & Machu Picchu",
+    destination: "Cusco & Valle Sagrado, Perú",
+    summary: "Una experiencia inolvidable recorriendo la capital del Imperio Incaico, templos sagrados y la maravilla de Machu Picchu.",
+    priceUsd: 520,
+    pricePen: 1922,
+    durationDays: 5,
+    durationNights: 4,
+    departureCity: "Lima",
+    validFrom: "2026-08-18",
+    validUntil: "2027-02-14",
+    featuredMediaId: 3,
+    featuredMediaUrl: "/media/demo-cusco-machupicchu.webp",
+    featuredMediaFocalX: 50.0,
+    featuredMediaFocalY: 35.0,
+    isFeatured: true,
+    inclusions: [
+      "Vuelos Lima - Cusco - Lima",
+      "Tren turístico Expedition a Machu Picchu",
+      "Entrada y guía oficial en Machu Picchu",
+      "Alojamiento boutique con desayunos",
+    ],
+    exclusions: ["Almuerzos libres en Aguas Calientes", "Gastos personales"],
+    whatsappMessageTemplate:
+      'Hola Viajes Carolina, deseo cotizar el paquete "Cusco Mágico & Machu Picchu" desde S/ 1,922. ¿Me podrían brindar detalles?',
+    displayOrder: 2,
+    active: true,
+  },
+  {
+    id: 3,
+    slug: "punta-cana-all-inclusive-caribe",
+    title: "Punta Cana All-Inclusive Deluxe",
+    destination: "Punta Cana, República Dominicana",
+    summary: "Relax absoluto en resorts de primer nivel con comidas y bebidas ilimitadas, playas de arena blanca y actividades acuáticas.",
+    priceUsd: 799,
+    pricePen: 2956,
+    durationDays: 5,
+    durationNights: 4,
+    departureCity: "Lima",
+    validFrom: "2026-08-18",
+    validUntil: "2027-02-14",
+    featuredMediaId: 2,
+    featuredMediaUrl: "/media/demo-cartagena-caribe.webp",
+    featuredMediaFocalX: 60.0,
+    featuredMediaFocalY: 50.0,
+    isFeatured: true,
+    inclusions: [
+      "Vuelos internacionales ida y vuelta",
+      "Resort 5 estrellas Todo Incluido 24h",
+      "Bebidas y cenas temáticas ilimitadas",
+      "Deportes acuáticos no motorizados",
+    ],
+    exclusions: ["Impuestos de entrada a República Dominicana", "Propinas voluntarias"],
+    whatsappMessageTemplate:
+      'Hola Viajes Carolina, quiero consultar sobre la oferta "Punta Cana All-Inclusive Deluxe". ¿Cuáles son las fechas disponibles?',
+    displayOrder: 3,
+    active: true,
+  },
+  {
+    id: 4,
+    slug: "iquitos-selva-magica-amazonas",
+    title: "Iquitos & Selva Mágica Amazonas",
+    destination: "Iquitos & Río Amazonas, Perú",
+    summary: "Adéntrate en el pulmón del mundo con expediciones nocturnas, avistamiento de delfines rosados y conexión con la naturaleza.",
+    priceUsd: 380,
+    pricePen: 1406,
+    durationDays: 4,
+    durationNights: 3,
+    departureCity: "Lima",
+    validFrom: "2026-08-18",
+    validUntil: "2027-02-14",
+    featuredMediaId: 1,
+    featuredMediaUrl: "/media/demo-hero-travel.webp",
+    featuredMediaFocalX: 72.5,
+    featuredMediaFocalY: 28.0,
+    isFeatured: true,
+    inclusions: [
+      "Vuelos Lima - Iquitos - Lima",
+      "Lodge ecológico en la selva",
+      "Todas las comidas incluidas (pensión completa)",
+      "Excursiones guiadas por botánicos locales",
+    ],
+    exclusions: ["Bebidas alcohólicas", "Souvenirs"],
+    whatsappMessageTemplate:
+      'Hola Viajes Carolina, me encanta la opción "Iquitos & Selva Mágica Amazonas". ¿Me asesoran con las salidas?',
+    displayOrder: 4,
+    active: true,
+  },
+];
+
 export const DEFAULT_MEDIA_ASSETS: MediaAssetDTO[] = [
   {
     id: 1,
@@ -221,6 +345,7 @@ export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = { ...DEFAULT_OFFICE_LOCATIO
 export let MOCK_MEDIA_ASSETS: MediaAssetDTO[] = [...DEFAULT_MEDIA_ASSETS];
 export let MOCK_HOME_HERO: HomeHeroDTO = { ...DEFAULT_HOME_HERO };
 export let MOCK_TRAVEL_INTENTIONS: TravelIntentionDTO[] = [...DEFAULT_TRAVEL_INTENTIONS];
+export let MOCK_PROMOTIONS: PromotionDTO[] = [...DEFAULT_PROMOTIONS];
 
 export function getMockSiteSettings(): SiteSettingsDTO {
   return MOCK_SITE_SETTINGS;
@@ -322,6 +447,92 @@ export function deleteMockTravelIntention(id: number): void {
   }
 }
 
+export function getMockFeaturedPromotions(): PromotionDTO[] {
+  return MOCK_PROMOTIONS.filter((p) => p.isFeatured && p.active);
+}
+
+export function getMockPromotions(): PromotionDTO[] {
+  return MOCK_PROMOTIONS.filter((p) => p.active);
+}
+
+export function getMockAdminPromotions(): PromotionDTO[] {
+  return MOCK_PROMOTIONS;
+}
+
+export function getMockPromotionBySlug(slug: string): PromotionDTO | null {
+  return MOCK_PROMOTIONS.find((p) => p.slug === slug) || null;
+}
+
+export function createMockPromotion(req: CreateOrUpdatePromotionRequest): PromotionDTO {
+  const newPromo: PromotionDTO = {
+    id: Date.now(),
+    slug: req.slug,
+    title: req.title,
+    destination: req.destination,
+    summary: req.summary,
+    priceUsd: Number(req.priceUsd),
+    pricePen: req.pricePen ? Number(req.pricePen) : Number(req.priceUsd) * 3.7,
+    durationDays: Number(req.durationDays),
+    durationNights: Number(req.durationNights),
+    departureCity: req.departureCity || "Lima",
+    validFrom: req.validFrom || new Date().toISOString().split("T")[0],
+    validUntil: req.validUntil || new Date(Date.now() + 180 * 86400000).toISOString().split("T")[0],
+    featuredMediaId: req.featuredMediaId,
+    featuredMediaUrl: "/media/demo-cartagena-caribe.webp",
+    featuredMediaFocalX: 50.0,
+    featuredMediaFocalY: 50.0,
+    isFeatured: req.isFeatured ?? true,
+    inclusions: req.inclusions,
+    exclusions: req.exclusions,
+    whatsappMessageTemplate: req.whatsappMessageTemplate,
+    displayOrder: req.displayOrder || MOCK_PROMOTIONS.length + 1,
+    active: req.active ?? true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_PROMOTIONS.push(newPromo);
+  return newPromo;
+}
+
+export function updateMockPromotion(id: number, req: CreateOrUpdatePromotionRequest): PromotionDTO {
+  const index = MOCK_PROMOTIONS.findIndex((p) => p.id === id);
+  if (index === -1) {
+    throw new Error(`Promoción no encontrada con ID: ${id}`);
+  }
+  const current = MOCK_PROMOTIONS[index];
+  const updated: PromotionDTO = {
+    ...current,
+    slug: req.slug,
+    title: req.title,
+    destination: req.destination,
+    summary: req.summary,
+    priceUsd: Number(req.priceUsd),
+    pricePen: req.pricePen ? Number(req.pricePen) : current.pricePen,
+    durationDays: Number(req.durationDays),
+    durationNights: Number(req.durationNights),
+    departureCity: req.departureCity || current.departureCity,
+    validFrom: req.validFrom || current.validFrom,
+    validUntil: req.validUntil || current.validUntil,
+    featuredMediaId: req.featuredMediaId,
+    isFeatured: req.isFeatured ?? current.isFeatured,
+    inclusions: req.inclusions,
+    exclusions: req.exclusions,
+    whatsappMessageTemplate: req.whatsappMessageTemplate,
+    displayOrder: req.displayOrder ?? current.displayOrder,
+    active: req.active ?? current.active,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_PROMOTIONS[index] = updated;
+  return updated;
+}
+
+export function deleteMockPromotion(id: number): void {
+  const index = MOCK_PROMOTIONS.findIndex((p) => p.id === id);
+  if (index !== -1) {
+    MOCK_PROMOTIONS[index].active = false;
+  }
+}
+
 export function getMockMediaPage(page = 0, size = 24): MediaPageResponse {
   const start = page * size;
   const items = MOCK_MEDIA_ASSETS.slice(start, start + size);
@@ -348,43 +559,6 @@ export function updateMockMediaFocalPoint(id: number, req: UpdateMediaFocalPoint
   MOCK_MEDIA_ASSETS[index] = updated;
   return updated;
 }
-
-export const MOCK_PROMOTIONS: PromotionDTO[] = [
-  {
-    id: 1,
-    slug: "cartagena-donde-el-mar-te-espera",
-    title: "Cartagena, donde el mar te espera",
-    destination: "Cartagena de Indias, Colombia",
-    summary: "Descubre la magia del Caribe, sus calles coloniales y atardeceres inolvidables.",
-    priceUsd: 890,
-    pricePen: 3250,
-    durationDays: 5,
-    durationNights: 4,
-    departureCity: "Lima",
-    validFrom: "2026-01-01",
-    validUntil: "2026-12-31",
-    isFeatured: true,
-    inclusions: ["Vuelos ida y vuelta", "Hotel 4 estrellas", "Desayunos incluidos", "Tour Islas del Rosario"],
-    exclusions: ["Gastos personales", "Seguro médico opcional"],
-  },
-  {
-    id: 2,
-    slug: "cusco-magico-y-valle-sagrado",
-    title: "Cusco Mágico y Valle Sagrado",
-    destination: "Cusco, Perú",
-    summary: "Conecta con la historia incaica y la maravilla del mundo en una experiencia completa.",
-    priceUsd: 520,
-    pricePen: 1922,
-    durationDays: 4,
-    durationNights: 3,
-    departureCity: "Lima",
-    validFrom: "2026-01-01",
-    validUntil: "2026-12-31",
-    isFeatured: true,
-    inclusions: ["Tren Expedition", "Entradas a Machu Picchu", "Guía profesional", "Traslados privados"],
-    exclusions: ["Almuerzos no especificados"],
-  },
-];
 
 export const MOCK_BLOG_POSTS: BlogPostDTO[] = [
   {

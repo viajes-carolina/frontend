@@ -2,6 +2,7 @@ import {
   SiteSettingsDTO,
   OfficeLocationDTO,
   PromotionDTO,
+  CreateOrUpdatePromotionRequest,
   BlogPostDTO,
   ApiInfoDTO,
   MediaAssetDTO,
@@ -27,6 +28,13 @@ import {
   createMockTravelIntention,
   updateMockTravelIntention,
   deleteMockTravelIntention,
+  getMockFeaturedPromotions,
+  getMockPromotions,
+  getMockAdminPromotions,
+  getMockPromotionBySlug,
+  createMockPromotion,
+  updateMockPromotion,
+  deleteMockPromotion,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   DEFAULT_MEDIA_ASSETS,
@@ -36,6 +44,7 @@ const STORAGE_KEY_SETTINGS = "vc_site_settings";
 const STORAGE_KEY_OFFICE = "vc_office_location";
 const STORAGE_KEY_HERO = "vc_home_hero";
 const STORAGE_KEY_INTENTIONS = "vc_travel_intentions";
+const STORAGE_KEY_PROMOTIONS = "vc_promotions";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -348,6 +357,119 @@ export class ViajesCarolinaApiClient {
   }
 
   // ==========================================
+  // Promotions API (Corte 6)
+  // ==========================================
+
+  async getFeaturedPromotions(): Promise<PromotionDTO[]> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(this.getEffectiveUrl("public/v1/promotions/featured"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return getMockFeaturedPromotions();
+  }
+
+  async getPromotions(): Promise<PromotionDTO[]> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const res = await fetch(this.getEffectiveUrl("public/v1/promotions"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return getMockPromotions();
+  }
+
+  async getAdminPromotions(): Promise<PromotionDTO[]> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return getMockAdminPromotions();
+  }
+
+  async getPromotionBySlug(slug: string): Promise<PromotionDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`public/v1/promotions/${slug}`), {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    const found = getMockPromotionBySlug(slug);
+    if (found) return found;
+    throw new Error(`Promoción no encontrada: ${slug}`);
+  }
+
+  async createPromotion(payload: CreateOrUpdatePromotionRequest): Promise<PromotionDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return createMockPromotion(payload);
+  }
+
+  async updatePromotion(id: number, payload: CreateOrUpdatePromotionRequest): Promise<PromotionDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch {
+      // fallback
+    }
+    return updateMockPromotion(id, payload);
+  }
+
+  async deletePromotion(id: number): Promise<void> {
+    try {
+      await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
+        method: "DELETE",
+      });
+    } catch {
+      // fallback
+    }
+    deleteMockPromotion(id);
+  }
+
+  // ==========================================
   // Media Assets API (Corte 3)
   // ==========================================
 
@@ -451,19 +573,6 @@ export class ViajesCarolinaApiClient {
     } catch {
       // ignore
     }
-  }
-
-  async getPromotions(): Promise<PromotionDTO[]> {
-    if (this.useMocks) return MOCK_PROMOTIONS;
-    try {
-      const res = await fetch(this.getEffectiveUrl("public/v1/promotions"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return MOCK_PROMOTIONS;
   }
 
   async getBlogPosts(): Promise<BlogPostDTO[]> {

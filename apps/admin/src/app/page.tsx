@@ -1,16 +1,17 @@
 import Link from "next/link";
-import { Button, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon, ImageIcon, PlaneIcon, CompassIcon } from "@vc/ui";
+import { Button, MapPinIcon, WhatsAppIcon, ArrowUpRightIcon, ImageIcon, PlaneIcon, CompassIcon, SunIcon } from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [siteSettings, office, mediaData, homeHero, intentions] = await Promise.all([
+  const [siteSettings, office, mediaData, homeHero, intentions, promotions] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
     apiClient.getMediaList(0, 10),
     apiClient.getHomeHero(),
     apiClient.getAdminTravelIntentions(),
+    apiClient.getAdminPromotions(),
   ]);
 
   return (
@@ -22,7 +23,7 @@ export default async function AdminDashboardPage() {
             Panel de Control · {siteSettings.siteName}
           </h1>
           <p className="font-inter text-neutral-muted text-sm mt-1">
-            Gestión centralizada de contenidos, intenciones de viaje, biblioteca de medios e identidad.
+            Gestión centralizada de contenidos, promociones, intenciones de viaje, medios e identidad.
           </p>
         </div>
         <div className="flex gap-3">
@@ -62,28 +63,54 @@ export default async function AdminDashboardPage() {
           </span>
         </Link>
 
-        {/* Card: Intenciones de Viaje (Corte 5) */}
+        {/* Card: Promociones & Paquetes (Corte 6) */}
         <Link
-          href="/intenciones"
+          href="/promociones"
           className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-sunset/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase tracking-wider font-semibold text-brand-sunset">
-                Corte 5 · Intenciones
+                Corte 6 · Catálogo
               </span>
               <div className="p-2 rounded-xl bg-brand-sunset/10 text-brand-sunset">
-                <CompassIcon size={20} />
+                <SunIcon size={20} />
               </div>
             </div>
             <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-sunset transition-colors">
+              Promociones & Paquetes
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {promotions.length} paquetes y ofertas activas en catálogo.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-brand-sunset mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Gestionar Promociones &rarr;
+          </span>
+        </Link>
+
+        {/* Card: Intenciones de Viaje (Corte 5) */}
+        <Link
+          href="/intenciones"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-brand-accent">
+                Corte 5 · Intenciones
+              </span>
+              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent">
+                <CompassIcon size={20} />
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
               Intenciones de Viaje
             </h3>
             <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
               {intentions.length} experiencias activas en portada.
             </p>
           </div>
-          <span className="text-xs font-semibold text-brand-sunset mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             Gestionar Intenciones &rarr;
           </span>
         </Link>

@@ -193,6 +193,7 @@ export interface CreateOrUpdateTravelIntentionRequest {
   active?: boolean;
 }
 
+// Promotions DTOs (Corte 6)
 export interface PromotionDTO {
   id: number;
   slug: string;
@@ -207,9 +208,38 @@ export interface PromotionDTO {
   validFrom: string;
   validUntil: string;
   featuredMediaId?: number;
+  featuredMediaUrl?: string;
+  featuredMediaFocalX?: number;
+  featuredMediaFocalY?: number;
   isFeatured: boolean;
   inclusions: string[];
   exclusions: string[];
+  whatsappMessageTemplate?: string;
+  displayOrder?: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateOrUpdatePromotionRequest {
+  slug: string;
+  title: string;
+  destination: string;
+  summary: string;
+  priceUsd: number;
+  pricePen?: number;
+  durationDays: number;
+  durationNights: number;
+  departureCity?: string;
+  validFrom?: string;
+  validUntil?: string;
+  featuredMediaId?: number;
+  isFeatured?: boolean;
+  inclusions: string[];
+  exclusions: string[];
+  whatsappMessageTemplate?: string;
+  displayOrder?: number;
+  active?: boolean;
 }
 
 export interface BlogPostDTO {
