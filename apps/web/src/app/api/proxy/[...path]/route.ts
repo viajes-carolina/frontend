@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  MOCK_SITE_SETTINGS,
-  MOCK_OFFICE_LOCATION,
+  getMockSiteSettings,
+  updateMockSiteSettings,
+  getMockOfficeLocation,
+  updateMockOfficeLocation,
   MOCK_PROMOTIONS,
   MOCK_BLOG_POSTS,
-  updateMockSiteSettings,
-  updateMockOfficeLocation,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://localhost:8080";
@@ -19,7 +19,22 @@ async function proxyOrFallback(
   const targetUrl = `${BACKEND_URL}/api/${targetPath}`;
   const method = req.method;
 
-  // Try real Quarkus backend first
+  // Read request body safely once
+  let bodyText: string | undefined = undefined;
+  let bodyJson: Record<string, unknown> | undefined = undefined;
+
+  if (["POST", "PUT", "PATCH"].includes(method)) {
+    try {
+      bodyText = await req.text();
+      if (bodyText) {
+        bodyJson = JSON.parse(bodyText);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // Try real Quarkus backend first if online
   try {
     const headers = new Headers();
     req.headers.forEach((val, key) => {
@@ -28,17 +43,13 @@ async function proxyOrFallback(
       }
     });
 
-    const body = ["POST", "PUT", "PATCH"].includes(method)
-      ? await req.text()
-      : undefined;
-
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1200);
+    const timeoutId = setTimeout(() => controller.abort(), 600);
 
     const response = await fetch(targetUrl, {
       method,
       headers,
-      body,
+      body: bodyText,
       signal: controller.signal,
     });
 
@@ -49,34 +60,24 @@ async function proxyOrFallback(
       return NextResponse.json(data, { status: response.status });
     }
   } catch {
-    // Backend offline / connection refused -> Fallback to mock store
+    // Backend offline / dev fallback
   }
 
-  // Graceful Offline / Dev Fallback
+  // Graceful Offline / Dev Fallback with Disk Persistence
   if (targetPath.includes("settings") || targetPath.includes("site")) {
     if (method === "PUT" || method === "POST") {
-      try {
-        const body = await req.json();
-        const updated = updateMockSiteSettings(body);
-        return NextResponse.json(updated, { status: 200 });
-      } catch {
-        return NextResponse.json(MOCK_SITE_SETTINGS, { status: 200 });
-      }
+      const updated = updateMockSiteSettings(bodyJson || {});
+      return NextResponse.json(updated, { status: 200 });
     }
-    return NextResponse.json(MOCK_SITE_SETTINGS, { status: 200 });
+    return NextResponse.json(getMockSiteSettings(), { status: 200 });
   }
 
   if (targetPath.includes("office")) {
     if (method === "PUT" || method === "POST") {
-      try {
-        const body = await req.json();
-        const updated = updateMockOfficeLocation(body);
-        return NextResponse.json(updated, { status: 200 });
-      } catch {
-        return NextResponse.json(MOCK_OFFICE_LOCATION, { status: 200 });
-      }
+      const updated = updateMockOfficeLocation(bodyJson || {});
+      return NextResponse.json(updated, { status: 200 });
     }
-    return NextResponse.json(MOCK_OFFICE_LOCATION, { status: 200 });
+    return NextResponse.json(getMockOfficeLocation(), { status: 200 });
   }
 
   if (targetPath.includes("promotions")) {

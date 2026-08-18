@@ -1,6 +1,43 @@
+import fs from "fs";
+import path from "path";
 import { SiteSettingsDTO, OfficeLocationDTO, PromotionDTO, BlogPostDTO, ApiInfoDTO } from "./types";
 
-export let MOCK_SITE_SETTINGS: SiteSettingsDTO = {
+const DATA_DIR = path.resolve(process.cwd(), "..", "..", ".data");
+
+function getFilePath(filename: string): string {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  } catch {
+    // In browser or restricted env
+  }
+  return path.join(DATA_DIR, filename);
+}
+
+function readJsonFile<T>(filename: string, fallback: T): T {
+  try {
+    const filePath = getFilePath(filename);
+    if (fs.existsSync(filePath)) {
+      const raw = fs.readFileSync(filePath, "utf-8");
+      return JSON.parse(raw) as T;
+    }
+  } catch {
+    // Fallback to in-memory
+  }
+  return fallback;
+}
+
+function writeJsonFile<T>(filename: string, data: T): void {
+  try {
+    const filePath = getFilePath(filename);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+  } catch {
+    // Fallback in non-node env
+  }
+}
+
+export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
   id: 1,
   siteName: "Viajes Carolina",
   brandTagline: "El viaje comienza aquí",
@@ -13,15 +50,7 @@ export let MOCK_SITE_SETTINGS: SiteSettingsDTO = {
   tiktokUrl: "https://tiktok.com/@viajescarolina",
 };
 
-export function updateMockSiteSettings(updated: Partial<SiteSettingsDTO>): SiteSettingsDTO {
-  MOCK_SITE_SETTINGS = {
-    ...MOCK_SITE_SETTINGS,
-    ...updated,
-  };
-  return MOCK_SITE_SETTINGS;
-}
-
-export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = {
+export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
   id: 1,
   addressLine: "Av. Larco 101, Oficina 502",
   district: "Miraflores",
@@ -39,15 +68,38 @@ export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = {
   updatedAt: new Date().toISOString(),
 };
 
-export function updateMockOfficeLocation(updated: Partial<OfficeLocationDTO>): OfficeLocationDTO {
-  MOCK_OFFICE_LOCATION = {
-    ...MOCK_OFFICE_LOCATION,
+export function getMockSiteSettings(): SiteSettingsDTO {
+  return readJsonFile<SiteSettingsDTO>("site_settings.json", DEFAULT_SITE_SETTINGS);
+}
+
+export function updateMockSiteSettings(updated: Partial<SiteSettingsDTO>): SiteSettingsDTO {
+  const current = getMockSiteSettings();
+  const merged = {
+    ...current,
     ...updated,
-    revision: (MOCK_OFFICE_LOCATION.revision || 1) + 1,
+  };
+  writeJsonFile("site_settings.json", merged);
+  return merged;
+}
+
+export function getMockOfficeLocation(): OfficeLocationDTO {
+  return readJsonFile<OfficeLocationDTO>("office_location.json", DEFAULT_OFFICE_LOCATION);
+}
+
+export function updateMockOfficeLocation(updated: Partial<OfficeLocationDTO>): OfficeLocationDTO {
+  const current = getMockOfficeLocation();
+  const merged = {
+    ...current,
+    ...updated,
+    revision: (current.revision || 1) + 1,
     updatedAt: new Date().toISOString(),
   };
-  return MOCK_OFFICE_LOCATION;
+  writeJsonFile("office_location.json", merged);
+  return merged;
 }
+
+export const MOCK_SITE_SETTINGS = DEFAULT_SITE_SETTINGS;
+export const MOCK_OFFICE_LOCATION = DEFAULT_OFFICE_LOCATION;
 
 export const MOCK_PROMOTIONS: PromotionDTO[] = [
   {
