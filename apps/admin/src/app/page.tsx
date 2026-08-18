@@ -26,6 +26,7 @@ export default async function AdminDashboardPage() {
     testimonials,
     faqs,
     inquiries,
+    blogPosts,
   ] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
@@ -36,6 +37,7 @@ export default async function AdminDashboardPage() {
     apiClient.getTestimonials(),
     apiClient.getFaqs(),
     apiClient.getAdminInquiries(),
+    apiClient.getAdminBlogPosts(),
   ]);
 
   const newInquiriesCount = inquiries.filter((i) => i.status === "NEW").length;
@@ -63,6 +65,31 @@ export default async function AdminDashboardPage() {
 
       {/* Grid of Sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Card: Blog & Contenidos (Corte 10) */}
+        <Link
+          href="/blog"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-primary/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-brand-primary">
+                Corte 10 · CMS Blog
+              </span>
+              <div className="p-2 rounded-xl bg-brand-primary/10 text-brand-primary">
+                <span>✍️</span>
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-primary transition-colors">
+              Blog & Contenidos
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {blogPosts.length} artículos publicados y en borrador con búsqueda trigram.
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-brand-primary mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Administrar CMS &rarr;
+          </span>
+        </Link>
         {/* Card: Contacto & Leads (Corte 9) */}
         <Link
           href="/contacto"

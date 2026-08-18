@@ -372,17 +372,77 @@ export interface PublicAboutResponse {
   advisors: TravelAdvisorDTO[];
 }
 
+// Blog DTOs (Corte 10)
+export interface BlogCategoryDTO {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  displayOrder: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateOrUpdateBlogCategoryRequest {
+  name: string;
+  slug: string;
+  description?: string;
+  displayOrder?: number;
+  active?: boolean;
+}
+
 export interface BlogPostDTO {
   id: number;
   slug: string;
   title: string;
-  excerpt: string;
-  content: string;
-  category: string;
-  featuredMediaId?: number;
-  publishedAt: string;
-  readingTimeMinutes: number;
+  summary: string;
+  contentMarkdown: string;
+  categoryId: number;
+  categoryName?: string;
+  categorySlug?: string;
+  coverMediaId?: number;
+  coverMediaUrl?: string;
   authorName: string;
+  readingTimeMinutes: number;
+  tags: string[];
+  status: string; // 'DRAFT', 'PUBLISHED', 'ARCHIVED'
+  publishedAt?: string;
+  viewCount: number;
+  isFeatured: boolean;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateOrUpdateBlogPostRequest {
+  slug: string;
+  title: string;
+  summary: string;
+  contentMarkdown: string;
+  categoryId: number;
+  coverMediaId?: number;
+  authorName?: string;
+  readingTimeMinutes?: number;
+  tags?: string[];
+  status?: string;
+  isFeatured?: boolean;
+  active?: boolean;
+}
+
+export interface PublicBlogResponse {
+  items: BlogPostDTO[];
+  categories: BlogCategoryDTO[];
+  featuredPost?: BlogPostDTO;
+  total: number;
+  page: number;
+  size: number;
+  totalPages: number;
+}
+
+export interface BlogPostDetailResponse {
+  post: BlogPostDTO;
+  relatedPosts: BlogPostDTO[];
 }
 
 // Contact Page & Inquiry DTOs (Corte 9)

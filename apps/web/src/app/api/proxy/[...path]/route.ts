@@ -31,6 +31,12 @@ import {
   ContactPageDTO,
   ContactInquiryDTO,
   PublicContactResponse,
+  DEFAULT_BLOG_CATEGORIES,
+  DEFAULT_BLOG_POSTS,
+  BlogCategoryDTO,
+  BlogPostDTO,
+  PublicBlogResponse,
+  BlogPostDetailResponse,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -565,7 +571,143 @@ async function proxyOrFallback(
     }
 
     if (targetPath.includes("blog")) {
-      return NextResponse.json(MOCK_BLOG_POSTS, { status: 200 });
+      const posts = readStoredJson<BlogPostDTO[]>("blog_posts.json", DEFAULT_BLOG_POSTS);
+      const categories = readStoredJson<BlogCategoryDTO[]>("blog_categories.json", DEFAULT_BLOG_CATEGORIES);
+
+      if (targetPath.includes("categories")) {
+        if (method === "POST") {
+          const newCat: BlogCategoryDTO = {
+            id: Date.now(),
+            name: String(bodyJson?.name || "Nueva Categoría"),
+            slug: String(bodyJson?.slug || `cat-${Date.now()}`),
+            description: bodyJson?.description ? String(bodyJson.description) : undefined,
+            displayOrder: bodyJson?.displayOrder ? Number(bodyJson.displayOrder) : categories.length + 1,
+            active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          const updated = [...categories, newCat];
+          writeStoredJson("blog_categories.json", updated);
+          return NextResponse.json(newCat, { status: 201 });
+        }
+        if (method === "PUT") {
+          const idMatch = targetPath.match(/categories\/(\d+)/);
+          const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+          const idx = categories.findIndex((c) => c.id === id);
+          if (idx !== -1) {
+            const updatedItem = { ...categories[idx], ...(bodyJson || {}), updatedAt: new Date().toISOString() };
+            categories[idx] = updatedItem as BlogCategoryDTO;
+            writeStoredJson("blog_categories.json", categories);
+            return NextResponse.json(updatedItem, { status: 200 });
+          }
+        }
+        if (method === "DELETE") {
+          const idMatch = targetPath.match(/categories\/(\d+)/);
+          const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+          const idx = categories.findIndex((c) => c.id === id);
+          if (idx !== -1) {
+            categories[idx].active = false;
+            writeStoredJson("blog_categories.json", categories);
+          }
+          return new NextResponse(null, { status: 204 });
+        }
+        return NextResponse.json(categories.filter((c) => c.active), { status: 200 });
+      }
+
+      if (targetPath.includes("posts/") && method === "GET") {
+        const slug = targetPath.split("posts/")[1]?.split("?")[0];
+        const post = posts.find((p) => p.slug === slug && p.active);
+        if (post) {
+          post.viewCount = (post.viewCount || 0) + 1;
+          writeStoredJson("blog_posts.json", posts);
+          const related = posts.filter((p) => p.categoryId === post.categoryId && p.id !== post.id && p.active && p.status === "PUBLISHED").slice(0, 3);
+          const res: BlogPostDetailResponse = { post, relatedPosts: related };
+          return NextResponse.json(res, { status: 200 });
+        }
+      }
+
+      if (method === "POST") {
+        const cat = categories.find((c) => c.id === bodyJson?.categoryId) || categories[0];
+        const newPost: BlogPostDTO = {
+          id: Date.now(),
+          slug: String(bodyJson?.slug || `post-${Date.now()}`),
+          title: String(bodyJson?.title || "Nuevo Artículo"),
+          summary: String(bodyJson?.summary || ""),
+          contentMarkdown: String(bodyJson?.contentMarkdown || ""),
+          categoryId: Number(bodyJson?.categoryId || cat.id),
+          categoryName: cat.name,
+          categorySlug: cat.slug,
+          coverMediaId: bodyJson?.coverMediaId ? Number(bodyJson.coverMediaId) : undefined,
+          coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+          authorName: String(bodyJson?.authorName || "Equipo Viajes Carolina"),
+          readingTimeMinutes: Number(bodyJson?.readingTimeMinutes || 5),
+          tags: Array.isArray(bodyJson?.tags) ? (bodyJson?.tags as string[]) : [],
+          status: String(bodyJson?.status || "PUBLISHED"),
+          publishedAt: String(bodyJson?.status || "PUBLISHED") === "PUBLISHED" ? new Date().toISOString() : undefined,
+          viewCount: 0,
+          isFeatured: bodyJson?.isFeatured !== undefined ? Boolean(bodyJson.isFeatured) : false,
+          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [newPost, ...posts];
+        writeStoredJson("blog_posts.json", updated);
+        return NextResponse.json(newPost, { status: 201 });
+      }
+
+      if (method === "PUT") {
+        const idMatch = targetPath.match(/posts\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const idx = posts.findIndex((p) => p.id === id);
+        if (idx !== -1) {
+          const cat = bodyJson?.categoryId ? categories.find((c) => c.id === bodyJson?.categoryId) || categories[0] : null;
+          const updatedItem = {
+            ...posts[idx],
+            ...(bodyJson || {}),
+            ...(cat ? { categoryName: cat.name, categorySlug: cat.slug } : {}),
+            updatedAt: new Date().toISOString(),
+          };
+          posts[idx] = updatedItem as BlogPostDTO;
+          writeStoredJson("blog_posts.json", posts);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+
+      if (method === "DELETE") {
+        const idMatch = targetPath.match(/posts\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const idx = posts.findIndex((p) => p.id === id);
+        if (idx !== -1) {
+          posts[idx].active = false;
+          posts[idx].status = "ARCHIVED";
+          writeStoredJson("blog_posts.json", posts);
+        }
+        return new NextResponse(null, { status: 204 });
+      }
+
+      // Public Blog List Response
+      const url = new URL(req.url);
+      const catSlug = url.searchParams.get("category");
+      const search = url.searchParams.get("search");
+      let filtered = posts.filter((p) => p.active && p.status === "PUBLISHED");
+      if (catSlug && catSlug !== "all") {
+        filtered = filtered.filter((p) => p.categorySlug === catSlug);
+      }
+      if (search && search.trim()) {
+        const q = search.toLowerCase();
+        filtered = filtered.filter((p) => p.title.toLowerCase().includes(q) || p.summary.toLowerCase().includes(q) || p.tags.some((t) => t.toLowerCase().includes(q)));
+      }
+      const featured = (!catSlug || catSlug === "all") && (!search || !search.trim()) ? posts.find((p) => p.isFeatured && p.active && p.status === "PUBLISHED") : undefined;
+      const res: PublicBlogResponse = {
+        items: filtered,
+        categories: categories.filter((c) => c.active),
+        featuredPost: featured,
+        total: filtered.length,
+        page: 0,
+        size: 9,
+        totalPages: Math.ceil(filtered.length / 9),
+      };
+      return NextResponse.json(res, { status: 200 });
     }
 
     return NextResponse.json({ status: "UP", mock: true }, { status: 200 });

@@ -3,7 +3,6 @@ import {
   OfficeLocationDTO,
   PromotionDTO,
   CreateOrUpdatePromotionRequest,
-  BlogPostDTO,
   ApiInfoDTO,
   MediaAssetDTO,
   MediaPageResponse,
@@ -28,6 +27,12 @@ import {
   ContactInquiryDTO,
   UpdateInquiryStatusRequest,
   PublicContactResponse,
+  BlogCategoryDTO,
+  CreateOrUpdateBlogCategoryRequest,
+  BlogPostDTO,
+  CreateOrUpdateBlogPostRequest,
+  PublicBlogResponse,
+  BlogPostDetailResponse,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -914,19 +919,288 @@ export function updateMockMediaFocalPoint(id: number, req: UpdateMediaFocalPoint
   return updated;
 }
 
-export const MOCK_BLOG_POSTS: BlogPostDTO[] = [
+export const DEFAULT_BLOG_CATEGORIES: BlogCategoryDTO[] = [
   {
     id: 1,
-    slug: "guia-completa-para-viajar-al-caribe",
-    title: "Guía completa para tu primer viaje al Caribe",
-    excerpt: "Todo lo que necesitas saber sobre pasaportes, temporadas ideales y qué empacar.",
-    content: "Viajar al Caribe es una de las experiencias más revitalizantes...",
-    category: "Consejos de Viaje",
-    publishedAt: "2026-08-10",
-    readingTimeMinutes: 5,
-    authorName: "Carolina Zúñiga",
+    name: "Guías de Destinos",
+    slug: "guias-de-destinos",
+    description: "Consejos detallados, qué ver y cómo planificar tu estancia en los mejores destinos del mundo.",
+    displayOrder: 1,
+    active: true,
+  },
+  {
+    id: 2,
+    name: "Consejos de Viaje",
+    slug: "consejos-de-viaje",
+    description: "Tips prácticos sobre equipaje, documentación, seguros de viaje y cambio de moneda.",
+    displayOrder: 2,
+    active: true,
+  },
+  {
+    id: 3,
+    name: "Lunas de Miel & Romance",
+    slug: "lunas-de-miel",
+    description: "Inspiración, hoteles boutique y resorts exclusivos para parejas y recién casados.",
+    displayOrder: 3,
+    active: true,
+  },
+  {
+    id: 4,
+    name: "Gastronomía & Cultura",
+    slug: "gastronomia-y-cultura",
+    description: "Descubre los sabores ancestrales y las tradiciones culturales de cada rincón turístico.",
+    displayOrder: 4,
+    active: true,
   },
 ];
+
+export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
+  {
+    id: 1,
+    slug: "guia-completa-para-viajar-a-cartagena-2026",
+    title: "Guía Completa para viajar a Cartagena de Indias: Qué ver, clima y mejores zonas",
+    summary: "Descubre por qué Cartagena es la joya del Caribe: desde sus murallas históricas en la Ciudad Amurallada hasta las aguas cristalinas de las Islas del Rosario.",
+    contentMarkdown: `# Guía Completa para viajar a Cartagena de Indias 🌴\n\nCartagena de Indias es uno de los destinos más vibrantes y coloridos de Sudamérica. Con su arquitectura colonial, atardeceres mágicos sobre el mar Caribe y gastronomía de primer nivel, es perfecta para escapadas de 4 a 5 días.\n\n---\n\n## 1. La Mejor Época para Viajar\nEl clima en Cartagena es tropical todo el año, con una temperatura promedio de 28°C a 32°C.\n- **Temporada seca (Diciembre a Abril):** Brisa fresca, cielos despejados y poca lluvia. Ideal para días de playa y paseos en catamarán.\n- **Temporada verde (Mayo a Noviembre):** Menor afluencia turística, mejores tarifas hoteleras y chaparrones breves al caer la tarde.\n\n---\n\n## 2. Zonas Imperdibles\n- **Ciudad Amurallada & San Diego:** Camina entre balcones floridos, plazas históricas y los mejores restaurantes de mariscos.\n- **Barrio Getsemaní:** El corazón bohemio y artístico, famoso por su arte urbano, música en vivo y ambiente nocturno.\n- **Islas del Rosario & Barú:** A solo 45 minutos en lancha, encontrarás playas de arena blanca y aguas turquesas ideales para snorkel.\n\n---\n\n## 3. Consejos de una Asesora\n> *"En Viajes Carolina recomendamos dedicar al menos un día completo a navegar hacia un resort de playa privado en las Islas del Rosario para disfrutar de la tranquilidad sin vendedores ambulantes."* — **Carolina Zúñiga**, Directora de Experiencias.\n\n¿Quieres cotizar tu paquete a Cartagena con vuelos y hotel boutique incluido? ¡Escríbenos por WhatsApp!`,
+    categoryId: 1,
+    categoryName: "Guías de Destinos",
+    categorySlug: "guias-de-destinos",
+    coverMediaId: 2,
+    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    authorName: "Carolina Zúñiga",
+    readingTimeMinutes: 6,
+    tags: ["Cartagena", "Caribe", "Colombia", "Playas", "Consejos"],
+    status: "PUBLISHED",
+    publishedAt: "2026-08-18T00:00:00.000Z",
+    viewCount: 342,
+    isFeatured: true,
+    active: true,
+  },
+  {
+    id: 2,
+    slug: "machu-picchu-todo-lo-que-debes-saber-antes-de-subir",
+    title: "Machu Picchu: Todo lo que debes saber sobre circuitos, trenes y entradas",
+    summary: "Planifica tu visita a la maravilla del mundo sin contratiempos. Te explicamos los nuevos circuitos del santuario, tipos de trenes y aclimatación en Cusco.",
+    contentMarkdown: `# Machu Picchu: Guía Definitiva y Consejos Prácticos 🏔️\n\nSubir a Machu Picchu es el sueño de millones de viajeros. Sin embargo, debido a las regulaciones de conservación y los nuevos circuitos oficiales del Ministerio de Cultura, una planificación anticipada es esencial.\n\n---\n\n## 1. Los Nuevos Circuitos Oficiales\nA partir del 2024, el santuario se divide en circuitos específicos:\n- **Circuito Panorámico (Terraza Clásica):** Perfecto para la foto postal emblemática y las vistas superiores.\n- **Circuito Clásico (Ciudadela Central):** Recorre el Templo del Sol, la Plaza Principal y las terrazas agrícolas.\n- **Circuito de la Realeza:** Acceso directo a la zona baja y fuentes ceremoniales.\n\n---\n\n## 2. Tipos de Trenes desde Ollantaytambo\n- **Expedition / The 360°:** Opciones cómodas con ventanas panorámicas superiores para apreciar el Valle Sagrado.\n- **Vistadome / Observatory:** Vagones con shows folclóricos en vivo, música andina y aperitivos tradicionales.\n- **Hiram Bingham (Belmond):** Lujo supremo con comida gourmet y coche bar abierto.\n\n---\n\n## 3. Claves para Evitar el Mal de Altura (Soroche)\n1. Pasa al menos el primer día descansando en el Valle Sagrado (2,870 msnm) antes de pernoctar en Cusco ciudad (3,400 msnm).\n2. Bebe suficiente mate de coca o infusión de muña.\n3. Come ligero durante las primeras 24 horas.\n\n¿Deseas que coordinemos tus boletos de tren y guiado privado en Machu Picchu? ¡Contáctanos y diseñamos tu itinerario!`,
+    categoryId: 1,
+    categoryName: "Guías de Destinos",
+    categorySlug: "guias-de-destinos",
+    coverMediaId: 3,
+    coverMediaUrl: "/media/demo-cusco-machupicchu.webp",
+    authorName: "Valeria Gómez",
+    readingTimeMinutes: 8,
+    tags: ["Cusco", "Machu Picchu", "Perú", "Aventura", "Historia"],
+    status: "PUBLISHED",
+    publishedAt: "2026-08-18T00:00:00.000Z",
+    viewCount: 518,
+    isFeatured: true,
+    active: true,
+  },
+  {
+    id: 3,
+    slug: "consejos-para-tu-primer-resort-all-inclusive-en-punta-cana",
+    title: "Consejos para tu primer resort All-Inclusive en Punta Cana",
+    summary: "Maximiza tu experiencia todo incluido: cómo elegir entre resorts familiares o solo adultos, reservas de cenas temáticas y propinas.",
+    contentMarkdown: `# Cómo Disfrutar al Máximo un Resort Todo Incluido en Punta Cana 🍹\n\nPunta Cana es el sinónimo universal de desconexión caribeña. Con kilómetros de costa en Playa Bávaro y Uvero Alto, elegir el hotel correcto marcará la diferencia en tus vacaciones.\n\n---\n\n## 1. Solo Adultos vs. Resort Familiar\n- **Family-Friendly:** Cuentan con parques acuáticos, clubes infantiles con monitores certificados y restaurantes con menú para niños.\n- **Adults-Only:** Piscinas infinity con ambiente chill-out, cenas gourmet a la luz de las velas y serenidad garantizada.\n\n---\n\n## 2. Trucos para las Cenas a la Carta\nLa mayoría de los resorts 5 estrellas incluyen cenas temáticas (japonesa teppanyaki, francesa, italiana o cortes de carne).\n- **Tip Pro:** Descarga la app del hotel apenas hagas el check-in para reservar tus horarios favoritos de cena y evitar filas.\n\n---\n\n## 3. ¿Qué Ropa Empacar?\n- Trajes de baño y ropa ligera de lino/algodón.\n- Al menos un atuendo *elegante sport* (pantalón largo para caballeros) para los restaurantes temáticos nocturnos.\n- Protector solar biodegradable para proteger los arrecifes coralinos.\n\n¡Cotiza tu paquete All-Inclusive a Punta Cana con vuelos y traslados privados con Viajes Carolina!`,
+    categoryId: 3,
+    categoryName: "Lunas de Miel & Romance",
+    categorySlug: "lunas-de-miel",
+    coverMediaId: 2,
+    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    authorName: "Lucía Ramos",
+    readingTimeMinutes: 5,
+    tags: ["Punta Cana", "All Inclusive", "Caribe", "Lunas de Miel", "Resorts"],
+    status: "PUBLISHED",
+    publishedAt: "2026-08-18T00:00:00.000Z",
+    viewCount: 289,
+    isFeatured: false,
+    active: true,
+  },
+  {
+    id: 4,
+    slug: "documentacion-y-seguros-que-necesitas-para-viajar-en-2026",
+    title: "Documentación y seguros: Lo que necesitas saber antes de salir del Perú",
+    summary: "Vigencia de pasaporte, requisitos para viajar por Sudamérica con DNI y la importancia de contar con tarjeta de asistencia médica internacional.",
+    contentMarkdown: `# Documentos y Asistencia Médica: Viaja con Total Tranquilidad 📋\n\nPlanear un viaje no solo se trata de elegir el destino y el hotel; asegurarte de que tu documentación esté al día te ahorrará sorpresas desagradables en el counter del aeropuerto.\n\n---\n\n## 1. Vigencia del Pasaporte\nLa mayoría de los países internacionales (incluyendo la Unión Europea, Estados Unidos y países del Caribe) exigen que tu pasaporte tenga **al menos 6 meses de vigencia** a partir de la fecha de retorno.\n\n---\n\n## 2. ¿Cuándo Puedes Viajar Solo con DNI?\nGracias a los acuerdos de la Comunidad Andina y el Mercosur, los ciudadanos peruanos pueden viajar a:\n- Colombia, Ecuador, Bolivia, Chile, Argentina, Brasil, Uruguay y Paraguay portando únicamente su **DNI vigente en buen estado**.\n\n---\n\n## 3. La Importancia de la Tarjeta de Asistencia Médica\nUn imprevisto de salud en el extranjero puede costar miles de dólares. En Viajes Carolina siempre incluimos planes integrales que cubren:\n- Asistencia médica por accidente o enfermedad 24/7.\n- Compensación por pérdida o demora de equipaje.\n- Telemedicina en español a través de app móvil.\n\n¿Tienes dudas sobre los requisitos de tu próximo destino? ¡Nuestras asesoras te guían paso a paso!`,
+    categoryId: 2,
+    categoryName: "Consejos de Viaje",
+    categorySlug: "consejos-de-viaje",
+    coverMediaId: 1,
+    coverMediaUrl: "/media/demo-hero-travel.webp",
+    authorName: "Carolina Zúñiga",
+    readingTimeMinutes: 4,
+    tags: ["Documentación", "Seguros", "Tips", "Aeropuertos", "DNI"],
+    status: "PUBLISHED",
+    publishedAt: "2026-08-18T00:00:00.000Z",
+    viewCount: 195,
+    isFeatured: false,
+    active: true,
+  },
+];
+
+export let MOCK_BLOG_CATEGORIES: BlogCategoryDTO[] = [...DEFAULT_BLOG_CATEGORIES];
+export let MOCK_BLOG_POSTS: BlogPostDTO[] = [...DEFAULT_BLOG_POSTS];
+
+export function getMockPublicBlog(categorySlug?: string, search?: string, page = 0, size = 9): PublicBlogResponse {
+  let filtered = MOCK_BLOG_POSTS.filter((p) => p.active && p.status === "PUBLISHED");
+  if (categorySlug && categorySlug !== "all") {
+    filtered = filtered.filter((p) => p.categorySlug === categorySlug);
+  }
+  if (search && search.trim()) {
+    const q = search.toLowerCase();
+    filtered = filtered.filter(
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        p.summary.toLowerCase().includes(q) ||
+        p.tags.some((t) => t.toLowerCase().includes(q))
+    );
+  }
+  const total = filtered.length;
+  const start = page * size;
+  const items = filtered.slice(start, start + size);
+  const featuredPost = (!categorySlug || categorySlug === "all") && (!search || !search.trim())
+    ? MOCK_BLOG_POSTS.find((p) => p.isFeatured && p.active && p.status === "PUBLISHED") || items[0]
+    : undefined;
+
+  return {
+    items,
+    categories: MOCK_BLOG_CATEGORIES.filter((c) => c.active),
+    featuredPost,
+    total,
+    page,
+    size,
+    totalPages: Math.ceil(total / (size > 0 ? size : 9)),
+  };
+}
+
+export function getMockBlogCategories(admin = false): BlogCategoryDTO[] {
+  return admin ? MOCK_BLOG_CATEGORIES : MOCK_BLOG_CATEGORIES.filter((c) => c.active);
+}
+
+export function getMockBlogPostBySlug(slug: string): BlogPostDetailResponse {
+  const post = MOCK_BLOG_POSTS.find((p) => p.slug === slug && p.active);
+  if (!post) throw new Error(`Artículo no encontrado con slug: ${slug}`);
+  post.viewCount = (post.viewCount || 0) + 1;
+  const relatedPosts = MOCK_BLOG_POSTS.filter(
+    (p) => p.categoryId === post.categoryId && p.id !== post.id && p.active && p.status === "PUBLISHED"
+  ).slice(0, 3);
+  return { post, relatedPosts };
+}
+
+export function getMockAdminBlogPosts(status?: string, search?: string): BlogPostDTO[] {
+  let list = [...MOCK_BLOG_POSTS];
+  if (status && status !== "ALL") {
+    list = list.filter((p) => p.status === status);
+  }
+  if (search && search.trim()) {
+    const q = search.toLowerCase();
+    list = list.filter(
+      (p) => p.title.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q)
+    );
+  }
+  return list;
+}
+
+export function createMockBlogPost(req: CreateOrUpdateBlogPostRequest): BlogPostDTO {
+  const cat = MOCK_BLOG_CATEGORIES.find((c) => c.id === req.categoryId) || MOCK_BLOG_CATEGORIES[0];
+  const newPost: BlogPostDTO = {
+    id: Date.now(),
+    slug: req.slug,
+    title: req.title,
+    summary: req.summary,
+    contentMarkdown: req.contentMarkdown,
+    categoryId: req.categoryId,
+    categoryName: cat.name,
+    categorySlug: cat.slug,
+    coverMediaId: req.coverMediaId,
+    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    authorName: req.authorName || "Equipo Viajes Carolina",
+    readingTimeMinutes: req.readingTimeMinutes || 5,
+    tags: req.tags || [],
+    status: req.status || "PUBLISHED",
+    publishedAt: req.status === "PUBLISHED" ? new Date().toISOString() : undefined,
+    viewCount: 0,
+    isFeatured: req.isFeatured ?? false,
+    active: req.active ?? true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_BLOG_POSTS.unshift(newPost);
+  return newPost;
+}
+
+export function updateMockBlogPost(id: number, req: CreateOrUpdateBlogPostRequest): BlogPostDTO {
+  const index = MOCK_BLOG_POSTS.findIndex((p) => p.id === id);
+  if (index === -1) throw new Error(`Artículo no encontrado con ID: ${id}`);
+  const current = MOCK_BLOG_POSTS[index];
+  const cat = req.categoryId ? MOCK_BLOG_CATEGORIES.find((c) => c.id === req.categoryId) || current : current;
+  const updated: BlogPostDTO = {
+    ...current,
+    slug: req.slug || current.slug,
+    title: req.title || current.title,
+    summary: req.summary || current.summary,
+    contentMarkdown: req.contentMarkdown || current.contentMarkdown,
+    categoryId: req.categoryId || current.categoryId,
+    categoryName: (cat as any).name || current.categoryName,
+    categorySlug: (cat as any).slug || current.categorySlug,
+    coverMediaId: req.coverMediaId !== undefined ? req.coverMediaId : current.coverMediaId,
+    authorName: req.authorName || current.authorName,
+    readingTimeMinutes: req.readingTimeMinutes || current.readingTimeMinutes,
+    tags: req.tags || current.tags,
+    status: req.status || current.status,
+    isFeatured: req.isFeatured !== undefined ? req.isFeatured : current.isFeatured,
+    active: req.active !== undefined ? req.active : current.active,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_BLOG_POSTS[index] = updated;
+  return updated;
+}
+
+export function deleteMockBlogPost(id: number): void {
+  const index = MOCK_BLOG_POSTS.findIndex((p) => p.id === id);
+  if (index !== -1) {
+    MOCK_BLOG_POSTS[index].active = false;
+    MOCK_BLOG_POSTS[index].status = "ARCHIVED";
+  }
+}
+
+export function createMockBlogCategory(req: CreateOrUpdateBlogCategoryRequest): BlogCategoryDTO {
+  const newCat: BlogCategoryDTO = {
+    id: Date.now(),
+    name: req.name,
+    slug: req.slug,
+    description: req.description,
+    displayOrder: req.displayOrder || MOCK_BLOG_CATEGORIES.length + 1,
+    active: req.active ?? true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_BLOG_CATEGORIES.push(newCat);
+  return newCat;
+}
+
+export function updateMockBlogCategory(id: number, req: CreateOrUpdateBlogCategoryRequest): BlogCategoryDTO {
+  const index = MOCK_BLOG_CATEGORIES.findIndex((c) => c.id === id);
+  if (index === -1) throw new Error(`Categoría no encontrada con ID: ${id}`);
+  const current = MOCK_BLOG_CATEGORIES[index];
+  const updated: BlogCategoryDTO = {
+    ...current,
+    name: req.name || current.name,
+    slug: req.slug || current.slug,
+    description: req.description !== undefined ? req.description : current.description,
+    displayOrder: req.displayOrder ?? current.displayOrder,
+    active: req.active !== undefined ? req.active : current.active,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_BLOG_CATEGORIES[index] = updated;
+  return updated;
+}
+
+export function deleteMockBlogCategory(id: number): void {
+  const index = MOCK_BLOG_CATEGORIES.findIndex((c) => c.id === id);
+  if (index !== -1) {
+    MOCK_BLOG_CATEGORIES[index].active = false;
+  }
+}
 
 export const DEFAULT_CONTACT_PAGE: ContactPageDTO = {
   id: 1,

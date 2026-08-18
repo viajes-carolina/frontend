@@ -28,6 +28,11 @@ import {
   ContactInquiryDTO,
   UpdateInquiryStatusRequest,
   PublicContactResponse,
+  BlogCategoryDTO,
+  CreateOrUpdateBlogPostRequest,
+  CreateOrUpdateBlogCategoryRequest,
+  PublicBlogResponse,
+  BlogPostDetailResponse,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -73,6 +78,16 @@ import {
   getMockAdminInquiries,
   submitMockContactInquiry,
   updateMockInquiryStatus,
+  getMockPublicBlog,
+  getMockBlogCategories,
+  getMockBlogPostBySlug,
+  getMockAdminBlogPosts,
+  createMockBlogPost,
+  updateMockBlogPost,
+  deleteMockBlogPost,
+  createMockBlogCategory,
+  updateMockBlogCategory,
+  deleteMockBlogCategory,
   getMockMediaPage,
   updateMockMediaFocalPoint,
   DEFAULT_MEDIA_ASSETS,
@@ -931,17 +946,148 @@ export class ViajesCarolinaApiClient {
     return updateMockInquiryStatus(id, status);
   }
 
-  async getBlogPosts(): Promise<BlogPostDTO[]> {
-    if (this.useMocks) return MOCK_BLOG_POSTS;
+  // ==========================================
+  // Blog API (Corte 10)
+  // ==========================================
+
+  async getPublicBlog(categorySlug?: string, search?: string, page = 0, size = 9): Promise<PublicBlogResponse> {
     try {
-      const res = await fetch(this.getEffectiveUrl("public/v1/blog"), {
+      const params = new URLSearchParams();
+      if (categorySlug && categorySlug !== "all") params.append("category", categorySlug);
+      if (search && search.trim()) params.append("search", search.trim());
+      params.append("page", page.toString());
+      params.append("size", size.toString());
+
+      const url = `public/v1/blog?${params.toString()}`;
+      const res = await fetch(this.getEffectiveUrl(url), {
         cache: "no-store",
       });
       if (res.ok) return await res.json();
     } catch {
       // fallback
     }
-    return MOCK_BLOG_POSTS;
+    return getMockPublicBlog(categorySlug, search, page, size);
+  }
+
+  async getBlogCategories(admin = false): Promise<BlogCategoryDTO[]> {
+    try {
+      const url = admin ? "admin/v1/blog/categories" : "public/v1/blog/categories";
+      const res = await fetch(this.getEffectiveUrl(url), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockBlogCategories(admin);
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPostDetailResponse> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`public/v1/blog/posts/${slug}`), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockBlogPostBySlug(slug);
+  }
+
+  async getAdminBlogPosts(status?: string, search?: string, page = 0, size = 50): Promise<BlogPostDTO[]> {
+    try {
+      const params = new URLSearchParams();
+      if (status && status !== "ALL") params.append("status", status);
+      if (search && search.trim()) params.append("search", search.trim());
+      params.append("page", page.toString());
+      params.append("size", size.toString());
+
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/posts?${params.toString()}`), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAdminBlogPosts(status, search);
+  }
+
+  async createBlogPost(payload: CreateOrUpdateBlogPostRequest): Promise<BlogPostDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/blog/posts"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return createMockBlogPost(payload);
+  }
+
+  async updateBlogPost(id: number, payload: CreateOrUpdateBlogPostRequest): Promise<BlogPostDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/posts/${id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockBlogPost(id, payload);
+  }
+
+  async deleteBlogPost(id: number): Promise<void> {
+    try {
+      await fetch(this.getEffectiveUrl(`admin/v1/blog/posts/${id}`), {
+        method: "DELETE",
+      });
+    } catch {
+      // fallback
+    }
+    deleteMockBlogPost(id);
+  }
+
+  async createBlogCategory(payload: CreateOrUpdateBlogCategoryRequest): Promise<BlogCategoryDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("admin/v1/blog/categories"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return createMockBlogCategory(payload);
+  }
+
+  async updateBlogCategory(id: number, payload: CreateOrUpdateBlogCategoryRequest): Promise<BlogCategoryDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/categories/${id}`), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockBlogCategory(id, payload);
+  }
+
+  async deleteBlogCategory(id: number): Promise<void> {
+    try {
+      await fetch(this.getEffectiveUrl(`admin/v1/blog/categories/${id}`), {
+        method: "DELETE",
+      });
+    } catch {
+      // fallback
+    }
+    deleteMockBlogCategory(id);
   }
 }
 

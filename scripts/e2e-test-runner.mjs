@@ -56,12 +56,25 @@ async function runE2ETests() {
     const contactoHtml = await contactoRes.text();
     assert(contactoHtml.includes("Estamos para Ayudarte") || contactoHtml.includes("próximo destino"), "HTML de Contacto contiene Hero de Contacto (Corte 9)");
     assert(contactoHtml.includes("Envíanos un Mensaje") || contactoHtml.includes("Nombre Completo"), "HTML de Contacto contiene Formulario con Validación Anti-Bot (Corte 9)");
-    assert(contactoHtml.includes("Atención Directa") || contactoHtml.includes("Escríbenos por WhatsApp"), "HTML de Contacto contiene Caja de Canales Directos & Oficina (Corte 9)");
+    assert(contactoHtml.includes("Atención Directa") || contactoHtml.includes("Canal Directo") || contactoHtml.includes("Oficina en Miraflores") || contactoHtml.includes("Escríbenos por WhatsApp") || contactoHtml.includes("Iniciar Chat por WhatsApp"), "HTML de Contacto contiene Caja de Canales Directos & Oficina (Corte 9)");
+
+    const blogRes = await fetch(`${BASE_WEB_URL}/blog`);
+    assert(blogRes.status === 200, `Página pública Blog /blog responde HTTP 200 OK (${blogRes.status})`);
+    const blogHtml = await blogRes.text();
+    assert(blogHtml.includes("Historias &amp; Inspiración") || blogHtml.includes("Historias & Inspiración") || blogHtml.includes("Guías, Consejos y Destinos") || blogHtml.includes("Blog"), "HTML de Blog contiene Hero y Buscador (Corte 10)");
+    assert(blogHtml.includes("Cartagena") || blogHtml.includes("Machu Picchu") || blogHtml.includes("Punta Cana"), "HTML de Blog contiene Artículos y Destinos (Corte 10)");
+
+    const blogSlugRes = await fetch(`${BASE_WEB_URL}/blog/guia-completa-para-viajar-a-cartagena-2026`);
+    assert(blogSlugRes.status === 200, `Página de artículo /blog/guia-completa-para-viajar-a-cartagena-2026 responde HTTP 200 OK (${blogSlugRes.status})`);
+    const blogSlugHtml = await blogSlugRes.text();
+    assert(blogSlugHtml.includes("Guía Completa para Viajar a Cartagena") || blogSlugHtml.includes("Cartagena"), "HTML de Artículo individual contiene Título y Lectura (Corte 10)");
+    assert(blogSlugHtml.includes("Carolina Zúñiga") || blogSlugHtml.includes("Especialista en Destinos"), "HTML de Artículo contiene Perfil de Autora (Corte 10)");
+    assert(blogSlugHtml.includes("Hablar con una Asesora") || blogSlugHtml.includes("Diseñamos tu viaje a medida"), "HTML de Artículo contiene CTA Directo de WhatsApp (Corte 10)");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 9)
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 10)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
@@ -84,6 +97,9 @@ async function runE2ETests() {
 
     const contactoAdminRes = await fetch(`${BASE_ADMIN_URL}/contacto`);
     assert(contactoAdminRes.status === 200, `Módulo Contacto & Leads responde con HTTP 200 OK (${contactoAdminRes.status})`);
+
+    const blogAdminRes = await fetch(`${BASE_ADMIN_URL}/blog`);
+    assert(blogAdminRes.status === 200, `Módulo Blog CMS responde con HTTP 200 OK (${blogAdminRes.status})`);
 
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
@@ -506,8 +522,90 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Contacto & Leads: ${err.message}`);
   }
 
-  // 12. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 12. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 12. Verificación de API Proxy & Persistencia E2E (Corte 10: Blog & CMS)...
+  console.log("\n📦 12. Verificando API Proxy & Persistencia E2E (Corte 10: Blog & CMS)...");
+  try {
+    // Listado público de blog con filtros
+    const blogGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/blog`);
+    assert(blogGet.status === 200, `GET /api/proxy/public/v1/blog responde 200 OK (${blogGet.status})`);
+    const blogData = await blogGet.json();
+    const blogPosts = Array.isArray(blogData.items) ? blogData.items : (Array.isArray(blogData.posts) ? blogData.posts : []);
+    assert(Array.isArray(blogPosts) && blogPosts.length >= 4, `Listado de blog contiene ${blogPosts.length} artículos`);
+    assert(Array.isArray(blogData.categories) && blogData.categories.length >= 4, `Listado de categorías contiene ${blogData.categories?.length || 0} categorías`);
+
+    // Consulta de categorías
+    const catGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/blog/categories`);
+    assert(catGet.status === 200, `GET /api/proxy/public/v1/blog/categories responde 200 OK (${catGet.status})`);
+    const catList = await catGet.json();
+    assert(Array.isArray(catList) && catList.length >= 4, `Endpoint de categorías devuelve ${catList.length} categorías`);
+
+    // Detalle de artículo por slug e incremento de vistas
+    const slugTest = "guia-completa-para-viajar-a-cartagena-2026";
+    const postDetailGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/blog/posts/${slugTest}`);
+    assert(postDetailGet.status === 200, `GET /api/proxy/public/v1/blog/posts/${slugTest} responde 200 OK (${postDetailGet.status})`);
+    const postDetail = await postDetailGet.json();
+    assert(!!postDetail.post && postDetail.post.slug === slugTest, `Artículo cargado por slug: "${postDetail.post?.title}"`);
+    assert(Array.isArray(postDetail.relatedPosts), `Artículos relacionados devueltos: ${postDetail.relatedPosts?.length || 0} relacionados`);
+
+    // Listado de administración de artículos
+    const adminPostsGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/blog/posts`);
+    assert(adminPostsGet.status === 200, `GET /api/proxy/admin/v1/blog/posts responde 200 OK (${adminPostsGet.status})`);
+    const adminPostsList = await adminPostsGet.json();
+    assert(Array.isArray(adminPostsList) && adminPostsList.length >= 4, `Panel CMS contiene ${adminPostsList.length} artículos`);
+
+    // Crear un nuevo artículo E2E
+    const newArticleSlug = `test-articulo-${Date.now()}`;
+    const newPostRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/blog/posts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: "Test Artículo E2E Nuevo Destino",
+        slug: newArticleSlug,
+        categoryId: 1,
+        summary: "Resumen de prueba automatizada para verificar el motor de CMS y persistencia.",
+        contentMarkdown: "## Introducción al nuevo destino\n\nEste es un artículo creado automáticamente por el runner E2E.\n\n- Punto 1\n- Punto 2",
+        authorName: "Carolina Zúñiga",
+        readingTimeMinutes: 4,
+        tags: ["Test", "E2E", "Aventura"],
+        coverMediaId: 1,
+        status: "PUBLISHED",
+        isFeatured: false,
+        active: true,
+      }),
+    });
+    assert(newPostRes.status === 201 || newPostRes.status === 200, `POST /api/proxy/admin/v1/blog/posts responde 201/200 OK (${newPostRes.status})`);
+    const createdPost = await newPostRes.json();
+    assert(createdPost.slug === newArticleSlug, `Artículo creado con slug correcto: "${createdPost.slug}"`);
+
+    // Mutación E2E de Artículo existente
+    const testArticleSummary = "Guía imprescindible con los mejores consejos, restaurantes en la ciudad amurallada y excursiones en islas del Caribe.";
+    const postPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/blog/posts/1`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: "Guía Completa para Viajar a Cartagena 2026",
+        slug: "guia-completa-para-viajar-a-cartagena-2026",
+        categoryId: 1,
+        summary: testArticleSummary,
+        contentMarkdown: "# Guía Completa para Viajar a Cartagena 2026\n\nCartagena de Indias es uno de los destinos más vibrantes del Caribe colombiano.",
+        authorName: "Carolina Zúñiga",
+        readingTimeMinutes: 6,
+        tags: ["Cartagena", "Colombia", "Caribe", "Playas"],
+        coverMediaId: 2,
+        status: "PUBLISHED",
+        isFeatured: true,
+        active: true,
+      }),
+    });
+    assert(postPut.status === 200, `PUT /api/proxy/admin/v1/blog/posts/1 responde 200 OK (${postPut.status})`);
+    const updatedPost = await postPut.json();
+    assert(updatedPost.summary === testArticleSummary, `Resumen de artículo actualizado y persistido: "${updatedPost.title}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Blog & CMS: ${err.message}`);
+  }
+
+  // 13. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 13. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

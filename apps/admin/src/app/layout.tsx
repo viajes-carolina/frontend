@@ -91,6 +91,13 @@ export default function RootLayout({
                 <span>Contacto & Leads</span>
               </Link>
               <Link
+                href="/blog"
+                className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-between"
+              >
+                <span>Blog & Contenidos</span>
+                <span className="text-[10px] bg-brand-accent text-brand-navy font-bold px-1.5 py-0.5 rounded">CMS</span>
+              </Link>
+              <Link
                 href="/medios"
                 className="px-3.5 py-2.5 rounded-xl font-sora text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
               >
