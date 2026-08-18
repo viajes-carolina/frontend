@@ -39,6 +39,11 @@ import {
   HomeBlogInspirationDTO,
   UpdateHomeBlogInspirationRequest,
   PublicHomeBlogInspirationResponse,
+  ClaimRecordDTO,
+  SubmitClaimRequest,
+  UpdateClaimStatusRequest,
+  ContactExploreLinkDTO,
+  CreateOrUpdateContactExploreLinkRequest,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -1463,6 +1468,137 @@ export function updateMockHomeBlogInspiration(req: UpdateHomeBlogInspirationRequ
   };
   return MOCK_HOME_BLOG_INSPIRATION;
 }
+
+// Claims & Contact Explore Links Mocks (Corte 13)
+export const DEFAULT_CONTACT_EXPLORE_LINKS: ContactExploreLinkDTO[] = [
+  {
+    id: 1,
+    title: "Libro de Reclamaciones",
+    description: "Conforme a lo establecido en el Código de Protección y Defensa del Consumidor del Perú.",
+    iconName: "BookOpenIcon",
+    targetUrl: "/reclamaciones",
+    buttonText: "Registrar Hoja de Reclamación",
+    displayOrder: 1,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 2,
+    title: "Preguntas Frecuentes",
+    description: "Resuelve tus dudas sobre reservas, métodos de pago, equipaje y políticas de viaje.",
+    iconName: "QuestionMarkCircleIcon",
+    targetUrl: "/#faq",
+    buttonText: "Ver Preguntas Frecuentes",
+    displayOrder: 2,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+  {
+    id: 3,
+    title: "Visita Nuestra Oficina",
+    description: "Te atendemos en Miraflores con previa cita para planificar tu itinerario personalizado.",
+    iconName: "MapPinIcon",
+    targetUrl: "https://maps.google.com/?q=Av.+Larco+101,+Miraflores,+Lima",
+    buttonText: "Cómo Llegar en Google Maps",
+    displayOrder: 3,
+    active: true,
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+];
+
+export const DEFAULT_CLAIM_RECORDS: ClaimRecordDTO[] = [
+  {
+    id: 1,
+    claimCode: "REC-2026-0001",
+    fullName: "Juan Pérez Alarcón",
+    documentType: "DNI",
+    documentNumber: "45892314",
+    email: "juan.perez@ejemplo.com",
+    phone: "+51987112233",
+    address: "Calle Las Flores 230, San Isidro, Lima",
+    isMinor: false,
+    contractedType: "SERVICIO",
+    claimedAmount: 1250.0,
+    currency: "PEN",
+    description: "Servicio de paquete turístico a Cusco contratado para Julio 2026",
+    claimType: "RECLAMO",
+    consumerDetail: "Deseo solicitar la reprogramación de fechas debido a motivos de fuerza mayor justificados con anticipación.",
+    consumerRequest: "Reubicación de fecha de viaje sin cobro de penalidad administrativa.",
+    status: "PENDING",
+    createdAt: "2026-08-18T00:00:00.000Z",
+    updatedAt: "2026-08-18T00:00:00.000Z",
+  },
+];
+
+export let MOCK_CONTACT_EXPLORE_LINKS: ContactExploreLinkDTO[] = [...DEFAULT_CONTACT_EXPLORE_LINKS];
+export let MOCK_CLAIM_RECORDS: ClaimRecordDTO[] = [...DEFAULT_CLAIM_RECORDS];
+
+export function getMockContactExploreLinks(): ContactExploreLinkDTO[] {
+  return MOCK_CONTACT_EXPLORE_LINKS.filter((l) => l.active);
+}
+
+export function getMockAdminClaims(status?: string): ClaimRecordDTO[] {
+  if (status && status !== "ALL") {
+    return MOCK_CLAIM_RECORDS.filter((c) => c.status === status);
+  }
+  return MOCK_CLAIM_RECORDS;
+}
+
+export function getMockClaimByCode(claimCode: string): ClaimRecordDTO | null {
+  return MOCK_CLAIM_RECORDS.find((c) => c.claimCode === claimCode) || null;
+}
+
+export function submitMockClaim(req: SubmitClaimRequest): ClaimRecordDTO {
+  const year = new Date().getFullYear();
+  const nextNum = MOCK_CLAIM_RECORDS.length + 1;
+  const claimCode = `REC-${year}-${String(nextNum).padStart(4, "0")}`;
+
+  const newClaim: ClaimRecordDTO = {
+    id: Date.now(),
+    claimCode,
+    fullName: req.fullName,
+    documentType: req.documentType,
+    documentNumber: req.documentNumber,
+    email: req.email,
+    phone: req.phone,
+    address: req.address,
+    isMinor: req.isMinor ?? false,
+    parentName: req.parentName,
+    parentDocument: req.parentDocument,
+    contractedType: req.contractedType || "SERVICIO",
+    claimedAmount: req.claimedAmount,
+    currency: req.currency || "PEN",
+    description: req.description,
+    claimType: req.claimType || "RECLAMO",
+    consumerDetail: req.consumerDetail,
+    consumerRequest: req.consumerRequest,
+    status: "PENDING",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  MOCK_CLAIM_RECORDS.unshift(newClaim);
+  return newClaim;
+}
+
+export function updateMockClaimStatus(id: number, status: string, responseNotes?: string): ClaimRecordDTO {
+  const index = MOCK_CLAIM_RECORDS.findIndex((c) => c.id === id);
+  if (index === -1) throw new Error(`Reclamo no encontrado con ID: ${id}`);
+  const current = MOCK_CLAIM_RECORDS[index];
+  const updated: ClaimRecordDTO = {
+    ...current,
+    status,
+    responseNotes: responseNotes !== undefined ? responseNotes : current.responseNotes,
+    responseAt: responseNotes ? new Date().toISOString() : current.responseAt,
+    updatedAt: new Date().toISOString(),
+  };
+  MOCK_CLAIM_RECORDS[index] = updated;
+  return updated;
+}
+
 
 
 

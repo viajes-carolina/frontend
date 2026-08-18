@@ -38,6 +38,10 @@ import {
   HomeBlogInspirationDTO,
   UpdateHomeBlogInspirationRequest,
   PublicHomeBlogInspirationResponse,
+  ClaimRecordDTO,
+  SubmitClaimRequest,
+  UpdateClaimStatusRequest,
+  ContactExploreLinkDTO,
 } from "./types";
 import {
   MOCK_PROMOTIONS,
@@ -99,6 +103,11 @@ import {
   getMockGlobalSearch,
   getMockHomeBlogInspiration,
   updateMockHomeBlogInspiration,
+  getMockContactExploreLinks,
+  getMockAdminClaims,
+  getMockClaimByCode,
+  submitMockClaim,
+  updateMockClaimStatus,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -1164,6 +1173,79 @@ export class ViajesCarolinaApiClient {
       // fallback
     }
     return updateMockHomeBlogInspiration(payload);
+  }
+
+  // ==========================================
+  // Claims: Libro de Reclamaciones & Office Links (Corte 13)
+  // ==========================================
+
+  async submitClaim(payload: SubmitClaimRequest): Promise<ClaimRecordDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("public/v1/claims"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return submitMockClaim(payload);
+  }
+
+  async getClaimByCode(claimCode: string): Promise<ClaimRecordDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`public/v1/claims/${encodeURIComponent(claimCode)}`), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    const found = getMockClaimByCode(claimCode);
+    if (found) return found;
+    throw new Error(`Hoja de reclamación no encontrada: ${claimCode}`);
+  }
+
+  async getAdminClaims(status?: string): Promise<ClaimRecordDTO[]> {
+    try {
+      const url = status && status !== "ALL"
+        ? `admin/v1/claims?status=${encodeURIComponent(status)}`
+        : "admin/v1/claims";
+      const res = await fetch(this.getEffectiveUrl(url), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockAdminClaims(status);
+  }
+
+  async updateClaimStatus(id: number, status: string, responseNotes?: string): Promise<ClaimRecordDTO> {
+    try {
+      const res = await fetch(this.getEffectiveUrl(`admin/v1/claims/${id}/status`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status, responseNotes }),
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return updateMockClaimStatus(id, status, responseNotes);
+  }
+
+  async getContactExploreLinks(): Promise<ContactExploreLinkDTO[]> {
+    try {
+      const res = await fetch(this.getEffectiveUrl("public/v1/contact/explore-links"), {
+        cache: "no-store",
+      });
+      if (res.ok) return await res.json();
+    } catch {
+      // fallback
+    }
+    return getMockContactExploreLinks();
   }
 }
 

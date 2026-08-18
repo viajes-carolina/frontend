@@ -42,6 +42,10 @@ import {
   DEFAULT_HOME_BLOG_INSPIRATION,
   HomeBlogInspirationDTO,
   PublicHomeBlogInspirationResponse,
+  DEFAULT_CLAIM_RECORDS,
+  ClaimRecordDTO,
+  DEFAULT_CONTACT_EXPLORE_LINKS,
+  ContactExploreLinkDTO,
 } from "@vc/api-client";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
@@ -159,7 +163,12 @@ async function proxyOrFallback(
     }
 
     // Graceful Offline / Dev Fallback with Disk Persistence
-    if (targetPath === "public/v1/contact" || (targetPath.includes("contact") && targetPath.includes("public") && !targetPath.includes("inquiry"))) {
+    if (targetPath.includes("explore-links")) {
+      const current = readStoredJson<ContactExploreLinkDTO[]>("contact_explore_links.json", DEFAULT_CONTACT_EXPLORE_LINKS);
+      return NextResponse.json(current.filter((l) => l.active), { status: 200 });
+    }
+
+    if (targetPath === "public/v1/contact" || (targetPath.includes("contact") && targetPath.includes("public") && !targetPath.includes("inquiry") && !targetPath.includes("explore-links"))) {
       const p = readStoredJson<ContactPageDTO>("contact_page.json", DEFAULT_CONTACT_PAGE);
       const settings = readStoredJson<SiteSettingsDTO>("site_settings.json", DEFAULT_SITE_SETTINGS);
       const office = readStoredJson<OfficeLocationDTO>("office_location.json", DEFAULT_OFFICE_LOCATION);
@@ -744,6 +753,80 @@ async function proxyOrFallback(
         list = list.filter((p) => p.title.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q));
       }
       return NextResponse.json(list, { status: 200 });
+    }
+
+    if (targetPath.includes("claims")) {
+      const claims = readStoredJson<ClaimRecordDTO[]>("claims.json", DEFAULT_CLAIM_RECORDS);
+      if (method === "POST") {
+        const year = new Date().getFullYear();
+        const nextNum = claims.length + 1;
+        const claimCode = `REC-${year}-${String(nextNum).padStart(4, "0")}`;
+        const newClaim: ClaimRecordDTO = {
+          id: Date.now(),
+          claimCode,
+          fullName: String(bodyJson?.fullName || ""),
+          documentType: String(bodyJson?.documentType || "DNI"),
+          documentNumber: String(bodyJson?.documentNumber || ""),
+          email: String(bodyJson?.email || ""),
+          phone: String(bodyJson?.phone || ""),
+          address: String(bodyJson?.address || ""),
+          isMinor: Boolean(bodyJson?.isMinor),
+          parentName: bodyJson?.parentName ? String(bodyJson.parentName) : undefined,
+          parentDocument: bodyJson?.parentDocument ? String(bodyJson.parentDocument) : undefined,
+          contractedType: String(bodyJson?.contractedType || "SERVICIO"),
+          claimedAmount: bodyJson?.claimedAmount ? Number(bodyJson.claimedAmount) : undefined,
+          currency: String(bodyJson?.currency || "PEN"),
+          description: String(bodyJson?.description || ""),
+          claimType: String(bodyJson?.claimType || "RECLAMO"),
+          consumerDetail: String(bodyJson?.consumerDetail || ""),
+          consumerRequest: String(bodyJson?.consumerRequest || ""),
+          status: "PENDING",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [newClaim, ...claims];
+        writeStoredJson("claims.json", updated);
+        return NextResponse.json(newClaim, { status: 201 });
+      }
+
+      if (method === "PATCH") {
+        const idMatch = targetPath.match(/claims\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const idx = claims.findIndex((c) => c.id === id);
+        if (idx !== -1) {
+          const updatedItem = {
+            ...claims[idx],
+            status: String(bodyJson?.status || claims[idx].status),
+            responseNotes: bodyJson?.responseNotes !== undefined ? String(bodyJson.responseNotes) : claims[idx].responseNotes,
+            responseAt: bodyJson?.responseNotes ? new Date().toISOString() : claims[idx].responseAt,
+            updatedAt: new Date().toISOString(),
+          };
+          claims[idx] = updatedItem as ClaimRecordDTO;
+          writeStoredJson("claims.json", claims);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+      }
+
+      if (targetPath.includes("public/v1/claims/")) {
+        const code = decodeURIComponent(targetPath.split("public/v1/claims/")[1]?.split("?")[0] || "");
+        const found = claims.find((c) => c.claimCode === code);
+        if (found) {
+          return NextResponse.json(found, { status: 200 });
+        }
+        return NextResponse.json({ message: "Not found" }, { status: 404 });
+      }
+
+      const url = new URL(req.url);
+      const statusParam = url.searchParams.get("status");
+      if (statusParam && statusParam !== "ALL") {
+        return NextResponse.json(claims.filter((c) => c.status === statusParam), { status: 200 });
+      }
+      return NextResponse.json(claims, { status: 200 });
+    }
+
+    if (targetPath.includes("explore-links")) {
+      const current = readStoredJson<ContactExploreLinkDTO[]>("contact_explore_links.json", DEFAULT_CONTACT_EXPLORE_LINKS);
+      return NextResponse.json(current.filter((l) => l.active), { status: 200 });
     }
 
     if (targetPath.includes("search")) {

@@ -76,11 +76,18 @@ async function runE2ETests() {
     const searchHtml = await searchRes.text();
     assert(searchHtml.includes("Buscador Global de Viajes") || searchHtml.includes("Explora Nuestro Catálogo") || searchHtml.includes("Búsqueda"), "HTML de Buscador contiene Hero y Barra de Búsqueda (Corte 11)");
     assert(searchHtml.includes("Promociones") || searchHtml.includes("Cartagena") || searchHtml.includes("Cusco") || searchHtml.includes("Todos los Resultados"), "HTML de Buscador contiene Resultados Dinámicos iniciales (Corte 11)");
+
+    const reclamacionesRes = await fetch(`${BASE_WEB_URL}/reclamaciones`);
+    assert(reclamacionesRes.status === 200, `Página pública Libro de Reclamaciones /reclamaciones responde HTTP 200 OK (${reclamacionesRes.status})`);
+    const reclamacionesHtml = await reclamacionesRes.text();
+    assert(reclamacionesHtml.includes("Libro de Reclamaciones") || reclamacionesHtml.includes("Hoja de Reclamación"), "HTML de Reclamaciones contiene Título y Encabezado Legal (Corte 13)");
+    assert(reclamacionesHtml.includes("20601234567") || reclamacionesHtml.includes("VIAJES CAROLINA"), "HTML de Reclamaciones contiene Razón Social y RUC (Corte 13)");
+    assert(reclamacionesHtml.includes("Identificación del Consumidor") || reclamacionesHtml.includes("RECLAMO"), "HTML de Reclamaciones contiene Formulario Oficial (Corte 13)");
   } catch (err) {
     assert(false, `Error conectando a Web Pública: ${err.message}`);
   }
 
-  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 10)
+  // 2. Verificación de Rutas y Navegación del Panel Admin (Cortes 1 al 13)
   console.log("\n📦 2. Verificando Panel Admin (http://localhost:3001)...");
   try {
     const adminRes = await fetch(`${BASE_ADMIN_URL}`);
@@ -106,6 +113,9 @@ async function runE2ETests() {
 
     const blogAdminRes = await fetch(`${BASE_ADMIN_URL}/blog`);
     assert(blogAdminRes.status === 200, `Módulo Blog CMS responde con HTTP 200 OK (${blogAdminRes.status})`);
+
+    const reclamacionesAdminRes = await fetch(`${BASE_ADMIN_URL}/reclamaciones`);
+    assert(reclamacionesAdminRes.status === 200, `Módulo Libro de Reclamaciones responde con HTTP 200 OK (${reclamacionesAdminRes.status})`);
 
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
@@ -684,8 +694,78 @@ async function runE2ETests() {
     assert(false, `Error en prueba E2E de Inspiración desde Blog: ${err.message}`);
   }
 
-  // 15. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
-  console.log("\n📦 15. Verificando Purity Check & Client Isolation en paquetes compartidos...");
+  // 15. Verificación de API Proxy & Libro de Reclamaciones E2E (Corte 13: Reclamaciones & Soporte)...
+  console.log("\n📦 15. Verificando API Proxy & Libro de Reclamaciones E2E (Corte 13)...");
+  try {
+    // 15.1 Consulta de Enlaces de Soporte y Exploración
+    const exploreRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/contact/explore-links`);
+    assert(exploreRes.status === 200, `GET /api/proxy/public/v1/contact/explore-links responde 200 OK (${exploreRes.status})`);
+    const exploreLinks = await exploreRes.json();
+    assert(Array.isArray(exploreLinks) && exploreLinks.length >= 3, `Enlaces de soporte devueltos: ${exploreLinks.length} tarjetas`);
+    assert(exploreLinks.some((l) => l.targetUrl === "/reclamaciones"), `Contiene enlace al Libro de Reclamaciones`);
+
+    // 15.2 Registro de Hoja de Reclamación con Turnstile
+    const testConsumerEmail = `reclamante-${Date.now()}@ejemplo.com`;
+    const claimPost = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/claims`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: "María Fernanda Quispe",
+        documentType: "DNI",
+        documentNumber: "47891234",
+        email: testConsumerEmail,
+        phone: "+51 987 654 321",
+        address: "Av. Pardo 450, Miraflores, Lima",
+        isMinor: false,
+        contractedType: "SERVICIO",
+        claimedAmount: 1850.0,
+        currency: "PEN",
+        description: "Paquete a Cartagena de Indias 4D/3N contratado en Julio 2026",
+        claimType: "RECLAMO",
+        consumerDetail: "Disconformidad con el horario de traslado brindado por el operador local.",
+        consumerRequest: "Devolución o crédito por el costo del traslado no efectuado a tiempo.",
+        turnstileToken: "turnstile-mock-token",
+      }),
+    });
+    assert(claimPost.status === 201 || claimPost.status === 200, `POST /api/proxy/public/v1/claims responde 201/200 OK (${claimPost.status})`);
+    const createdClaim = await claimPost.json();
+    assert(createdClaim.claimCode && createdClaim.claimCode.startsWith("REC-"), `Código correlativo único generado: "${createdClaim.claimCode}"`);
+    assert(createdClaim.status === "PENDING", `Estado inicial de reclamación es PENDING: "${createdClaim.status}"`);
+
+    // 15.3 Consulta de Reclamación por Código Único
+    const claimLookupRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/claims/${encodeURIComponent(createdClaim.claimCode)}`);
+    assert(claimLookupRes.status === 200, `GET /api/proxy/public/v1/claims/${createdClaim.claimCode} responde 200 OK (${claimLookupRes.status})`);
+    const lookupClaim = await claimLookupRes.json();
+    assert(lookupClaim.claimCode === createdClaim.claimCode, `Reclamación recuperada con código idéntico: "${lookupClaim.claimCode}"`);
+    assert(lookupClaim.fullName === "María Fernanda Quispe", `Nombre del reclamante coincide: "${lookupClaim.fullName}"`);
+
+    // 15.4 Listado Administrativo de Reclamaciones
+    const adminClaimsRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/claims`);
+    assert(adminClaimsRes.status === 200, `GET /api/proxy/admin/v1/claims responde 200 OK (${adminClaimsRes.status})`);
+    const adminClaimsList = await adminClaimsRes.json();
+    assert(Array.isArray(adminClaimsList) && adminClaimsList.length > 0, `Bandeja de reclamaciones contiene ${adminClaimsList.length} registros`);
+
+    // 15.5 Actualización de Estado y Emisión de Respuesta Oficial
+    const targetClaimId = createdClaim.id || 1;
+    const testResponseNotes = "Estimada clienta, tras revisar los hechos con el operador en destino, se ha procedido al reembolso íntegro del traslado.";
+    const statusUpdateRes = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/claims/${targetClaimId}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status: "RESOLVED",
+        responseNotes: testResponseNotes,
+      }),
+    });
+    assert(statusUpdateRes.status === 200, `PATCH /api/proxy/admin/v1/claims/${targetClaimId}/status responde 200 OK (${statusUpdateRes.status})`);
+    const updatedClaim = await statusUpdateRes.json();
+    assert(updatedClaim.status === "RESOLVED", `Estado de reclamación actualizado a RESOLVED: "${updatedClaim.status}"`);
+    assert(updatedClaim.responseNotes === testResponseNotes, `Notas de respuesta oficial persistidas: "${updatedClaim.responseNotes}"`);
+  } catch (err) {
+    assert(false, `Error en prueba E2E de Libro de Reclamaciones: ${err.message}`);
+  }
+
+  // 16. Purity Check: Cero dependencias nativas de Node.js en paquetes compartidos de cliente
+  console.log("\n📦 16. Verificando Purity Check & Client Isolation en paquetes compartidos...");
   try {
     const fs = await import("node:fs");
     const path = await import("node:path");

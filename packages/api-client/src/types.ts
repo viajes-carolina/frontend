@@ -565,4 +565,80 @@ export interface PublicHomeBlogInspirationResponse {
   posts: BlogPostDTO[];
 }
 
+// Claims & Contact Explore Links DTOs (Corte 13)
+export interface ClaimRecordDTO {
+  id: number;
+  claimCode: string;
+  fullName: string;
+  documentType: string;
+  documentNumber: string;
+  email: string;
+  phone: string;
+  address: string;
+  isMinor: boolean;
+  parentName?: string;
+  parentDocument?: string;
+  contractedType: string;
+  claimedAmount?: number;
+  currency?: string;
+  description: string;
+  claimType: string;
+  consumerDetail: string;
+  consumerRequest: string;
+  status: string;
+  responseNotes?: string;
+  responseAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface SubmitClaimRequest {
+  fullName: string;
+  documentType: string;
+  documentNumber: string;
+  email: string;
+  phone: string;
+  address: string;
+  isMinor?: boolean;
+  parentName?: string;
+  parentDocument?: string;
+  contractedType: string;
+  claimedAmount?: number;
+  currency?: string;
+  description: string;
+  claimType: string;
+  consumerDetail: string;
+  consumerRequest: string;
+  turnstileToken?: string;
+}
+
+export interface UpdateClaimStatusRequest {
+  status: string;
+  responseNotes?: string;
+}
+
+export interface ContactExploreLinkDTO {
+  id: number;
+  title: string;
+  description: string;
+  iconName: string;
+  targetUrl: string;
+  buttonText: string;
+  displayOrder: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateOrUpdateContactExploreLinkRequest {
+  title: string;
+  description: string;
+  iconName: string;
+  targetUrl: string;
+  buttonText: string;
+  displayOrder?: number;
+  active?: boolean;
+}
+
+
 

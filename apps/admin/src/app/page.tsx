@@ -27,6 +27,7 @@ export default async function AdminDashboardPage() {
     faqs,
     inquiries,
     blogPosts,
+    claims,
   ] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
@@ -38,9 +39,11 @@ export default async function AdminDashboardPage() {
     apiClient.getFaqs(),
     apiClient.getAdminInquiries(),
     apiClient.getAdminBlogPosts(),
+    apiClient.getAdminClaims(),
   ]);
 
   const newInquiriesCount = inquiries.filter((i) => i.status === "NEW").length;
+  const pendingClaimsCount = claims.filter((c) => c.status === "PENDING").length;
 
   return (
     <div className="min-h-screen p-8 max-w-6xl mx-auto space-y-8">
@@ -88,6 +91,35 @@ export default async function AdminDashboardPage() {
           </div>
           <span className="text-xs font-semibold text-brand-primary mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             Administrar CMS &rarr;
+          </span>
+        </Link>
+
+        {/* Card: Libro de Reclamaciones (Corte 13) */}
+        <Link
+          href="/reclamaciones"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-amber-500/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+        >
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs uppercase tracking-wider font-semibold text-amber-600">
+                Corte 13 · Reclamaciones
+              </span>
+              <div className="p-2 rounded-xl bg-amber-50 text-amber-600 relative">
+                <span>📖</span>
+                {pendingClaimsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+                )}
+              </div>
+            </div>
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-amber-600 transition-colors">
+              Libro de Reclamaciones
+            </h3>
+            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
+              {claims.length} hojas registradas ({pendingClaimsCount} pendientes de respuesta).
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-amber-600 mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            Atender Reclamos &rarr;
           </span>
         </Link>
         {/* Card: Contacto & Leads (Corte 9) */}

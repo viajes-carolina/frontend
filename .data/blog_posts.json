@@ -1,5 +1,83 @@
 [
   {
+    "id": 1787079499534,
+    "slug": "test-articulo-1787079499459",
+    "title": "Test Artículo E2E Nuevo Destino",
+    "summary": "Resumen de prueba automatizada para verificar el motor de CMS y persistencia.",
+    "contentMarkdown": "## Introducción al nuevo destino\n\nEste es un artículo creado automáticamente por el runner E2E.\n\n- Punto 1\n- Punto 2",
+    "categoryId": 1,
+    "categoryName": "Guías de Destinos",
+    "categorySlug": "guias-de-destinos",
+    "coverMediaId": 1,
+    "coverMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "authorName": "Carolina Zúñiga",
+    "readingTimeMinutes": 4,
+    "tags": [
+      "Test",
+      "E2E",
+      "Aventura"
+    ],
+    "status": "PUBLISHED",
+    "publishedAt": "2026-08-18T18:58:19.534Z",
+    "viewCount": 0,
+    "isFeatured": false,
+    "active": true,
+    "createdAt": "2026-08-18T18:58:19.534Z",
+    "updatedAt": "2026-08-18T18:58:19.534Z"
+  },
+  {
+    "id": 1787079453369,
+    "slug": "test-articulo-1787079451277",
+    "title": "Test Artículo E2E Nuevo Destino",
+    "summary": "Resumen de prueba automatizada para verificar el motor de CMS y persistencia.",
+    "contentMarkdown": "## Introducción al nuevo destino\n\nEste es un artículo creado automáticamente por el runner E2E.\n\n- Punto 1\n- Punto 2",
+    "categoryId": 1,
+    "categoryName": "Guías de Destinos",
+    "categorySlug": "guias-de-destinos",
+    "coverMediaId": 1,
+    "coverMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "authorName": "Carolina Zúñiga",
+    "readingTimeMinutes": 4,
+    "tags": [
+      "Test",
+      "E2E",
+      "Aventura"
+    ],
+    "status": "PUBLISHED",
+    "publishedAt": "2026-08-18T18:57:33.369Z",
+    "viewCount": 0,
+    "isFeatured": false,
+    "active": true,
+    "createdAt": "2026-08-18T18:57:33.369Z",
+    "updatedAt": "2026-08-18T18:57:33.369Z"
+  },
+  {
+    "id": 1787078572924,
+    "slug": "test-articulo-1787078572888",
+    "title": "Test Artículo E2E Nuevo Destino",
+    "summary": "Resumen de prueba automatizada para verificar el motor de CMS y persistencia.",
+    "contentMarkdown": "## Introducción al nuevo destino\n\nEste es un artículo creado automáticamente por el runner E2E.\n\n- Punto 1\n- Punto 2",
+    "categoryId": 1,
+    "categoryName": "Guías de Destinos",
+    "categorySlug": "guias-de-destinos",
+    "coverMediaId": 1,
+    "coverMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "authorName": "Carolina Zúñiga",
+    "readingTimeMinutes": 4,
+    "tags": [
+      "Test",
+      "E2E",
+      "Aventura"
+    ],
+    "status": "PUBLISHED",
+    "publishedAt": "2026-08-18T18:42:52.924Z",
+    "viewCount": 0,
+    "isFeatured": false,
+    "active": true,
+    "createdAt": "2026-08-18T18:42:52.924Z",
+    "updatedAt": "2026-08-18T18:42:52.924Z"
+  },
+  {
     "id": 1787076740667,
     "slug": "test-articulo-1787076740613",
     "title": "Test Artículo E2E Nuevo Destino",
@@ -179,7 +257,7 @@
     "viewCount": 342,
     "isFeatured": true,
     "active": true,
-    "updatedAt": "2026-08-18T18:12:20.728Z"
+    "updatedAt": "2026-08-18T18:58:21.614Z"
   },
   {
     "id": 2,

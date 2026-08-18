@@ -1,6 +1,6 @@
 import { apiClient } from "@vc/api-client";
 import { ContactClientView } from "./ContactClientView";
-import { FaqSection, ClosingCtaSection, JourneyConnector } from "@vc/ui";
+import { FaqSection, ClosingCtaSection, JourneyConnector, ContactExploreSection } from "@vc/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -10,10 +10,11 @@ export const metadata = {
 };
 
 export default async function ContactoPage() {
-  const [contactData, trustData, siteSettings] = await Promise.all([
+  const [contactData, trustData, siteSettings, exploreLinks] = await Promise.all([
     apiClient.getPublicContact(),
     apiClient.getPublicTrust(),
     apiClient.getSiteSettings(),
+    apiClient.getContactExploreLinks(),
   ]);
 
   return (
@@ -23,7 +24,12 @@ export default async function ContactoPage() {
 
       <JourneyConnector />
 
-      {/* 02. FAQ Reminders */}
+      {/* 02. Enlaces de Exploración, Soporte y Libro de Reclamaciones */}
+      <ContactExploreSection links={exploreLinks} />
+
+      <JourneyConnector />
+
+      {/* 03. FAQ Reminders */}
       {trustData.faqs && trustData.faqs.length > 0 && (
         <>
           <FaqSection faqs={trustData.faqs} settings={siteSettings} />
@@ -31,7 +37,7 @@ export default async function ContactoPage() {
         </>
       )}
 
-      {/* 03. Closing CTA */}
+      {/* 04. Closing CTA */}
       <ClosingCtaSection settings={siteSettings} />
     </main>
   );
