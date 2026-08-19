@@ -1,7 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
+import fs from "node:fs";
+import path from "node:path";
+
+function findMediaFile(filename: string): { buffer: Buffer; contentType: string } | null {
+  const possibleDirs = [
+    path.resolve(process.cwd(), ".data", "media"),
+    path.resolve(process.cwd(), "public", "media"),
+    path.resolve(process.cwd(), "..", "..", ".data", "media"),
+    path.resolve(process.cwd(), "..", "web", "public", "media"),
+    path.resolve(process.cwd(), "..", "admin", "public", "media"),
+  ];
+
+  for (const dir of possibleDirs) {
+    const fullPath = path.join(dir, filename);
+    if (fs.existsSync(fullPath)) {
+      try {
+        const buffer = fs.readFileSync(fullPath);
+        const ext = path.extname(filename).toLowerCase();
+        let contentType = "image/webp";
+        if (ext === ".png") contentType = "image/png";
+        else if (ext === ".jpg" || ext === ".jpeg") contentType = "image/jpeg";
+        else if (ext === ".svg") contentType = "image/svg+xml";
+        else if (ext === ".gif") contentType = "image/gif";
+        return { buffer, contentType };
+      } catch {
+        // ignore
+      }
+    }
+  }
+  return null;
+}
 
 export async function GET(req: NextRequest, context: { params: Promise<{ filename: string }> }) {
   const { filename } = await context.params;
+
+  // 1. Check if real file exists on disk
+  const diskFile = findMediaFile(filename);
+  if (diskFile) {
+    return new NextResponse(new Uint8Array(diskFile.buffer), {
+      status: 200,
+      headers: {
+        "Content-Type": diskFile.contentType,
+        "Cache-Control": "public, max-age=31536000, immutable",
+      },
+    });
+  }
+
+  // 2. Dynamic SVG Fallback for demo placeholders
   const cleanName = decodeURIComponent(filename || "").replace(/\.[^/.]+$/, "").replace(/-/g, " ");
   const title = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
 

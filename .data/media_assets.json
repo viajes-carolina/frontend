@@ -1,5 +1,41 @@
 [
   {
+    "id": 1787156731811,
+    "filename": "1787156731811-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "originalName": "ChatGPT Image 19 ago 2026, 10_10_09.png",
+    "mimeType": "image/webp",
+    "fileSizeBytes": 245000,
+    "width": 1920,
+    "height": 1080,
+    "focalX": 50,
+    "focalY": 50,
+    "altText": "ChatGPT Image 19 ago 2026, 10_10_09",
+    "caption": "",
+    "storagePath": "/media/1787156731811-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "variantsJson": "{}",
+    "active": true,
+    "createdAt": "2026-08-19T16:25:31.815Z",
+    "updatedAt": "2026-08-19T16:25:31.815Z"
+  },
+  {
+    "id": 1787156698110,
+    "filename": "1787156698110-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "originalName": "ChatGPT Image 19 ago 2026, 10_10_09.png",
+    "mimeType": "image/webp",
+    "fileSizeBytes": 245000,
+    "width": 1920,
+    "height": 1080,
+    "focalX": 50,
+    "focalY": 50,
+    "altText": "ChatGPT Image 19 ago 2026, 10_10_09",
+    "caption": "",
+    "storagePath": "/media/1787156698110-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "variantsJson": "{}",
+    "active": true,
+    "createdAt": "2026-08-19T16:24:58.116Z",
+    "updatedAt": "2026-08-19T16:24:58.116Z"
+  },
+  {
     "id": 1,
     "filename": "demo-hero-travel.webp",
     "originalName": "hero-travel-banner.webp",
@@ -15,7 +51,7 @@
     "variantsJson": "{}",
     "active": true,
     "createdAt": "2026-08-18T00:00:00.000Z",
-    "updatedAt": "2026-08-19T16:13:30.124Z"
+    "updatedAt": "2026-08-19T16:41:41.945Z"
   },
   {
     "id": 2,

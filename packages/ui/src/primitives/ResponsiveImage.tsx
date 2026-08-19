@@ -38,7 +38,7 @@ export function ResponsiveImage({
   objectFit = "cover",
   caption,
 }: ResponsiveImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
 
   const focalX = Math.max(0, Math.min(100, focalPoint?.x ?? 50));
   const focalY = Math.max(0, Math.min(100, focalPoint?.y ?? 50));
@@ -70,10 +70,11 @@ export function ResponsiveImage({
           width: fill || aspectRatio ? "100%" : width ? `${width}px` : "100%",
           height: fill || aspectRatio ? "100%" : height ? `${height}px` : "auto",
         }}
-        className={`transition-all duration-500 ease-out ${
-          isLoaded ? "opacity-100 scale-100 blur-0" : "opacity-0 scale-105 blur-sm"
+        className={`transition-all duration-300 ease-out ${
+          isLoaded ? "opacity-100 scale-100 blur-0" : "opacity-90 blur-0"
         } ${imgClassName}`}
         onLoad={() => setIsLoaded(true)}
+        onError={() => setIsLoaded(true)}
       />
 
       {caption && (

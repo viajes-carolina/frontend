@@ -244,6 +244,7 @@ export function HeroForm({ initialHero }: HeroFormProps) {
                     src={backgroundMediaUrl.startsWith("http") || backgroundMediaUrl.startsWith("/") ? backgroundMediaUrl : `/${backgroundMediaUrl}`}
                     alt="Fondo Hero"
                     fill
+                    unoptimized
                     style={{ objectFit: "cover" }}
                   />
                 ) : (

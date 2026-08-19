@@ -52,7 +52,11 @@ export function FocalPointPicker({
     setIsDragging(false);
   };
 
-  const safeSrc = src.startsWith("http") || src.startsWith("/") ? src : `/${src}`;
+  const safeSrc = src
+    ? src.startsWith("http") || src.startsWith("/") || src.startsWith("data:")
+      ? src
+      : `/${src}`
+    : "/media/demo-hero-travel.webp";
 
   return (
     <div className={`space-y-4 ${className}`}>

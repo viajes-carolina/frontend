@@ -6,7 +6,7 @@
     "fullName": "Administrador General",
     "role": "SUPER_ADMIN",
     "active": true,
-    "lastLoginAt": "2026-08-19T16:13:34.121Z",
+    "lastLoginAt": "2026-08-19T16:41:46.480Z",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "updatedAt": "2026-08-18T00:00:00.000Z"
   },
@@ -181,5 +181,15 @@
     "active": true,
     "createdAt": "2026-08-19T16:13:34.364Z",
     "updatedAt": "2026-08-19T16:13:34.458Z"
+  },
+  {
+    "id": 1787157706895,
+    "username": "asesora_1787157706764",
+    "email": "asesora_1787157706764@viajescarolina.com",
+    "fullName": "Asesora Certificada E2E",
+    "role": "ADVISOR",
+    "active": true,
+    "createdAt": "2026-08-19T16:41:46.895Z",
+    "updatedAt": "2026-08-19T16:41:47.032Z"
   }
 ]

@@ -71,6 +71,8 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         setTrustIndicators(fresh.trustIndicators || []);
         setBackgroundMediaId(fresh.backgroundMediaId);
         setBackgroundMediaUrl(fresh.backgroundMediaUrl);
+        setBackgroundFocalX(fresh.backgroundFocalX || 50);
+        setBackgroundFocalY(fresh.backgroundFocalY || 50);
         setFeaturedCardBadge(fresh.featuredCardBadge || "");
         setFeaturedCardTitle(fresh.featuredCardTitle || "");
         setFeaturedCardSubtitle(fresh.featuredCardSubtitle || "");
@@ -82,9 +84,14 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     });
   }, []);
 
+  const [backgroundFocalX, setBackgroundFocalX] = useState<number>(initialHero.backgroundFocalX || 50);
+  const [backgroundFocalY, setBackgroundFocalY] = useState<number>(initialHero.backgroundFocalY || 50);
+
   const handleSelectBgMedia = (media: MediaAssetDTO) => {
     setBackgroundMediaId(media.id);
     setBackgroundMediaUrl(media.storagePath);
+    setBackgroundFocalX(media.focalX || 50);
+    setBackgroundFocalY(media.focalY || 50);
   };
 
   const handleSelectCardMedia = (media: MediaAssetDTO) => {
@@ -109,12 +116,16 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         secondaryCtaUrl,
         trustIndicators,
         backgroundMediaId,
+        backgroundMediaUrl,
+        backgroundFocalX,
+        backgroundFocalY,
         featuredCardBadge,
         featuredCardTitle,
         featuredCardSubtitle,
         featuredCardPricePen,
         featuredCardOrigin,
         featuredCardMediaId,
+        featuredCardMediaUrl,
       };
 
       const updated = await apiClient.updateHomeHero(payload);
