@@ -1,5 +1,87 @@
 [
   {
+    "id": 1787145991648,
+    "username": "admin",
+    "action": "PUBLISH_ON_DEMAND_ISR",
+    "entityType": "PUBLISHING",
+    "entityId": "ALL",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"target\":\"ALL\",\"tags\":[\"all\",\"/\",\"/promociones\",\"/blog\",\"/nosotros\",\"/contacto\",\"/reclamaciones\"],\"reason\":\"Validación automatizada de suite E2E en Corte 15\"}",
+    "createdAt": "2026-08-19T13:26:31.648Z"
+  },
+  {
+    "id": 1787145989001,
+    "username": "admin",
+    "action": "UPDATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787145988894",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787145988820\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-19T13:26:29.001Z"
+  },
+  {
+    "id": 1787145988897,
+    "username": "admin",
+    "action": "CREATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787145988894",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787145988820\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-19T13:26:28.897Z"
+  },
+  {
+    "id": 1787145988666,
+    "userId": 1,
+    "username": "admin",
+    "action": "LOGIN_SUCCESS",
+    "entityType": "AUTH",
+    "entityId": "1",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"admin\"}",
+    "createdAt": "2026-08-19T13:26:28.666Z"
+  },
+  {
+    "id": 1787145414915,
+    "username": "admin",
+    "action": "PUBLISH_ON_DEMAND_ISR",
+    "entityType": "PUBLISHING",
+    "entityId": "ALL",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"target\":\"ALL\",\"tags\":[\"all\",\"/\",\"/promociones\",\"/blog\",\"/nosotros\",\"/contacto\",\"/reclamaciones\"],\"reason\":\"Validación automatizada de suite E2E en Corte 15\"}",
+    "createdAt": "2026-08-19T13:16:54.915Z"
+  },
+  {
+    "id": 1787145412560,
+    "username": "admin",
+    "action": "UPDATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787145412495",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787145412429\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-19T13:16:52.560Z"
+  },
+  {
+    "id": 1787145412497,
+    "username": "admin",
+    "action": "CREATE_ADMIN_USER",
+    "entityType": "USER",
+    "entityId": "1787145412495",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"asesora_1787145412429\",\"role\":\"ADVISOR\"}",
+    "createdAt": "2026-08-19T13:16:52.497Z"
+  },
+  {
+    "id": 1787145412270,
+    "userId": 1,
+    "username": "admin",
+    "action": "LOGIN_SUCCESS",
+    "entityType": "AUTH",
+    "entityId": "1",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"username\":\"admin\"}",
+    "createdAt": "2026-08-19T13:16:52.270Z"
+  },
+  {
     "id": 1787126620493,
     "username": "admin",
     "action": "PUBLISH_ON_DEMAND_ISR",
