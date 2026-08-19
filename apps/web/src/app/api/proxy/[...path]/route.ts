@@ -142,7 +142,8 @@ async function proxyOrFallback(
     const resolvedParams = params ? await params : { path: [] };
     const routeParams = Array.isArray(resolvedParams?.path) ? resolvedParams.path : [];
     const targetPath = routeParams.join("/");
-    const targetUrl = `${BACKEND_URL}/api/${targetPath}`;
+    const queryString = req.nextUrl.search || "";
+    const targetUrl = `${BACKEND_URL}/api/${targetPath}${queryString}`;
     const method = req.method;
 
     // Read request body safely once
