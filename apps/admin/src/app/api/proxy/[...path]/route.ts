@@ -5,6 +5,7 @@ import {
   DEFAULT_SITE_SETTINGS,
   DEFAULT_OFFICE_LOCATION,
   DEFAULT_MEDIA_ASSETS,
+  MediaAssetDTO,
   DEFAULT_HOME_HERO,
   DEFAULT_TRAVEL_INTENTIONS,
   DEFAULT_PROMOTIONS,
@@ -606,13 +607,101 @@ async function proxyOrFallback(
     }
 
     if (targetPath.includes("media")) {
-      if (method === "PATCH") {
+      const currentMedia = readStoredJson<MediaAssetDTO[]>("media_assets.json", DEFAULT_MEDIA_ASSETS);
+
+      if (method === "POST" || targetPath.includes("upload")) {
+        const id = Date.now();
+        let originalName = `imagen-${id}.webp`;
+        let filename = `media-${id}.webp`;
+        let altText = "Nueva Imagen";
+        let caption = "";
+        let storagePath = `/media/${filename}`;
+
+        if (bodyText) {
+          const nameMatch = bodyText.match(/filename="([^"]+)"/);
+          if (nameMatch) {
+            originalName = nameMatch[1];
+            filename = `${Date.now()}-${nameMatch[1].replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+            storagePath = `/media/${filename}`;
+            altText = originalName.replace(/\.[^/.]+$/, "");
+          }
+          const altMatch = bodyText.match(/name="altText"\r?\n\r?\n([^\r\n]+)/);
+          if (altMatch) altText = altMatch[1];
+          const capMatch = bodyText.match(/name="caption"\r?\n\r?\n([^\r\n]+)/);
+          if (capMatch) caption = capMatch[1];
+        }
+        if (bodyJson) {
+          if (bodyJson.originalName) originalName = String(bodyJson.originalName);
+          if (bodyJson.filename) filename = String(bodyJson.filename);
+          if (bodyJson.altText) altText = String(bodyJson.altText);
+          if (bodyJson.caption) caption = String(bodyJson.caption);
+          if (bodyJson.storagePath) storagePath = String(bodyJson.storagePath);
+        }
+
+        const newAsset: MediaAssetDTO = {
+          id,
+          filename,
+          originalName,
+          mimeType: "image/webp",
+          fileSizeBytes: 245000,
+          width: 1920,
+          height: 1080,
+          focalX: 50.0,
+          focalY: 50.0,
+          altText,
+          caption,
+          storagePath,
+          variantsJson: "{}",
+          active: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        const updated = [newAsset, ...currentMedia];
+        writeStoredJson("media_assets.json", updated);
+        return NextResponse.json(newAsset, { status: 201 });
+      }
+
+      if (method === "PATCH" || method === "PUT") {
         const idMatch = targetPath.match(/media\/(\d+)/);
         const id = idMatch ? parseInt(idMatch[1], 10) : 1;
-        const updated = updateMockMediaFocalPoint(id, (bodyJson as any) || { focalX: 50, focalY: 50 });
-        return NextResponse.json(updated || DEFAULT_MEDIA_ASSETS[0], { status: 200 });
+        const idx = currentMedia.findIndex((m) => m.id === id);
+        if (idx !== -1) {
+          const updatedItem = {
+            ...currentMedia[idx],
+            ...(bodyJson || {}),
+            updatedAt: new Date().toISOString(),
+          };
+          currentMedia[idx] = updatedItem as MediaAssetDTO;
+          writeStoredJson("media_assets.json", currentMedia);
+          return NextResponse.json(updatedItem, { status: 200 });
+        }
+        const fallbackUpdated = updateMockMediaFocalPoint(id, (bodyJson as any) || { focalX: 50, focalY: 50 });
+        return NextResponse.json(fallbackUpdated || currentMedia[0], { status: 200 });
       }
-      return NextResponse.json(getMockMediaPage(), { status: 200 });
+
+      if (method === "DELETE") {
+        const idMatch = targetPath.match(/media\/(\d+)/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+        const filtered = currentMedia.filter((m) => m.id !== id);
+        writeStoredJson("media_assets.json", filtered);
+        return new NextResponse(null, { status: 204 });
+      }
+
+      const idMatch = targetPath.match(/media\/(\d+)/);
+      if (idMatch && method === "GET") {
+        const id = parseInt(idMatch[1], 10);
+        const found = currentMedia.find((m) => m.id === id);
+        if (found) return NextResponse.json(found, { status: 200 });
+      }
+
+      const activeMedia = currentMedia.filter((m) => m.active !== false);
+      return NextResponse.json({
+        items: activeMedia,
+        total: activeMedia.length,
+        page: 0,
+        size: 50,
+        totalPages: Math.ceil(activeMedia.length / 50) || 1,
+      }, { status: 200 });
     }
 
     if (targetPath.includes("blog")) {

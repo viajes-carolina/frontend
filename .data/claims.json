@@ -1,5 +1,28 @@
 [
   {
+    "id": 1787156013766,
+    "claimCode": "REC-2026-0018",
+    "fullName": "María Fernanda Quispe",
+    "documentType": "DNI",
+    "documentNumber": "47891234",
+    "email": "reclamante-1787156013661@ejemplo.com",
+    "phone": "+51 987 654 321",
+    "address": "Av. Pardo 450, Miraflores, Lima",
+    "isMinor": false,
+    "contractedType": "SERVICIO",
+    "claimedAmount": 1850,
+    "currency": "PEN",
+    "description": "Paquete a Cartagena de Indias 4D/3N contratado en Julio 2026",
+    "claimType": "RECLAMO",
+    "consumerDetail": "Disconformidad con el horario de traslado brindado por el operador local.",
+    "consumerRequest": "Devolución o crédito por el costo del traslado no efectuado a tiempo.",
+    "status": "RESOLVED",
+    "createdAt": "2026-08-19T16:13:33.766Z",
+    "updatedAt": "2026-08-19T16:13:34.045Z",
+    "responseNotes": "Estimada clienta, tras revisar los hechos con el operador en destino, se ha procedido al reembolso íntegro del traslado.",
+    "responseAt": "2026-08-19T16:13:34.045Z"
+  },
+  {
     "id": 1787151658503,
     "claimCode": "REC-2026-0017",
     "fullName": "María Fernanda Quispe",
