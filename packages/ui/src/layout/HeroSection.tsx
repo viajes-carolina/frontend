@@ -65,7 +65,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
             <div className="animate-hero-fade-up inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 shadow-md backdrop-blur-md mb-5 hover:border-brand-sunset/50 transition-colors">
               <span className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
               <span className="font-sora text-xs font-bold uppercase tracking-[0.08em] text-brand-sunset">
-                {hero.badgeText || "Asesoría 100% Personalizada"}
+                {hero.badgeText || "Una nueva forma de viajar"}
               </span>
             </div>
 
@@ -107,7 +107,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
             </div>
           </div>
 
-          {/* Right Column: Glassmorphism Service Card (4 Value Pillars) */}
+          {/* Right Column: Glassmorphism Service Card (3 Core Value Pillars) */}
           <div className="w-full lg:w-5/12 flex justify-center lg:justify-end">
             <div className="animate-hero-scale-in animation-delay-200 w-full max-w-md bg-brand-navy/75 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-7 shadow-2xl text-left space-y-4 hover:border-brand-sunset/40 transition-all duration-300">
               
@@ -118,16 +118,16 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
                     Servicios Diseñados para Ti
                   </span>
                   <span className="font-inter text-[11px] text-atmosphere-sky">
-                    Asesoría integral de principio a fin
+                    Todo lo que necesitas para tu viaje en un solo lugar
                   </span>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                  100% a Medida
+                  100% Flexible
                 </span>
               </div>
 
-              {/* 4 Service Pillars */}
-              <div className="space-y-3">
+              {/* 3 Core Service Pillars */}
+              <div className="space-y-3.5">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-brand-sunset shrink-0 mt-0.5 shadow-sm">
                     <PlaneIcon size={16} />
@@ -151,7 +151,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
                       Hoteles & Resorts Seleccionados
                     </span>
                     <span className="font-inter text-[11px] text-atmosphere-sky leading-snug block">
-                      Alojamientos todo incluido y resorts de confianza inspeccionados.
+                      Alojamientos recomendados según tu estilo, comodidad y presupuesto.
                     </span>
                   </div>
                 </div>
@@ -162,39 +162,13 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
                   </div>
                   <div>
                     <span className="font-sora font-bold text-xs sm:text-sm text-white block">
-                      Itinerarios & Tours a Medida
+                      Itinerarios a tu Medida
                     </span>
                     <span className="font-inter text-[11px] text-atmosphere-sky leading-snug block">
-                      Experiencias privadas y circuitos diseñados a tu ritmo y presupuesto.
+                      Experiencias y actividades diseñadas para disfrutar a tu propio ritmo.
                     </span>
                   </div>
                 </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-brand-whatsapp shrink-0 mt-0.5 shadow-sm">
-                    <span className="text-sm">💬</span>
-                  </div>
-                  <div>
-                    <span className="font-sora font-bold text-xs sm:text-sm text-white block">
-                      Acompañamiento 24/7 por WhatsApp
-                    </span>
-                    <span className="font-inter text-[11px] text-atmosphere-sky leading-snug block">
-                      Asistencia y respaldo permanente antes, durante y después del viaje.
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card Footer: Social Proof */}
-              <div className="pt-3 border-t border-white/15 flex items-center justify-between text-xs text-atmosphere-sky">
-                <div className="flex items-center gap-1.5 text-amber-400">
-                  <StarIcon size={14} />
-                  <span className="font-sora font-bold text-white text-[11px]">4.9 / 5</span>
-                  <span className="text-[10px] text-neutral-subtle">· Calificación</span>
-                </div>
-                <span className="font-inter text-[10px] text-emerald-400 font-semibold">
-                  +12 Años de Experiencia
-                </span>
               </div>
 
             </div>
