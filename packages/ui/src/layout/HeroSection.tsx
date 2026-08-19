@@ -4,7 +4,7 @@ import React from "react";
 import { HomeHeroDTO, SiteSettingsDTO } from "@vc/api-client";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 import { Button } from "../primitives/Button";
-import { ResponsiveImage } from "../primitives/ResponsiveImage";
+import { TravelMaskFrame } from "../primitives/TravelMaskFrame";
 import { PlaneIcon, ArrowUpRightIcon, CheckIcon } from "../icons/icons";
 
 export interface HeroSectionProps {
@@ -29,7 +29,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
     <section
       className={`relative w-full overflow-hidden bg-gradient-to-b from-atmosphere-twilight via-brand-navy to-atmosphere-twilight pt-24 sm:pt-32 pb-16 sm:pb-24 border-b border-white/10 ${className}`}
     >
-      {/* Background Decorative Blur Orbs */}
+      {/* Background Decorative Ambient Glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[450px] bg-brand-blue/15 blur-[120px] pointer-events-none rounded-full" />
       <div className="absolute top-20 right-10 w-96 h-96 bg-brand-sunset/10 blur-[100px] pointer-events-none rounded-full" />
 
@@ -64,7 +64,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
                 size="lg"
                 phone={whatsappPhone}
                 message={message}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto shadow-xl"
               >
                 {hero.whatsappCtaText}
               </WhatsAppButton>
@@ -98,66 +98,41 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
             </div>
           </div>
 
-          {/* Right Column: Interactive Featured Card */}
-          <div className="w-full lg:w-1/2 flex justify-center lg:justify-end relative">
-            <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-brand-sunset/15 blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full bg-brand-accent/10 blur-3xl pointer-events-none" />
+          {/* Right Column: Travel Mask Frame with Featured Trip & Live Trust Micro-Cards */}
+          <div className="w-full lg:w-1/2 flex flex-col items-center justify-center lg:items-end relative">
+            <TravelMaskFrame
+              imageUrl={hero.backgroundMediaUrl || "/media/demo-hero-travel.webp"}
+              alt={hero.featuredCardTitle || "Destino de viaje"}
+              focalPoint={{
+                x: hero.backgroundFocalX || 50,
+                y: hero.backgroundFocalY || 40,
+              }}
+              topBadge={hero.featuredCardBadge || "Destino Recomendado"}
+              originText={hero.featuredCardOrigin || "Salidas desde Lima"}
+              priceText={
+                hero.featuredCardPricePen
+                  ? `Desde S/ ${Number(hero.featuredCardPricePen).toLocaleString()}`
+                  : "Cotización a medida"
+              }
+              priority
+            />
 
-            <div className="relative w-full max-w-md bg-brand-navy border border-white/15 rounded-3xl p-6 sm:p-7 shadow-2xl overflow-hidden group hover:border-brand-accent/40 transition-all duration-300">
-              
-              {/* Media Container with Focal Point */}
-              <div className="relative w-full aspect-video sm:h-72 rounded-2xl overflow-hidden mb-5 border border-white/10">
-                {hero.backgroundMediaUrl ? (
-                  <ResponsiveImage
-                    src={hero.backgroundMediaUrl}
-                    alt={hero.featuredCardTitle || "Hero Banner"}
-                    fill
-                    priority
-                    focalPoint={{
-                      x: hero.backgroundFocalX || 50,
-                      y: hero.backgroundFocalY || 40,
-                    }}
-                    className="w-full h-full"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-brand-blue/30 to-brand-navy flex flex-col items-center justify-center p-5">
-                    <div className="w-16 h-16 rounded-2xl bg-brand-accent/20 border border-brand-accent/40 flex items-center justify-center text-brand-accent mb-3 group-hover:scale-110 transition-transform duration-300">
-                      <PlaneIcon size={32} />
-                    </div>
-                  </div>
-                )}
-
-                {/* Card Top Badge */}
-                {hero.featuredCardBadge && (
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-brand-navy/80 backdrop-blur-md border border-white/20 text-white font-sora text-xs font-bold tracking-wider uppercase shadow-md">
-                    {hero.featuredCardBadge}
-                  </div>
-                )}
-
-                {/* Origin and Price Bar */}
-                <div className="absolute inset-x-3 bottom-3 flex items-center justify-between text-xs font-inter text-white/90 bg-brand-navy/85 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/15 shadow-md">
-                  <span>{hero.featuredCardOrigin || "Desde Lima"}</span>
-                  <span className="text-brand-sunset font-sora font-bold text-sm">
-                    {hero.featuredCardPricePen ? `Desde S/ ${Number(hero.featuredCardPricePen).toLocaleString()}` : "Cotización a medida"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Card Meta Content */}
-              <div className="flex flex-col text-left space-y-2">
-                <h3 className="font-sora font-bold text-xl text-white">
+            {/* Travel Experience Context Bar */}
+            <div className="mt-8 w-full max-w-[380px] bg-brand-navy/85 backdrop-blur-md border border-white/15 rounded-2xl p-4 shadow-lg text-left space-y-1.5 animate-fade-in hover:border-brand-sunset/40 transition-colors">
+              <div className="flex items-center justify-between">
+                <h3 className="font-sora font-bold text-base text-white">
                   {hero.featuredCardTitle || "Machu Picchu & Valle Sagrado"}
                 </h3>
-                <p className="font-inter text-atmosphere-sky text-xs">
-                  {hero.featuredCardSubtitle || "Experiencia personalizada de 5 días / 4 noches"}
-                </p>
-                <p className="font-inter text-neutral-subtle text-sm leading-relaxed pt-1">
-                  Vuelos confirmados + hoteles seleccionados + asesoría permanente antes, durante y después del viaje.
-                </p>
-                <div className="flex items-center gap-2 text-xs font-inter text-emerald-400 font-medium pt-2">
-                  <CheckIcon size={16} />
-                  <span>Salidas disponibles para esta temporada 2026</span>
-                </div>
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  Temporada 2026
+                </span>
+              </div>
+              <p className="font-inter text-xs text-atmosphere-sky line-clamp-1">
+                {hero.featuredCardSubtitle || "Experiencia personalizada de 5 días / 4 noches"}
+              </p>
+              <div className="flex items-center gap-2 text-[11px] font-inter text-neutral-subtle pt-1 border-t border-white/10">
+                <CheckIcon size={14} className="text-emerald-400 shrink-0" />
+                <span>Vuelos confirmados + hoteles y asesoría permanente</span>
               </div>
             </div>
           </div>

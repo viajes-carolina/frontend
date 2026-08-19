@@ -9,7 +9,7 @@
     "/contacto",
     "/reclamaciones"
   ],
-  "publishedAt": "2026-08-18T21:22:57.229Z",
+  "publishedAt": "2026-08-19T08:03:40.489Z",
   "triggeredBy": "admin",
   "message": "Publicación completada exitosamente. Se revalidaron 7 tags/rutas en Next.js ISR."
 }

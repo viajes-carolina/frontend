@@ -1,6 +1,7 @@
 export * from "./primitives/Button";
 export * from "./primitives/WhatsAppButton";
 export * from "./primitives/ResponsiveImage";
+export * from "./primitives/TravelMaskFrame";
 export * from "./primitives/FocalPointPicker";
 export * from "./primitives/MediaPickerModal";
 export * from "./journey/JourneyConnector";
