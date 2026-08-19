@@ -47,15 +47,16 @@ export function ResponsiveImage({
 
   // Prevent Cumulative Layout Shift (CLS < 0.1)
   const containerStyle: React.CSSProperties = {
-    position: "relative",
+    position: fill ? "absolute" : "relative",
+    ...(fill ? { inset: 0 } : {}),
     overflow: "hidden",
     ...(aspectRatio ? { aspectRatio } : {}),
   };
 
-  const safeSrc = src.startsWith("http") || src.startsWith("/") ? src : `/${src}`;
+  const safeSrc = src.startsWith("http") || src.startsWith("/") || src.startsWith("blob:") || src.startsWith("data:") ? src : `/${src}`;
 
   return (
-    <figure className={`group overflow-hidden rounded-2xl bg-neutral-surface ${className}`} style={containerStyle}>
+    <figure className={`group overflow-hidden ${fill ? "w-full h-full" : "rounded-2xl bg-neutral-surface"} ${className}`} style={containerStyle}>
       <img
         src={safeSrc}
         alt={alt}

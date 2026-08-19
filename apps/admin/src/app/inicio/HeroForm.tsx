@@ -22,6 +22,7 @@ export function HeroForm({ initialHero }: HeroFormProps) {
     secondaryCtaUrl, setSecondaryCtaUrl,
     trustIndicators, setTrustIndicators,
     backgroundMediaId, backgroundMediaUrl,
+    backgroundFocalX, backgroundFocalY,
     featuredCardBadge, setFeaturedCardBadge,
     featuredCardTitle, setFeaturedCardTitle,
     featuredCardSubtitle, setFeaturedCardSubtitle,
@@ -43,6 +44,10 @@ export function HeroForm({ initialHero }: HeroFormProps) {
     setTrustIndicators(updated);
   };
 
+  const bgImageSrc = backgroundMediaUrl
+    ? (backgroundMediaUrl.startsWith("http") || backgroundMediaUrl.startsWith("/") ? backgroundMediaUrl : `/${backgroundMediaUrl}`)
+    : "/media/demo-cartagena-caribe.webp";
+
   return (
     <form onSubmit={handleSave} className="space-y-8 max-w-4xl">
       {/* Notifications */}
@@ -52,6 +57,76 @@ export function HeroForm({ initialHero }: HeroFormProps) {
           <span className="font-medium text-sm">{statusMessage}</span>
         </div>
       )}
+
+      {/* Interactive Live Preview of the Hero Header */}
+      <div className="bg-brand-navy rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl border border-white/10">
+        {/* Background Image with Live Focal Point */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <Image
+            src={bgImageSrc}
+            alt="Vista Previa de Fondo"
+            fill
+            unoptimized
+            style={{
+              objectFit: "cover",
+              objectPosition: `${backgroundFocalX || 50}% ${backgroundFocalY || 50}%`,
+            }}
+            className="scale-105 transition-all duration-700 ease-out"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-navy/95 via-brand-navy/85 to-brand-navy/70" />
+        </div>
+
+        {/* Top Header of Live Preview */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-white/15">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="font-sora text-xs font-bold uppercase tracking-wider text-atmosphere-sky">
+              Vista Previa en Vivo del Hero
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsBgModalOpen(true)}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-xs font-bold text-white transition-all shadow-sm"
+          >
+            🖼️ Cambiar Imagen de Fondo
+          </button>
+        </div>
+
+        {/* Hero Content Live Simulation */}
+        <div className="space-y-4 max-w-xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-brand-sunset text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse" />
+            {badgeText || "Una nueva forma de viajar"}
+          </div>
+
+          <h1 className="font-sora font-extrabold text-2xl sm:text-3xl leading-tight">
+            {titleHighlight || "Tu viaje comienza"}{" "}
+            <span className="text-brand-accent">{titleAccent || "antes de despegar"}</span>
+          </h1>
+
+          <p className="font-inter text-xs sm:text-sm text-atmosphere-sky line-clamp-2">
+            {description || "Desde la primera idea hasta tu regreso, una asesora te acompaña con opciones claras, atención humana y respaldo en cada etapa."}
+          </p>
+
+          <div className="pt-2 flex flex-wrap items-center gap-3">
+            <div className="px-5 py-2.5 rounded-xl bg-brand-whatsapp text-white font-sora font-bold text-xs shadow-lg inline-flex items-center gap-2">
+              <span>💬 {whatsappCtaText || "Cuéntame tu viaje"}</span>
+            </div>
+            {secondaryCtaText && (
+              <div className="px-4 py-2 rounded-xl bg-white/10 border border-white/20 text-white font-sora text-xs">
+                {secondaryCtaText}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Live Focal Point coordinates indicator */}
+        <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-neutral-subtle font-inter">
+          <span>Punto focal activo: <strong>X: {backgroundFocalX || 50}% | Y: {backgroundFocalY || 50}%</strong></span>
+          <span className="text-brand-sunset font-semibold">Se actualiza en tiempo real</span>
+        </div>
+      </div>
 
       {/* Section 1: Headline & Main Copy */}
       <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
@@ -238,14 +313,17 @@ export function HeroForm({ initialHero }: HeroFormProps) {
               Imagen Principal del Hero (Biblioteca de Medios)
             </label>
             <div className="flex items-center gap-4">
-              <div className="relative w-32 aspect-video rounded-xl bg-neutral-surface border border-neutral-border overflow-hidden shrink-0">
+              <div className="relative w-36 aspect-video rounded-xl bg-neutral-surface border border-neutral-border overflow-hidden shrink-0 shadow-sm">
                 {backgroundMediaUrl ? (
                   <Image
-                    src={backgroundMediaUrl.startsWith("http") || backgroundMediaUrl.startsWith("/") ? backgroundMediaUrl : `/${backgroundMediaUrl}`}
+                    src={bgImageSrc}
                     alt="Fondo Hero"
                     fill
                     unoptimized
-                    style={{ objectFit: "cover" }}
+                    style={{
+                      objectFit: "cover",
+                      objectPosition: `${backgroundFocalX || 50}% ${backgroundFocalY || 50}%`,
+                    }}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-neutral-muted">
@@ -264,7 +342,7 @@ export function HeroForm({ initialHero }: HeroFormProps) {
                 </Button>
                 {backgroundMediaId && (
                   <span className="block font-inter text-xs text-neutral-muted mt-1">
-                    ID Activo: #{backgroundMediaId}
+                    ID Activo: #{backgroundMediaId} • Punto Focal: ({backgroundFocalX || 50}%, {backgroundFocalY || 50}%)
                   </span>
                 )}
               </div>

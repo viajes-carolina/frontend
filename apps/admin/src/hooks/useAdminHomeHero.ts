@@ -151,6 +151,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     secondaryCtaUrl, setSecondaryCtaUrl,
     trustIndicators, setTrustIndicators,
     backgroundMediaId, backgroundMediaUrl,
+    backgroundFocalX, backgroundFocalY,
     featuredCardBadge, setFeaturedCardBadge,
     featuredCardTitle, setFeaturedCardTitle,
     featuredCardSubtitle, setFeaturedCardSubtitle,

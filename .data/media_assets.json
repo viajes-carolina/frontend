@@ -1,5 +1,59 @@
 [
   {
+    "id": 1787157866957,
+    "filename": "1787157866957-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "originalName": "ChatGPT Image 19 ago 2026, 10_10_09.png",
+    "mimeType": "image/webp",
+    "fileSizeBytes": 245000,
+    "width": 1920,
+    "height": 1080,
+    "focalX": 50,
+    "focalY": 50,
+    "altText": "ChatGPT Image 19 ago 2026, 10_10_09",
+    "caption": "",
+    "storagePath": "/media/1787157866957-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "variantsJson": "{}",
+    "active": true,
+    "createdAt": "2026-08-19T16:44:26.960Z",
+    "updatedAt": "2026-08-19T16:44:26.960Z"
+  },
+  {
+    "id": 1787157834478,
+    "filename": "1787157834478-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "originalName": "ChatGPT Image 19 ago 2026, 10_10_09.png",
+    "mimeType": "image/webp",
+    "fileSizeBytes": 245000,
+    "width": 1920,
+    "height": 1080,
+    "focalX": 50,
+    "focalY": 50,
+    "altText": "ChatGPT Image 19 ago 2026, 10_10_09",
+    "caption": "",
+    "storagePath": "/media/1787157834478-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "variantsJson": "{}",
+    "active": true,
+    "createdAt": "2026-08-19T16:43:54.482Z",
+    "updatedAt": "2026-08-19T16:43:54.482Z"
+  },
+  {
+    "id": 1787157797699,
+    "filename": "1787157797699-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "originalName": "ChatGPT Image 19 ago 2026, 10_10_09.png",
+    "mimeType": "image/webp",
+    "fileSizeBytes": 245000,
+    "width": 1920,
+    "height": 1080,
+    "focalX": 50,
+    "focalY": 50,
+    "altText": "ChatGPT Image 19 ago 2026, 10_10_09",
+    "caption": "",
+    "storagePath": "/media/1787157797699-ChatGPT_Image_19_ago_2026__10_10_09.png",
+    "variantsJson": "{}",
+    "active": true,
+    "createdAt": "2026-08-19T16:43:17.702Z",
+    "updatedAt": "2026-08-19T16:43:17.702Z"
+  },
+  {
     "id": 1787156731811,
     "filename": "1787156731811-ChatGPT_Image_19_ago_2026__10_10_09.png",
     "originalName": "ChatGPT Image 19 ago 2026, 10_10_09.png",
@@ -51,7 +105,7 @@
     "variantsJson": "{}",
     "active": true,
     "createdAt": "2026-08-18T00:00:00.000Z",
-    "updatedAt": "2026-08-19T16:41:41.945Z"
+    "updatedAt": "2026-08-19T16:51:36.920Z"
   },
   {
     "id": 2,

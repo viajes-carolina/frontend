@@ -113,6 +113,27 @@ function writeStoredJson<T>(filename: string, data: T): void {
   }
 }
 
+function saveUploadedMediaFile(filename: string, buffer: Buffer) {
+  const dirs = [
+    path.resolve(process.cwd(), ".data", "media"),
+    path.resolve(process.cwd(), "public", "media"),
+    path.resolve(process.cwd(), "..", "web", "public", "media"),
+    path.resolve(process.cwd(), "..", "admin", "public", "media"),
+    path.resolve(process.cwd(), "..", "..", ".data", "media"),
+  ];
+
+  for (const dir of dirs) {
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(path.join(dir, filename), buffer);
+    } catch {
+      // ignore
+    }
+  }
+}
+
 async function proxyOrFallback(
   req: NextRequest,
   params: Promise<{ path: string[] }>
@@ -127,8 +148,31 @@ async function proxyOrFallback(
     // Read request body safely once
     let bodyText: string | undefined = undefined;
     let bodyJson: Record<string, unknown> | undefined = undefined;
+    const isMultipart = req.headers.get("content-type")?.includes("multipart/form-data") || targetPath.includes("upload");
+    let uploadedFileBuffer: Buffer | null = null;
+    let uploadedFileName = "";
+    let uploadedMimeType = "image/webp";
+    let uploadedFileSize = 0;
+    let formAltText = "";
+    let formCaption = "";
 
-    if (["POST", "PUT", "PATCH"].includes(method)) {
+    if (isMultipart && method === "POST") {
+      try {
+        const formData = await req.formData();
+        const file = formData.get("file") as File | null;
+        if (file) {
+          uploadedFileName = file.name;
+          uploadedMimeType = file.type || "image/webp";
+          uploadedFileSize = file.size;
+          const arrayBuffer = await file.arrayBuffer();
+          uploadedFileBuffer = Buffer.from(arrayBuffer);
+        }
+        formAltText = (formData.get("altText") as string) || "";
+        formCaption = (formData.get("caption") as string) || "";
+      } catch (err) {
+        console.error("Error reading formData in proxy:", err);
+      }
+    } else if (["POST", "PUT", "PATCH"].includes(method)) {
       try {
         bodyText = await req.text();
         if (bodyText) {
@@ -611,39 +655,30 @@ async function proxyOrFallback(
 
       if (method === "POST" || targetPath.includes("upload")) {
         const id = Date.now();
-        let originalName = `imagen-${id}.webp`;
-        let filename = `media-${id}.webp`;
-        let altText = "Nueva Imagen";
-        let caption = "";
-        let storagePath = `/media/${filename}`;
+        let cleanOriginalName = uploadedFileName || `imagen-${id}.webp`;
+        let safeFilename = `${id}-${cleanOriginalName.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+        let altText = formAltText || cleanOriginalName.replace(/\.[^/.]+$/, "");
+        let caption = formCaption || "";
+        let storagePath = `/media/${safeFilename}`;
 
-        if (bodyText) {
-          const nameMatch = bodyText.match(/filename="([^"]+)"/);
-          if (nameMatch) {
-            originalName = nameMatch[1];
-            filename = `${Date.now()}-${nameMatch[1].replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-            storagePath = `/media/${filename}`;
-            altText = originalName.replace(/\.[^/.]+$/, "");
-          }
-          const altMatch = bodyText.match(/name="altText"\r?\n\r?\n([^\r\n]+)/);
-          if (altMatch) altText = altMatch[1];
-          const capMatch = bodyText.match(/name="caption"\r?\n\r?\n([^\r\n]+)/);
-          if (capMatch) caption = capMatch[1];
-        }
         if (bodyJson) {
-          if (bodyJson.originalName) originalName = String(bodyJson.originalName);
-          if (bodyJson.filename) filename = String(bodyJson.filename);
+          if (bodyJson.originalName) cleanOriginalName = String(bodyJson.originalName);
+          if (bodyJson.filename) safeFilename = String(bodyJson.filename);
           if (bodyJson.altText) altText = String(bodyJson.altText);
           if (bodyJson.caption) caption = String(bodyJson.caption);
           if (bodyJson.storagePath) storagePath = String(bodyJson.storagePath);
         }
 
+        if (uploadedFileBuffer) {
+          saveUploadedMediaFile(safeFilename, uploadedFileBuffer);
+        }
+
         const newAsset: MediaAssetDTO = {
           id,
-          filename,
-          originalName,
-          mimeType: "image/webp",
-          fileSizeBytes: 245000,
+          filename: safeFilename,
+          originalName: cleanOriginalName,
+          mimeType: uploadedMimeType,
+          fileSizeBytes: uploadedFileSize || (uploadedFileBuffer ? uploadedFileBuffer.length : 245000),
           width: 1920,
           height: 1080,
           focalX: 50.0,

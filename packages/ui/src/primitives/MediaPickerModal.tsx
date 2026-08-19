@@ -28,10 +28,12 @@ export function MediaPickerModal({
   const [showGallery, setShowGallery] = useState(false);
   const [currentFocalX, setCurrentFocalX] = useState(50);
   const [currentFocalY, setCurrentFocalY] = useState(50);
+  const [localPreviewSrc, setLocalPreviewSrc] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
+      setLocalPreviewSrc(null);
       apiClient
         .getMediaList(0, 50)
         .then((res) => {
@@ -68,6 +70,7 @@ export function MediaPickerModal({
 
     // Crear vista previa inmediata con ObjectURL
     const localBlobUrl = URL.createObjectURL(file);
+    setLocalPreviewSrc(localBlobUrl);
 
     setIsUploading(true);
     try {
@@ -112,6 +115,7 @@ export function MediaPickerModal({
   };
 
   const handleSelectFromGallery = (item: MediaAssetDTO) => {
+    setLocalPreviewSrc(null);
     setSelected(item);
     setCurrentFocalX(item.focalX || 50);
     setCurrentFocalY(item.focalY || 50);
@@ -231,7 +235,7 @@ export function MediaPickerModal({
 
               {/* Interactive Focal Point Picker */}
               <FocalPointPicker
-                src={selected.storagePath}
+                src={localPreviewSrc || selected.storagePath}
                 alt={selected.altText || selected.originalName}
                 initialFocalX={currentFocalX}
                 initialFocalY={currentFocalY}

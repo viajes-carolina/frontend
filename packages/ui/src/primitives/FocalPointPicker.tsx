@@ -53,7 +53,7 @@ export function FocalPointPicker({
   };
 
   const safeSrc = src
-    ? src.startsWith("http") || src.startsWith("/") || src.startsWith("data:")
+    ? src.startsWith("http") || src.startsWith("/") || src.startsWith("data:") || src.startsWith("blob:")
       ? src
       : `/${src}`
     : "/media/demo-hero-travel.webp";
