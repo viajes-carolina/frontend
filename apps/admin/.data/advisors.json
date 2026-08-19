@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "fullName": "Carolina Zúñiga",
+    "roleTitle": "Fundadora & Directora de Experiencias",
+    "specialty": "Destinos Internacionales & Lunas de Miel",
+    "bio": "Más de 15 años diseñando itinerarios de ensueño en el Caribe y Europa. Apasionada por hacer de cada viaje una experiencia irrepetible.",
+    "photoMediaId": 2,
+    "photoMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "whatsappPhone": "+51987654321",
+    "whatsappMessageTemplate": "Hola Carolina, me gustaría una asesoría personalizada contigo para planificar mi viaje.",
+    "displayOrder": 1,
+    "active": true,
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "updatedAt": "2026-08-19T17:02:59.996Z"
+  },
+  {
+    "id": 2,
+    "fullName": "Lucía Ramos",
+    "roleTitle": "Asesora Senior de Viajes",
+    "specialty": "Caribe, Resorts All-Inclusive & Cruceros",
+    "bio": "Especialista en vacaciones familiares y escapadas de relax. Conoce al detalle los mejores resorts de Punta Cana, Cancún y Cartagena.",
+    "photoMediaId": 2,
+    "photoMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "whatsappPhone": "+51987654321",
+    "whatsappMessageTemplate": "Hola Lucía, deseo cotizar un paquete al Caribe y recibir tu recomendación de resorts.",
+    "displayOrder": 2,
+    "active": true,
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "updatedAt": "2026-08-18T00:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "fullName": "Valeria Gómez",
+    "roleTitle": "Especialista en Destinos Nacionales",
+    "specialty": "Cusco, Selva Amazónica & Trekking",
+    "bio": "Guía experta en las maravillas del Perú. Diseña rutas culturales y de aventura con los mejores horarios y operadores certificados.",
+    "photoMediaId": 3,
+    "photoMediaUrl": "/media/demo-cusco-machupicchu.webp",
+    "whatsappPhone": "+51987654321",
+    "whatsappMessageTemplate": "Hola Valeria, me interesa cotizar un viaje a Cusco / Selva peruana con tu asesoría.",
+    "displayOrder": 3,
+    "active": true,
+    "createdAt": "2026-08-18T00:00:00.000Z",
+    "updatedAt": "2026-08-18T00:00:00.000Z"
+  }
+]

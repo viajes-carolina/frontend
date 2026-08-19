@@ -59,25 +59,28 @@ export function HeroForm({ initialHero }: HeroFormProps) {
       )}
 
       {/* Interactive Live Preview of the Hero Header */}
-      <div className="bg-brand-navy rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl border border-white/10">
+      <div className="rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl border border-white/20 bg-slate-900 min-h-[320px] flex flex-col justify-between">
         {/* Background Image with Live Focal Point */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <Image
             src={bgImageSrc}
             alt="Vista Previa de Fondo"
             fill
             unoptimized
+            priority
             style={{
               objectFit: "cover",
               objectPosition: `${backgroundFocalX || 50}% ${backgroundFocalY || 50}%`,
             }}
             className="scale-105 transition-all duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-navy/95 via-brand-navy/85 to-brand-navy/70" />
+          {/* Subtle contrast gradient - keeps photo crystal clear */}
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-900/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-black/30" />
         </div>
 
         {/* Top Header of Live Preview */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-white/15">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-white/20">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-sora text-xs font-bold uppercase tracking-wider text-atmosphere-sky">
@@ -94,18 +97,18 @@ export function HeroForm({ initialHero }: HeroFormProps) {
         </div>
 
         {/* Hero Content Live Simulation */}
-        <div className="space-y-4 max-w-xl">
+        <div className="relative z-10 space-y-4 max-w-xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-brand-sunset text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse" />
             {badgeText || "Una nueva forma de viajar"}
           </div>
 
-          <h1 className="font-sora font-extrabold text-2xl sm:text-3xl leading-tight">
+          <h1 className="font-sora font-extrabold text-2xl sm:text-3xl leading-tight drop-shadow-md">
             {titleHighlight || "Tu viaje comienza"}{" "}
             <span className="text-brand-accent">{titleAccent || "antes de despegar"}</span>
           </h1>
 
-          <p className="font-inter text-xs sm:text-sm text-atmosphere-sky line-clamp-2">
+          <p className="font-inter text-xs sm:text-sm text-atmosphere-sky line-clamp-2 drop-shadow">
             {description || "Desde la primera idea hasta tu regreso, una asesora te acompaña con opciones claras, atención humana y respaldo en cada etapa."}
           </p>
 
@@ -122,7 +125,7 @@ export function HeroForm({ initialHero }: HeroFormProps) {
         </div>
 
         {/* Live Focal Point coordinates indicator */}
-        <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-neutral-subtle font-inter">
+        <div className="relative z-10 mt-6 pt-3 border-t border-white/15 flex items-center justify-between text-[11px] text-white/80 font-inter">
           <span>Punto focal activo: <strong>X: {backgroundFocalX || 50}% | Y: {backgroundFocalY || 50}%</strong></span>
           <span className="text-brand-sunset font-semibold">Se actualiza en tiempo real</span>
         </div>

@@ -2,7 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
 
+function getContentType(filePath: string): string {
+  const ext = path.extname(filePath).toLowerCase();
+  if (ext === ".png") return "image/png";
+  if (ext === ".jpg" || ext === ".jpeg") return "image/jpeg";
+  if (ext === ".svg") return "image/svg+xml";
+  if (ext === ".gif") return "image/gif";
+  if (ext === ".webp") return "image/webp";
+  return "image/webp";
+}
+
 function findMediaFile(filename: string): { buffer: Buffer; contentType: string } | null {
+  const decoded = decodeURIComponent(filename || "");
+  const idPrefixMatch = decoded.match(/^(\d+)-/);
+  const idPrefix = idPrefixMatch ? idPrefixMatch[1] : null;
+
   const possibleDirs = [
     path.resolve(process.cwd(), ".data", "media"),
     path.resolve(process.cwd(), "public", "media"),
@@ -12,20 +26,40 @@ function findMediaFile(filename: string): { buffer: Buffer; contentType: string 
   ];
 
   for (const dir of possibleDirs) {
-    const fullPath = path.join(dir, filename);
+    if (!fs.existsSync(dir)) continue;
+
+    // 1. Direct exact filename
+    const fullPath = path.join(dir, decoded);
     if (fs.existsSync(fullPath)) {
       try {
-        const buffer = fs.readFileSync(fullPath);
-        const ext = path.extname(filename).toLowerCase();
-        let contentType = "image/webp";
-        if (ext === ".png") contentType = "image/png";
-        else if (ext === ".jpg" || ext === ".jpeg") contentType = "image/jpeg";
-        else if (ext === ".svg") contentType = "image/svg+xml";
-        else if (ext === ".gif") contentType = "image/gif";
-        return { buffer, contentType };
-      } catch {
-        // ignore
-      }
+        if (fs.statSync(fullPath).isFile()) {
+          return { buffer: fs.readFileSync(fullPath), contentType: getContentType(fullPath) };
+        }
+      } catch {}
+    }
+
+    // 2. Exact match with original filename
+    const originalFullPath = path.join(dir, filename);
+    if (fs.existsSync(originalFullPath)) {
+      try {
+        if (fs.statSync(originalFullPath).isFile()) {
+          return { buffer: fs.readFileSync(originalFullPath), contentType: getContentType(originalFullPath) };
+        }
+      } catch {}
+    }
+
+    // 3. Match by ID prefix (e.g. 1787158399489-*)
+    if (idPrefix) {
+      try {
+        const files = fs.readdirSync(dir);
+        const match = files.find((f) => f.startsWith(`${idPrefix}-`));
+        if (match) {
+          const matchPath = path.join(dir, match);
+          if (fs.existsSync(matchPath) && fs.statSync(matchPath).isFile()) {
+            return { buffer: fs.readFileSync(matchPath), contentType: getContentType(matchPath) };
+          }
+        }
+      } catch {}
     }
   }
   return null;

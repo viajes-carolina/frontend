@@ -1,0 +1,131 @@
+[
+  {
+    "id": 1,
+    "slug": "cartagena-donde-el-mar-te-espera",
+    "title": "Cartagena: Donde el mar te espera",
+    "destination": "Cartagena de Indias, Colombia",
+    "summary": "Disfruta del encanto caribeño con playas de arena cálida, murallas históricas y atardeceres mágicos frente al mar.",
+    "priceUsd": 429,
+    "pricePen": 1590,
+    "durationDays": 4,
+    "durationNights": 3,
+    "departureCity": "Lima",
+    "validFrom": "2026-08-18",
+    "validUntil": "2027-02-14",
+    "featuredMediaId": 2,
+    "featuredMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "featuredMediaFocalX": 60,
+    "featuredMediaFocalY": 50,
+    "isFeatured": true,
+    "inclusions": [
+      "Vuelos ida y vuelta con equipaje",
+      "Hotel 4 estrellas con desayuno buffet",
+      "Traslados aeropuerto - hotel - aeropuerto",
+      "Tour en lancha a Islas del Rosario"
+    ],
+    "exclusions": [
+      "Gastos no especificados",
+      "Tarjeta de asistencia médica opcional"
+    ],
+    "whatsappMessageTemplate": "Hola Viajes Carolina, me interesa la promoción \"Cartagena: Donde el mar te espera\" desde USD 429. ¿Tienen fechas disponibles?",
+    "displayOrder": 1,
+    "active": true,
+    "updatedAt": "2026-08-19T17:02:51.499Z"
+  },
+  {
+    "id": 2,
+    "slug": "cusco-magico-y-machu-picchu",
+    "title": "Cusco Mágico & Machu Picchu",
+    "destination": "Cusco & Valle Sagrado, Perú",
+    "summary": "Una experiencia inolvidable recorriendo la capital del Imperio Incaico, templos sagrados y la maravilla de Machu Picchu.",
+    "priceUsd": 520,
+    "pricePen": 1922,
+    "durationDays": 5,
+    "durationNights": 4,
+    "departureCity": "Lima",
+    "validFrom": "2026-08-18",
+    "validUntil": "2027-02-14",
+    "featuredMediaId": 3,
+    "featuredMediaUrl": "/media/demo-cusco-machupicchu.webp",
+    "featuredMediaFocalX": 50,
+    "featuredMediaFocalY": 35,
+    "isFeatured": true,
+    "inclusions": [
+      "Vuelos Lima - Cusco - Lima",
+      "Tren turístico Expedition a Machu Picchu",
+      "Entrada y guía oficial en Machu Picchu",
+      "Alojamiento boutique con desayunos"
+    ],
+    "exclusions": [
+      "Almuerzos libres en Aguas Calientes",
+      "Gastos personales"
+    ],
+    "whatsappMessageTemplate": "Hola Viajes Carolina, deseo cotizar el paquete \"Cusco Mágico & Machu Picchu\" desde S/ 1,922. ¿Me podrían brindar detalles?",
+    "displayOrder": 2,
+    "active": true
+  },
+  {
+    "id": 3,
+    "slug": "punta-cana-all-inclusive-caribe",
+    "title": "Punta Cana All-Inclusive Deluxe",
+    "destination": "Punta Cana, República Dominicana",
+    "summary": "Relax absoluto en resorts de primer nivel con comidas y bebidas ilimitadas, playas de arena blanca y actividades acuáticas.",
+    "priceUsd": 799,
+    "pricePen": 2956,
+    "durationDays": 5,
+    "durationNights": 4,
+    "departureCity": "Lima",
+    "validFrom": "2026-08-18",
+    "validUntil": "2027-02-14",
+    "featuredMediaId": 2,
+    "featuredMediaUrl": "/media/demo-cartagena-caribe.webp",
+    "featuredMediaFocalX": 60,
+    "featuredMediaFocalY": 50,
+    "isFeatured": true,
+    "inclusions": [
+      "Vuelos internacionales ida y vuelta",
+      "Resort 5 estrellas Todo Incluido 24h",
+      "Bebidas y cenas temáticas ilimitadas",
+      "Deportes acuáticos no motorizados"
+    ],
+    "exclusions": [
+      "Impuestos de entrada a República Dominicana",
+      "Propinas voluntarias"
+    ],
+    "whatsappMessageTemplate": "Hola Viajes Carolina, quiero consultar sobre la oferta \"Punta Cana All-Inclusive Deluxe\". ¿Cuáles son las fechas disponibles?",
+    "displayOrder": 3,
+    "active": true
+  },
+  {
+    "id": 4,
+    "slug": "iquitos-selva-magica-amazonas",
+    "title": "Iquitos & Selva Mágica Amazonas",
+    "destination": "Iquitos & Río Amazonas, Perú",
+    "summary": "Adéntrate en el pulmón del mundo con expediciones nocturnas, avistamiento de delfines rosados y conexión con la naturaleza.",
+    "priceUsd": 380,
+    "pricePen": 1406,
+    "durationDays": 4,
+    "durationNights": 3,
+    "departureCity": "Lima",
+    "validFrom": "2026-08-18",
+    "validUntil": "2027-02-14",
+    "featuredMediaId": 1,
+    "featuredMediaUrl": "/media/demo-hero-travel.webp",
+    "featuredMediaFocalX": 72.5,
+    "featuredMediaFocalY": 28,
+    "isFeatured": true,
+    "inclusions": [
+      "Vuelos Lima - Iquitos - Lima",
+      "Lodge ecológico en la selva",
+      "Todas las comidas incluidas (pensión completa)",
+      "Excursiones guiadas por botánicos locales"
+    ],
+    "exclusions": [
+      "Bebidas alcohólicas",
+      "Souvenirs"
+    ],
+    "whatsappMessageTemplate": "Hola Viajes Carolina, me encanta la opción \"Iquitos & Selva Mágica Amazonas\". ¿Me asesoran con las salidas?",
+    "displayOrder": 4,
+    "active": true
+  }
+]

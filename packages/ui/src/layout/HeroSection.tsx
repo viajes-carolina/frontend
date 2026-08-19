@@ -30,7 +30,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
     >
       {/* 1. Cinematic Full-Bleed Panoramic Background Image */}
       {hero.backgroundMediaUrl ? (
-        <div className="absolute inset-0 -z-20 overflow-hidden">
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
           <ResponsiveImage
             src={hero.backgroundMediaUrl}
             alt={hero.titleHighlight || "Fondo de viaje Viajes Carolina"}
@@ -44,16 +44,16 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
           />
         </div>
       ) : (
-        <div className="absolute inset-0 -z-20 bg-gradient-to-b from-atmosphere-twilight via-brand-navy to-atmosphere-twilight" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-atmosphere-twilight via-brand-navy to-atmosphere-twilight" />
       )}
 
       {/* 2. Atmospheric & High-Contrast Overlay */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-atmosphere-twilight/95 via-brand-navy/85 to-atmosphere-twilight/70 pointer-events-none" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-t from-atmosphere-twilight/90 via-transparent to-black/40 pointer-events-none" />
+      <div className="absolute inset-0 z-1 bg-gradient-to-r from-atmosphere-twilight/80 via-brand-navy/50 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 z-1 bg-gradient-to-t from-atmosphere-twilight/70 via-transparent to-black/30 pointer-events-none" />
 
       {/* Ambient Glows */}
-      <div className="absolute top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand-blue/20 blur-[130px] pointer-events-none rounded-full" />
-      <div className="absolute top-1/2 right-10 w-96 h-96 bg-brand-sunset/15 blur-[120px] pointer-events-none rounded-full" />
+      <div className="absolute top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand-blue/20 blur-[130px] pointer-events-none rounded-full z-1" />
+      <div className="absolute top-1/2 right-10 w-96 h-96 bg-brand-sunset/15 blur-[120px] pointer-events-none rounded-full z-1" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-14">
