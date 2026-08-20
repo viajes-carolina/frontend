@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import type { ClaimRecordDTO } from "@vc/api-client";
 import { useAdminClaims } from "../../hooks/useAdminClaims";
+import { buildWhatsAppUrl } from "../../lib/whatsapp";
 
 interface ClaimsInboxProps {
   initialClaims: ClaimRecordDTO[];
@@ -105,7 +106,7 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
               <tbody className="divide-y divide-slate-100">
                 {claims.map((claim) => (
                   <tr key={claim.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-primary-700">
+                    <td className="py-3.5 px-4 font-mono font-bold text-brand-navy">
                       {claim.claimCode}
                     </td>
                     <td className="py-3.5 px-4 text-slate-500">
@@ -124,7 +125,7 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
                     <td className="py-3.5 px-4 text-right space-x-2">
                       <button
                         onClick={() => handleOpenModal(claim)}
-                        className="px-3 py-1.5 bg-primary-50 hover:bg-primary-100 text-primary-700 font-bold rounded-lg text-[11px] transition-all"
+                        className="px-3 py-1.5 bg-brand-accent/10 hover:bg-brand-accent/20 text-brand-accent font-bold rounded-lg text-[11px] transition-all"
                       >
                         Ver Detalle & Responder
                       </button>
@@ -144,7 +145,7 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div>
                 <span className="text-xs text-slate-500 font-medium">Hoja de Reclamación Oficial</span>
-                <h3 className="text-xl font-black text-primary-800 font-mono">
+                <h3 className="text-xl font-black text-brand-navy font-mono">
                   {selectedClaim.claimCode}
                 </h3>
               </div>
@@ -179,7 +180,7 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
               <div>
                 <strong className="text-slate-900">Bien / Servicio:</strong> {selectedClaim.contractedType} — {selectedClaim.description}
                 {selectedClaim.claimedAmount && (
-                  <span className="ml-2 font-mono text-primary-700 font-bold">
+                  <span className="ml-2 font-mono text-brand-navy font-bold">
                     ({selectedClaim.currency} {selectedClaim.claimedAmount})
                   </span>
                 )}
@@ -208,7 +209,7 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
                 value={responseInput}
                 onChange={(e) => setResponseInput(e.target.value)}
                 placeholder="Escribe la respuesta formal, justificación legal o solución ofrecida al consumidor..."
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
               />
 
               <div className="flex flex-wrap gap-2 items-center justify-between pt-2">
@@ -238,9 +239,10 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
 
                 {selectedClaim.phone && (
                   <a
-                    href={`https://wa.me/${selectedClaim.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                    href={buildWhatsAppUrl(
+                      selectedClaim.phone,
                       `Hola ${selectedClaim.fullName}, nos comunicamos de Viajes Carolina respecto a su Hoja de Reclamación ${selectedClaim.claimCode}.`
-                    )}`}
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-3.5 py-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-bold rounded-xl text-xs inline-flex items-center gap-1.5"

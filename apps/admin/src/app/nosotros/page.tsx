@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useAdminAbout } from "../../hooks/useAdminAbout";
+import { useMediaPicker } from "../../hooks/useMediaPicker";
 import { AboutForm } from "./AboutForm";
 import { AdvisorList } from "./AdvisorList";
 import { AdvisorFormModal } from "./AdvisorFormModal";
@@ -30,6 +31,7 @@ export default function AdminAboutPage() {
   } = useAdminAbout();
 
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
+  const mediaPicker = useMediaPicker(isMediaPickerOpen);
 
   const handleOpenMediaPicker = (target: "hero" | "story" | "advisor") => {
     setMediaPickerTarget(target);
@@ -190,6 +192,10 @@ export default function AdminAboutPage() {
         }}
         onSelect={handleSelectMedia}
         title="Seleccionar Medio para Nosotros"
+        items={mediaPicker.items}
+        loading={mediaPicker.loading}
+        onUploadFile={mediaPicker.uploadFile}
+        onFocalPointSave={mediaPicker.saveFocalPoint}
       />
     </div>
   );

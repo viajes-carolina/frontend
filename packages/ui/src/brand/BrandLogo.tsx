@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { BRAND_CONFIG } from "@vc/config";
 
 export interface BrandLogoProps {
   variant?: "light" | "dark" | "monochrome";
@@ -16,7 +17,7 @@ export function BrandLogo({
   width = 484,
 }: BrandLogoProps) {
   const textColor = variant === "light" ? "#FFFFFF" : "#14293B";
-  const dotColor = variant === "monochrome" ? textColor : "#FF8A1F";
+  const dotColor = variant === "monochrome" ? textColor : BRAND_CONFIG.colors.accent;
 
   return (
     <svg

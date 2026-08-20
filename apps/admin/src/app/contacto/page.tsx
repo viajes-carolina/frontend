@@ -21,10 +21,20 @@ export default function AdminContactPage() {
     updateInquiryStatus,
   } = useAdminContact();
 
-  if (loading || !pageSettings) {
+  if (loading) {
     return (
       <div className="p-8 max-w-6xl mx-auto flex items-center justify-center min-h-[50vh]">
         <div className="animate-spin w-8 h-8 border-4 border-brand-accent border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  if (!pageSettings) {
+    return (
+      <div className="p-8 max-w-6xl mx-auto">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-xs font-inter">
+          ⚠️ {error || "No se pudo cargar la configuración de contacto."}
+        </div>
       </div>
     );
   }
@@ -54,7 +64,7 @@ export default function AdminContactPage() {
           </p>
         </div>
         <div className="flex gap-3">
-          <a href="http://localhost:3000/contacto" target="_blank" rel="noopener noreferrer">
+          <a href={`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/contacto`} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="sm" icon={<ArrowUpRightIcon size={16} />}>
               Ver Página Pública
             </Button>

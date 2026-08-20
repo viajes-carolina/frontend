@@ -25,79 +25,52 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen bg-neutral-soft text-neutral-ink flex flex-col items-center">
       {/* =========================================================================
-          01 · Hero Section Dinámica (Figma: 01. Hero — Tu viaje comienza antes de despegar)
+          01 · Hero Section Dinámica — Imaginar
           ========================================================================= */}
       <HeroSection hero={homeHero} settings={siteSettings} />
 
-      {/* =========================================================================
-          02 · Journey Connector
-          ========================================================================= */}
-      <div className="w-full max-w-5xl px-4 my-6">
-        <JourneyConnector />
+      {/* Ruta narrativa, parada 1/3: arranca el recorrido */}
+      <div className="w-full max-w-5xl px-4">
+        <JourneyConnector step="01" label="Imaginar → Explorar" />
       </div>
 
       {/* =========================================================================
-          03 · Intenciones de Viaje (Figma: 02. Intenciones de Viaje)
+          02 · Intenciones de Viaje — Explorar
           ========================================================================= */}
       <IntentionsSection intentions={intentions} settings={siteSettings} />
 
       {/* =========================================================================
-          04 · Journey Connector
-          ========================================================================= */}
-      <div className="w-full max-w-5xl px-4 my-6">
-        <JourneyConnector />
-      </div>
-
-      {/* =========================================================================
-          05 · Promociones Destacadas (Figma: 03. Promociones Destacadas)
+          03 · Promociones Destacadas — Explorar
           ========================================================================= */}
       <PromotionsSection promotions={promotions} settings={siteSettings} />
 
       {/* =========================================================================
-          06 · Journey Connector
-          ========================================================================= */}
-      <div className="w-full max-w-5xl px-4 my-6">
-        <JourneyConnector />
-      </div>
-
-      {/* =========================================================================
-          07 · Inspiración desde Blog (Figma: 06. Inspiración para tu viaje)
+          04 · Inspiración desde Blog — Explorar
           ========================================================================= */}
       <BlogInspirationSection config={blogInspiration.config} posts={blogInspiration.posts} />
 
-      {/* =========================================================================
-          08 · Journey Connector
-          ========================================================================= */}
-      <div className="w-full max-w-5xl px-4 my-6">
-        <JourneyConnector />
+      {/* Ruta narrativa, parada 2/3: de inspiración a validación social */}
+      <div className="w-full max-w-5xl px-4">
+        <JourneyConnector step="02" label="Explorar → Prepararte" />
       </div>
 
       {/* =========================================================================
-          09 · Testimonios y Experiencias de Clientes (Figma: 04. Confianza y Testimonios)
+          05 · Testimonios y Experiencias de Clientes — Prepararte
           ========================================================================= */}
       <TestimonialsSection testimonials={trustData.testimonials} />
 
       {/* =========================================================================
-          08 · Journey Connector
-          ========================================================================= */}
-      <div className="w-full max-w-5xl px-4 my-6">
-        <JourneyConnector />
-      </div>
-
-      {/* =========================================================================
-          09 · Preguntas Frecuentes FAQ (Figma: 05. Preguntas Frecuentes)
+          06 · Preguntas Frecuentes FAQ — Prepararte
           ========================================================================= */}
       <FaqSection faqs={trustData.faqs} settings={siteSettings} />
 
-      {/* =========================================================================
-          10 · Journey Connector
-          ========================================================================= */}
-      <div className="w-full max-w-5xl px-4 my-6">
-        <JourneyConnector />
+      {/* Ruta narrativa, parada 3/3: llegada a la conversación */}
+      <div className="w-full max-w-5xl px-4">
+        <JourneyConnector step="03" label="Prepararte → Conversar" />
       </div>
 
       {/* =========================================================================
-          11 · Cierre y Gran Llamado a la Acción (Figma: 07. Conversación Final)
+          07 · Cierre y Gran Llamado a la Acción — Conversar
           ========================================================================= */}
       <ClosingCtaSection settings={siteSettings} />
     </main>

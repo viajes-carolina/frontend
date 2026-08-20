@@ -31,6 +31,10 @@ export interface IntentionFormModalProps {
   isMediaPickerOpen: boolean;
   setIsMediaPickerOpen: (val: boolean) => void;
   onSelectMedia: (media: MediaAssetDTO) => void;
+  mediaPickerItems: MediaAssetDTO[];
+  mediaPickerLoading: boolean;
+  onUploadMediaFile: (file: File) => Promise<MediaAssetDTO>;
+  onMediaFocalPointSave: (id: number, payload: { focalX: number; focalY: number }) => Promise<void>;
 }
 
 export function IntentionFormModal({
@@ -59,6 +63,10 @@ export function IntentionFormModal({
   isMediaPickerOpen,
   setIsMediaPickerOpen,
   onSelectMedia,
+  mediaPickerItems,
+  mediaPickerLoading,
+  onUploadMediaFile,
+  onMediaFocalPointSave,
 }: IntentionFormModalProps) {
   if (!isOpen) return null;
 
@@ -281,6 +289,10 @@ export function IntentionFormModal({
           onClose={() => setIsMediaPickerOpen(false)}
           onSelect={onSelectMedia}
           selectedMediaId={coverMediaId}
+          items={mediaPickerItems}
+          loading={mediaPickerLoading}
+          onUploadFile={onUploadMediaFile}
+          onFocalPointSave={onMediaFocalPointSave}
           title="Seleccionar Portada de la Intención"
         />
       </div>

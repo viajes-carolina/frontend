@@ -82,8 +82,8 @@ export const UsersTable: React.FC<UsersTableProps> = ({
         });
       }
       setModalOpen(false);
-    } catch (err: any) {
-      setFormError(err?.message || "Error al guardar usuario.");
+    } catch (err) {
+      setFormError(err instanceof Error ? err.message : "Error al guardar usuario.");
     } finally {
       setSubmitting(false);
     }
@@ -241,6 +241,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                 <input
                   type="text"
                   required
+                  autoComplete="off"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Ej. Carolina Zúñiga"
@@ -254,6 +255,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   <input
                     type="text"
                     required
+                    autoComplete="off"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="usuario"
@@ -265,6 +267,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                   <input
                     type="email"
                     required
+                    autoComplete="off"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="correo@viajescarolina.com"
@@ -280,6 +283,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                 <input
                   type="password"
                   required={!editingUser}
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MediaAssetDTO, apiClient } from "@vc/api-client";
+import { MediaAssetDTO } from "@vc/api-client";
 import { Button } from "./Button";
 import { FocalPointPicker } from "./FocalPointPicker";
 import { CheckIcon, CloseIcon, ImageIcon } from "../icons/icons";
@@ -12,55 +12,68 @@ export interface MediaPickerModalProps {
   onSelect: (media: MediaAssetDTO) => void;
   selectedMediaId?: number;
   title?: string;
+  items: MediaAssetDTO[];
+  loading: boolean;
+  onUploadFile: (file: File) => Promise<MediaAssetDTO>;
+  onFocalPointSave: (id: number, payload: { focalX: number; focalY: number }) => Promise<void>;
 }
 
+// Componente puro: no llama a apiClient directamente (a diferencia de la versión
+// anterior). items/loading/onUploadFile/onFocalPointSave los provee quien lo use
+// (ver apps/admin/src/hooks/useMediaPicker.ts) — así un fallo real de subida o de
+// guardado de punto focal se muestra como error, en vez de fabricar un asset falso.
 export function MediaPickerModal({
   isOpen,
   onClose,
   onSelect,
   selectedMediaId,
   title = "Seleccionar y Editar Imagen",
+  items,
+  loading,
+  onUploadFile,
+  onFocalPointSave,
 }: MediaPickerModalProps) {
-  const [items, setItems] = useState<MediaAssetDTO[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<MediaAssetDTO | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
   const [currentFocalX, setCurrentFocalX] = useState(50);
   const [currentFocalY, setCurrentFocalY] = useState(50);
   const [localPreviewSrc, setLocalPreviewSrc] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // Solo se inicializa la selección una vez por apertura del modal — sin esto, cada
+  // subida exitosa cambia la referencia de `items` (nuevo asset al frente del array),
+  // este efecto se re-dispara, y pisa la selección recién subida con la original.
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      setLoading(true);
-      setLocalPreviewSrc(null);
-      apiClient
-        .getMediaList(0, 50)
-        .then((res) => {
-          const list = res.items || [];
-          setItems(list);
-          if (selectedMediaId) {
-            const found = list.find((m) => m.id === selectedMediaId);
-            if (found) {
-              setSelected(found);
-              setCurrentFocalX(found.focalX || 50);
-              setCurrentFocalY(found.focalY || 50);
-              setShowGallery(false);
-            } else {
-              setShowGallery(true);
-            }
-          } else if (list.length > 0) {
-            setSelected(list[0]);
-            setCurrentFocalX(list[0].focalX || 50);
-            setCurrentFocalY(list[0].focalY || 50);
-            setShowGallery(false);
-          } else {
-            setShowGallery(true);
-          }
-        })
-        .finally(() => setLoading(false));
+    if (!isOpen) {
+      setHasInitialized(false);
+      return;
     }
-  }, [isOpen, selectedMediaId]);
+    if (loading || hasInitialized) return;
+    setLocalPreviewSrc(null);
+    if (selectedMediaId) {
+      const found = items.find((m) => m.id === selectedMediaId);
+      if (found) {
+        setSelected(found);
+        setCurrentFocalX(found.focalX || 50);
+        setCurrentFocalY(found.focalY || 50);
+        setShowGallery(false);
+        setHasInitialized(true);
+        return;
+      }
+    }
+    if (items.length > 0) {
+      setSelected(items[0]);
+      setCurrentFocalX(items[0].focalX || 50);
+      setCurrentFocalY(items[0].focalY || 50);
+      setShowGallery(false);
+    } else {
+      setShowGallery(true);
+    }
+    setHasInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, loading, selectedMediaId, items]);
 
   if (!isOpen) return null;
 
@@ -71,44 +84,20 @@ export function MediaPickerModal({
     // Crear vista previa inmediata con ObjectURL
     const localBlobUrl = URL.createObjectURL(file);
     setLocalPreviewSrc(localBlobUrl);
-
+    setErrorMessage(null);
     setIsUploading(true);
     try {
-      const uploaded = await apiClient.uploadMedia(file);
-      const finalAsset: MediaAssetDTO = {
-        ...uploaded,
-        storagePath: uploaded.storagePath || localBlobUrl,
-      };
-      setItems((prev) => [finalAsset, ...prev]);
-      setSelected(finalAsset);
-      setCurrentFocalX(finalAsset.focalX || 50);
-      setCurrentFocalY(finalAsset.focalY || 50);
+      const uploaded = await onUploadFile(file);
+      setSelected(uploaded);
+      setCurrentFocalX(uploaded.focalX || 50);
+      setCurrentFocalY(uploaded.focalY || 50);
       setShowGallery(false); // Directamente mostrar el editor de la nueva imagen
     } catch (err) {
       console.error("Error al subir imagen:", err);
-      const fallbackAsset: MediaAssetDTO = {
-        id: Date.now(),
-        filename: file.name,
-        originalName: file.name,
-        mimeType: file.type || "image/webp",
-        fileSizeBytes: file.size,
-        width: 1920,
-        height: 1080,
-        focalX: 50,
-        focalY: 50,
-        altText: file.name.replace(/\.[^/.]+$/, ""),
-        caption: "",
-        storagePath: localBlobUrl,
-        variantsJson: "{}",
-        active: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setItems((prev) => [fallbackAsset, ...prev]);
-      setSelected(fallbackAsset);
-      setCurrentFocalX(50);
-      setCurrentFocalY(50);
-      setShowGallery(false);
+      setLocalPreviewSrc(null);
+      setErrorMessage(
+        err instanceof Error ? err.message : "No se pudo subir la imagen. Intenta de nuevo."
+      );
     } finally {
       setIsUploading(false);
     }
@@ -116,6 +105,7 @@ export function MediaPickerModal({
 
   const handleSelectFromGallery = (item: MediaAssetDTO) => {
     setLocalPreviewSrc(null);
+    setErrorMessage(null);
     setSelected(item);
     setCurrentFocalX(item.focalX || 50);
     setCurrentFocalY(item.focalY || 50);
@@ -123,28 +113,31 @@ export function MediaPickerModal({
   };
 
   const handleConfirm = async () => {
-    if (selected) {
-      const updatedMedia: MediaAssetDTO = {
-        ...selected,
-        focalX: currentFocalX,
-        focalY: currentFocalY,
-      };
+    if (!selected) return;
+    const updatedMedia: MediaAssetDTO = {
+      ...selected,
+      focalX: currentFocalX,
+      focalY: currentFocalY,
+    };
 
-      // Si se modificó el punto focal, persistirlo en la API
-      if (currentFocalX !== selected.focalX || currentFocalY !== selected.focalY) {
-        try {
-          await apiClient.updateMediaFocalPoint(selected.id, {
-            focalX: currentFocalX,
-            focalY: currentFocalY,
-          });
-        } catch (err) {
-          console.error("Error al guardar punto focal:", err);
-        }
+    // Si se modificó el punto focal, persistirlo en la API
+    if (currentFocalX !== selected.focalX || currentFocalY !== selected.focalY) {
+      try {
+        await onFocalPointSave(selected.id, {
+          focalX: currentFocalX,
+          focalY: currentFocalY,
+        });
+      } catch (err) {
+        console.error("Error al guardar punto focal:", err);
+        setErrorMessage(
+          err instanceof Error ? err.message : "No se pudo guardar el punto focal."
+        );
+        return;
       }
-
-      onSelect(updatedMedia);
-      onClose();
     }
+
+    onSelect(updatedMedia);
+    onClose();
   };
 
   return (
@@ -209,6 +202,19 @@ export function MediaPickerModal({
             />
           </label>
         </div>
+
+        {errorMessage && (
+          <div className="mx-6 mt-3 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-inter font-medium flex items-center justify-between gap-3">
+            <span>{errorMessage}</span>
+            <button
+              type="button"
+              onClick={() => setErrorMessage(null)}
+              className="text-red-500 hover:text-red-700 shrink-0"
+            >
+              <CloseIcon size={14} />
+            </button>
+          </div>
+        )}
 
         {/* Modal Body */}
         <div className="flex-1 p-6 overflow-y-auto min-h-[340px]">

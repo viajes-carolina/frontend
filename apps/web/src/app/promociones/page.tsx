@@ -1,5 +1,5 @@
 import { apiClient } from "@vc/api-client";
-import { PromotionCard, JourneyConnector } from "@vc/ui";
+import { PromotionCard } from "@vc/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -40,11 +40,6 @@ export default async function PromotionsCatalogPage() {
               settings={siteSettings}
             />
           ))}
-        </div>
-
-        {/* Journey Connector */}
-        <div className="w-full max-w-4xl mx-auto my-16">
-          <JourneyConnector />
         </div>
       </div>
     </main>

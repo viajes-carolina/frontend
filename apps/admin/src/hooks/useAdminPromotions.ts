@@ -7,6 +7,7 @@ import {
   MediaAssetDTO,
   apiClient,
 } from "@vc/api-client";
+import { estimatePricePenFromUsd, slugify } from "../lib/promotionPricing";
 
 export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
   const [promotions, setPromotions] = useState<PromotionDTO[]>(initialPromotions);
@@ -17,10 +18,10 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
 
   // Form state
   const [slug, setSlug] = useState("");
-  const [title, setTitle] = useState("");
+  const [title, setTitleRaw] = useState("");
   const [destination, setDestination] = useState("");
   const [summary, setSummary] = useState("");
-  const [priceUsd, setPriceUsd] = useState<number | string>("");
+  const [priceUsd, setPriceUsdRaw] = useState<number | string>("");
   const [pricePen, setPricePen] = useState<number | string>("");
   const [durationDays, setDurationDays] = useState<number>(4);
   const [durationNights, setDurationNights] = useState<number>(3);
@@ -59,10 +60,10 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
   const openCreateModal = () => {
     setEditingPromotion(null);
     setSlug("");
-    setTitle("");
+    setTitleRaw("");
     setDestination("");
     setSummary("");
-    setPriceUsd("");
+    setPriceUsdRaw("");
     setPricePen("");
     setDurationDays(4);
     setDurationNights(3);
@@ -83,10 +84,10 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
   const openEditModal = (promo: PromotionDTO) => {
     setEditingPromotion(promo);
     setSlug(promo.slug);
-    setTitle(promo.title);
+    setTitleRaw(promo.title);
     setDestination(promo.destination);
     setSummary(promo.summary);
-    setPriceUsd(promo.priceUsd);
+    setPriceUsdRaw(promo.priceUsd);
     setPricePen(promo.pricePen || "");
     setDurationDays(promo.durationDays);
     setDurationNights(promo.durationNights);
@@ -102,6 +103,22 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
     setDisplayOrder(promo.displayOrder || 0);
     setActive(promo.active);
     setIsModalOpen(true);
+  };
+
+  // Al escribir el título, sugiere el slug si aún no fue editado a mano.
+  const setTitle = (value: string) => {
+    setTitleRaw(value);
+    if (!editingPromotion && !slug) {
+      setSlug(slugify(value));
+    }
+  };
+
+  // Al escribir el precio en USD, sugiere el precio en PEN si aún no fue editado a mano.
+  const setPriceUsd = (value: number | string) => {
+    setPriceUsdRaw(value);
+    if (value && !pricePen) {
+      setPricePen(estimatePricePenFromUsd(Number(value)));
+    }
   };
 
   const handleSelectMedia = (media: MediaAssetDTO) => {

@@ -67,7 +67,7 @@ export function MediaGallery() {
         </div>
       ) : items.length === 0 ? (
         <div className="bg-white p-12 rounded-3xl border border-neutral-border text-center space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-brand-primary/10 flex items-center justify-center text-brand-primary mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-brand-accent/10 flex items-center justify-center text-brand-accent mx-auto">
             <ImageIcon size={32} />
           </div>
           <h3 className="font-sora font-bold text-lg text-brand-navy">
@@ -100,7 +100,7 @@ export function MediaGallery() {
               <div
                 key={item.id}
                 onClick={() => openDetail(item)}
-                className="group bg-white rounded-2xl border border-neutral-border hover:border-brand-primary hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer flex flex-col"
+                className="group bg-white rounded-2xl border border-neutral-border hover:border-brand-accent hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer flex flex-col"
               >
                 {/* Image Container with Focal Position Preview */}
                 <div className="relative aspect-video w-full overflow-hidden bg-neutral-surface">
@@ -125,7 +125,7 @@ export function MediaGallery() {
                 {/* Card Info */}
                 <div className="p-4 flex-1 flex flex-col justify-between space-y-2">
                   <div>
-                    <h4 className="font-sora font-bold text-xs text-brand-navy truncate group-hover:text-brand-primary transition-colors">
+                    <h4 className="font-sora font-bold text-xs text-brand-navy truncate group-hover:text-brand-accent transition-colors">
                       {item.originalName}
                     </h4>
                     <p className="font-inter text-[11px] text-neutral-muted mt-0.5">
@@ -135,7 +135,7 @@ export function MediaGallery() {
 
                   <div className="pt-2 border-t border-neutral-border flex justify-between items-center text-[11px] font-inter text-neutral-muted">
                     <span className="truncate max-w-[120px]">{item.altText || "Sin alt text"}</span>
-                    <span className="text-brand-primary font-semibold">Editar ✏️</span>
+                    <span className="text-brand-accent font-semibold">Editar ✏️</span>
                   </div>
                 </div>
               </div>

@@ -14,8 +14,8 @@ export function useAdminPublishing() {
       setError(null);
       const res = await apiClient.getPublishingStatus();
       setStatus(res);
-    } catch (err: any) {
-      setError(err?.message || "Error al cargar estado de publicación");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al cargar estado de publicación");
     } finally {
       setLoading(false);
     }
@@ -26,8 +26,8 @@ export function useAdminPublishing() {
       const res = await apiClient.triggerPublish(req);
       setStatus(res);
       return res;
-    } catch (err: any) {
-      setError(err?.message || "Error al publicar contenidos");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al publicar contenidos");
       throw err;
     }
   }, []);

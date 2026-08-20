@@ -4,7 +4,11 @@ import React from "react";
 import { PublishingManagerCard } from "@vc/ui";
 import { useAdminPublishing } from "../../hooks/useAdminPublishing";
 
-export const PublishingClientView: React.FC = () => {
+export interface PublishingClientViewProps {
+  draftUrl: string;
+}
+
+export const PublishingClientView: React.FC<PublishingClientViewProps> = ({ draftUrl }) => {
   const { status, loading, triggerPublish } = useAdminPublishing();
 
   return (
@@ -13,6 +17,7 @@ export const PublishingClientView: React.FC = () => {
         lastPublishStatus={status}
         onPublish={triggerPublish}
         loading={loading}
+        draftUrl={draftUrl}
       />
     </div>
   );

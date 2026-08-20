@@ -49,6 +49,10 @@ export interface PromotionFormModalProps {
   isMediaPickerOpen: boolean;
   setIsMediaPickerOpen: (val: boolean) => void;
   onSelectMedia: (media: MediaAssetDTO) => void;
+  mediaPickerItems: MediaAssetDTO[];
+  mediaPickerLoading: boolean;
+  onUploadMediaFile: (file: File) => Promise<MediaAssetDTO>;
+  onMediaFocalPointSave: (id: number, payload: { focalX: number; focalY: number }) => Promise<void>;
 }
 
 export function PromotionFormModal({
@@ -95,6 +99,10 @@ export function PromotionFormModal({
   isMediaPickerOpen,
   setIsMediaPickerOpen,
   onSelectMedia,
+  mediaPickerItems,
+  mediaPickerLoading,
+  onUploadMediaFile,
+  onMediaFocalPointSave,
 }: PromotionFormModalProps) {
   if (!isOpen) return null;
 
@@ -132,12 +140,7 @@ export function PromotionFormModal({
               <input
                 type="text"
                 value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  if (!isEditing && !slug) {
-                    setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
-                  }
-                }}
+                onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ej: Cartagena: Donde el mar te espera"
                 className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
@@ -198,12 +201,7 @@ export function PromotionFormModal({
               <input
                 type="number"
                 value={priceUsd}
-                onChange={(e) => {
-                  setPriceUsd(e.target.value);
-                  if (e.target.value && !pricePen) {
-                    setPricePen(Math.round(Number(e.target.value) * 3.7));
-                  }
-                }}
+                onChange={(e) => setPriceUsd(e.target.value)}
                 placeholder="429"
                 min={0}
                 className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent bg-white"
@@ -390,6 +388,10 @@ export function PromotionFormModal({
           onClose={() => setIsMediaPickerOpen(false)}
           onSelect={onSelectMedia}
           selectedMediaId={featuredMediaId}
+          items={mediaPickerItems}
+          loading={mediaPickerLoading}
+          onUploadFile={onUploadMediaFile}
+          onFocalPointSave={onMediaFocalPointSave}
           title="Seleccionar Fotografía de la Promoción"
         />
       </div>

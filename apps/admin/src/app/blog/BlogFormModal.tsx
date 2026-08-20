@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { BlogPostDTO, BlogCategoryDTO, CreateOrUpdateBlogPostRequest, MediaAssetDTO } from "@vc/api-client";
 import { MediaPickerModal } from "@vc/ui";
+import { useMediaPicker } from "../../hooks/useMediaPicker";
 
 export interface BlogFormModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
   const [active, setActive] = useState(true);
 
   const [isMediaPickerOpen, setIsMediaPickerOpen] = useState(false);
+  const mediaPicker = useMediaPicker(isMediaPickerOpen);
 
   useEffect(() => {
     if (editingPost) {
@@ -150,7 +152,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
                   placeholder="Ej. Guía Completa para viajar a Cartagena 2026"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
 
@@ -164,7 +166,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   placeholder="guia-completa-para-viajar-a-cartagena-2026"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm font-mono text-neutral-700 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm font-mono text-neutral-700 focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
             </div>
@@ -178,7 +180,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent bg-white"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -195,7 +197,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-accent bg-white"
                 >
                   <option value="PUBLISHED">🟢 Publicado</option>
                   <option value="DRAFT">🟡 Borrador</option>
@@ -215,7 +217,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                       onChange={(e) => setIsFeatured(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-brand-primary"></div>
+                    <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:width-5 after:transition-all peer-checked:bg-brand-accent"></div>
                   </label>
                   <span className="text-xs font-bold text-neutral-700">
                     {isFeatured ? "⭐ Destacado" : "Normal"}
@@ -235,7 +237,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="Carolina Zúñiga"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
 
@@ -249,7 +251,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                   max="60"
                   value={readingTimeMinutes}
                   onChange={(e) => setReadingTimeMinutes(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
 
@@ -262,7 +264,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
                   placeholder="Cartagena, Caribe, Playas"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
             </div>
@@ -310,7 +312,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
                 placeholder="Breve introducción que atraiga al lector en las tarjetas y redes sociales..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary resize-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-neutral-300 text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
               />
             </div>
 
@@ -330,7 +332,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                 value={contentMarkdown}
                 onChange={(e) => setContentMarkdown(e.target.value)}
                 placeholder="# Título del Artículo..."
-                className="w-full p-4 rounded-xl border border-neutral-300 font-mono text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="w-full p-4 rounded-xl border border-neutral-300 font-mono text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand-accent"
               />
             </div>
           </form>
@@ -349,7 +351,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
               type="button"
               onClick={handleSubmit}
               disabled={saving || !title.trim() || !slug.trim()}
-              className="px-6 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-bold hover:bg-brand-primary/90 transition shadow-md disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl bg-brand-accent text-white text-sm font-bold hover:bg-brand-sunset transition shadow-md disabled:opacity-50"
             >
               {saving ? "Guardando..." : editingPost ? "Guardar Cambios" : "Publicar Artículo"}
             </button>
@@ -362,6 +364,10 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
         isOpen={isMediaPickerOpen}
         onClose={() => setIsMediaPickerOpen(false)}
         onSelect={handleMediaSelect}
+        items={mediaPicker.items}
+        loading={mediaPicker.loading}
+        onUploadFile={mediaPicker.uploadFile}
+        onFocalPointSave={mediaPicker.saveFocalPoint}
       />
     </>
   );

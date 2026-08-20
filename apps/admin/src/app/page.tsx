@@ -62,7 +62,7 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
         <div className="flex gap-3">
-          <a href="http://localhost:3000" target="_blank" rel="noopener noreferrer">
+          <a href={process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="sm" icon={<ArrowUpRightIcon size={16} />}>
               Ver Web Pública
             </Button>
@@ -75,25 +75,25 @@ export default async function AdminDashboardPage() {
         {/* Card: Blog & Contenidos (Corte 10) */}
         <Link
           href="/blog"
-          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-primary/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs uppercase tracking-wider font-semibold text-brand-primary">
+              <span className="text-xs uppercase tracking-wider font-semibold text-brand-accent">
                 Corte 10 · CMS Blog
               </span>
-              <div className="p-2 rounded-xl bg-brand-primary/10 text-brand-primary">
+              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent">
                 <span>✍️</span>
               </div>
             </div>
-            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-primary transition-colors">
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
               Blog & Contenidos
             </h3>
             <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
               {blogPosts.length} artículos publicados y en borrador con búsqueda trigram.
             </p>
           </div>
-          <span className="text-xs font-semibold text-brand-primary mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             Administrar CMS &rarr;
           </span>
         </Link>
@@ -366,25 +366,25 @@ export default async function AdminDashboardPage() {
         {/* Card: Biblioteca de Medios (Corte 3) */}
         <Link
           href="/medios"
-          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-primary/60 shadow-sm transition-all duration-200 flex flex-col justify-between"
+          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/60 shadow-sm transition-all duration-200 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs uppercase tracking-wider font-semibold text-brand-primary">
+              <span className="text-xs uppercase tracking-wider font-semibold text-brand-accent">
                 Corte 3 · Medios
               </span>
-              <div className="p-2 rounded-xl bg-brand-primary/10 text-brand-primary">
+              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent">
                 <ImageIcon size={20} />
               </div>
             </div>
-            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-primary transition-colors">
+            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
               Biblioteca de Medios
             </h3>
             <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
               {mediaData.total || 0} activos optimizados en WebP.
             </p>
           </div>
-          <span className="text-xs font-semibold text-brand-primary mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             Abrir Galería &rarr;
           </span>
         </Link>

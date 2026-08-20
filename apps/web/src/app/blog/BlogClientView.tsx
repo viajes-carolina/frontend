@@ -53,7 +53,7 @@ export const BlogClientView: React.FC<BlogClientViewProps> = ({ initialData }) =
                   handleSelectCategory("all");
                   handleSearchChange("");
                 }}
-                className="text-xs sm:text-sm font-semibold text-brand-primary hover:text-brand-secondary transition underline"
+                className="text-xs sm:text-sm font-semibold text-brand-accent hover:text-brand-sunset transition underline"
               >
                 Limpiar filtros
               </button>
@@ -93,7 +93,7 @@ export const BlogClientView: React.FC<BlogClientViewProps> = ({ initialData }) =
                 handleSelectCategory("all");
                 handleSearchChange("");
               }}
-              className="px-6 py-2.5 rounded-xl bg-brand-primary text-white font-bold text-sm hover:bg-brand-primary/90 transition shadow-sm"
+              className="px-6 py-2.5 rounded-xl bg-brand-accent text-white font-bold text-sm hover:bg-brand-sunset transition shadow-sm"
             >
               Ver todos los artículos
             </button>

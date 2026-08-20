@@ -82,11 +82,11 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
         </p>
 
         {/* Claim Code Box */}
-        <div className="bg-slate-50 border-2 border-dashed border-primary-300 rounded-2xl p-6 mb-8 max-w-md mx-auto">
+        <div className="bg-slate-50 border-2 border-dashed border-brand-navy/30 rounded-2xl p-6 mb-8 max-w-md mx-auto">
           <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
             Código de Reclamación
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-primary-700 font-mono tracking-widest">
+          <div className="text-2xl sm:text-3xl font-black text-brand-navy font-mono tracking-widest">
             {submittedClaim.claimCode}
           </div>
           <p className="text-xs text-slate-500 mt-2">
@@ -132,7 +132,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
       {/* 1. Datos del Consumidor Reclamante */}
       <div>
         <div className="flex items-center gap-3 border-b border-slate-200 pb-3 mb-6">
-          <div className="w-8 h-8 rounded-full bg-primary-600 text-white font-bold flex items-center justify-center text-sm shadow">
+          <div className="w-8 h-8 rounded-full bg-brand-navy text-white font-bold flex items-center justify-center text-sm shadow">
             1
           </div>
           <div>
@@ -157,7 +157,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.fullName}
               onChange={handleChange}
               placeholder="Ej. Juan Carlos Pérez Alarcón"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
 
@@ -169,7 +169,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               name="documentType"
               value={formData.documentType}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             >
               <option value="DNI">DNI (Documento Nacional de Identidad)</option>
               <option value="CE">CE (Carné de Extranjería)</option>
@@ -189,7 +189,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.documentNumber}
               onChange={handleChange}
               placeholder="Ej. 45892314"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
 
@@ -204,7 +204,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.email}
               onChange={handleChange}
               placeholder="correo@ejemplo.com"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
 
@@ -219,7 +219,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.phone}
               onChange={handleChange}
               placeholder="+51 987 654 321"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
 
@@ -234,7 +234,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.address}
               onChange={handleChange}
               placeholder="Ej. Calle Las Flores 230, Dpto 402, Miraflores, Lima"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
 
@@ -245,7 +245,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
                 name="isMinor"
                 checked={formData.isMinor}
                 onChange={handleChange}
-                className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500"
+                className="w-4 h-4 rounded text-brand-accent focus:ring-brand-accent"
               />
               <span className="text-xs font-semibold text-slate-700">
                 El reclamante es menor de edad (se requiere consignar datos de padre, madre o apoderado legal)
@@ -266,7 +266,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
                   value={formData.parentName || ""}
                   onChange={handleChange}
                   placeholder="Nombre del apoderado"
-                  className="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+                  className="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
                 />
               </div>
               <div>
@@ -280,7 +280,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
                   value={formData.parentDocument || ""}
                   onChange={handleChange}
                   placeholder="Doc. del apoderado"
-                  className="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+                  className="w-full px-4 py-3 bg-amber-50/50 border border-amber-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
                 />
               </div>
             </>
@@ -291,7 +291,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
       {/* 2. Identificación del Bien Contratado */}
       <div>
         <div className="flex items-center gap-3 border-b border-slate-200 pb-3 mb-6">
-          <div className="w-8 h-8 rounded-full bg-primary-600 text-white font-bold flex items-center justify-center text-sm shadow">
+          <div className="w-8 h-8 rounded-full bg-brand-navy text-white font-bold flex items-center justify-center text-sm shadow">
             2
           </div>
           <div>
@@ -313,7 +313,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               name="contractedType"
               value={formData.contractedType}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             >
               <option value="SERVICIO">Servicio Turístico / Paquete de Viaje</option>
               <option value="PRODUCTO">Producto / Bien Físico</option>
@@ -331,7 +331,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.claimedAmount || ""}
               onChange={handleChange}
               placeholder="0.00"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
 
@@ -343,7 +343,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               name="currency"
               value={formData.currency}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             >
               <option value="PEN">Soles (PEN - S/)</option>
               <option value="USD">Dólares Americanos (USD - $)</option>
@@ -361,7 +361,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.description}
               onChange={handleChange}
               placeholder="Ej. Paquete turístico a Punta Cana con salida el 15/07/2026, reserva #48291"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
         </div>
@@ -370,7 +370,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
       {/* 3. Detalle de la Reclamación */}
       <div>
         <div className="flex items-center gap-3 border-b border-slate-200 pb-3 mb-6">
-          <div className="w-8 h-8 rounded-full bg-primary-600 text-white font-bold flex items-center justify-center text-sm shadow">
+          <div className="w-8 h-8 rounded-full bg-brand-navy text-white font-bold flex items-center justify-center text-sm shadow">
             3
           </div>
           <div>
@@ -388,7 +388,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
           <label
             className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
               formData.claimType === "RECLAMO"
-                ? "border-primary-600 bg-primary-50/50 shadow-sm"
+                ? "border-brand-accent bg-brand-accent/5 shadow-sm"
                 : "border-slate-200 bg-slate-50 hover:bg-slate-100/70"
             }`}
           >
@@ -399,7 +399,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
                 value="RECLAMO"
                 checked={formData.claimType === "RECLAMO"}
                 onChange={handleChange}
-                className="text-primary-600 focus:ring-primary-500"
+                className="text-brand-accent focus:ring-brand-accent"
               />
               <span className="font-extrabold text-sm text-slate-900">RECLAMO</span>
             </div>
@@ -411,7 +411,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
           <label
             className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex flex-col justify-between ${
               formData.claimType === "QUEJA"
-                ? "border-primary-600 bg-primary-50/50 shadow-sm"
+                ? "border-brand-accent bg-brand-accent/5 shadow-sm"
                 : "border-slate-200 bg-slate-50 hover:bg-slate-100/70"
             }`}
           >
@@ -422,7 +422,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
                 value="QUEJA"
                 checked={formData.claimType === "QUEJA"}
                 onChange={handleChange}
-                className="text-primary-600 focus:ring-primary-500"
+                className="text-brand-accent focus:ring-brand-accent"
               />
               <span className="font-extrabold text-sm text-slate-900">QUEJA</span>
             </div>
@@ -444,7 +444,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.consumerDetail}
               onChange={handleChange}
               placeholder="Describe lo ocurrido indicando fechas, personas involucradas y motivos de tu disconformidad..."
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
 
@@ -459,7 +459,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
               value={formData.consumerRequest}
               onChange={handleChange}
               placeholder="Indica la solución o pretensión que solicitas a la agencia (ej. reprogramación, compensación, etc.)..."
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-accent focus:outline-none"
             />
           </div>
         </div>
@@ -473,7 +473,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
             required
             checked={declaredTruth}
             onChange={(e) => setDeclaredTruth(e.target.checked)}
-            className="w-5 h-5 rounded text-primary-600 focus:ring-primary-500 mt-0.5"
+            className="w-5 h-5 rounded text-brand-accent focus:ring-brand-accent mt-0.5"
           />
           <span className="text-xs text-slate-600 leading-relaxed">
             Declaro bajo juramento que los datos e información consignados en la presente Hoja de Reclamación son verdaderos y fidedignos, de conformidad con la Ley N° 29571.
@@ -488,7 +488,7 @@ export const ClaimFormSection: React.FC<ClaimFormSectionProps> = ({ onSubmitClai
           <button
             type="submit"
             disabled={loading}
-            className="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-extrabold text-sm rounded-2xl transition-all shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-8 py-4 bg-brand-accent hover:bg-brand-sunset text-white font-extrabold text-sm rounded-2xl transition-all shadow-lg hover:shadow-xl active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

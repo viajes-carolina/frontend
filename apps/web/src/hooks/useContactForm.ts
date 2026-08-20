@@ -13,8 +13,8 @@ export function useContactForm() {
     try {
       await apiClient.submitContactInquiry(payload);
       return true;
-    } catch (err: any) {
-      setError(err?.message || "Error al enviar la solicitud");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al enviar la solicitud");
       return false;
     } finally {
       setSubmitting(false);

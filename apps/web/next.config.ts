@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@vc/ui", "@vc/config", "@vc/api-client"],
+  transpilePackages: ["@vc/ui", "@vc/config", "@vc/api-client", "@vc/next-proxy"],
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

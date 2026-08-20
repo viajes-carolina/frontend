@@ -12,8 +12,8 @@ export function useAdminUsers() {
       setError(null);
       const data = await apiClient.getAdminUsers();
       setUsers(data);
-    } catch (err: any) {
-      setError(err?.message || "Error al cargar usuarios.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al cargar usuarios.");
     } finally {
       setLoading(false);
     }

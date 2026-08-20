@@ -7,12 +7,14 @@ export interface PublishingManagerCardProps {
   lastPublishStatus: PublishResponseDTO | null;
   onPublish: (req: PublishRequestDTO) => Promise<PublishResponseDTO>;
   loading?: boolean;
+  draftUrl: string;
 }
 
 export const PublishingManagerCard: React.FC<PublishingManagerCardProps> = ({
   lastPublishStatus,
   onPublish,
   loading = false,
+  draftUrl,
 }) => {
   const [selectedTarget, setSelectedTarget] = useState<string>("ALL");
   const [reason, setReason] = useState<string>("");
@@ -39,8 +41,8 @@ export const PublishingManagerCard: React.FC<PublishingManagerCardProps> = ({
       });
       setPublishResult(res);
       setReason("");
-    } catch (err: any) {
-      setErrorMsg(err?.message || "Error al disparar la publicación ISR.");
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : "Error al disparar la publicación ISR.");
     } finally {
       setSubmitting(false);
     }
@@ -61,7 +63,7 @@ export const PublishingManagerCard: React.FC<PublishingManagerCardProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <a
-            href="http://localhost:3000/api/draft?secret=vc-secret-isr-key-2026&path=/"
+            href={draftUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2.5 rounded-xl text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-colors flex items-center gap-1.5"

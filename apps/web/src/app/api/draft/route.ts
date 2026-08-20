@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { draftMode } from "next/headers";
 
-const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET || "vc-secret-isr-key-2026";
+const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET || "revalidation-secret-viajes-carolina-2026";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Sora, Inter } from "next/font/google";
+import { Sora, Inter, Fraunces } from "next/font/google";
 import { apiClient } from "@vc/api-client";
 import { HeaderWrapper } from "../components/HeaderWrapper";
 import { FooterWrapper } from "../components/FooterWrapper";
@@ -14,6 +14,14 @@ const sora = Sora({
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -34,7 +42,7 @@ export default async function RootLayout({
   ]);
 
   return (
-    <html lang="es" className={`${sora.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="es" className={`${sora.variable} ${inter.variable} ${fraunces.variable}`} suppressHydrationWarning>
       <body
         className="antialiased font-sans bg-neutral-soft text-neutral-ink selection:bg-brand-accent selection:text-brand-navy flex flex-col min-h-screen"
         suppressHydrationWarning

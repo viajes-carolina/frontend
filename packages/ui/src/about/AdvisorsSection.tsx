@@ -2,6 +2,7 @@
 
 import React from "react";
 import { TravelAdvisorDTO } from "@vc/api-client";
+import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 
 export interface AdvisorsSectionProps {
@@ -42,7 +43,7 @@ export function AdvisorsSection({ advisors, className = "" }: AdvisorsSectionPro
           {advisors.map((advisor) => {
             const photoUrl = advisor.photoMediaUrl || "/media/demo-cartagena-caribe.webp";
             const message = advisor.whatsappMessageTemplate || `Hola ${advisor.fullName}, me gustaría una asesoría personalizada para planificar mi viaje.`;
-            const phone = advisor.whatsappPhone || "+51987654321";
+            const phone = advisor.whatsappPhone || DEFAULT_WHATSAPP_PHONE;
 
             return (
               <div
@@ -83,9 +84,11 @@ export function AdvisorsSection({ advisors, className = "" }: AdvisorsSectionPro
                   {/* Direct WhatsApp Action */}
                   <div className="pt-4 border-t border-neutral-border">
                     <WhatsAppButton
+                      variant="link"
+                      size="sm"
                       phone={phone}
                       message={message}
-                      className="w-full justify-center !py-2.5 text-xs font-bold shadow-sm"
+                      className="w-full justify-center"
                     >
                       {`Consultar con ${advisor.fullName.split(" ")[0]}`}
                     </WhatsAppButton>

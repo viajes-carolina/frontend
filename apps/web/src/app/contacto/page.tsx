@@ -22,20 +22,15 @@ export default async function ContactoPage() {
       {/* 01. Contact Client Hero & Form Grid */}
       <ContactClientView contactData={contactData} />
 
-      <JourneyConnector />
-
       {/* 02. Enlaces de Exploración, Soporte y Libro de Reclamaciones */}
       <ContactExploreSection links={exploreLinks} />
 
-      <JourneyConnector />
-
       {/* 03. FAQ Reminders */}
       {trustData.faqs && trustData.faqs.length > 0 && (
-        <>
-          <FaqSection faqs={trustData.faqs} settings={siteSettings} />
-          <JourneyConnector />
-        </>
+        <FaqSection faqs={trustData.faqs} settings={siteSettings} />
       )}
+
+      <JourneyConnector step="01" label="¿Todo listo? Conversemos" />
 
       {/* 04. Closing CTA */}
       <ClosingCtaSection settings={siteSettings} />

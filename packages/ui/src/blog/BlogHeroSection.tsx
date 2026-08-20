@@ -19,27 +19,21 @@ export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
   onSearchChange,
 }) => {
   return (
-    <section className="relative overflow-hidden bg-brand-primary text-white py-16 lg:py-20">
-      {/* Background patterns */}
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-primary via-brand-primary to-brand-primary/95 pointer-events-none" />
-      <div
-        className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none"
-      />
-
+    <section className="relative overflow-hidden bg-neutral-soft border-b border-neutral-border py-16 lg:py-20">
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-brand-secondary text-xs font-semibold uppercase tracking-wider mb-4 backdrop-blur-sm">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-neutral-border shadow-sm text-brand-accent text-xs font-semibold uppercase tracking-wider mb-4">
           <span>✈️</span>
           <span>Historias & Inspiración</span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 text-white">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 text-brand-navy">
           Guías, Consejos y Destinos para Soñar
         </h1>
 
         {/* Subtitle */}
-        <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto mb-8 leading-relaxed">
+        <p className="text-base sm:text-lg text-neutral-muted max-w-2xl mx-auto mb-8 leading-relaxed">
           Descubre itinerarios recomendados por nuestras asesoras, tips prácticos para tus vuelos y los secretos de cada rincón del mundo.
         </p>
 
@@ -56,7 +50,7 @@ export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Buscar destinos, consejos, playas, visas..."
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white text-neutral-800 placeholder-neutral-400 text-sm sm:text-base font-medium shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-secondary transition"
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white border border-neutral-border text-neutral-800 placeholder-neutral-400 text-sm sm:text-base font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-accent transition"
             />
             {searchQuery && (
               <button
@@ -79,8 +73,8 @@ export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
             onClick={() => onSelectCategory("all")}
             className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition ${
               selectedCategorySlug === "all"
-                ? "bg-white text-brand-primary shadow-md"
-                : "bg-white/10 text-white hover:bg-white/20"
+                ? "bg-brand-accent text-white shadow-md"
+                : "bg-white text-neutral-muted border border-neutral-border hover:border-brand-accent/40 hover:text-brand-navy"
             }`}
           >
             Todos los artículos
@@ -93,8 +87,8 @@ export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
               onClick={() => onSelectCategory(cat.slug)}
               className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition ${
                 selectedCategorySlug === cat.slug
-                  ? "bg-white text-brand-primary shadow-md"
-                  : "bg-white/10 text-white hover:bg-white/20"
+                  ? "bg-brand-accent text-white shadow-md"
+                  : "bg-white text-neutral-muted border border-neutral-border hover:border-brand-accent/40 hover:text-brand-navy"
               }`}
             >
               {cat.name}

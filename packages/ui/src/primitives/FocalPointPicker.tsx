@@ -64,7 +64,7 @@ export function FocalPointPicker({
         <label className="font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted">
           Punto Focal Interactivo (Centro de Atención)
         </label>
-        <span className="font-inter text-xs font-bold text-brand-navy bg-brand-primary/10 px-2.5 py-1 rounded-full">
+        <span className="font-inter text-xs font-bold text-brand-navy bg-brand-navy/10 px-2.5 py-1 rounded-full">
           X: {focalX}% | Y: {focalY}%
         </span>
       </div>
@@ -95,7 +95,7 @@ export function FocalPointPicker({
             {/* Outer animated ring */}
             <div className="w-10 h-10 rounded-full border-2 border-white shadow-[0_0_12px_rgba(0,0,0,0.6)] animate-pulse" />
             {/* Inner primary circle */}
-            <div className="absolute w-4 h-4 rounded-full bg-brand-primary border-2 border-white shadow-md" />
+            <div className="absolute w-4 h-4 rounded-full bg-brand-accent border-2 border-white shadow-md" />
             {/* Cross lines */}
             <div className="absolute w-6 h-0.5 bg-white shadow-sm" />
             <div className="absolute h-6 w-0.5 bg-white shadow-sm" />

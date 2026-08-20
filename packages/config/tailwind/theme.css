@@ -55,6 +55,8 @@
   /* --- Tipografía Oficial --- */
   --font-sora: "Sora", system-ui, -apple-system, sans-serif;
   --font-inter: "Inter", system-ui, -apple-system, sans-serif;
+  /* Solo para h1/h2 de sección y citas del sitio público (apps/web) — nunca en admin. */
+  --font-display: "Fraunces", Georgia, serif;
 
   /* --- Espaciado Oficial Figma --- */
   --spacing-050: 4px;

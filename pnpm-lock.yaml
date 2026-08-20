@@ -26,6 +26,9 @@ importers:
       '@vc/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@vc/next-proxy':
+        specifier: workspace:*
+        version: link:../../packages/next-proxy
       '@vc/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -69,6 +72,9 @@ importers:
       '@vc/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@vc/next-proxy':
+        specifier: workspace:*
+        version: link:../../packages/next-proxy
       '@vc/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -105,12 +111,35 @@ importers:
         version: 5.9.3
 
   packages/api-client:
+    dependencies:
+      '@vc/config':
+        specifier: workspace:*
+        version: link:../config
+      next:
+        specifier: ^15.1.7
+        version: 15.5.23(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
     devDependencies:
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
 
   packages/config: {}
+
+  packages/next-proxy:
+    dependencies:
+      '@vc/api-client':
+        specifier: workspace:*
+        version: link:../api-client
+      '@vc/config':
+        specifier: workspace:*
+        version: link:../config
+      next:
+        specifier: ^15.1.7
+        version: 15.5.23(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
 
   packages/ui:
     dependencies:

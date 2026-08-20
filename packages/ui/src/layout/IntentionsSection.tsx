@@ -20,6 +20,15 @@ export interface IntentionsSectionProps {
   className?: string;
 }
 
+// Tinte propio por tarjeta (rota por índice) — reemplaza el bg-white uniforme de las 4
+// tiles para que no se sientan filtros idénticos de un sistema.
+const INTENTION_TINTS = [
+  { bg: "bg-atmosphere-sand", icon: "bg-white/70" },
+  { bg: "bg-atmosphere-sky/50", icon: "bg-white/70" },
+  { bg: "bg-brand-accent/10", icon: "bg-white/70" },
+  { bg: "bg-white", icon: "bg-neutral-soft" },
+];
+
 function renderIntentionIcon(iconName: string, size = 20) {
   switch (iconName) {
     case "LandmarkIcon":
@@ -74,10 +83,11 @@ export function IntentionsSection({
           </p>
         </div>
 
-        {/* Intention Selector Tabs */}
+        {/* Intention Selector Tabs — cada tarjeta con un tinte propio, no 4 tiles idénticos */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-10">
           {activeList.map((item, idx) => {
             const isSelected = idx === selectedIndex;
+            const tint = INTENTION_TINTS[idx % INTENTION_TINTS.length];
             return (
               <button
                 key={item.id || item.slug}
@@ -85,14 +95,12 @@ export function IntentionsSection({
                 className={`flex items-center gap-3 p-4 sm:p-5 rounded-2xl border transition-all duration-200 text-left cursor-pointer ${
                   isSelected
                     ? "bg-white border-brand-accent text-brand-navy shadow-md ring-2 ring-brand-accent/20 scale-[1.02]"
-                    : "bg-white/80 border-neutral-border text-neutral-muted hover:bg-white hover:text-brand-navy hover:border-neutral-subtle shadow-sm"
+                    : `${tint.bg} border-transparent text-neutral-muted hover:border-brand-accent/30 shadow-sm`
                 }`}
               >
                 <div
                   className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                    isSelected
-                      ? "bg-brand-accent text-brand-navy"
-                      : "bg-neutral-soft text-brand-navy/70"
+                    isSelected ? "bg-brand-accent text-brand-navy" : `${tint.icon} text-brand-navy/80`
                   }`}
                 >
                   {renderIntentionIcon(item.iconName, 22)}

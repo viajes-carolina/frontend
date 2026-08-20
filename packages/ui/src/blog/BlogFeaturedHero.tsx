@@ -30,7 +30,7 @@ export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post }) => {
             alt={post.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
           />
-          <div className="absolute top-4 left-4 bg-brand-secondary text-brand-primary text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md">
+          <div className="absolute top-4 left-4 bg-brand-sunset text-brand-navy text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md">
             ⭐ Destacado de la Semana
           </div>
         </a>
@@ -41,7 +41,7 @@ export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post }) => {
             {/* Category & Meta */}
             <div className="flex items-center gap-2 mb-3">
               {post.categoryName && (
-                <span className="text-xs font-bold text-brand-primary bg-brand-primary/10 px-2.5 py-1 rounded-md">
+                <span className="text-xs font-bold text-brand-accent bg-brand-accent/10 px-2.5 py-1 rounded-md">
                   {post.categoryName}
                 </span>
               )}
@@ -49,7 +49,7 @@ export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post }) => {
             </div>
 
             {/* Title */}
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 hover:text-brand-primary transition-colors leading-tight mb-4">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 hover:text-brand-accent transition-colors leading-tight mb-4">
               <a href={`/blog/${post.slug}`}>
                 {post.title}
               </a>
@@ -64,7 +64,7 @@ export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post }) => {
           {/* Bottom Bar */}
           <div className="pt-6 border-t border-neutral-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-brand-primary/10 text-brand-primary font-bold text-sm flex items-center justify-center">
+              <div className="w-9 h-9 rounded-full bg-brand-navy/10 text-brand-navy font-bold text-sm flex items-center justify-center">
                 {post.authorName.charAt(0)}
               </div>
               <div>
@@ -75,7 +75,7 @@ export const BlogFeaturedHero: React.FC<BlogFeaturedHeroProps> = ({ post }) => {
 
             <a
               href={`/blog/${post.slug}`}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand-primary text-white text-xs sm:text-sm font-bold shadow-md hover:bg-brand-primary/90 hover:shadow-lg transition"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand-accent text-white text-xs sm:text-sm font-bold shadow-md hover:bg-brand-sunset hover:shadow-lg transition"
             >
               <span>Leer artículo</span>
               <span>→</span>

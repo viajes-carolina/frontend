@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { apiClient } from "@vc/api-client";
+import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
 import { BlogArticleContent } from "@vc/ui";
 
 interface BlogPostPageProps {
@@ -46,7 +47,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <BlogArticleContent
           post={detail.post}
           relatedPosts={detail.relatedPosts || []}
-          whatsappPhone={settings.whatsappPhone || "+51987654321"}
+          whatsappPhone={settings.whatsappPhone || DEFAULT_WHATSAPP_PHONE}
         />
       </main>
     );

@@ -6,7 +6,8 @@ import {
   ClaimFormSection,
   ClaimLookupSection,
 } from "@vc/ui";
-import { apiClient, SubmitClaimRequest, SiteSettingsDTO, OfficeLocationDTO } from "@vc/api-client";
+import { SiteSettingsDTO, OfficeLocationDTO } from "@vc/api-client";
+import { useClaimsPage } from "../../hooks/useClaimsPage";
 
 export interface ClaimsClientViewProps {
   settings: SiteSettingsDTO;
@@ -17,20 +18,14 @@ export const ClaimsClientView: React.FC<ClaimsClientViewProps> = ({
   settings,
   office,
 }) => {
-  const handleSubmitClaim = async (payload: SubmitClaimRequest) => {
-    return await apiClient.submitClaim(payload);
-  };
-
-  const handleLookupClaim = async (claimCode: string) => {
-    return await apiClient.getClaimByCode(claimCode);
-  };
+  const { handleSubmitClaim, handleLookupClaim } = useClaimsPage();
 
   return (
     <main className="min-h-screen bg-slate-50">
       {/* 1. Header con Información Legal */}
       <ClaimsHeroSection
-        companyName="VIAJES CAROLINA S.A.C."
-        companyRuc="20601234567"
+        companyName={settings.legalCompanyName || "VIAJES CAROLINA S.A.C."}
+        companyRuc={settings.taxId || "20601234567"}
         officeAddress={`${office.addressLine}, ${office.district}, ${office.city}`}
       />
 

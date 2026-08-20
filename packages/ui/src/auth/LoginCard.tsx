@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import type { LoginRequest } from "@vc/api-client";
+import { BRAND_CONFIG } from "@vc/config";
+import { BrandLogo } from "../brand/BrandLogo";
 
 export interface LoginCardProps {
   onSubmit: (req: LoginRequest) => Promise<void>;
@@ -17,7 +19,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
   loading = false,
   errorMessage = null,
   onClearError,
-  brandName = "Viajes Carolina",
+  brandName = BRAND_CONFIG.name,
   brandTagline = "Panel Administrativo & Gobernanza",
 }) => {
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
@@ -34,14 +36,11 @@ export const LoginCard: React.FC<LoginCardProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-stone-200/80 overflow-hidden">
+    <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-neutral-border overflow-hidden">
       {/* Header Corporativo */}
-      <div className="bg-gradient-to-r from-stone-900 via-stone-800 to-amber-950 p-8 text-center text-white relative">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-400/30 text-amber-300 font-serif font-bold text-2xl mb-3 shadow-inner">
-          VC
-        </div>
-        <h1 className="text-2xl font-serif font-bold tracking-tight text-white">{brandName}</h1>
-        <p className="text-xs font-medium text-amber-200/80 mt-1 uppercase tracking-widest">{brandTagline}</p>
+      <div className="bg-brand-navy p-8 text-center text-white relative" role="img" aria-label={brandName}>
+        <BrandLogo variant="light" className="h-8 w-auto mx-auto mb-4" />
+        <p className="font-inter text-xs font-medium text-atmosphere-sky mt-1 uppercase tracking-widest">{brandTagline}</p>
       </div>
 
       {/* Formulario */}
@@ -65,7 +64,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
         )}
 
         <div className="space-y-1.5">
-          <label className="block text-xs font-semibold text-stone-700 uppercase tracking-wider">
+          <label className="block font-inter text-xs font-semibold text-neutral-muted uppercase tracking-wider">
             Usuario o Correo Electrónico
           </label>
           <input
@@ -78,19 +77,19 @@ export const LoginCard: React.FC<LoginCardProps> = ({
               if (errorMessage && onClearError) onClearError();
             }}
             placeholder="admin@viajescarolina.com"
-            className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-stone-50/50 text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 transition-all placeholder:text-stone-400"
+            className="w-full px-4 py-3 rounded-xl border border-neutral-border bg-neutral-soft/50 text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:border-brand-accent transition-all placeholder:text-neutral-subtle"
           />
         </div>
 
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="block text-xs font-semibold text-stone-700 uppercase tracking-wider">
+            <label className="block font-inter text-xs font-semibold text-neutral-muted uppercase tracking-wider">
               Contraseña
             </label>
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-xs text-amber-700 hover:text-amber-800 font-medium"
+              className="text-xs text-brand-blue hover:text-brand-navy font-medium"
             >
               {showPassword ? "Ocultar" : "Mostrar"}
             </button>
@@ -106,7 +105,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
                 if (errorMessage && onClearError) onClearError();
               }}
               placeholder="••••••••••••"
-              className="w-full px-4 py-3 rounded-xl border border-stone-300 bg-stone-50/50 text-stone-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-600 transition-all placeholder:text-stone-400"
+              className="w-full px-4 py-3 rounded-xl border border-neutral-border bg-neutral-soft/50 text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:border-brand-accent transition-all placeholder:text-neutral-subtle"
             />
           </div>
         </div>
@@ -114,11 +113,11 @@ export const LoginCard: React.FC<LoginCardProps> = ({
         <button
           type="submit"
           disabled={loading || !usernameOrEmail.trim() || !password}
-          className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-medium text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-3.5 px-6 rounded-xl bg-brand-accent hover:bg-brand-sunset text-brand-navy font-inter font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
-              <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+              <svg className="animate-spin h-4 w-4 text-brand-navy" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
@@ -130,14 +129,14 @@ export const LoginCard: React.FC<LoginCardProps> = ({
         </button>
 
         {/* Indicadores de Seguridad */}
-        <div className="pt-4 border-t border-stone-100 flex items-center justify-center gap-4 text-[11px] text-stone-500">
+        <div className="pt-4 border-t border-neutral-border flex items-center justify-center gap-4 text-[11px] font-inter text-neutral-muted">
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
             Argon2id Hashing
           </span>
-          <span className="text-stone-300">•</span>
+          <span className="text-neutral-border">•</span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+            <span className="w-2 h-2 rounded-full bg-brand-blue"></span>
             Cookie HttpOnly Secure
           </span>
         </div>

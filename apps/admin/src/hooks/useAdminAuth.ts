@@ -30,8 +30,8 @@ export function useAdminAuth() {
       const res = await apiClient.loginAdmin(req);
       setCurrentUser(res.user);
       return res;
-    } catch (err: any) {
-      const msg = err?.message || "Credenciales inválidas.";
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Credenciales inválidas.";
       setError(msg);
       throw err;
     } finally {

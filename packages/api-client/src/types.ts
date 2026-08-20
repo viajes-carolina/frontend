@@ -19,10 +19,13 @@ export interface SiteSettingsDTO {
   logoMediaId?: number;
   faviconMediaId?: number;
   whatsappPhone?: string;
+  whatsappDisplayNumber?: string;
   whatsappDefaultMessage?: string;
   facebookUrl?: string;
   instagramUrl?: string;
   tiktokUrl?: string;
+  legalCompanyName?: string;
+  taxId?: string;
   revision?: number;
   updatedAt?: string;
 }
@@ -45,6 +48,8 @@ export interface PublicSiteResponse {
   facebookUrl?: string;
   instagramUrl?: string;
   tiktokUrl?: string;
+  legalCompanyName?: string;
+  taxId?: string;
   actions: Record<string, string>;
 }
 
@@ -139,6 +144,23 @@ export interface HomeHeroDTO {
   featuredCardOrigin?: string;
   featuredCardMediaId?: number;
   featuredCardMediaUrl?: string;
+  secondaryMedia1Id?: number;
+  secondaryMedia1Url?: string;
+  secondaryMedia1FocalX?: number;
+  secondaryMedia1FocalY?: number;
+  secondaryMedia2Id?: number;
+  secondaryMedia2Url?: string;
+  secondaryMedia2FocalX?: number;
+  secondaryMedia2FocalY?: number;
+  secondaryMedia3Id?: number;
+  secondaryMedia3Url?: string;
+  secondaryMedia3FocalX?: number;
+  secondaryMedia3FocalY?: number;
+  secondaryMedia4Id?: number;
+  secondaryMedia4Url?: string;
+  secondaryMedia4FocalX?: number;
+  secondaryMedia4FocalY?: number;
+  trustStatText?: string;
   revision?: number;
   updatedAt?: string;
 }
@@ -160,6 +182,23 @@ export interface UpdateHomeHeroRequest {
   featuredCardPricePen?: number;
   featuredCardOrigin?: string;
   featuredCardMediaId?: number;
+  secondaryMedia1Id?: number;
+  secondaryMedia1Url?: string;
+  secondaryMedia1FocalX?: number;
+  secondaryMedia1FocalY?: number;
+  secondaryMedia2Id?: number;
+  secondaryMedia2Url?: string;
+  secondaryMedia2FocalX?: number;
+  secondaryMedia2FocalY?: number;
+  secondaryMedia3Id?: number;
+  secondaryMedia3Url?: string;
+  secondaryMedia3FocalX?: number;
+  secondaryMedia3FocalY?: number;
+  secondaryMedia4Id?: number;
+  secondaryMedia4Url?: string;
+  secondaryMedia4FocalX?: number;
+  secondaryMedia4FocalY?: number;
+  trustStatText?: string;
 }
 
 // Travel Intentions DTOs (Corte 5)
@@ -511,10 +550,10 @@ export interface PublicContactResponse {
 }
 
 // Search DTOs (Corte 11)
-export type SearchResultType = "ALL" | "PROMOTION" | "BLOG_POST" | "INTENTION" | "DESTINATION";
+export type SearchResultType = "ALL" | "PROMOTION" | "BLOG_POST" | "INTENTION";
 
 export interface SearchResultItemDTO {
-  entityType: "PROMOTION" | "BLOG_POST" | "INTENTION" | "DESTINATION" | string;
+  entityType: "PROMOTION" | "BLOG_POST" | "INTENTION" | string;
   entityId: number;
   entitySlug: string;
   title: string;

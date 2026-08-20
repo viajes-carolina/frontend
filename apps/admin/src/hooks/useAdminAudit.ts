@@ -14,8 +14,8 @@ export function useAdminAudit() {
       const target = entityType !== undefined ? entityType : selectedEntityType;
       const data = await apiClient.getAuditLogs(target, 50);
       setLogs(data);
-    } catch (err: any) {
-      setError(err?.message || "Error al cargar registros de auditoría.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al cargar registros de auditoría.");
     } finally {
       setLoading(false);
     }

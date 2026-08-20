@@ -2,24 +2,35 @@
 
 import React from "react";
 
-export function JourneyConnector() {
+export interface JourneyConnectorProps {
+  /** Número de etapa, ej. "01" — mismo lenguaje visual en las 3 apariciones de la ruta. */
+  step: string;
+  /** Ej. "Imaginar → Explorar" — describe la transición narrativa, no la sección en sí. */
+  label: string;
+}
+
+/**
+ * Aparece solo en las 3 transiciones narrativas clave de Inicio (no entre cada bloque):
+ * Hero→Intenciones, Explorar→Prepararte, Prepararte→Conversar. Comparte el mismo hilo
+ * naranja y marcador numerado en las tres para sentirse una sola ruta, no decoraciones
+ * independientes.
+ */
+export function JourneyConnector({ step, label }: JourneyConnectorProps) {
   return (
-    <div className="w-full flex items-center justify-center py-6 overflow-hidden select-none">
-      <svg
-        className="w-full max-w-4xl h-12 text-brand-sunset/30 overflow-visible"
-        viewBox="0 0 1200 48"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M0 24C300 48 450 0 750 24C1050 48 1150 12 1200 24"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeDasharray="6 6"
-        />
-        <circle cx="750" cy="24" r="4" fill="var(--color-brand-accent)" />
-        <circle cx="1200" cy="24" r="4" fill="var(--color-brand-sunset)" />
-      </svg>
+    <div
+      className="w-full flex items-center justify-center gap-3 sm:gap-4 py-10 sm:py-12 select-none"
+      aria-hidden="true"
+    >
+      <span className="h-px flex-1 max-w-[80px] sm:max-w-[140px] bg-gradient-to-r from-transparent to-brand-accent/40" />
+      <div className="flex items-center gap-2.5 shrink-0">
+        <span className="flex items-center justify-center w-8 h-8 rounded-full border border-brand-accent/40 bg-white text-brand-accent font-sora font-bold text-xs shadow-sm">
+          {step}
+        </span>
+        <span className="hidden sm:inline font-sora text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-muted whitespace-nowrap">
+          {label}
+        </span>
+      </div>
+      <span className="h-px flex-1 max-w-[80px] sm:max-w-[140px] bg-gradient-to-l from-transparent to-brand-accent/40" />
     </div>
   );
 }

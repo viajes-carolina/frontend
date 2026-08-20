@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { ContactInquiryDTO } from "@vc/api-client";
 import { Button, WhatsAppIcon, MailIcon, PhoneIcon, CheckIcon, StarIcon } from "@vc/ui";
+import { buildWhatsAppUrl } from "../../lib/whatsapp";
 
 export interface InquiryInboxProps {
   inquiries: ContactInquiryDTO[];
@@ -54,13 +55,12 @@ export function InquiryInbox({
 
   const getWhatsAppLeadUrl = (inquiry: ContactInquiryDTO) => {
     if (!inquiry.phone) return null;
-    const cleanPhone = inquiry.phone.replace(/[^0-9]/g, "");
-    const msg = encodeURIComponent(
+    return buildWhatsAppUrl(
+      inquiry.phone,
       `Hola ${inquiry.fullName.split(" ")[0]}, te saludamos de Viajes Carolina. Recibimos tu consulta sobre ${
         inquiry.destinationOfInterest || "tu próximo viaje"
       }. ¿Cómo podemos ayudarte a diseñar tu itinerario ideal?`
     );
-    return `https://wa.me/${cleanPhone}?text=${msg}`;
   };
 
   return (

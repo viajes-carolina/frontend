@@ -130,7 +130,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         <div className="max-h-[60vh] overflow-y-auto p-3 divide-y divide-slate-50">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12 text-slate-400">
-              <svg className="animate-spin h-7 w-7 text-primary-600 mb-3" viewBox="0 0 24 24" fill="none">
+              <svg className="animate-spin h-7 w-7 text-brand-accent mb-3" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
@@ -158,7 +158,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-primary-50 text-primary-700">
+                      <span className="text-[10px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-brand-accent/10 text-brand-accent">
                         {item.entityType === "PROMOTION"
                           ? "Promoción"
                           : item.entityType === "BLOG_POST"
@@ -171,7 +171,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                         </span>
                       )}
                     </div>
-                    <h4 className="text-sm font-bold text-slate-900 group-hover:text-primary-600 truncate transition-colors">
+                    <h4 className="text-sm font-bold text-slate-900 group-hover:text-brand-accent truncate transition-colors">
                       {item.title}
                     </h4>
                     <p className="text-xs text-slate-500 line-clamp-1">

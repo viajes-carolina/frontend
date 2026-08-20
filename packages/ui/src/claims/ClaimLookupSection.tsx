@@ -52,7 +52,7 @@ export const ClaimLookupSection: React.FC<ClaimLookupSectionProps> = ({ onLookup
           ¿Ya tienes una reclamación en curso?
         </h2>
         <p className="text-xs text-slate-600">
-          Ingresa tu código único (ej. <code className="bg-slate-200 px-1.5 py-0.5 rounded font-mono text-primary-700 font-bold">REC-2026-0001</code>) para consultar el estado del trámite y las respuestas emitidas.
+          Ingresa tu código único (ej. <code className="bg-slate-200 px-1.5 py-0.5 rounded font-mono text-brand-navy font-bold">REC-2026-0001</code>) para consultar el estado del trámite y las respuestas emitidas.
         </p>
       </div>
 
@@ -62,7 +62,7 @@ export const ClaimLookupSection: React.FC<ClaimLookupSectionProps> = ({ onLookup
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="REC-2026-XXXX"
-          className="flex-1 px-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-mono uppercase focus:ring-2 focus:ring-primary-500 focus:outline-none"
+          className="flex-1 px-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-mono uppercase focus:ring-2 focus:ring-brand-accent focus:outline-none"
           required
         />
         <button
@@ -85,7 +85,7 @@ export const ClaimLookupSection: React.FC<ClaimLookupSectionProps> = ({ onLookup
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <div>
               <span className="text-xs text-slate-400 font-medium">Código:</span>{" "}
-              <strong className="font-mono text-primary-700">{claim.claimCode}</strong>
+              <strong className="font-mono text-brand-navy">{claim.claimCode}</strong>
             </div>
             <div>{getStatusBadge(claim.status)}</div>
           </div>
@@ -98,11 +98,11 @@ export const ClaimLookupSection: React.FC<ClaimLookupSectionProps> = ({ onLookup
           </div>
 
           {claim.responseNotes && (
-            <div className="bg-primary-50/60 border border-primary-100 rounded-xl p-4 text-xs text-slate-800 space-y-1">
-              <div className="font-bold text-primary-900">Respuesta Oficial de la Agencia:</div>
+            <div className="bg-brand-navy/5 border border-brand-navy/10 rounded-xl p-4 text-xs text-slate-800 space-y-1">
+              <div className="font-bold text-brand-navy">Respuesta Oficial de la Agencia:</div>
               <p className="leading-relaxed">{claim.responseNotes}</p>
               {claim.responseAt && (
-                <div className="text-[11px] text-primary-700/80 pt-1">
+                <div className="text-[11px] text-brand-navy/70 pt-1">
                   Respondido el {new Date(claim.responseAt).toLocaleString("es-PE")}
                 </div>
               )}

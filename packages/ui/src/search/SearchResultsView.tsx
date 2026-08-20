@@ -32,17 +32,17 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
+    <div className="min-h-screen bg-neutral-soft pb-20">
       {/* Hero Header */}
-      <section className="relative bg-gradient-to-b from-primary-950 via-slate-900 to-slate-900 text-white pt-28 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-neutral-soft border-b border-neutral-border pt-28 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <span className="inline-flex items-center gap-2 px-3 py-1 text-xs font-bold tracking-wider uppercase bg-primary-500/20 text-primary-300 border border-primary-500/30 rounded-full mb-4">
+          <span className="inline-flex items-center gap-2 px-3 py-1 text-xs font-bold tracking-wider uppercase bg-white text-brand-accent border border-neutral-border shadow-sm rounded-full mb-4">
             Explora Nuestro Catálogo
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mb-4 text-brand-navy">
             Buscador Global de Viajes
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-8">
+          <p className="text-base sm:text-lg text-neutral-muted max-w-2xl mx-auto mb-8">
             Encuentra paquetes turísticos, ofertas del Caribe, consejos de viaje y experiencias diseñadas a tu medida.
           </p>
 
@@ -76,12 +76,12 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
           {/* Sugerencias Rápidas */}
           {suggestedQueries.length > 0 && (
             <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
-              <span className="text-xs text-slate-400">Populares:</span>
+              <span className="text-xs text-neutral-muted">Populares:</span>
               {suggestedQueries.map((suggested) => (
                 <button
                   key={suggested}
                   onClick={() => onQueryChange(suggested)}
-                  className="text-xs text-slate-200 bg-white/10 hover:bg-white/20 border border-white/15 px-3 py-1 rounded-full backdrop-blur-sm transition-all"
+                  className="text-xs text-neutral-muted bg-white hover:text-brand-navy hover:border-brand-accent/40 border border-neutral-border px-3 py-1 rounded-full transition-all"
                 >
                   {suggested}
                 </button>
@@ -102,7 +102,7 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
                 onClick={() => onTypeChange(tab.value)}
                 className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all shrink-0 ${
                   activeType === tab.value
-                    ? "bg-primary-600 text-white shadow-md shadow-primary-500/20"
+                    ? "bg-brand-accent text-white shadow-md shadow-brand-accent/20"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200/70"
                 }`}
               >
@@ -129,7 +129,7 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-            <svg className="animate-spin h-10 w-10 text-primary-600 mb-4" viewBox="0 0 24 24" fill="none">
+            <svg className="animate-spin h-10 w-10 text-brand-accent mb-4" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
@@ -141,7 +141,7 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
               <a
                 key={`${item.entityType}-${item.entityId}`}
                 href={item.targetUrl}
-                className="group flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-primary-200 transition-all duration-300 overflow-hidden"
+                className="group flex flex-col bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-brand-accent/30 transition-all duration-300 overflow-hidden"
               >
                 {/* Imagen & Badge */}
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
@@ -172,11 +172,11 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
                 <div className="p-5 flex-1 flex flex-col justify-between">
                   <div>
                     {item.metadataInfo && (
-                      <span className="text-xs font-semibold text-primary-600 uppercase tracking-wider block mb-1">
+                      <span className="text-xs font-semibold text-brand-accent uppercase tracking-wider block mb-1">
                         {item.metadataInfo}
                       </span>
                     )}
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-primary-600 transition-colors line-clamp-2 mb-2">
+                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-brand-accent transition-colors line-clamp-2 mb-2">
                       {item.title}
                     </h3>
                     <p className="text-sm text-slate-600 line-clamp-3 mb-4">
@@ -184,7 +184,7 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-primary-600 group-hover:text-primary-700">
+                  <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-brand-accent group-hover:text-brand-navy">
                     <span>Ver detalles</span>
                     <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -197,7 +197,7 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
         ) : (
           /* Estado Vacío */
           <div className="max-w-xl mx-auto bg-white rounded-3xl p-8 sm:p-12 text-center border border-slate-200/80 shadow-md">
-            <div className="w-16 h-16 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-brand-accent/10 text-brand-accent flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>

@@ -22,9 +22,6 @@ export function ClosingCtaSection({ settings, className = "" }: ClosingCtaSectio
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden bg-gradient-to-br from-atmosphere-twilight via-brand-navy to-atmosphere-twilight rounded-3xl p-8 sm:p-14 border border-white/15 shadow-2xl text-white text-center space-y-8">
-          {/* Glow Effects */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-brand-sunset/15 blur-[140px] pointer-events-none rounded-full" />
-
           <div className="relative z-10 space-y-6 max-w-3xl mx-auto">
             {/* Eyebrow */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 shadow-sm backdrop-blur-md">
@@ -35,12 +32,12 @@ export function ClosingCtaSection({ settings, className = "" }: ClosingCtaSectio
             </div>
 
             {/* Title */}
-            <h2 className="font-sora font-extrabold text-3xl sm:text-5xl lg:text-[44px] leading-tight text-white max-w-2xl mx-auto">
+            <h2 className="font-display font-medium text-3xl sm:text-5xl lg:text-[48px] leading-tight text-white max-w-2xl mx-auto">
               Tu próximo viaje comienza con <span className="text-brand-sunset">una conversación</span>
             </h2>
 
             {/* Subtitle */}
-            <p className="font-inter text-atmosphere-sky text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
+            <p className="font-sora text-atmosphere-sky text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
               Desde una escapada de fin de semana hasta tu gran aventura soñada. Una asesora experta está lista para diseñar tu itinerario ideal.
             </p>
 
@@ -57,7 +54,7 @@ export function ClosingCtaSection({ settings, className = "" }: ClosingCtaSectio
             </div>
 
             {/* Trust Badges */}
-            <div className="pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-inter text-white/80 border-t border-white/10">
+            <div className="pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-sora text-white/80 border-t border-white/10">
               <div className="flex items-center gap-2">
                 <CheckIcon size={16} className="text-emerald-400" />
                 <span>Asesoría 100% gratuita</span>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 
-const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET || "vc-secret-isr-key-2026";
+const REVALIDATION_SECRET = process.env.REVALIDATION_SECRET || "revalidation-secret-viajes-carolina-2026";
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,8 +53,9 @@ export async function POST(req: NextRequest) {
       revalidatedPaths: revalidated,
       timestamp: new Date().toISOString(),
     });
-  } catch (err: any) {
-    return NextResponse.json({ message: err?.message || "Error al revalidar ISR." }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Error al revalidar ISR.";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }
 
@@ -73,7 +74,8 @@ export async function GET(req: NextRequest) {
       path: pathParam,
       timestamp: new Date().toISOString(),
     });
-  } catch (err: any) {
-    return NextResponse.json({ message: err?.message || "Error al revalidar." }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Error al revalidar.";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

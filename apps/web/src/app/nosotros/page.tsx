@@ -16,9 +16,10 @@ export const metadata = {
 };
 
 export default async function NosotrosPage() {
-  const [data, settings] = await Promise.all([
+  const [data, settings, office] = await Promise.all([
     apiClient.getPublicAbout(),
     apiClient.getSiteSettings(),
+    apiClient.getOfficeLocation(),
   ]);
 
   return (
@@ -26,22 +27,18 @@ export default async function NosotrosPage() {
       {/* 01. Hero & Stats */}
       <AboutHeroSection page={data.page} />
 
-      <JourneyConnector />
+      <JourneyConnector step="01" label="Nuestra historia" />
 
       {/* 02. Story & Values */}
-      <StorySection page={data.page} />
-
-      <JourneyConnector />
+      <StorySection page={data.page} office={office} />
 
       {/* 03. Mission & Vision */}
       <MissionVisionSection page={data.page} />
 
-      <JourneyConnector />
-
       {/* 04. Team / Advisors */}
       <AdvisorsSection advisors={data.advisors} />
 
-      <JourneyConnector />
+      <JourneyConnector step="02" label="Conversemos" />
 
       {/* 05. Closing CTA */}
       <ClosingCtaSection settings={settings} />

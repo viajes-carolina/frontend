@@ -106,7 +106,7 @@ export const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
                   value={name}
                   onChange={(e) => handleNameChange(e.target.value)}
                   placeholder="Ej. Guías de Destinos"
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-sm font-medium focus:ring-2 focus:ring-brand-primary"
+                  className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-sm font-medium focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
 
@@ -118,7 +118,7 @@ export const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                   placeholder="guias-de-destinos"
-                  className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-sm font-mono text-neutral-700 focus:ring-2 focus:ring-brand-primary"
+                  className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-sm font-mono text-neutral-700 focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
             </div>
@@ -130,7 +130,7 @@ export const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Breve descripción del propósito de la categoría..."
-                className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-sm focus:ring-2 focus:ring-brand-primary"
+                className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-sm focus:ring-2 focus:ring-brand-accent"
               />
             </div>
 
@@ -159,7 +159,7 @@ export const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
                 <button
                   type="submit"
                   disabled={saving || !name.trim() || !slug.trim()}
-                  className="px-4 py-1.5 rounded-xl bg-brand-primary text-white text-xs font-bold hover:bg-brand-primary/90 transition shadow-sm disabled:opacity-50"
+                  className="px-4 py-1.5 rounded-xl bg-brand-accent text-white text-xs font-bold hover:bg-brand-sunset transition shadow-sm disabled:opacity-50"
                 >
                   {saving ? "Guardando..." : editingCatId ? "Actualizar" : "Crear Categoría"}
                 </button>

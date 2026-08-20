@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { TravelIntentionDTO } from "@vc/api-client";
 import { useAdminIntentions } from "../../hooks/useAdminIntentions";
+import { useMediaPicker } from "../../hooks/useMediaPicker";
 import { Button, PlusIcon, EditIcon, TrashIcon, CheckIcon, ImageIcon } from "@vc/ui";
 import { IntentionFormModal } from "./IntentionFormModal";
 
@@ -34,6 +35,8 @@ export function IntentionList({ initialIntentions }: IntentionListProps) {
     handleSave,
     handleDelete,
   } = useAdminIntentions(initialIntentions);
+
+  const mediaPicker = useMediaPicker(isMediaPickerOpen);
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -191,6 +194,10 @@ export function IntentionList({ initialIntentions }: IntentionListProps) {
         isMediaPickerOpen={isMediaPickerOpen}
         setIsMediaPickerOpen={setIsMediaPickerOpen}
         onSelectMedia={handleSelectMedia}
+        mediaPickerItems={mediaPicker.items}
+        mediaPickerLoading={mediaPicker.loading}
+        onUploadMediaFile={mediaPicker.uploadFile}
+        onMediaFocalPointSave={mediaPicker.saveFocalPoint}
       />
     </div>
   );

@@ -27,7 +27,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {post.categoryName && (
-          <span className="absolute top-3 left-3 bg-brand-primary/90 text-white backdrop-blur-sm text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+          <span className="absolute top-3 left-3 bg-brand-navy/80 text-white backdrop-blur-sm text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
             {post.categoryName}
           </span>
         )}
@@ -44,7 +44,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
           </div>
 
           {/* Title */}
-          <h2 className="text-base sm:text-lg font-bold text-neutral-900 group-hover:text-brand-primary transition-colors line-clamp-2 mb-2 leading-snug">
+          <h2 className="text-base sm:text-lg font-bold text-neutral-900 group-hover:text-brand-accent transition-colors line-clamp-2 mb-2 leading-snug">
             <a href={`/blog/${post.slug}`}>
               {post.title}
             </a>
@@ -63,7 +63,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
           </span>
           <a
             href={`/blog/${post.slug}`}
-            className="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition"
+            className="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-brand-accent hover:text-brand-sunset transition"
           >
             <span>Leer artículo</span>
             <span className="group-hover:translate-x-1 transition-transform">→</span>

@@ -31,6 +31,10 @@ export interface TestimonialFormModalProps {
   isAvatarPickerOpen: boolean;
   setIsAvatarPickerOpen: (val: boolean) => void;
   onSelectAvatar: (media: MediaAssetDTO) => void;
+  avatarPickerItems: MediaAssetDTO[];
+  avatarPickerLoading: boolean;
+  onUploadAvatarFile: (file: File) => Promise<MediaAssetDTO>;
+  onAvatarFocalPointSave: (id: number, payload: { focalX: number; focalY: number }) => Promise<void>;
 }
 
 export function TestimonialFormModal({
@@ -59,6 +63,10 @@ export function TestimonialFormModal({
   isAvatarPickerOpen,
   setIsAvatarPickerOpen,
   onSelectAvatar,
+  avatarPickerItems,
+  avatarPickerLoading,
+  onUploadAvatarFile,
+  onAvatarFocalPointSave,
 }: TestimonialFormModalProps) {
   if (!isOpen) return null;
 
@@ -244,6 +252,10 @@ export function TestimonialFormModal({
           onClose={() => setIsAvatarPickerOpen(false)}
           onSelect={onSelectAvatar}
           selectedMediaId={avatarMediaId}
+          items={avatarPickerItems}
+          loading={avatarPickerLoading}
+          onUploadFile={onUploadAvatarFile}
+          onFocalPointSave={onAvatarFocalPointSave}
           title="Seleccionar Fotografía de Cliente"
         />
       </div>

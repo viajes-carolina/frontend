@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { TestimonialDTO, FaqItemDTO } from "@vc/api-client";
 import { useAdminTrust } from "../../hooks/useAdminTrust";
+import { useMediaPicker } from "../../hooks/useMediaPicker";
 import { Button, PlusIcon, EditIcon, TrashIcon, CheckIcon, StarIcon, HelpCircleIcon, ImageIcon } from "@vc/ui";
 import { TestimonialFormModal } from "./TestimonialFormModal";
 import { FaqFormModal } from "./FaqFormModal";
@@ -44,6 +45,8 @@ export function TrustManager({ initialTestimonials, initialFaqs }: TrustManagerP
     openCreateFaq, openEditFaq,
     handleSaveFaq, handleDeleteFaq,
   } = useAdminTrust(initialTestimonials, initialFaqs);
+
+  const avatarPicker = useMediaPicker(isAvatarPickerOpen);
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -293,6 +296,10 @@ export function TrustManager({ initialTestimonials, initialFaqs }: TrustManagerP
         isAvatarPickerOpen={isAvatarPickerOpen}
         setIsAvatarPickerOpen={setIsAvatarPickerOpen}
         onSelectAvatar={handleSelectAvatar}
+        avatarPickerItems={avatarPicker.items}
+        avatarPickerLoading={avatarPicker.loading}
+        onUploadAvatarFile={avatarPicker.uploadFile}
+        onAvatarFocalPointSave={avatarPicker.saveFocalPoint}
       />
 
       <FaqFormModal

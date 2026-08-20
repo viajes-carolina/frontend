@@ -20,7 +20,9 @@
       "@vc/config": ["./packages/config/src"],
       "@vc/config/*": ["./packages/config/src/*"],
       "@vc/api-client": ["./packages/api-client/src"],
-      "@vc/api-client/*": ["./packages/api-client/src/*"]
+      "@vc/api-client/*": ["./packages/api-client/src/*"],
+      "@vc/next-proxy": ["./packages/next-proxy/src"],
+      "@vc/next-proxy/*": ["./packages/next-proxy/src/*"]
     }
   },
   "exclude": ["node_modules", ".next", "dist"]

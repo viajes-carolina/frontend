@@ -5,9 +5,12 @@ export function middleware(request: NextRequest) {
 
   // Content-Security-Policy (CSP)
   const isHttps = request.nextUrl.protocol === "https:";
+  // 'unsafe-eval' solo es necesario para React Fast Refresh en desarrollo; los builds
+  // de producción de Next.js no lo requieren (ver hallazgo de auditoría SEC-017).
+  const isDev = process.env.NODE_ENV !== "production";
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://maps.googleapis.com;
+    script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval' " : ""}https://challenges.cloudflare.com https://maps.googleapis.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     img-src 'self' data: blob: https:;
     font-src 'self' data: https://fonts.gstatic.com;

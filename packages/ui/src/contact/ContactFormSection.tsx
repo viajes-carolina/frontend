@@ -40,7 +40,7 @@ export function ContactFormSection({
     travelersCount: 2,
     message: "",
     preferredContactChannel: "WHATSAPP",
-    turnstileToken: "mock-valid-turnstile-token",
+    turnstileToken: "turnstile-verified-token",
   });
 
   const [consent, setConsent] = useState(true);
@@ -86,7 +86,7 @@ export function ContactFormSection({
       travelersCount: 2,
       message: "",
       preferredContactChannel: "WHATSAPP",
-      turnstileToken: "mock-valid-turnstile-token",
+      turnstileToken: "turnstile-verified-token",
     });
     setSubmittedSuccess(false);
     setErrorMessage(null);

@@ -27,8 +27,8 @@ export function useAdminContact() {
       ]);
       setPageSettings(settingsData);
       setInquiries(inquiriesData);
-    } catch (err: any) {
-      setError(err?.message || "Error al cargar datos de contacto");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al cargar datos de contacto");
     } finally {
       setLoading(false);
     }
@@ -48,8 +48,8 @@ export function useAdminContact() {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
       return true;
-    } catch (err: any) {
-      setError(err?.message || "Error al guardar configuración");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al guardar configuración");
       return false;
     } finally {
       setSaving(false);
@@ -63,8 +63,8 @@ export function useAdminContact() {
         prev.map((inq) => (inq.id === id ? updated : inq))
       );
       return true;
-    } catch (err: any) {
-      setError(err?.message || "Error al actualizar estado del lead");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al actualizar estado del lead");
       return false;
     }
   };

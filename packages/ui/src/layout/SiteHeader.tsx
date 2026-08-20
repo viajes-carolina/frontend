@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { BRAND_CONFIG, DEFAULT_WHATSAPP_PHONE } from "@vc/config";
 import { BrandLogo } from "../brand/BrandLogo";
-import { PlaneIcon, MenuIcon } from "../icons/icons";
+import { MenuIcon } from "../icons/icons";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 import { MobileMenu, NavItem } from "./MobileMenu";
 
@@ -13,12 +14,11 @@ export interface SiteHeaderProps {
   whatsappMessage?: string;
   currentPath?: string;
   navItems?: NavItem[];
-  onOpenSearch?: () => void;
 }
 
 export function SiteHeader({
-  siteName = "Viajes Carolina",
-  whatsappPhone = "+51987654321",
+  siteName = BRAND_CONFIG.name,
+  whatsappPhone = DEFAULT_WHATSAPP_PHONE,
   whatsappMessage = "Hola Viajes Carolina, deseo consultar sobre un viaje.",
   currentPath = "/",
   navItems = [
@@ -28,7 +28,6 @@ export function SiteHeader({
     { label: "Blog", href: "/blog" },
     { label: "Contacto", href: "/contacto" },
   ],
-  onOpenSearch,
 }: SiteHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -38,7 +37,7 @@ export function SiteHeader({
   }));
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-md bg-atmosphere-twilight/90 border-b border-white/10 transition-all duration-200">
+    <header className="sticky top-0 z-40 w-full bg-surface-ivory border-b border-neutral-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Brand Logo Oficial */}
         <a
@@ -46,19 +45,19 @@ export function SiteHeader({
           className="flex items-center group focus:outline-none focus:ring-2 focus:ring-brand-accent rounded-lg p-1"
           aria-label={`${siteName} - Inicio`}
         >
-          <BrandLogo variant="light" className="h-8 sm:h-9 w-auto group-hover:scale-[1.02] transition-transform duration-200" />
+          <BrandLogo variant="dark" className="h-8 sm:h-9 w-auto group-hover:scale-[1.02] transition-transform duration-200" />
         </a>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full shadow-inner">
+        {/* Desktop Navigation — simple, sin cápsula */}
+        <nav className="hidden md:flex items-center gap-9">
           {activeNavItems.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className={`px-4 py-2 rounded-full font-sora text-sm transition-all duration-200 ${
+              className={`font-sora text-sm pb-1.5 border-b-2 transition-colors duration-200 ${
                 item.active
-                  ? "bg-brand-accent text-brand-navy font-bold shadow-sm"
-                  : "text-white/80 hover:text-white hover:bg-white/10 font-medium"
+                  ? "text-brand-navy font-bold border-brand-accent"
+                  : "text-neutral-muted font-medium border-transparent hover:text-brand-navy"
               }`}
             >
               {item.label}
@@ -66,53 +65,25 @@ export function SiteHeader({
           ))}
         </nav>
 
-        {/* Search & WhatsApp Actions */}
-        <div className="hidden md:flex items-center gap-3">
-          <a
-            href="/buscar"
-            onClick={(e) => {
-              if (onOpenSearch) {
-                e.preventDefault();
-                onOpenSearch();
-              }
-            }}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white/90 hover:text-white text-xs font-medium transition-all group"
-            aria-label="Buscar en la web"
-          >
-            <svg className="w-4 h-4 text-white/70 group-hover:text-brand-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <span className="hidden lg:inline">Buscar</span>
-            <kbd className="hidden lg:inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold text-white/60 bg-black/30 rounded border border-white/10">
-              ⌘K
-            </kbd>
-          </a>
-
-          <div className="hidden lg:flex items-center">
-            <WhatsAppButton
-              size="md"
-              phone={whatsappPhone}
-              message={whatsappMessage}
-            >
-              WhatsApp
-            </WhatsAppButton>
-          </div>
+        {/* WhatsApp — único CTA del header */}
+        <div className="hidden md:flex items-center">
+          <WhatsAppButton size="sm" phone={whatsappPhone} message={whatsappMessage}>
+            Escríbenos
+          </WhatsAppButton>
         </div>
 
-        {/* Mobile Menu & Search Button */}
+        {/* Mobile: WhatsApp compacto + hamburguesa */}
         <div className="flex md:hidden items-center gap-2">
-          <a
-            href="/buscar"
-            className="p-2.5 rounded-xl bg-white/10 text-white hover:bg-white/15 active:scale-95 transition-all"
-            aria-label="Buscar"
+          <WhatsAppButton
+            iconOnly
+            phone={whatsappPhone}
+            message={whatsappMessage}
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </a>
+            Escríbenos por WhatsApp
+          </WhatsAppButton>
           <button
             onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2.5 rounded-xl bg-white/10 text-white hover:bg-white/15 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-brand-accent cursor-pointer"
+            className="p-2.5 rounded-lg text-brand-navy active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-brand-accent cursor-pointer"
             aria-label="Abrir menú de navegación"
           >
             <MenuIcon size={24} />

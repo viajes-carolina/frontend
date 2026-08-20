@@ -1,15 +1,19 @@
 "use client";
 
 import React from "react";
-import { AboutPageDTO } from "@vc/api-client";
+import { AboutPageDTO, OfficeLocationDTO } from "@vc/api-client";
+import { DEFAULT_OFFICE_DISTRICT, DEFAULT_OFFICE_CITY } from "@vc/config";
 import { CheckIcon } from "../icons/icons";
 
 export interface StorySectionProps {
   page: AboutPageDTO;
+  office?: OfficeLocationDTO;
   className?: string;
 }
 
-export function StorySection({ page, className = "" }: StorySectionProps) {
+export function StorySection({ page, office, className = "" }: StorySectionProps) {
+  const district = office?.district || DEFAULT_OFFICE_DISTRICT;
+  const city = office?.city || DEFAULT_OFFICE_CITY;
   const imageUrl = page.storyMediaUrl || "/media/demo-cusco-machupicchu.webp";
 
   return (
@@ -73,7 +77,7 @@ export function StorySection({ page, className = "" }: StorySectionProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/80 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-brand-navy/90 backdrop-blur-md border border-white/10">
                 <span className="font-sora font-bold text-sm text-white block">
-                  Miraflores, Lima — Perú
+                  {district}, {city} — Perú
                 </span>
                 <span className="font-inter text-xs text-brand-sunset block">
                   Sede Principal · Atención Personalizada

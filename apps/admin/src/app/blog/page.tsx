@@ -55,7 +55,7 @@ export default function AdminBlogPage() {
           <button
             type="button"
             onClick={handleOpenCreatePost}
-            className="px-5 py-2.5 rounded-xl bg-brand-primary text-white font-bold text-xs sm:text-sm hover:bg-brand-primary/90 shadow-md transition flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-brand-accent text-white font-bold text-xs sm:text-sm hover:bg-brand-sunset shadow-md transition flex items-center gap-2"
           >
             <span>✍️</span>
             <span>Nuevo Artículo</span>
@@ -92,7 +92,7 @@ export default function AdminBlogPage() {
               onClick={() => setStatusFilter(tab.key)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                 statusFilter === tab.key
-                  ? "bg-brand-primary text-white shadow-sm"
+                  ? "bg-brand-accent text-white shadow-sm"
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
               }`}
             >
@@ -108,7 +108,7 @@ export default function AdminBlogPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar por título o slug..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-300 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-brand-primary"
+            className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-300 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-brand-accent"
           />
           <span className="absolute left-3 top-2.5 text-neutral-400 text-xs">🔍</span>
         </div>
@@ -166,7 +166,7 @@ export default function AdminBlogPage() {
 
                     {/* Category */}
                     <td className="py-4 px-4">
-                      <span className="text-xs font-bold text-brand-primary bg-brand-primary/10 px-2.5 py-1 rounded-md">
+                      <span className="text-xs font-bold text-brand-accent bg-brand-accent/10 px-2.5 py-1 rounded-md">
                         {post.categoryName || "General"}
                       </span>
                     </td>
@@ -207,7 +207,7 @@ export default function AdminBlogPage() {
                         <button
                           type="button"
                           onClick={() => handleOpenEditPost(post)}
-                          className="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-brand-primary hover:text-white text-neutral-700 text-xs font-bold transition shadow-sm"
+                          className="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-brand-accent hover:text-white text-neutral-700 text-xs font-bold transition shadow-sm"
                         >
                           Editar
                         </button>

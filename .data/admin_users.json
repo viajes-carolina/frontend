@@ -6,7 +6,7 @@
     "fullName": "Administrador General",
     "role": "SUPER_ADMIN",
     "active": true,
-    "lastLoginAt": "2026-08-19T16:51:59.518Z",
+    "lastLoginAt": "2026-08-19T17:31:05.066Z",
     "createdAt": "2026-08-18T00:00:00.000Z",
     "updatedAt": "2026-08-18T00:00:00.000Z"
   },
@@ -33,173 +33,23 @@
     "updatedAt": "2026-08-18T00:00:00.000Z"
   },
   {
-    "id": 1787080829530,
-    "username": "asesora_1787080829451",
-    "email": "asesora_1787080829451@viajescarolina.com",
+    "id": 1787159004864,
+    "username": "asesora_1787159004647",
+    "email": "asesora_1787159004647@viajescarolina.com",
     "fullName": "Asesora Certificada E2E",
     "role": "ADVISOR",
     "active": true,
-    "createdAt": "2026-08-18T19:20:29.530Z",
-    "updatedAt": "2026-08-18T19:20:29.664Z"
+    "createdAt": "2026-08-19T17:03:24.864Z",
+    "updatedAt": "2026-08-19T17:03:27.548Z"
   },
   {
-    "id": 1787080889226,
-    "username": "asesora_1787080889173",
-    "email": "asesora_1787080889173@viajescarolina.com",
+    "id": 1787160668308,
+    "username": "asesora_1787160668194",
+    "email": "asesora_1787160668194@viajescarolina.com",
     "fullName": "Asesora Certificada E2E",
     "role": "ADVISOR",
     "active": true,
-    "createdAt": "2026-08-18T19:21:29.226Z",
-    "updatedAt": "2026-08-18T19:21:29.294Z"
-  },
-  {
-    "id": 1787081970790,
-    "username": "asesora_1787081970650",
-    "email": "asesora_1787081970650@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-18T19:39:30.790Z",
-    "updatedAt": "2026-08-18T19:39:30.945Z"
-  },
-  {
-    "id": 1787082082432,
-    "username": "asesora_1787082082321",
-    "email": "asesora_1787082082321@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-18T19:41:22.433Z",
-    "updatedAt": "2026-08-18T19:41:23.050Z"
-  },
-  {
-    "id": 1787082621506,
-    "username": "asesora_1787082621451",
-    "email": "asesora_1787082621451@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-18T19:50:21.506Z",
-    "updatedAt": "2026-08-18T19:50:21.573Z"
-  },
-  {
-    "id": 1787088056694,
-    "username": "asesora_1787088056624",
-    "email": "asesora_1787088056624@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-18T21:20:56.694Z",
-    "updatedAt": "2026-08-18T21:20:56.764Z"
-  },
-  {
-    "id": 1787088085116,
-    "username": "asesora_1787088085020",
-    "email": "asesora_1787088085020@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-18T21:21:25.116Z",
-    "updatedAt": "2026-08-18T21:21:25.206Z"
-  },
-  {
-    "id": 1787088173239,
-    "username": "asesora_1787088173133",
-    "email": "asesora_1787088173133@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-18T21:22:53.239Z",
-    "updatedAt": "2026-08-18T21:22:53.341Z"
-  },
-  {
-    "id": 1787126519320,
-    "username": "asesora_1787126519253",
-    "email": "asesora_1787126519253@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T08:01:59.320Z",
-    "updatedAt": "2026-08-19T08:01:59.380Z"
-  },
-  {
-    "id": 1787126616230,
-    "username": "asesora_1787126616072",
-    "email": "asesora_1787126616072@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T08:03:36.230Z",
-    "updatedAt": "2026-08-19T08:03:36.339Z"
-  },
-  {
-    "id": 1787145412495,
-    "username": "asesora_1787145412429",
-    "email": "asesora_1787145412429@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T13:16:52.495Z",
-    "updatedAt": "2026-08-19T13:16:52.558Z"
-  },
-  {
-    "id": 1787145988894,
-    "username": "asesora_1787145988820",
-    "email": "asesora_1787145988820@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T13:26:28.894Z",
-    "updatedAt": "2026-08-19T13:26:28.998Z"
-  },
-  {
-    "id": 1787148339854,
-    "username": "asesora_1787148339788",
-    "email": "asesora_1787148339788@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T14:05:39.854Z",
-    "updatedAt": "2026-08-19T14:05:39.958Z"
-  },
-  {
-    "id": 1787151659309,
-    "username": "asesora_1787151659237",
-    "email": "asesora_1787151659237@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T15:00:59.309Z",
-    "updatedAt": "2026-08-19T15:00:59.428Z"
-  },
-  {
-    "id": 1787156014363,
-    "username": "asesora_1787156014287",
-    "email": "asesora_1787156014287@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T16:13:34.364Z",
-    "updatedAt": "2026-08-19T16:13:34.458Z"
-  },
-  {
-    "id": 1787157706895,
-    "username": "asesora_1787157706764",
-    "email": "asesora_1787157706764@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T16:41:46.895Z",
-    "updatedAt": "2026-08-19T16:41:47.032Z"
-  },
-  {
-    "id": 1787158319980,
-    "username": "asesora_1787158319828",
-    "email": "asesora_1787158319828@viajescarolina.com",
-    "fullName": "Asesora Certificada E2E",
-    "role": "ADVISOR",
-    "active": true,
-    "createdAt": "2026-08-19T16:51:59.981Z",
-    "updatedAt": "2026-08-19T16:52:00.192Z"
+    "createdAt": "2026-08-19T17:31:08.308Z",
+    "updatedAt": "2026-08-19T17:31:09.153Z"
   }
 ]

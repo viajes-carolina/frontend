@@ -2,6 +2,7 @@
 
 import React from "react";
 import { BlogPostDTO } from "@vc/api-client";
+import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
 import { ResponsiveImage } from "../primitives/ResponsiveImage";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 import { BlogCard } from "./BlogCard";
@@ -15,7 +16,7 @@ export interface BlogArticleContentProps {
 export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
   post,
   relatedPosts,
-  whatsappPhone = "+51987654321",
+  whatsappPhone = DEFAULT_WHATSAPP_PHONE,
 }) => {
   const formattedDate = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString("es-PE", {
@@ -90,7 +91,7 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
       } else if (trimmed.startsWith("> ")) {
         flushParagraph();
         elements.push(
-          <blockquote key={`quote-${keyIdx++}`} className="border-l-4 border-brand-primary pl-4 py-2 my-6 bg-brand-primary/5 rounded-r-xl italic text-neutral-800 text-base sm:text-lg">
+          <blockquote key={`quote-${keyIdx++}`} className="border-l-4 border-brand-accent pl-4 py-2 my-6 bg-brand-accent/5 rounded-r-xl italic text-neutral-800 text-base sm:text-lg">
             {parseInlineStyles(trimmed.substring(2))}
           </blockquote>
         );
@@ -98,7 +99,7 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
         flushParagraph();
         elements.push(
           <div key={`li-${keyIdx++}`} className="flex items-start gap-2.5 my-2 text-neutral-700 text-base sm:text-lg">
-            <span className="text-brand-secondary font-bold mt-1">✓</span>
+            <span className="text-brand-sunset font-bold mt-1">✓</span>
             <span>{parseInlineStyles(trimmed.substring(2))}</span>
           </div>
         );
@@ -108,7 +109,7 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
         const content = trimmed.replace(/^\d+\.\s/, "");
         elements.push(
           <div key={`num-${keyIdx++}`} className="flex items-start gap-3 my-2 text-neutral-700 text-base sm:text-lg">
-            <span className="w-6 h-6 rounded-full bg-brand-primary text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+            <span className="w-6 h-6 rounded-full bg-brand-navy text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
               {num}
             </span>
             <span>{parseInlineStyles(content)}</span>
@@ -133,13 +134,13 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-xs sm:text-sm text-neutral-500 mb-6 flex-wrap">
-          <a href="/" className="hover:text-brand-primary transition">Inicio</a>
+          <a href="/" className="hover:text-brand-accent transition">Inicio</a>
           <span>/</span>
-          <a href="/blog" className="hover:text-brand-primary transition">Blog</a>
+          <a href="/blog" className="hover:text-brand-accent transition">Blog</a>
           {post.categoryName && (
             <>
               <span>/</span>
-              <span className="text-brand-primary font-medium">{post.categoryName}</span>
+              <span className="text-brand-accent font-medium">{post.categoryName}</span>
             </>
           )}
         </nav>
@@ -147,7 +148,7 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
         {/* Category & Metadata */}
         <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-neutral-500 font-medium mb-4">
           {post.categoryName && (
-            <span className="bg-brand-primary/10 text-brand-primary font-bold px-3 py-1 rounded-full">
+            <span className="bg-brand-accent/10 text-brand-accent font-bold px-3 py-1 rounded-full">
               {post.categoryName}
             </span>
           )}
@@ -164,13 +165,13 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
         </h1>
 
         {/* Lead / Summary */}
-        <p className="text-lg sm:text-xl text-neutral-600 font-normal leading-relaxed mb-8 border-l-4 border-brand-secondary pl-4 py-1">
+        <p className="text-lg sm:text-xl text-neutral-600 font-normal leading-relaxed mb-8 border-l-4 border-brand-sunset pl-4 py-1">
           {post.summary}
         </p>
 
         {/* Author Header */}
         <div className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 border border-neutral-100 mb-8">
-          <div className="w-12 h-12 rounded-full bg-brand-primary text-white font-black text-lg flex items-center justify-center shadow-sm">
+          <div className="w-12 h-12 rounded-full bg-brand-navy text-white font-black text-lg flex items-center justify-center shadow-sm">
             {post.authorName.charAt(0)}
           </div>
           <div>
@@ -213,9 +214,9 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
         )}
 
         {/* Direct CTA Box */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-brand-primary to-brand-primary/95 text-white shadow-xl mb-16 text-center sm:text-left sm:flex sm:items-center sm:justify-between gap-6">
+        <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-brand-navy to-brand-navy/95 text-white shadow-xl mb-16 text-center sm:text-left sm:flex sm:items-center sm:justify-between gap-6">
           <div className="mb-6 sm:mb-0">
-            <span className="text-xs font-bold text-brand-secondary uppercase tracking-wider">
+            <span className="text-xs font-bold text-brand-sunset uppercase tracking-wider">
               ¿Listo para vivir esta experiencia?
             </span>
             <h3 className="text-xl sm:text-2xl font-black mt-1 mb-2 text-white">
@@ -250,7 +251,7 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
               </div>
               <a
                 href="/blog"
-                className="text-xs sm:text-sm font-bold text-brand-primary hover:text-brand-secondary transition"
+                className="text-xs sm:text-sm font-bold text-brand-accent hover:text-brand-sunset transition"
               >
                 Ver todos →
               </a>

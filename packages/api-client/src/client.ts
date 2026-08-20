@@ -51,78 +51,29 @@ import {
   PublishRequestDTO,
   PublishResponseDTO,
 } from "./types";
+// Solo se importan de ./mocks las funciones que siguen siendo un fallback legítimo:
+// lecturas públicas sin muro de auth, para cuando el backend real es genuinamente
+// inalcanzable (excepción de red/timeout). Ninguna mutación ni lectura admin-only
+// debe caer aquí — ver ApiError arriba y AUDIT_FINDINGS.md.
 import {
-  MOCK_PROMOTIONS,
-  MOCK_BLOG_POSTS,
   MOCK_API_INFO,
   getMockSiteSettings,
-  updateMockSiteSettings,
   getMockOfficeLocation,
-  updateMockOfficeLocation,
   getMockHomeHero,
-  updateMockHomeHero,
   getMockTravelIntentions,
-  getMockAdminTravelIntentions,
-  createMockTravelIntention,
-  updateMockTravelIntention,
-  deleteMockTravelIntention,
   getMockFeaturedPromotions,
   getMockPromotions,
-  getMockAdminPromotions,
   getMockPromotionBySlug,
-  createMockPromotion,
-  updateMockPromotion,
-  deleteMockPromotion,
   getMockPublicTrust,
-  getMockTestimonials,
-  createMockTestimonial,
-  updateMockTestimonial,
-  deleteMockTestimonial,
-  getMockFaqs,
-  createMockFaq,
-  updateMockFaq,
-  deleteMockFaq,
   getMockPublicAbout,
-  getMockAdminAbout,
-  updateMockAdminAbout,
-  getMockAdminAdvisors,
-  createMockAdvisor,
-  updateMockAdvisor,
-  deleteMockAdvisor,
   getMockPublicContact,
-  getMockAdminContact,
-  updateMockAdminContact,
-  getMockAdminInquiries,
-  submitMockContactInquiry,
-  updateMockInquiryStatus,
   getMockPublicBlog,
   getMockBlogCategories,
   getMockBlogPostBySlug,
-  getMockAdminBlogPosts,
-  createMockBlogPost,
-  updateMockBlogPost,
-  deleteMockBlogPost,
-  createMockBlogCategory,
-  updateMockBlogCategory,
-  deleteMockBlogCategory,
-  getMockMediaPage,
-  updateMockMediaFocalPoint,
-  DEFAULT_MEDIA_ASSETS,
   getMockGlobalSearch,
   getMockHomeBlogInspiration,
-  updateMockHomeBlogInspiration,
   getMockContactExploreLinks,
-  getMockAdminClaims,
   getMockClaimByCode,
-  submitMockClaim,
-  updateMockClaimStatus,
-  loginMockAdmin,
-  getMockAdminUsers,
-  createMockAdminUser,
-  updateMockAdminUser,
-  getMockAuditLogs,
-  getMockPublishingStatus,
-  publishMockContent,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -135,16 +86,36 @@ const STORAGE_KEY_ABOUT = "vc_about_page";
 
 export interface ApiClientConfig {
   baseUrl?: string;
-  useMocks?: boolean;
+}
+
+// Lanzado cuando el backend real respondió (no está inalcanzable) pero con un status
+// de error. A diferencia de una excepción de red, esto NUNCA debe enmascararse con un
+// fallback simulado — ver AUDIT_FINDINGS.md / E2E_ADMIN_WEB_TRACKING.md, hallazgo del
+// patrón "éxito falso" repetido en este archivo.
+export class ApiError extends Error {
+  status: number;
+  body: unknown;
+  constructor(status: number, body: unknown) {
+    super(`Error de API (HTTP ${status})`);
+    this.name = "ApiError";
+    this.status = status;
+    this.body = body;
+  }
+}
+
+async function parseErrorBody(res: Response): Promise<unknown> {
+  try {
+    return await res.json();
+  } catch {
+    return null;
+  }
 }
 
 export class ViajesCarolinaApiClient {
   private baseUrl: string;
-  private useMocks: boolean;
 
   constructor(config?: ApiClientConfig) {
     this.baseUrl = config?.baseUrl || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080";
-    this.useMocks = config?.useMocks ?? false;
   }
 
   private getEffectiveUrl(endpointPath: string): string {
@@ -154,36 +125,51 @@ export class ViajesCarolinaApiClient {
     return `${this.baseUrl}/api/${endpointPath.replace(/^\//, "")}`;
   }
 
-  async getInfo(): Promise<ApiInfoDTO> {
-    if (this.useMocks) return MOCK_API_INFO;
+  // Los Server Components (apps/admin) hacen fetch server-side directo al backend,
+  // sin pasar por el navegador: por eso el cookie de sesión no se adjunta solo.
+  // Esto reenvía la cookie vc_admin_jwt de la petición entrante (si existe) a los
+  // endpoints admin/v1/* que ahora requieren autenticación real.
+  private async withServerAuthCookie(init: RequestInit = {}): Promise<RequestInit> {
+    if (typeof window !== "undefined") return init;
     try {
-      const res = await fetch(this.getEffectiveUrl("public/v1/info"), {
-        cache: "no-store",
-      });
-      if (!res.ok) return MOCK_API_INFO;
-      return await res.json();
+      const { cookies } = await import("next/headers");
+      const jar = await cookies();
+      const token = jar.get("vc_admin_jwt")?.value;
+      if (!token) return init;
+      const headers = new Headers(init.headers);
+      headers.set("Cookie", `vc_admin_jwt=${token}`);
+      return { ...init, headers };
     } catch {
-      return MOCK_API_INFO;
+      // Fuera de un contexto de request de Next.js (ej. apps/web, que no tiene esta cookie).
+      return init;
     }
   }
 
+  async getInfo(): Promise<ApiInfoDTO> {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/info"), {
+        cache: "no-store",
+      });
+    } catch {
+      return MOCK_API_INFO;
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
   async getSiteSettings(): Promise<SiteSettingsDTO> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("admin/v1/settings"), {
+      res = await fetch(this.getEffectiveUrl("admin/v1/settings"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof window !== "undefined") {
-          localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(data));
-        }
-        return data;
-      }
     } catch {
+      // Excepción de red real (backend inalcanzable): usar caché local si existe.
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem(STORAGE_KEY_SETTINGS);
         if (stored) {
@@ -194,55 +180,43 @@ export class ViajesCarolinaApiClient {
           }
         }
       }
+      return getMockSiteSettings();
     }
-    return getMockSiteSettings();
+    // El backend respondió: un error real (ej. 401) nunca debe enmascararse con datos
+    // simulados — un formulario admin podría cargar datos falsos y guardarlos encima
+    // de los reales.
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    const data = await res.json();
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(data));
+    }
+    return data;
   }
 
   async updateSiteSettings(payload: Partial<SiteSettingsDTO>): Promise<SiteSettingsDTO> {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1500);
-      const res = await fetch(this.getEffectiveUrl("admin/v1/settings"), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof window !== "undefined") {
-          localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(data));
-        }
-        return data;
-      }
-    } catch {
-      // Offline fallback
-    }
-
-    const updated = updateMockSiteSettings(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/settings"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    const data = await res.json();
     if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(updated));
+      localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(data));
     }
-    return updated;
+    return data;
   }
 
   async getOfficeLocation(): Promise<OfficeLocationDTO> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("admin/v1/office"), {
+      res = await fetch(this.getEffectiveUrl("admin/v1/office"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof window !== "undefined") {
-          localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(data));
-        }
-        return data;
-      }
     } catch {
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem(STORAGE_KEY_OFFICE);
@@ -254,37 +228,28 @@ export class ViajesCarolinaApiClient {
           }
         }
       }
+      return getMockOfficeLocation();
     }
-    return getMockOfficeLocation();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    const data = await res.json();
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(data));
+    }
+    return data;
   }
 
   async updateOfficeLocation(payload: Partial<OfficeLocationDTO>): Promise<OfficeLocationDTO> {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1500);
-      const res = await fetch(this.getEffectiveUrl("admin/v1/office"), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof window !== "undefined") {
-          localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(data));
-        }
-        return data;
-      }
-    } catch {
-      // Offline fallback
-    }
-
-    const updated = updateMockOfficeLocation(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/office"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    const data = await res.json();
     if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(updated));
+      localStorage.setItem(STORAGE_KEY_OFFICE, JSON.stringify(data));
     }
-    return updated;
+    return data;
   }
 
   // ==========================================
@@ -292,21 +257,15 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getHomeHero(): Promise<HomeHeroDTO> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/home/hero"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/home/hero"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof window !== "undefined") {
-          localStorage.setItem(STORAGE_KEY_HERO, JSON.stringify(data));
-        }
-        return data;
-      }
     } catch {
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem(STORAGE_KEY_HERO);
@@ -318,37 +277,28 @@ export class ViajesCarolinaApiClient {
           }
         }
       }
+      return getMockHomeHero();
     }
-    return getMockHomeHero();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    const data = await res.json();
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_HERO, JSON.stringify(data));
+    }
+    return data;
   }
 
   async updateHomeHero(payload: Partial<HomeHeroDTO>): Promise<HomeHeroDTO> {
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1500);
-      const res = await fetch(this.getEffectiveUrl("admin/v1/home/hero"), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof window !== "undefined") {
-          localStorage.setItem(STORAGE_KEY_HERO, JSON.stringify(data));
-        }
-        return data;
-      }
-    } catch {
-      // Offline fallback
-    }
-
-    const updated = updateMockHomeHero(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/hero"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    const data = await res.json();
     if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY_HERO, JSON.stringify(updated));
+      localStorage.setItem(STORAGE_KEY_HERO, JSON.stringify(data));
     }
-    return updated;
+    return data;
   }
 
   // ==========================================
@@ -356,21 +306,15 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getTravelIntentions(): Promise<TravelIntentionDTO[]> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/home/intentions"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/home/intentions"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        const data = await res.json();
-        if (typeof window !== "undefined") {
-          localStorage.setItem(STORAGE_KEY_INTENTIONS, JSON.stringify(data));
-        }
-        return data;
-      }
     } catch {
       if (typeof window !== "undefined") {
         const stored = localStorage.getItem(STORAGE_KEY_INTENTIONS);
@@ -382,65 +326,49 @@ export class ViajesCarolinaApiClient {
           }
         }
       }
+      return getMockTravelIntentions();
     }
-    return getMockTravelIntentions();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    const data = await res.json();
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_INTENTIONS, JSON.stringify(data));
+    }
+    return data;
   }
 
   async getAdminTravelIntentions(): Promise<TravelIntentionDTO[]> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/intentions"), {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return getMockAdminTravelIntentions();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/intentions"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async createTravelIntention(payload: CreateOrUpdateTravelIntentionRequest): Promise<TravelIntentionDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/intentions"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return createMockTravelIntention(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/intentions"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateTravelIntention(id: number, payload: CreateOrUpdateTravelIntentionRequest): Promise<TravelIntentionDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/intentions/${id}`), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return updateMockTravelIntention(id, payload);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/intentions/${id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async deleteTravelIntention(id: number): Promise<void> {
-    try {
-      await fetch(this.getEffectiveUrl(`admin/v1/intentions/${id}`), {
-        method: "DELETE",
-      });
-    } catch {
-      // fallback
-    }
-    deleteMockTravelIntention(id);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/intentions/${id}`), {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
   }
 
   // ==========================================
@@ -448,112 +376,87 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getFeaturedPromotions(): Promise<PromotionDTO[]> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/promotions/featured"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/promotions/featured"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        return await res.json();
-      }
     } catch {
-      // fallback
+      return getMockFeaturedPromotions();
     }
-    return getMockFeaturedPromotions();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getPromotions(): Promise<PromotionDTO[]> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/promotions"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/promotions"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        return await res.json();
-      }
     } catch {
-      // fallback
+      return getMockPromotions();
     }
-    return getMockPromotions();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminPromotions(): Promise<PromotionDTO[]> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return getMockAdminPromotions();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getPromotionBySlug(slug: string): Promise<PromotionDTO> {
+    let res: Response;
     try {
-      const res = await fetch(this.getEffectiveUrl(`public/v1/promotions/${slug}`), {
+      res = await fetch(this.getEffectiveUrl(`public/v1/promotions/${slug}`), {
         cache: "no-store",
       });
-      if (res.ok) {
-        return await res.json();
-      }
     } catch {
-      // fallback
+      const found = getMockPromotionBySlug(slug);
+      if (found) return found;
+      throw new Error(`Promoción no encontrada: ${slug}`);
     }
-    const found = getMockPromotionBySlug(slug);
-    if (found) return found;
-    throw new Error(`Promoción no encontrada: ${slug}`);
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async createPromotion(payload: CreateOrUpdatePromotionRequest): Promise<PromotionDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return createMockPromotion(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updatePromotion(id: number, payload: CreateOrUpdatePromotionRequest): Promise<PromotionDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return updateMockPromotion(id, payload);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async deletePromotion(id: number): Promise<void> {
-    try {
-      await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
-        method: "DELETE",
-      });
-    } catch {
-      // fallback
-    }
-    deleteMockPromotion(id);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
   }
 
   // ==========================================
@@ -561,123 +464,90 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getPublicTrust(): Promise<PublicTrustResponse> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/home/trust"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/home/trust"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        return await res.json();
-      }
     } catch {
-      // fallback
+      return getMockPublicTrust();
     }
-    return getMockPublicTrust();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getTestimonials(): Promise<TestimonialDTO[]> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/testimonials"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockTestimonials();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/testimonials"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async createTestimonial(payload: CreateOrUpdateTestimonialRequest): Promise<TestimonialDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/testimonials"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return createMockTestimonial(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/testimonials"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateTestimonial(id: number, payload: CreateOrUpdateTestimonialRequest): Promise<TestimonialDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/testimonials/${id}`), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockTestimonial(id, payload);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/testimonials/${id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async deleteTestimonial(id: number): Promise<void> {
-    try {
-      await fetch(this.getEffectiveUrl(`admin/v1/testimonials/${id}`), {
-        method: "DELETE",
-      });
-    } catch {
-      // fallback
-    }
-    deleteMockTestimonial(id);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/testimonials/${id}`), {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
   }
 
   async getFaqs(): Promise<FaqItemDTO[]> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/faq"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockFaqs();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/faq"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async createFaq(payload: CreateOrUpdateFaqRequest): Promise<FaqItemDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/faq"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return createMockFaq(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/faq"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateFaq(id: number, payload: CreateOrUpdateFaqRequest): Promise<FaqItemDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/faq/${id}`), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockFaq(id, payload);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/faq/${id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async deleteFaq(id: number): Promise<void> {
-    try {
-      await fetch(this.getEffectiveUrl(`admin/v1/faq/${id}`), {
-        method: "DELETE",
-      });
-    } catch {
-      // fallback
-    }
-    deleteMockFaq(id);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/faq/${id}`), {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
   }
 
   // ==========================================
@@ -685,98 +555,73 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getPublicAbout(): Promise<PublicAboutResponse> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/about"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/about"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        return await res.json();
-      }
     } catch {
-      // fallback
+      return getMockPublicAbout();
     }
-    return getMockPublicAbout();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminAbout(): Promise<AboutPageDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/about"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAdminAbout();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/about"), {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateAdminAbout(payload: UpdateAboutPageRequest): Promise<AboutPageDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/about"), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockAdminAbout(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/about"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminAdvisors(): Promise<TravelAdvisorDTO[]> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/advisors"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAdminAdvisors();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/advisors"), {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async createAdvisor(payload: CreateOrUpdateAdvisorRequest): Promise<TravelAdvisorDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/advisors"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return createMockAdvisor(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/advisors"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateAdvisor(id: number, payload: CreateOrUpdateAdvisorRequest): Promise<TravelAdvisorDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/advisors/${id}`), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockAdvisor(id, payload);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/advisors/${id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async deleteAdvisor(id: number): Promise<void> {
-    try {
-      await fetch(this.getEffectiveUrl(`admin/v1/advisors/${id}`), {
-        method: "DELETE",
-      });
-    } catch {
-      // fallback
-    }
-    deleteMockAdvisor(id);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/advisors/${id}`), {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
   }
 
   // ==========================================
@@ -784,38 +629,24 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getMediaList(page = 0, size = 24, mimeType?: string): Promise<MediaPageResponse> {
-    try {
-      const queryParams = new URLSearchParams({
-        page: page.toString(),
-        size: size.toString(),
-        ...(mimeType ? { mimeType } : {}),
-      });
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/media?${queryParams.toString()}`), {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return getMockMediaPage(page, size);
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+      ...(mimeType ? { mimeType } : {}),
+    });
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/media?${queryParams.toString()}`), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getMediaById(id: number): Promise<MediaAssetDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/media/${id}`), {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    const found = DEFAULT_MEDIA_ASSETS.find((m) => m.id === id);
-    if (found) return found;
-    throw new Error(`Activo multimedia no encontrado con ID: ${id}`);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/media/${id}`), {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async uploadMedia(file: File, altText?: string, caption?: string): Promise<MediaAssetDTO> {
@@ -824,65 +655,29 @@ export class ViajesCarolinaApiClient {
     if (altText) formData.append("altText", altText);
     if (caption) formData.append("caption", caption);
 
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/media/upload"), {
-        method: "POST",
-        body: formData,
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-
-    const mockAsset: MediaAssetDTO = {
-      id: Date.now(),
-      filename: `mock-${file.name}`,
-      originalName: file.name,
-      mimeType: file.type || "image/webp",
-      fileSizeBytes: file.size,
-      width: 1200,
-      height: 800,
-      focalX: 50.0,
-      focalY: 50.0,
-      altText: altText || file.name,
-      caption: caption || "",
-      storagePath: `/media/mock-${file.name}`,
-      variantsJson: "{}",
-      active: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    return mockAsset;
+    const res = await fetch(this.getEffectiveUrl("admin/v1/media/upload"), {
+      method: "POST",
+      body: formData,
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateMediaFocalPoint(id: number, payload: UpdateMediaFocalPointRequest): Promise<MediaAssetDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/media/${id}/focal-point`), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    const mock = updateMockMediaFocalPoint(id, payload);
-    if (mock) return mock;
-    throw new Error(`Error al actualizar punto focal en activo: ${id}`);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/media/${id}/focal-point`), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async deleteMedia(id: number): Promise<void> {
-    try {
-      await fetch(this.getEffectiveUrl(`admin/v1/media/${id}`), {
-        method: "DELETE",
-      });
-    } catch {
-      // ignore
-    }
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/media/${id}`), {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
   }
 
   // ==========================================
@@ -890,92 +685,69 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getPublicContact(): Promise<PublicContactResponse> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/contact"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/contact"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) {
-        return await res.json();
-      }
     } catch {
-      // fallback
+      return getMockPublicContact();
     }
-    return getMockPublicContact();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async submitContactInquiry(payload: SubmitContactInquiryRequest): Promise<ContactInquiryDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("public/v1/contact/inquiry"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return submitMockContactInquiry(payload);
+    const res = await fetch(this.getEffectiveUrl("public/v1/contact/inquiry"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminContact(): Promise<ContactPageDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/contact"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAdminContact();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/contact"), {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateAdminContact(payload: UpdateContactPageRequest): Promise<ContactPageDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/contact"), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockAdminContact(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/contact"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminInquiries(status?: string): Promise<ContactInquiryDTO[]> {
-    try {
-      const url = status && status !== "ALL"
-        ? `admin/v1/inquiries?status=${encodeURIComponent(status)}`
-        : "admin/v1/inquiries";
-      const res = await fetch(this.getEffectiveUrl(url), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAdminInquiries(status);
+    const url = status && status !== "ALL"
+      ? `admin/v1/inquiries?status=${encodeURIComponent(status)}`
+      : "admin/v1/inquiries";
+    const res = await fetch(this.getEffectiveUrl(url), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateInquiryStatus(id: number, status: string): Promise<ContactInquiryDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/inquiries/${id}/status`), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockInquiryStatus(id, status);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/inquiries/${id}/status`), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   // ==========================================
@@ -983,143 +755,119 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getPublicBlog(categorySlug?: string, search?: string, page = 0, size = 9): Promise<PublicBlogResponse> {
-    try {
-      const params = new URLSearchParams();
-      if (categorySlug && categorySlug !== "all") params.append("category", categorySlug);
-      if (search && search.trim()) params.append("search", search.trim());
-      params.append("page", page.toString());
-      params.append("size", size.toString());
+    const params = new URLSearchParams();
+    if (categorySlug && categorySlug !== "all") params.append("category", categorySlug);
+    if (search && search.trim()) params.append("search", search.trim());
+    params.append("page", page.toString());
+    params.append("size", size.toString());
+    const url = `public/v1/blog?${params.toString()}`;
 
-      const url = `public/v1/blog?${params.toString()}`;
-      const res = await fetch(this.getEffectiveUrl(url), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl(url), { cache: "no-store" });
     } catch {
-      // fallback
+      return getMockPublicBlog(categorySlug, search, page, size);
     }
-    return getMockPublicBlog(categorySlug, search, page, size);
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getBlogCategories(admin = false): Promise<BlogCategoryDTO[]> {
-    try {
-      const url = admin ? "admin/v1/blog/categories" : "public/v1/blog/categories";
-      const res = await fetch(this.getEffectiveUrl(url), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
+    const url = admin ? "admin/v1/blog/categories" : "public/v1/blog/categories";
+    if (admin) {
+      const res = await fetch(this.getEffectiveUrl(url), { cache: "no-store" });
+      if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+      return await res.json();
     }
-    return getMockBlogCategories(admin);
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl(url), { cache: "no-store" });
+    } catch {
+      return getMockBlogCategories(admin);
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getBlogPostBySlug(slug: string): Promise<BlogPostDetailResponse> {
+    let res: Response;
     try {
-      const res = await fetch(this.getEffectiveUrl(`public/v1/blog/posts/${slug}`), {
+      res = await fetch(this.getEffectiveUrl(`public/v1/blog/posts/${slug}`), {
         cache: "no-store",
       });
-      if (res.ok) return await res.json();
     } catch {
-      // fallback
+      return getMockBlogPostBySlug(slug);
     }
-    return getMockBlogPostBySlug(slug);
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminBlogPosts(status?: string, search?: string, page = 0, size = 50): Promise<BlogPostDTO[]> {
-    try {
-      const params = new URLSearchParams();
-      if (status && status !== "ALL") params.append("status", status);
-      if (search && search.trim()) params.append("search", search.trim());
-      params.append("page", page.toString());
-      params.append("size", size.toString());
+    const params = new URLSearchParams();
+    if (status && status !== "ALL") params.append("status", status);
+    if (search && search.trim()) params.append("search", search.trim());
+    params.append("page", page.toString());
+    params.append("size", size.toString());
 
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/posts?${params.toString()}`), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAdminBlogPosts(status, search);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/posts?${params.toString()}`), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async createBlogPost(payload: CreateOrUpdateBlogPostRequest): Promise<BlogPostDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/blog/posts"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return createMockBlogPost(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/blog/posts"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateBlogPost(id: number, payload: CreateOrUpdateBlogPostRequest): Promise<BlogPostDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/posts/${id}`), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockBlogPost(id, payload);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/posts/${id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async deleteBlogPost(id: number): Promise<void> {
-    try {
-      await fetch(this.getEffectiveUrl(`admin/v1/blog/posts/${id}`), {
-        method: "DELETE",
-      });
-    } catch {
-      // fallback
-    }
-    deleteMockBlogPost(id);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/posts/${id}`), {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
   }
 
   async createBlogCategory(payload: CreateOrUpdateBlogCategoryRequest): Promise<BlogCategoryDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/blog/categories"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return createMockBlogCategory(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/blog/categories"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateBlogCategory(id: number, payload: CreateOrUpdateBlogCategoryRequest): Promise<BlogCategoryDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/categories/${id}`), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockBlogCategory(id, payload);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/categories/${id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async deleteBlogCategory(id: number): Promise<void> {
-    try {
-      await fetch(this.getEffectiveUrl(`admin/v1/blog/categories/${id}`), {
-        method: "DELETE",
-      });
-    } catch {
-      // fallback
-    }
-    deleteMockBlogCategory(id);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/blog/categories/${id}`), {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
   }
 
   // ==========================================
@@ -1127,21 +875,20 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async searchGlobal(query = "", type: SearchResultType = "ALL", limit = 20): Promise<GlobalSearchResponse> {
-    try {
-      const params = new URLSearchParams();
-      if (query.trim()) params.append("q", query.trim());
-      if (type && type !== "ALL") params.append("type", type);
-      params.append("limit", limit.toString());
+    const params = new URLSearchParams();
+    if (query.trim()) params.append("q", query.trim());
+    if (type && type !== "ALL") params.append("type", type);
+    params.append("limit", limit.toString());
+    const url = `public/v1/search?${params.toString()}`;
 
-      const url = `public/v1/search?${params.toString()}`;
-      const res = await fetch(this.getEffectiveUrl(url), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl(url), { cache: "no-store" });
     } catch {
-      // fallback
+      return getMockGlobalSearch(query, type, limit);
     }
-    return getMockGlobalSearch(query, type, limit);
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   // ==========================================
@@ -1149,45 +896,38 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async getPublicHomeBlogInspiration(): Promise<PublicHomeBlogInspirationResponse> {
+    let res: Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(this.getEffectiveUrl("public/v1/home/blog-inspiration"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/home/blog-inspiration"), {
         cache: "no-store",
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
-      if (res.ok) return await res.json();
     } catch {
-      // fallback
+      return getMockHomeBlogInspiration();
     }
-    return getMockHomeBlogInspiration();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminHomeBlogInspiration(): Promise<HomeBlogInspirationDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/home/blog-inspiration"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockHomeBlogInspiration().config;
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/blog-inspiration"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateAdminHomeBlogInspiration(payload: UpdateHomeBlogInspirationRequest): Promise<HomeBlogInspirationDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/home/blog-inspiration"), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockHomeBlogInspiration(payload);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/blog-inspiration"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   // ==========================================
@@ -1195,87 +935,73 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async submitClaim(payload: SubmitClaimRequest): Promise<ClaimRecordDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("public/v1/claims"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return submitMockClaim(payload);
+    const res = await fetch(this.getEffectiveUrl("public/v1/claims"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getClaimByCode(claimCode: string): Promise<ClaimRecordDTO> {
+    let res: Response;
     try {
-      const res = await fetch(this.getEffectiveUrl(`public/v1/claims/${encodeURIComponent(claimCode)}`), {
+      res = await fetch(this.getEffectiveUrl(`public/v1/claims/${encodeURIComponent(claimCode)}`), {
         cache: "no-store",
       });
-      if (res.ok) return await res.json();
     } catch {
-      // fallback
+      const found = getMockClaimByCode(claimCode);
+      if (found) return found;
+      throw new Error(`Hoja de reclamación no encontrada: ${claimCode}`);
     }
-    const found = getMockClaimByCode(claimCode);
-    if (found) return found;
-    throw new Error(`Hoja de reclamación no encontrada: ${claimCode}`);
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminClaims(status?: string): Promise<ClaimRecordDTO[]> {
-    try {
-      const url = status && status !== "ALL"
-        ? `admin/v1/claims?status=${encodeURIComponent(status)}`
-        : "admin/v1/claims";
-      const res = await fetch(this.getEffectiveUrl(url), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAdminClaims(status);
+    const url = status && status !== "ALL"
+      ? `admin/v1/claims?status=${encodeURIComponent(status)}`
+      : "admin/v1/claims";
+    const res = await fetch(this.getEffectiveUrl(url), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateClaimStatus(id: number, status: string, responseNotes?: string): Promise<ClaimRecordDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/claims/${id}/status`), {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, responseNotes }),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockClaimStatus(id, status, responseNotes);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/claims/${id}/status`), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status, responseNotes }),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getContactExploreLinks(): Promise<ContactExploreLinkDTO[]> {
+    let res: Response;
     try {
-      const res = await fetch(this.getEffectiveUrl("public/v1/contact/explore-links"), {
+      res = await fetch(this.getEffectiveUrl("public/v1/contact/explore-links"), {
         cache: "no-store",
       });
-      if (res.ok) return await res.json();
     } catch {
-      // fallback
+      return getMockContactExploreLinks();
     }
-    return getMockContactExploreLinks();
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   // Auth & Governance (Corte 14)
   async loginAdmin(req: LoginRequest): Promise<LoginResponse> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/auth/login"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return loginMockAdmin(req);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/auth/login"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async logoutAdmin(): Promise<{ status: string }> {
@@ -1291,99 +1017,71 @@ export class ViajesCarolinaApiClient {
   }
 
   async getCurrentAdminUser(): Promise<AdminUserDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/auth/me"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAdminUsers()[0];
+    const res = await fetch(this.getEffectiveUrl("admin/v1/auth/me"), {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAdminUsers(): Promise<AdminUserDTO[]> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/users"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAdminUsers();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/users"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async createAdminUser(req: CreateAdminUserRequest): Promise<AdminUserDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/users"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return createMockAdminUser(req);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/users"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async updateAdminUser(id: number, req: UpdateAdminUserRequest): Promise<AdminUserDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl(`admin/v1/users/${id}`), {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return updateMockAdminUser(id, req);
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/users/${id}`), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getAuditLogs(entityType?: string, limit?: number): Promise<AuditLogDTO[]> {
-    try {
-      const params = new URLSearchParams();
-      if (entityType && entityType !== "ALL") params.append("entityType", entityType);
-      if (limit) params.append("limit", String(limit));
-      const q = params.toString();
-      const url = q ? `admin/v1/audit-logs?${q}` : "admin/v1/audit-logs";
-      const res = await fetch(this.getEffectiveUrl(url), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockAuditLogs(entityType, limit);
+    const params = new URLSearchParams();
+    if (entityType && entityType !== "ALL") params.append("entityType", entityType);
+    if (limit) params.append("limit", String(limit));
+    const q = params.toString();
+    const url = q ? `admin/v1/audit-logs?${q}` : "admin/v1/audit-logs";
+    const res = await fetch(this.getEffectiveUrl(url), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   // Publishing & ISR (Corte 15)
   async triggerPublish(req: PublishRequestDTO): Promise<PublishResponseDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/publish"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(req),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return publishMockContent(req);
+    const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/publish"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getPublishingStatus(): Promise<PublishResponseDTO> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/status"), {
-        cache: "no-store",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return getMockPublishingStatus();
+    const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/status"), {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 }
 

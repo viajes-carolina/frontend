@@ -2,6 +2,16 @@
 
 import React from "react";
 import { ContactPageDTO } from "@vc/api-client";
+import {
+  DEFAULT_PRIMARY_PHONE,
+  DEFAULT_WHATSAPP_PHONE,
+  DEFAULT_CONTACT_EMAIL,
+  DEFAULT_OFFICE_ADDRESS_LINE,
+  DEFAULT_OFFICE_DISTRICT,
+  DEFAULT_OFFICE_CITY,
+  DEFAULT_OFFICE_SCHEDULE_WEEKDAYS,
+  DEFAULT_OFFICE_SCHEDULE_SATURDAYS,
+} from "@vc/config";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 import { MapPinIcon, WhatsAppIcon, MailIcon, PhoneIcon } from "../icons/icons";
 
@@ -17,11 +27,11 @@ export interface ContactDirectBoxProps {
 
 export function ContactDirectBox({
   page,
-  whatsappPhone = "+51987654321",
-  primaryPhone = "+51 987 654 321",
-  contactEmail = "contacto@viajescarolina.com",
-  officeAddress = "Av. Larco 101, Oficina 502, Miraflores, Lima",
-  officeHours = "Lunes a Viernes: 9:00 AM – 7:00 PM | Sábados: 9:00 AM – 4:00 PM",
+  whatsappPhone = DEFAULT_WHATSAPP_PHONE,
+  primaryPhone = DEFAULT_PRIMARY_PHONE,
+  contactEmail = DEFAULT_CONTACT_EMAIL,
+  officeAddress = `${DEFAULT_OFFICE_ADDRESS_LINE}, ${DEFAULT_OFFICE_DISTRICT}, ${DEFAULT_OFFICE_CITY}`,
+  officeHours = `${DEFAULT_OFFICE_SCHEDULE_WEEKDAYS} | ${DEFAULT_OFFICE_SCHEDULE_SATURDAYS}`,
   className = "",
 }: ContactDirectBoxProps) {
   const boxTitle = page?.whatsappBoxTitle || "¿Prefieres atención inmediata?";

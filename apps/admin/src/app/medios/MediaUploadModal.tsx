@@ -49,7 +49,7 @@ export function MediaUploadModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-neutral-border flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-primary/10 flex items-center justify-center text-brand-primary">
+            <div className="w-9 h-9 rounded-xl bg-brand-accent/10 flex items-center justify-center text-brand-accent">
               <ImageIcon size={20} />
             </div>
             <h3 className="font-sora font-bold text-lg text-brand-navy">Subir Nuevo Activo</h3>
@@ -85,8 +85,8 @@ export function MediaUploadModal({
               </button>
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center aspect-video w-full rounded-2xl border-2 border-dashed border-neutral-border hover:border-brand-primary/60 bg-neutral-surface/40 hover:bg-neutral-surface cursor-pointer transition-all p-6 text-center group">
-              <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-brand-primary group-hover:scale-110 transition-transform mb-3">
+            <label className="flex flex-col items-center justify-center aspect-video w-full rounded-2xl border-2 border-dashed border-neutral-border hover:border-brand-accent/60 bg-neutral-surface/40 hover:bg-neutral-surface cursor-pointer transition-all p-6 text-center group">
+              <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-brand-accent group-hover:scale-110 transition-transform mb-3">
                 <ImageIcon size={24} />
               </div>
               <span className="font-sora font-semibold text-sm text-brand-navy">

@@ -1,3 +1,4 @@
+import { USD_TO_PEN_RATE } from "@vc/config";
 import {
   SiteSettingsDTO,
   OfficeLocationDTO,
@@ -61,10 +62,13 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
   contactEmail: "contacto@viajescarolina.com",
   primaryPhone: "+51 987 654 321",
   whatsappPhone: "+51987654321",
+  whatsappDisplayNumber: "+51 987 654 321",
   whatsappDefaultMessage: "Hola Viajes Carolina, deseo asesoría personalizada para mi próximo viaje.",
   facebookUrl: "https://facebook.com/viajescarolina",
   instagramUrl: "https://instagram.com/viajescarolina",
   tiktokUrl: "https://tiktok.com/@viajescarolina",
+  legalCompanyName: "VIAJES CAROLINA S.A.C.",
+  taxId: "20601234567",
 };
 
 export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
@@ -89,9 +93,9 @@ export const DEFAULT_HOME_HERO: HomeHeroDTO = {
   id: 1,
   badgeText: "Empieza con una conversación",
   titleHighlight: "Tu viaje comienza",
-  titleAccent: "antes de despegar",
-  description: "Desde la primera idea hasta tu regreso, una asesora te acompaña con opciones claras, atención humana y respaldo en cada etapa.",
-  whatsappCtaText: "Cuéntame tu viaje",
+  titleAccent: "con una conversación.",
+  description: "Cuéntanos qué sueñas y diseñamos un viaje a tu medida — sin catálogos, sin apuro.",
+  whatsappCtaText: "Cuéntanos qué imaginas por WhatsApp",
   whatsappMessageOverride: "Hola Viajes Carolina, quiero empezar a planear mi próximo viaje.",
   secondaryCtaText: "Explorar promociones",
   secondaryCtaUrl: "#promociones",
@@ -107,6 +111,17 @@ export const DEFAULT_HOME_HERO: HomeHeroDTO = {
   featuredCardOrigin: "Desde Lima",
   featuredCardMediaId: 3,
   featuredCardMediaUrl: "/media/demo-cusco-machupicchu.webp",
+  // Collage de fotos de clientes (Hero H6): sin URL hasta que el admin suba
+  // fotos reales — el componente muestra un placeholder abstracto mientras tanto.
+  secondaryMedia1FocalX: 50.0,
+  secondaryMedia1FocalY: 50.0,
+  secondaryMedia2FocalX: 50.0,
+  secondaryMedia2FocalY: 50.0,
+  secondaryMedia3FocalX: 50.0,
+  secondaryMedia3FocalY: 50.0,
+  secondaryMedia4FocalX: 50.0,
+  secondaryMedia4FocalY: 50.0,
+  trustStatText: "Más de 1,000 viajeros han confiado en nosotros para vivir recuerdos inolvidables.",
   revision: 1,
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
@@ -678,7 +693,7 @@ export function createMockPromotion(req: CreateOrUpdatePromotionRequest): Promot
     destination: req.destination,
     summary: req.summary,
     priceUsd: Number(req.priceUsd),
-    pricePen: req.pricePen ? Number(req.pricePen) : Number(req.priceUsd) * 3.7,
+    pricePen: req.pricePen ? Number(req.pricePen) : Number(req.priceUsd) * USD_TO_PEN_RATE,
     durationDays: Number(req.durationDays),
     durationNights: Number(req.durationNights),
     departureCity: req.departureCity || "Lima",

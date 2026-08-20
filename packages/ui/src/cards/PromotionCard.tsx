@@ -52,7 +52,7 @@ export function PromotionCard({
           {/* Top Duration & Origin Pill */}
           <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-navy/90 backdrop-blur-md border border-white/20 text-white font-sora text-xs font-bold shadow-md">
             <span>{`${promotion.durationDays}D / ${promotion.durationNights}N`}</span>
-            <span className="text-brand-sunset">·</span>
+            <span className="text-white/40">·</span>
             <span className="text-atmosphere-sky">{promotion.departureCity || "Desde Lima"}</span>
           </div>
         </div>
@@ -111,10 +111,11 @@ export function PromotionCard({
         </div>
 
         <WhatsAppButton
+          variant="link"
           size="md"
           phone={whatsappPhone}
           message={message}
-          className="w-full shadow-md"
+          className="w-full justify-center"
         >
           Cotizar Paquete
         </WhatsAppButton>

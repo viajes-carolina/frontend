@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { PromotionDTO } from "@vc/api-client";
 import { useAdminPromotions } from "../../hooks/useAdminPromotions";
+import { useMediaPicker } from "../../hooks/useMediaPicker";
 import { Button, PlusIcon, EditIcon, TrashIcon, CheckIcon, ImageIcon, MapPinIcon } from "@vc/ui";
 import { PromotionFormModal } from "./PromotionFormModal";
 
@@ -43,6 +44,8 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
     handleSave,
     handleDelete,
   } = useAdminPromotions(initialPromotions);
+
+  const mediaPicker = useMediaPicker(isMediaPickerOpen);
 
   return (
     <div className="space-y-6 max-w-6xl">
@@ -222,6 +225,10 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
         isMediaPickerOpen={isMediaPickerOpen}
         setIsMediaPickerOpen={setIsMediaPickerOpen}
         onSelectMedia={handleSelectMedia}
+        mediaPickerItems={mediaPicker.items}
+        mediaPickerLoading={mediaPicker.loading}
+        onUploadMediaFile={mediaPicker.uploadFile}
+        onMediaFocalPointSave={mediaPicker.saveFocalPoint}
       />
     </div>
   );

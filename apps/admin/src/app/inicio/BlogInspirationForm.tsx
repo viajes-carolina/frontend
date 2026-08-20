@@ -61,7 +61,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
               onChange={(e) => updateField("active", e.target.checked)}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-accent"></div>
             <span className="ml-3 text-xs font-semibold text-slate-700">
               {config.active ? "Visible en Home" : "Oculto"}
             </span>
@@ -90,7 +90,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
             type="text"
             value={config.badgeText}
             onChange={(e) => updateField("badgeText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Inspiración para tu viaje"
             required
           />
@@ -103,7 +103,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
           <select
             value={config.postsLimit}
             onChange={(e) => updateField("postsLimit", Number(e.target.value))}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
           >
             <option value={3}>3 artículos (Recomendado - 1 fila)</option>
             <option value={6}>6 artículos (2 filas)</option>
@@ -118,7 +118,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
             type="text"
             value={config.titleHighlight}
             onChange={(e) => updateField("titleHighlight", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Consejos y guías"
             required
           />
@@ -132,7 +132,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
             type="text"
             value={config.titleAccent}
             onChange={(e) => updateField("titleAccent", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="para explorar el mundo"
             required
           />
@@ -146,7 +146,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
             value={config.subtitle}
             onChange={(e) => updateField("subtitle", e.target.value)}
             rows={3}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Descubre recomendaciones de viaje, mejores temporadas..."
             required
           />
@@ -160,7 +160,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
             type="text"
             value={config.ctaText}
             onChange={(e) => updateField("ctaText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Ver todos los artículos del blog"
             required
           />
@@ -174,7 +174,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
             type="text"
             value={config.ctaUrl}
             onChange={(e) => updateField("ctaUrl", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="/blog"
             required
           />
@@ -185,7 +185,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm rounded-xl transition-all disabled:opacity-50 flex items-center gap-2"
+          className="px-6 py-2.5 bg-brand-accent hover:bg-brand-sunset text-white font-bold text-sm rounded-xl transition-all disabled:opacity-50 flex items-center gap-2"
         >
           {saving ? (
             <>
