@@ -10,8 +10,6 @@ import {
   UpdateMediaFocalPointRequest,
   HomeHeroDTO,
   UpdateHomeHeroRequest,
-  TravelIntentionDTO,
-  CreateOrUpdateTravelIntentionRequest,
   TestimonialDTO,
   CreateOrUpdateTestimonialRequest,
   FaqItemDTO,
@@ -92,10 +90,10 @@ export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
 export const DEFAULT_HOME_HERO: HomeHeroDTO = {
   id: 1,
   badgeText: "Empieza con una conversación",
-  titleHighlight: "Tu viaje comienza",
-  titleAccent: "con una conversación.",
-  description: "Cuéntanos qué sueñas y diseñamos un viaje a tu medida — sin catálogos, sin apuro.",
-  whatsappCtaText: "Cuéntanos qué imaginas por WhatsApp",
+  titleHighlight: "¿Qué viaje te gustaría",
+  titleAccent: "recordar toda la vida?",
+  description: "Cuéntanos qué imaginas. Te escuchamos y construimos contigo una experiencia que se sienta tuya desde la primera conversación.",
+  whatsappCtaText: "Conversemos por WhatsApp",
   whatsappMessageOverride: "Hola Viajes Carolina, quiero empezar a planear mi próximo viaje.",
   secondaryCtaText: "Explorar promociones",
   secondaryCtaUrl: "#promociones",
@@ -121,81 +119,11 @@ export const DEFAULT_HOME_HERO: HomeHeroDTO = {
   secondaryMedia3FocalY: 50.0,
   secondaryMedia4FocalX: 50.0,
   secondaryMedia4FocalY: 50.0,
-  trustStatText: "Más de 1,000 viajeros han confiado en nosotros para vivir recuerdos inolvidables.",
+  trustStatText: "Cada foto pertenece a viajeros que confiaron en nosotros.",
+  eyebrowText: "Empecemos por lo que sueñas",
   revision: 1,
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
-
-export const DEFAULT_TRAVEL_INTENTIONS: TravelIntentionDTO[] = [
-  {
-    id: 1,
-    slug: "playa-relax",
-    title: "Playa & Relax Caribe",
-    tagline: "Desconéctate frente al mar turquesa con resorts todo incluido y paseos en catamarán.",
-    iconName: "SunIcon",
-    featuredDestinations: ["Cartagena", "Cancún", "Punta Cana", "San Andrés", "Varadero"],
-    whatsappMessageTemplate: "Hola Viajes Carolina, me interesa planear unas vacaciones de Playa y Relax en el Caribe. ¿Qué opciones tienen disponibles?",
-    coverMediaId: 2,
-    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
-    coverFocalX: 60.0,
-    coverFocalY: 50.0,
-    displayOrder: 1,
-    active: true,
-    createdAt: "2026-08-18T00:00:00.000Z",
-    updatedAt: "2026-08-18T00:00:00.000Z",
-  },
-  {
-    id: 2,
-    slug: "cultura-maravillas",
-    title: "Cultura & Maravillas",
-    tagline: "Conéctate con la historia milenaria, ciudadelas ancestrales y gastronomía única.",
-    iconName: "LandmarkIcon",
-    featuredDestinations: ["Cusco & Machu Picchu", "Arequipa & Cañón del Colca", "Puno & Lago Titicaca"],
-    whatsappMessageTemplate: "Hola Viajes Carolina, deseo cotizar un viaje cultural a Cusco y maravillas del Perú. ¿Me podrían asesorar?",
-    coverMediaId: 3,
-    coverMediaUrl: "/media/demo-cusco-machupicchu.webp",
-    coverFocalX: 50.0,
-    coverFocalY: 35.0,
-    displayOrder: 2,
-    active: true,
-    createdAt: "2026-08-18T00:00:00.000Z",
-    updatedAt: "2026-08-18T00:00:00.000Z",
-  },
-  {
-    id: 3,
-    slug: "luna-de-miel",
-    title: "Lunas de Miel & Romance",
-    tagline: "Experiencias íntimas y exclusivas diseñadas al detalle para celebrar el amor.",
-    iconName: "HeartIcon",
-    featuredDestinations: ["Riviera Maya", "Bora Bora", "Aruba", "Paracas Deluxe"],
-    whatsappMessageTemplate: "Hola Viajes Carolina, estamos buscando un paquete especial de Luna de Miel. ¿Qué destinos románticos recomiendan?",
-    coverMediaId: 2,
-    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
-    coverFocalX: 60.0,
-    coverFocalY: 50.0,
-    displayOrder: 3,
-    active: true,
-    createdAt: "2026-08-18T00:00:00.000Z",
-    updatedAt: "2026-08-18T00:00:00.000Z",
-  },
-  {
-    id: 4,
-    slug: "aventura-naturaleza",
-    title: "Aventura & Naturaleza",
-    tagline: "Trekking, selva amazónica, avistamiento de fauna y paisajes sobrecogedores.",
-    iconName: "CompassIcon",
-    featuredDestinations: ["Iquitos & Amazonas", "Huaraz & Cordillera Blanca", "Tarapoto & Cataratas"],
-    whatsappMessageTemplate: "Hola Viajes Carolina, busco un paquete de aventura y ecoturismo. ¿Cuáles son las mejores alternativas?",
-    coverMediaId: 1,
-    coverMediaUrl: "/media/demo-hero-travel.webp",
-    coverFocalX: 72.5,
-    coverFocalY: 28.0,
-    displayOrder: 4,
-    active: true,
-    createdAt: "2026-08-18T00:00:00.000Z",
-    updatedAt: "2026-08-18T00:00:00.000Z",
-  },
-];
 
 export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
   {
@@ -562,7 +490,6 @@ export let MOCK_SITE_SETTINGS: SiteSettingsDTO = { ...DEFAULT_SITE_SETTINGS };
 export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = { ...DEFAULT_OFFICE_LOCATION };
 export let MOCK_MEDIA_ASSETS: MediaAssetDTO[] = [...DEFAULT_MEDIA_ASSETS];
 export let MOCK_HOME_HERO: HomeHeroDTO = { ...DEFAULT_HOME_HERO };
-export let MOCK_TRAVEL_INTENTIONS: TravelIntentionDTO[] = [...DEFAULT_TRAVEL_INTENTIONS];
 export let MOCK_PROMOTIONS: PromotionDTO[] = [...DEFAULT_PROMOTIONS];
 export let MOCK_TESTIMONIALS: TestimonialDTO[] = [...DEFAULT_TESTIMONIALS];
 export let MOCK_FAQS: FaqItemDTO[] = [...DEFAULT_FAQS];
@@ -607,66 +534,6 @@ export function updateMockHomeHero(updated: Partial<HomeHeroDTO>): HomeHeroDTO {
     updatedAt: new Date().toISOString(),
   };
   return MOCK_HOME_HERO;
-}
-
-export function getMockTravelIntentions(): TravelIntentionDTO[] {
-  return MOCK_TRAVEL_INTENTIONS.filter((i) => i.active);
-}
-
-export function getMockAdminTravelIntentions(): TravelIntentionDTO[] {
-  return MOCK_TRAVEL_INTENTIONS;
-}
-
-export function createMockTravelIntention(req: CreateOrUpdateTravelIntentionRequest): TravelIntentionDTO {
-  const newIntention: TravelIntentionDTO = {
-    id: Date.now(),
-    slug: req.slug,
-    title: req.title,
-    tagline: req.tagline,
-    iconName: req.iconName || "SunIcon",
-    featuredDestinations: req.featuredDestinations,
-    whatsappMessageTemplate: req.whatsappMessageTemplate,
-    coverMediaId: req.coverMediaId,
-    coverMediaUrl: "/media/demo-cartagena-caribe.webp",
-    coverFocalX: 50.0,
-    coverFocalY: 50.0,
-    displayOrder: req.displayOrder || MOCK_TRAVEL_INTENTIONS.length + 1,
-    active: req.active ?? true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  MOCK_TRAVEL_INTENTIONS.push(newIntention);
-  return newIntention;
-}
-
-export function updateMockTravelIntention(id: number, req: CreateOrUpdateTravelIntentionRequest): TravelIntentionDTO {
-  const index = MOCK_TRAVEL_INTENTIONS.findIndex((i) => i.id === id);
-  if (index === -1) {
-    throw new Error(`Intención no encontrada con ID: ${id}`);
-  }
-  const current = MOCK_TRAVEL_INTENTIONS[index];
-  const updated: TravelIntentionDTO = {
-    ...current,
-    slug: req.slug,
-    title: req.title,
-    tagline: req.tagline,
-    iconName: req.iconName || current.iconName,
-    featuredDestinations: req.featuredDestinations,
-    whatsappMessageTemplate: req.whatsappMessageTemplate,
-    coverMediaId: req.coverMediaId,
-    displayOrder: req.displayOrder ?? current.displayOrder,
-    active: req.active ?? current.active,
-    updatedAt: new Date().toISOString(),
-  };
-  MOCK_TRAVEL_INTENTIONS[index] = updated;
-  return updated;
-}
-
-export function deleteMockTravelIntention(id: number): void {
-  const index = MOCK_TRAVEL_INTENTIONS.findIndex((i) => i.id === id);
-  if (index !== -1) {
-    MOCK_TRAVEL_INTENTIONS[index].active = false;
-  }
 }
 
 export function getMockFeaturedPromotions(): PromotionDTO[] {
@@ -1382,7 +1249,7 @@ export function getMockGlobalSearch(query = "", type: SearchResultType = "ALL", 
           subtitle: p.summary,
           metadataInfo: p.destination,
           imageUrl: p.featuredMediaUrl || "/media/demo-cartagena-caribe.webp",
-          targetUrl: "/promociones",
+          targetUrl: "/#promociones",
           badgeText: `USD ${p.priceUsd}`,
           score,
         });
@@ -1418,34 +1285,6 @@ export function getMockGlobalSearch(query = "", type: SearchResultType = "ALL", 
     });
   }
 
-  // 3. Travel Intentions
-  if (type === "ALL" || type === "INTENTION") {
-    MOCK_TRAVEL_INTENTIONS.filter((i) => i.active).forEach((i) => {
-      let score = 0;
-      if (!q) {
-        score = 1.0;
-      } else {
-        if (i.title.toLowerCase().includes(q)) score += 3.0;
-        if (i.tagline.toLowerCase().includes(q)) score += 2.0;
-        if (i.featuredDestinations.some((d) => d.toLowerCase().includes(q))) score += 2.5;
-      }
-      if (score > 0) {
-        allResults.push({
-          entityType: "INTENTION",
-          entityId: i.id,
-          entitySlug: i.slug,
-          title: i.title,
-          subtitle: i.tagline,
-          metadataInfo: "Experiencia de Viaje",
-          imageUrl: i.coverMediaUrl || "/media/demo-cartagena-caribe.webp",
-          targetUrl: "/#intenciones",
-          badgeText: i.iconName,
-          score,
-        });
-      }
-    });
-  }
-
   allResults.sort((a, b) => (b.score || 0) - (a.score || 0));
   const results = allResults.slice(0, limit);
 
@@ -1461,11 +1300,11 @@ export function getMockGlobalSearch(query = "", type: SearchResultType = "ALL", 
 // Home Blog Inspiration Mocks (Corte 12)
 export const DEFAULT_HOME_BLOG_INSPIRATION: HomeBlogInspirationDTO = {
   id: 1,
-  badgeText: "Inspiración para tu viaje",
-  titleHighlight: "Consejos y guías",
-  titleAccent: "para explorar el mundo",
-  subtitle: "Descubre recomendaciones de viaje, mejores temporadas, qué empacar y secretos locales de la mano de nuestras asesoras expertas.",
-  ctaText: "Ver todos los artículos del blog",
+  badgeText: "03 · Leer también es viajar",
+  titleHighlight: "Ideas para preparar el viaje",
+  titleAccent: "con más calma",
+  subtitle: "Guías nacidas de dudas reales que suelen aparecer antes de viajar.",
+  ctaText: "Ver todos los artículos",
   ctaUrl: "/blog",
   postsLimit: 3,
   active: true,
@@ -1828,7 +1667,7 @@ export function publishMockContent(req: PublishRequestDTO): PublishResponseDTO {
         tags = ["home", "/"];
         break;
       case "PROMOTIONS":
-        tags = ["promotions", "/promociones"];
+        tags = ["promotions", "/"];
         break;
       case "BLOG":
         tags = ["blog", "/blog"];
@@ -1840,7 +1679,7 @@ export function publishMockContent(req: PublishRequestDTO): PublishResponseDTO {
         tags = ["contact", "/contacto"];
         break;
       default:
-        tags = ["all", "/", "/promociones", "/blog", "/nosotros", "/contacto", "/reclamaciones"];
+        tags = ["all", "/", "/blog", "/nosotros", "/contacto", "/reclamaciones"];
         break;
     }
   }

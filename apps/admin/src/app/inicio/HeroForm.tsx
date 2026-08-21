@@ -13,7 +13,7 @@ export interface HeroFormProps {
 
 export function HeroForm({ initialHero }: HeroFormProps) {
   const {
-    badgeText, setBadgeText,
+    eyebrowText, setEyebrowText,
     titleHighlight, setTitleHighlight,
     titleAccent, setTitleAccent,
     description, setDescription,
@@ -158,11 +158,10 @@ export function HeroForm({ initialHero }: HeroFormProps) {
             </label>
             <input
               type="text"
-              value={badgeText}
-              onChange={(e) => setBadgeText(e.target.value)}
+              value={eyebrowText}
+              onChange={(e) => setEyebrowText(e.target.value)}
               placeholder="Ej: Empieza con una conversación"
               className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              required
             />
           </div>
 

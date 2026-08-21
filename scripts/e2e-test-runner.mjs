@@ -33,15 +33,11 @@ async function runE2ETests() {
     assert(webHtml.includes("Tu viaje comienza"), "HTML contiene titular H1 de Figma Hero");
     assert(webHtml.includes("Cuéntame tu viaje"), "HTML contiene CTA principal de WhatsApp");
     assert(webHtml.includes("Asesoría sin costo") || webHtml.includes("Respuesta rápida"), "HTML contiene indicadores de confianza");
-    assert(webHtml.includes("intención de viaje") || webHtml.includes("Playa &amp; Relax") || webHtml.includes("Playa & Relax"), "HTML contiene sección de Intenciones de Viaje (Corte 5)");
     assert(webHtml.includes("inspiran a viajar") || webHtml.includes("Cartagena") || webHtml.includes("Cusco"), "HTML contiene sección de Promociones Destacadas (Corte 6)");
     assert(webHtml.includes("Historias y experiencias") || webHtml.includes("Mariana") || webHtml.includes("Carlos Mendoza"), "HTML contiene sección de Testimonios (Corte 7)");
     assert(webHtml.includes("Preguntas Frecuentes") || webHtml.includes("asesoría para cotizar"), "HTML contiene sección de FAQ Acordeón (Corte 7)");
     assert(webHtml.includes("Hablar con una Asesora por WhatsApp") || webHtml.includes("una conversación"), "HTML contiene Closing CTA Section (Corte 7)");
     assert(webHtml.includes("Recorre el Sitio") || webHtml.includes("Larco 101"), "HTML contiene estructura de Footer (Corte 2)");
-
-    const promoCatalogRes = await fetch(`${BASE_WEB_URL}/promociones`);
-    assert(promoCatalogRes.status === 200, `Catálogo de promociones /promociones responde HTTP 200 OK (${promoCatalogRes.status})`);
 
     const nosotrosRes = await fetch(`${BASE_WEB_URL}/nosotros`);
     assert(nosotrosRes.status === 200, `Página pública Nosotros /nosotros responde HTTP 200 OK (${nosotrosRes.status})`);
@@ -98,9 +94,6 @@ async function runE2ETests() {
 
     const promoRes = await fetch(`${BASE_ADMIN_URL}/promociones`);
     assert(promoRes.status === 200, `Módulo Promociones & Paquetes responde con HTTP 200 OK (${promoRes.status})`);
-
-    const intencionesRes = await fetch(`${BASE_ADMIN_URL}/intenciones`);
-    assert(intencionesRes.status === 200, `Módulo Intenciones de Viaje responde con HTTP 200 OK (${intencionesRes.status})`);
 
     const confianzaRes = await fetch(`${BASE_ADMIN_URL}/confianza`);
     assert(confianzaRes.status === 200, `Módulo Confianza, Testimonios & FAQ responde con HTTP 200 OK (${confianzaRes.status})`);
@@ -282,42 +275,6 @@ async function runE2ETests() {
     assert(updatedHero.badgeText === testBadge, `Insignia de Hero actualizada y persistida: "${updatedHero.badgeText}"`);
   } catch (err) {
     assert(false, `Error en prueba E2E de Home Hero: ${err.message}`);
-  }
-
-  // 7. Verificación de API Proxy & Persistencia E2E (Corte 5: Intenciones de Viaje)...
-  console.log("\n📦 7. Verificando API Proxy & Persistencia E2E (Corte 5: Intenciones de Viaje)...");
-  try {
-    const intentionsGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/home/intentions`);
-    assert(intentionsGet.status === 200, `GET /api/proxy/public/v1/home/intentions responde 200 OK (${intentionsGet.status})`);
-    const intentionsList = await intentionsGet.json();
-    assert(Array.isArray(intentionsList) && intentionsList.length >= 4, `Listado de intenciones contiene ${intentionsList.length} experiencias activas`);
-    
-    const firstIntention = intentionsList[0];
-    assert(firstIntention.slug === "playa-relax" || !!firstIntention.title, `Primera intención: "${firstIntention.title}"`);
-    assert(Array.isArray(firstIntention.featuredDestinations) && firstIntention.featuredDestinations.length > 0, `Destinos sugeridos presentes: ${firstIntention.featuredDestinations.length} destinos`);
-
-    // Mutación E2E de Intención en PostgreSQL
-    const testTagline = "Desconéctate frente al mar turquesa con resorts todo incluido y paseos en catamarán.";
-    const intentionPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/intentions/1`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        slug: "playa-relax",
-        title: "Playa & Relax Caribe",
-        tagline: testTagline,
-        iconName: "SunIcon",
-        featuredDestinations: ["Cartagena", "Cancún", "Punta Cana", "San Andrés", "Varadero"],
-        whatsappMessageTemplate: "Hola Viajes Carolina, me interesa planear unas vacaciones de Playa y Relax en el Caribe. ¿Qué opciones tienen disponibles?",
-        coverMediaId: 2,
-        displayOrder: 1,
-        active: true,
-      }),
-    });
-    assert(intentionPut.status === 200, `PUT /api/proxy/admin/v1/intentions/1 responde 200 OK (${intentionPut.status})`);
-    const updatedIntention = await intentionPut.json();
-    assert(updatedIntention.tagline === testTagline, `Tagline de intención actualizado y persistido: "${updatedIntention.tagline}"`);
-  } catch (err) {
-    assert(false, `Error en prueba E2E de Intenciones de Viaje: ${err.message}`);
   }
 
   // 8. Verificación de API Proxy & Persistencia E2E (Corte 6: Promociones & Paquetes)...

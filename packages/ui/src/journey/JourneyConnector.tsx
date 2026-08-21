@@ -11,7 +11,7 @@ export interface JourneyConnectorProps {
 
 /**
  * Aparece solo en las 3 transiciones narrativas clave de Inicio (no entre cada bloque):
- * Hero→Intenciones, Explorar→Prepararte, Prepararte→Conversar. Comparte el mismo hilo
+ * Hero→Descubrir, Explorar→Prepararte, Prepararte→Conversar. Comparte el mismo hilo
  * naranja y marcador numerado en las tres para sentirse una sola ruta, no decoraciones
  * independientes.
  */

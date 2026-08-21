@@ -57,9 +57,7 @@ export function FooterWrapper({ settings: initialSettings, office: initialOffice
   return (
     <Footer
       siteName={settings.siteName}
-      brandTagline={settings.brandTagline}
       contactEmail={settings.contactEmail}
-      primaryPhone={settings.primaryPhone}
       whatsappPhone={settings.whatsappPhone}
       whatsappMessage={settings.whatsappDefaultMessage}
       address={office.addressLine}

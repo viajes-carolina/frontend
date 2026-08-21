@@ -24,8 +24,8 @@ export const PublishingManagerCard: React.FC<PublishingManagerCardProps> = ({
 
   const targets = [
     { value: "ALL", label: "Todo el Sitio", desc: "Revalida todas las páginas públicas (Home, Promociones, Blog, Nosotros, Contacto, Reclamaciones)" },
-    { value: "HOME", label: "Portada & Hero", desc: "Revalida Hero, Intenciones de viaje, Promociones destacadas y Testimonios" },
-    { value: "PROMOTIONS", label: "Catálogo de Promociones", desc: "Revalida el listado de paquetes y detalles de oferta" },
+    { value: "HOME", label: "Portada & Hero", desc: "Revalida Hero, Promociones destacadas, Blog y Testimonios" },
+    { value: "PROMOTIONS", label: "Catálogo de Promociones", desc: "Revalida las promociones destacadas mostradas en Inicio (el catálogo completo vive en Facebook)" },
     { value: "BLOG", label: "Blog & Contenidos", desc: "Revalida artículos, categorías e inspiración del blog" },
     { value: "ABOUT", label: "Nosotros & Asesoras", desc: "Revalida historia institucional y perfiles de asesoras" },
     { value: "CONTACT", label: "Contacto & Soporte", desc: "Revalida canales directos y enlaces de oficina" },

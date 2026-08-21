@@ -8,7 +8,6 @@ import {
   DEFAULT_MEDIA_ASSETS,
   MediaAssetDTO,
   DEFAULT_HOME_HERO,
-  DEFAULT_TRAVEL_INTENTIONS,
   DEFAULT_PROMOTIONS,
   DEFAULT_TESTIMONIALS,
   DEFAULT_FAQS,
@@ -20,7 +19,6 @@ import {
   SiteSettingsDTO,
   OfficeLocationDTO,
   HomeHeroDTO,
-  TravelIntentionDTO,
   PromotionDTO,
   TestimonialDTO,
   FaqItemDTO,
@@ -581,58 +579,6 @@ export async function handleProxyRequest(
       return NextResponse.json(current, { status: 200 });
     }
 
-    if (targetPath.includes("intentions")) {
-      const current = readStoredJson<TravelIntentionDTO[]>("travel_intentions.json", DEFAULT_TRAVEL_INTENTIONS);
-      if (method === "POST") {
-        const newIntention: TravelIntentionDTO = {
-          id: Date.now(),
-          slug: String(bodyJson?.slug || `intent-${Date.now()}`),
-          title: String(bodyJson?.title || "Nueva Intención"),
-          tagline: String(bodyJson?.tagline || ""),
-          iconName: String(bodyJson?.iconName || "SunIcon"),
-          featuredDestinations: Array.isArray(bodyJson?.featuredDestinations) ? (bodyJson?.featuredDestinations as string[]) : [],
-          whatsappMessageTemplate: String(bodyJson?.whatsappMessageTemplate || ""),
-          coverMediaId: bodyJson?.coverMediaId ? Number(bodyJson.coverMediaId) : undefined,
-          coverMediaUrl: "/media/demo-cartagena-caribe.webp",
-          coverFocalX: 50.0,
-          coverFocalY: 50.0,
-          displayOrder: bodyJson?.displayOrder ? Number(bodyJson.displayOrder) : current.length + 1,
-          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
-        const updated = [...current, newIntention];
-        writeStoredJson("travel_intentions.json", updated);
-        return NextResponse.json(newIntention, { status: 201 });
-      }
-      if (method === "PUT") {
-        const idMatch = targetPath.match(/intentions\/(\d+)/);
-        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
-        const index = current.findIndex((i) => i.id === id);
-        if (index !== -1) {
-          const updatedItem = {
-            ...current[index],
-            ...(bodyJson || {}),
-            updatedAt: new Date().toISOString(),
-          };
-          current[index] = updatedItem as TravelIntentionDTO;
-          writeStoredJson("travel_intentions.json", current);
-          return NextResponse.json(updatedItem, { status: 200 });
-        }
-      }
-      if (method === "DELETE") {
-        const idMatch = targetPath.match(/intentions\/(\d+)/);
-        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
-        const index = current.findIndex((i) => i.id === id);
-        if (index !== -1) {
-          current[index].active = false;
-          writeStoredJson("travel_intentions.json", current);
-        }
-        return new NextResponse(null, { status: 204 });
-      }
-      return NextResponse.json(current, { status: 200 });
-    }
-
     if (targetPath.includes("blog-inspiration")) {
       const config = readStoredJson<HomeBlogInspirationDTO>("home_blog_inspiration.json", DEFAULT_HOME_BLOG_INSPIRATION);
       if (method === "PUT" || method === "POST") {
@@ -1154,7 +1100,7 @@ export async function handleProxyRequest(
             tags = ["home", "/"];
             break;
           case "PROMOTIONS":
-            tags = ["promotions", "/promociones"];
+            tags = ["promotions", "/"];
             break;
           case "BLOG":
             tags = ["blog", "/blog"];
@@ -1166,7 +1112,7 @@ export async function handleProxyRequest(
             tags = ["contact", "/contacto"];
             break;
           default:
-            tags = ["all", "/", "/promociones", "/blog", "/nosotros", "/contacto", "/reclamaciones"];
+            tags = ["all", "/", "/blog", "/nosotros", "/contacto", "/reclamaciones"];
             break;
         }
       }

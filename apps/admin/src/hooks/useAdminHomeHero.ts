@@ -98,6 +98,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     initialHero.secondaryMedia4FocalY || 50
   );
   const [trustStatText, setTrustStatText] = useState(initialHero.trustStatText || "");
+  const [eyebrowText, setEyebrowText] = useState(initialHero.eyebrowText || "");
 
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -150,6 +151,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         setSecondaryMedia4FocalX(fresh.secondaryMedia4FocalX || 50);
         setSecondaryMedia4FocalY(fresh.secondaryMedia4FocalY || 50);
         setTrustStatText(fresh.trustStatText || "");
+        setEyebrowText(fresh.eyebrowText || "");
       }
     });
   }, []);
@@ -241,6 +243,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         secondaryMedia4FocalX,
         secondaryMedia4FocalY,
         trustStatText,
+        eyebrowText,
       };
 
       const updated = await apiClient.updateHomeHero(payload);
@@ -278,6 +281,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     secondaryMedia3Id, secondaryMedia3Url, secondaryMedia3FocalX, secondaryMedia3FocalY,
     secondaryMedia4Id, secondaryMedia4Url, secondaryMedia4FocalX, secondaryMedia4FocalY,
     trustStatText, setTrustStatText,
+    eyebrowText, setEyebrowText,
     isSaving,
     statusMessage,
     isBgModalOpen, setIsBgModalOpen,

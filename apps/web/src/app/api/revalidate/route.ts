@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Token o secreto de revalidación inválido." }, { status: 401 });
     }
 
-    const defaultPaths = ["/", "/promociones", "/blog", "/nosotros", "/contacto", "/reclamaciones", "/buscar"];
+    const defaultPaths = ["/", "/blog", "/nosotros", "/contacto", "/reclamaciones", "/buscar"];
     const targets = tagsOrPaths.length > 0 ? tagsOrPaths : defaultPaths;
 
     const revalidated: string[] = [];

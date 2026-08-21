@@ -19,7 +19,6 @@ const FILTER_TABS: { label: string; value: SearchResultType }[] = [
   { label: "Todos los Resultados", value: "ALL" },
   { label: "Promociones & Paquetes", value: "PROMOTION" },
   { label: "Artículos & Guías", value: "BLOG_POST" },
-  { label: "Intenciones de Viaje", value: "INTENTION" },
 ];
 
 export const SearchResultsView: React.FC<SearchResultsViewProps> = ({

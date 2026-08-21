@@ -22,7 +22,6 @@ const FILTER_TABS: { label: string; value: SearchResultType }[] = [
   { label: "Todos", value: "ALL" },
   { label: "Promociones", value: "PROMOTION" },
   { label: "Blog & Guías", value: "BLOG_POST" },
-  { label: "Intenciones", value: "INTENTION" },
 ];
 
 export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({

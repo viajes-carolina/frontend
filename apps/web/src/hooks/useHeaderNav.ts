@@ -7,7 +7,7 @@ export function useHeaderNav() {
 
   const navItems = [
     { label: "Inicio", href: "/" },
-    { label: "Promociones", href: "/promociones" },
+    { label: "Promociones", href: "/#promociones" },
     { label: "Nosotros", href: "/nosotros" },
     { label: "Blog", href: "/blog" },
     { label: "Contacto", href: "/contacto" },
