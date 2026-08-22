@@ -97,7 +97,7 @@ export function TravelMemoriesCollage({ memories, className = "" }: TravelMemori
     <div className={`${className} overflow-hidden`}>
       <MainPhoto
         memory={main}
-        className="absolute z-10 left-[6.67%] top-[54.63%] w-[76.92%] h-[35.24%] md:left-[38.09%] md:top-[9.25%] md:w-[48.83%] md:h-[60.35%] xl:left-[35.07%] xl:top-[6.04%] xl:w-[43.06%] xl:h-[77.29%]"
+        className="absolute z-10 left-[6.67%] top-[54.63%] w-[76.92%] h-[35.24%] md:left-[38.09%] md:top-[9.25%] md:w-[48.83%] md:h-[60.35%] xl:left-[35.07%] xl:top-[6.04%] xl:w-[43.06%] xl:h-[77.29%] animate-hero-postal-in animation-delay-100"
       />
 
       {top && (
@@ -108,7 +108,7 @@ export function TravelMemoriesCollage({ memories, className = "" }: TravelMemori
           rotate={-6}
           tape="top"
           colorGrade={top.colorGrade}
-          className="absolute z-30 left-[51.17%] top-[48.96%] w-[44.62%] h-[12.78%] md:left-[69.2%] md:top-[2.37%] md:w-[26.17%] md:h-[19.6%] xl:left-[72.3%] xl:top-[1.82%] xl:w-[24.31%] xl:h-[28.02%]"
+          className="absolute z-30 left-[51.17%] top-[48.96%] w-[44.62%] h-[12.78%] md:left-[69.2%] md:top-[2.37%] md:w-[26.17%] md:h-[19.6%] xl:left-[72.3%] xl:top-[1.82%] xl:w-[24.31%] xl:h-[28.02%] animate-hero-postal-in animation-delay-200"
         />
       )}
 
@@ -120,7 +120,7 @@ export function TravelMemoriesCollage({ memories, className = "" }: TravelMemori
           rotate={4}
           tape="none"
           colorGrade={side.colorGrade}
-          className="hidden xl:block absolute z-30 xl:left-[74.41%] xl:top-[34.42%] xl:w-[22.36%] xl:h-[28.02%]"
+          className="hidden xl:block absolute z-30 xl:left-[74.41%] xl:top-[34.42%] xl:w-[22.36%] xl:h-[28.02%] animate-hero-postal-in animation-delay-300"
         />
       )}
 
@@ -132,7 +132,7 @@ export function TravelMemoriesCollage({ memories, className = "" }: TravelMemori
           rotate={-5}
           tape="top"
           colorGrade={bottom.colorGrade}
-          className="absolute z-30 left-[37.73%] top-[78.87%] w-[56.92%] h-[14.1%] md:left-[59.36%] md:top-[57.58%] md:w-[33.2%] md:h-[21.59%] xl:left-[58.3%] xl:top-[60.59%] xl:w-[28.47%] xl:h-[28.5%]"
+          className="absolute z-30 left-[37.73%] top-[78.87%] w-[56.92%] h-[14.1%] md:left-[59.36%] md:top-[57.58%] md:w-[33.2%] md:h-[21.59%] xl:left-[58.3%] xl:top-[60.59%] xl:w-[28.47%] xl:h-[28.5%] animate-hero-postal-in animation-delay-400"
         />
       )}
     </div>

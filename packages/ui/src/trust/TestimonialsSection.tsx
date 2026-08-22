@@ -3,6 +3,7 @@
 import React, { useId } from "react";
 import { TestimonialDTO } from "@vc/api-client";
 import { PolaroidPhoto } from "../primitives/PolaroidPhoto";
+import { Reveal } from "../primitives/Reveal";
 import type { FocalPoint } from "../primitives/ResponsiveImage";
 
 export interface TestimonialsSectionProps {
@@ -166,9 +167,9 @@ export function TestimonialsSection({ testimonials, memoryPhoto, className = "" 
         />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1600px] xl:px-16">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
         {/* Encabezado */}
-        <div className="mb-10 xl:mb-16 xl:flex xl:justify-end">
+        <Reveal className="mb-10 xl:mb-16 xl:flex xl:justify-end">
           <div className="max-w-xl xl:text-right">
             <svg aria-hidden="true" viewBox="0 0 268.8 23.04" className="mb-4 h-4 w-[180px] xl:hidden" fill="none">
               <path d={ROUTE_COMPACT_PATH} className="stroke-brand-navy" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
@@ -184,25 +185,39 @@ export function TestimonialsSection({ testimonials, memoryPhoto, className = "" 
               Cada fotografía guarda una experiencia que comenzó con una conversación.
             </p>
           </div>
-        </div>
+        </Reveal>
 
         {/* Mobile — flujo secuencial */}
         <div className="md:hidden">
           <div className="relative">
             <PhotoBlob variant="compact" className="w-full aspect-[341/203.5]" />
-            <PolaroidPhoto
-              imageUrl={memoryPhoto?.url}
-              alt="Recuerdo de un viaje con Viajes Carolina"
-              focalPoint={focalPoint}
-              rotate={-4}
-              tape="top"
-              className="absolute right-[4%] top-[8%] w-[36%] aspect-[137.5/99]"
-            />
+            <Reveal delayMs={80} className="absolute right-[4%] top-[8%] w-[36%] aspect-[137.5/99]">
+              <PolaroidPhoto
+                imageUrl={memoryPhoto?.url}
+                alt="Recuerdo de un viaje con Viajes Carolina"
+                focalPoint={focalPoint}
+                rotate={-4}
+                tape="top"
+                className="w-full h-full"
+              />
+            </Reveal>
           </div>
-          {featured && <div className="mt-8"><FeaturedTestimonialCard testimonial={featured} /></div>}
+          {featured && (
+            <Reveal delayMs={160} className="mt-8">
+              <FeaturedTestimonialCard testimonial={featured} />
+            </Reveal>
+          )}
           <div className="mt-10 flex flex-col divide-y divide-neutral-border">
-            {voice1 && <div className="pb-6"><SupportVoice testimonial={voice1} /></div>}
-            {voice2 && <div className="pt-6"><SupportVoice testimonial={voice2} /></div>}
+            {voice1 && (
+              <Reveal delayMs={240} className="pb-6">
+                <SupportVoice testimonial={voice1} />
+              </Reveal>
+            )}
+            {voice2 && (
+              <Reveal delayMs={320} className="pt-6">
+                <SupportVoice testimonial={voice2} />
+              </Reveal>
+            )}
           </div>
         </div>
 
@@ -210,24 +225,32 @@ export function TestimonialsSection({ testimonials, memoryPhoto, className = "" 
         <div className="relative hidden md:block xl:hidden">
           <div className="relative xl:hidden">
             <PhotoBlob variant="compact" className="w-[62%] aspect-[514.6/307.1]" />
-            <PolaroidPhoto
-              imageUrl={memoryPhoto?.url}
-              alt="Recuerdo de un viaje con Viajes Carolina"
-              focalPoint={focalPoint}
-              rotate={-4}
-              tape="top"
-              className="absolute left-[42%] top-[-8%] w-[24%] aspect-[205/147.6]"
-            />
+            <Reveal delayMs={80} className="absolute left-[42%] top-[-8%] w-[24%] aspect-[205/147.6]">
+              <PolaroidPhoto
+                imageUrl={memoryPhoto?.url}
+                alt="Recuerdo de un viaje con Viajes Carolina"
+                focalPoint={focalPoint}
+                rotate={-4}
+                tape="top"
+                className="w-full h-full"
+              />
+            </Reveal>
             {featured && (
-              <FeaturedTestimonialCard testimonial={featured} className="absolute right-0 top-[14%] w-[46%]" />
+              <Reveal delayMs={160} className="absolute right-0 top-[14%] w-[46%]">
+                <FeaturedTestimonialCard testimonial={featured} />
+              </Reveal>
             )}
           </div>
           <div className="relative mt-14 flex gap-14">
-            {voice1 && <SupportVoice testimonial={voice1} />}
+            {voice1 && (
+              <Reveal delayMs={240}>
+                <SupportVoice testimonial={voice1} />
+              </Reveal>
+            )}
             {voice2 && (
-              <div className="border-l border-neutral-border pl-14">
+              <Reveal delayMs={320} className="border-l border-neutral-border pl-14">
                 <SupportVoice testimonial={voice2} />
-              </div>
+              </Reveal>
             )}
           </div>
         </div>
@@ -235,27 +258,31 @@ export function TestimonialsSection({ testimonials, memoryPhoto, className = "" 
         {/* Desktop / Wide — álbum colectivo sobre fondo navy */}
         <div className="relative hidden xl:block xl:min-h-[520px]">
           <PhotoBlob variant="wide" className="absolute left-0 top-0 w-[39%] aspect-[560/360]" />
-          <PolaroidPhoto
-            imageUrl={memoryPhoto?.url}
-            alt="Recuerdo de un viaje con Viajes Carolina"
-            focalPoint={focalPoint}
-            rotate={-4}
-            tape="top"
-            className="absolute left-[28%] top-[-6%] w-[20%] aspect-[270/190]"
-          />
-          {featured && (
-            <FeaturedTestimonialCard
-              testimonial={featured}
-              dark={false}
-              className="absolute left-[50%] top-[8%] w-[40%]"
+          <Reveal delayMs={80} className="absolute left-[28%] top-[-6%] w-[20%] aspect-[270/190]">
+            <PolaroidPhoto
+              imageUrl={memoryPhoto?.url}
+              alt="Recuerdo de un viaje con Viajes Carolina"
+              focalPoint={focalPoint}
+              rotate={-4}
+              tape="top"
+              className="w-full h-full"
             />
+          </Reveal>
+          {featured && (
+            <Reveal delayMs={160} className="absolute left-[50%] top-[8%] w-[40%]">
+              <FeaturedTestimonialCard testimonial={featured} dark={false} />
+            </Reveal>
           )}
           <div className="absolute bottom-0 left-[15%] flex w-[74%] gap-16">
-            {voice1 && <SupportVoice testimonial={voice1} light />}
+            {voice1 && (
+              <Reveal delayMs={240}>
+                <SupportVoice testimonial={voice1} light />
+              </Reveal>
+            )}
             {voice2 && (
-              <div className="border-l border-atmosphere-sea/30 pl-16">
+              <Reveal delayMs={320} className="border-l border-atmosphere-sea/30 pl-16">
                 <SupportVoice testimonial={voice2} light />
-              </div>
+              </Reveal>
             )}
           </div>
         </div>

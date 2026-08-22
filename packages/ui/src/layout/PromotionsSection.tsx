@@ -2,6 +2,7 @@
 
 import React, { useId } from "react";
 import { PromotionDTO, SiteSettingsDTO } from "@vc/api-client";
+import { Reveal } from "../primitives/Reveal";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 
 export interface PromotionsSectionProps {
@@ -166,31 +167,16 @@ export function PromotionsSection({ promotions, settings, className = "" }: Prom
         </svg>
       </div>
 
-      {/* Ruta vertical — solo xl, decorativa, corre junto a todo el bloque */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-y-16 left-4 hidden w-[90px] xl:block 2xl:left-12">
-        <svg viewBox="0 0 150 760" className="h-full w-full" fill="none" preserveAspectRatio="none">
-          <path d={ROUTE_VERTICAL_PATH} className="stroke-brand-navy" strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-        {/* Puntos como <span> aparte — dentro del SVG con preserveAspectRatio="none"
-            se ven ovalados, no circulares. */}
-        <span
-          className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-accent"
-          style={{ left: `${(92 / 150) * 100}%`, top: "0%" }}
-        />
-        <span
-          className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-accent"
-          style={{ left: `${(82 / 150) * 100}%`, top: "100%" }}
-        />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1600px] xl:px-16 xl:pl-[150px]">
-        {/* Encabezado */}
-        <div className="relative mb-10 flex flex-col gap-6 xl:mb-16 xl:flex-row xl:items-start xl:justify-between">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
+        {/* Encabezado — solo base/md; en xl vive dentro del lienzo relativo
+            de abajo, en su posición real de Figma (junto al blob, no
+            apilado arriba de todo el bloque). */}
+        <Reveal className="relative mb-10 flex flex-col gap-6 xl:hidden">
           <div className="max-w-xl">
             <svg
               aria-hidden="true"
               viewBox="0 0 268.8 23.04"
-              className="mb-4 h-4 w-[180px] xl:hidden"
+              className="mb-4 h-4 w-[180px]"
               fill="none"
             >
               <path d={ROUTE_HORIZONTAL_PATH} className="stroke-brand-navy" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
@@ -199,7 +185,7 @@ export function PromotionsSection({ promotions, settings, className = "" }: Prom
             <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
               02 · Viajes para empezar a imaginar
             </span>
-            <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy sm:text-4xl xl:text-[44px] xl:leading-[49px]">
+            <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy sm:text-4xl">
               Algunas formas de vivir tu próximo viaje
             </h2>
             <p className="font-inter mt-3 text-base leading-relaxed text-brand-navy sm:text-lg">
@@ -210,21 +196,25 @@ export function PromotionsSection({ promotions, settings, className = "" }: Prom
           <a
             href={discoverUrl}
             {...(discoverIsExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className="font-inter self-start text-sm font-semibold text-brand-navy hover:text-brand-accent transition-colors xl:pt-1"
+            className="font-inter self-start text-sm font-semibold text-brand-navy hover:text-brand-accent transition-colors"
           >
             Ver todas las promociones →
           </a>
-        </div>
+        </Reveal>
 
         {/* Mobile — flujo simple, sin superposición */}
         <div className="md:hidden">
           <div className="relative mx-auto max-w-[420px]">
             <PromoBlob variant="compact" className="mx-auto w-full aspect-[328.5/216]" />
-            <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} className="-mt-4 relative" />
+            <Reveal delayMs={80} className="-mt-4 relative">
+              <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} />
+            </Reveal>
           </div>
           <div className="mt-8 flex flex-col gap-4">
-            {secondaryPromos.map((p) => (
-              <SecondaryPromoCard key={p.id || p.slug} promo={p} discoverUrl={discoverUrl} />
+            {secondaryPromos.map((p, i) => (
+              <Reveal key={p.id || p.slug} delayMs={160 + i * 80}>
+                <SecondaryPromoCard promo={p} discoverUrl={discoverUrl} />
+              </Reveal>
             ))}
           </div>
         </div>
@@ -234,34 +224,98 @@ export function PromotionsSection({ promotions, settings, className = "" }: Prom
         <div className="hidden md:block xl:hidden">
           <div className="relative">
             <PromoBlob variant="compact" className="w-[64%] aspect-[620.5/408]" />
-            <FeaturedPromoCard
-              promo={featuredPromo}
-              whatsappPhone={settings?.whatsappPhone}
-              className="absolute right-0 top-[34%] w-[46%]"
-            />
+            <Reveal delayMs={80} className="absolute right-0 top-[34%] w-[46%]">
+              <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} />
+            </Reveal>
           </div>
           <div className="mt-10 grid grid-cols-2 gap-6">
-            {secondaryPromos.map((p) => (
-              <SecondaryPromoCard key={p.id || p.slug} promo={p} discoverUrl={discoverUrl} />
+            {secondaryPromos.map((p, i) => (
+              <Reveal key={p.id || p.slug} delayMs={160 + i * 80}>
+                <SecondaryPromoCard promo={p} discoverUrl={discoverUrl} />
+              </Reveal>
             ))}
           </div>
         </div>
 
-        {/* Desktop / Wide — escaparate panorámico: blob a la derecha, tarjeta
-            protagonista flotando sobre su esquina inferior izquierda, 2
-            secundarios en la franja inferior derecha */}
-        <div className="relative hidden xl:block xl:min-h-[560px]">
-          <PromoBlob variant="wide" className="absolute right-0 top-0 w-[62%] aspect-[850/500]" />
-          <FeaturedPromoCard
-            promo={featuredPromo}
-            whatsappPhone={settings?.whatsappPhone}
-            className="absolute left-0 top-[46%] w-[30%]"
-          />
-          <div className="absolute bottom-0 right-[3%] flex w-[48%] gap-6">
-            {secondaryPromos.map((p) => (
-              <SecondaryPromoCard key={p.id || p.slug} promo={p} discoverUrl={discoverUrl} className="flex-1" />
-            ))}
+        {/* Desktop / Wide — lienzo relativo único basado en Figma (node
+            409:36 "02 · Promociones · Escaparate panorámico · Wide", canvas
+            1920x940): ruta, encabezado, "ver todas", blob y tarjetas, todos
+            posicionados contra ese mismo lienzo — no bloques apilados por
+            separado. Orden en el DOM = orden de apilado visual (el blob va
+            primero para que el encabezado y la tarjeta destacada floten
+            sobre su esquina, tal como en Figma).
+
+            El encabezado ancla en `left-0` — ese punto coincide con donde
+            arranca el contenido de Blog/Testimonios/FAQ en este mismo
+            contenedor (verificado con getBoundingClientRect: ambos caen en
+            x=296.5px a 1920 de viewport), así las secciones quedan
+            alineadas al mismo margen izquierdo. El resto de los elementos
+            usa offsets en px calculados desde ese punto (diferencia real
+            entre cada elemento y el encabezado en las coordenadas de
+            Figma) en vez de un % del canvas de 1920 — con % puro, el
+            propio margen de página de Figma (274px antes de la ruta) se
+            sumaba AL padding real de este contenedor (`xl:px-16`),
+            duplicando el margen y corriendo todo el bloque hacia la
+            derecha. El ancho de las tarjetas (destacada 380px, secundarias
+            260px c/u) tampoco es literal de Figma (410px/290px) — a esa
+            medida el texto real (más largo que el mock de Figma) envolvía
+            mal o las tarjetas casi se tocaban; se ajustó a ojo verificando
+            en pantalla, no es un valor que debas "corregir" de vuelta al
+            literal de Figma. */}
+        <div className="relative hidden xl:block xl:min-h-[760px]">
+          {/* Ruta vertical — decorativa */}
+          <div aria-hidden="true" className="pointer-events-none absolute left-[-126px] top-[9.15%] w-[7.81%] h-[80.85%]">
+            <svg viewBox="0 0 150 760" className="h-full w-full" fill="none" preserveAspectRatio="none">
+              <path d={ROUTE_VERTICAL_PATH} className="stroke-brand-navy" strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+            </svg>
+            {/* Puntos como <span> aparte — dentro del SVG con preserveAspectRatio="none"
+                se ven ovalados, no circulares. */}
+            <span
+              className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-accent"
+              style={{ left: `${(92 / 150) * 100}%`, top: "0%" }}
+            />
+            <span
+              className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-accent"
+              style={{ left: `${(82 / 150) * 100}%`, top: "100%" }}
+            />
           </div>
+
+          <PromoBlob variant="wide" className="absolute left-[300px] top-[15.96%] w-[1050px] aspect-[850/500]" />
+
+          <Reveal className="absolute left-0 top-[10.85%] max-w-xl">
+            <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
+              02 · Viajes para empezar a imaginar
+            </span>
+            <h2 className="font-display mt-3 text-[44px] font-semibold leading-[49px] text-brand-navy">
+              Algunas formas de vivir tu próximo viaje
+            </h2>
+            <p className="font-inter mt-3 text-base leading-relaxed text-brand-navy">
+              Experiencias que podemos ajustar a tus tiempos, compañía y presupuesto.
+            </p>
+          </Reveal>
+
+          <a
+            href={discoverUrl}
+            {...(discoverIsExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            className="absolute right-0 top-[13.19%] font-inter text-sm font-semibold text-brand-navy hover:text-brand-accent transition-colors"
+          >
+            Ver todas las promociones →
+          </a>
+
+          <Reveal delayMs={80} className="absolute left-[-35px] top-[46.81%] w-[420px]">
+            <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} />
+          </Reveal>
+
+          {secondaryPromos[0] && (
+            <Reveal delayMs={160} className="absolute left-[712px] top-[67.02%] w-[280px]">
+              <SecondaryPromoCard promo={secondaryPromos[0]} discoverUrl={discoverUrl} />
+            </Reveal>
+          )}
+          {secondaryPromos[1] && (
+            <Reveal delayMs={240} className="absolute left-[1032px] top-[67.02%] w-[280px]">
+              <SecondaryPromoCard promo={secondaryPromos[1]} discoverUrl={discoverUrl} />
+            </Reveal>
+          )}
         </div>
       </div>
     </section>

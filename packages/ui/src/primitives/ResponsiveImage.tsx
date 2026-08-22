@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export interface FocalPoint {
   x: number; // 0..100
@@ -38,7 +38,19 @@ export function ResponsiveImage({
   objectFit = "cover",
   caption,
 }: ResponsiveImageProps) {
-  const [isLoaded, setIsLoaded] = useState(true);
+  // Las imágenes `priority` arrancan visibles (van sobre el fold, no deben
+  // parpadear); el resto arranca oculta para que el fundido de entrada se
+  // note al cargar.
+  const [isLoaded, setIsLoaded] = useState(priority);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // Salvaguarda: si la imagen ya está en caché del navegador, el evento
+  // `load` puede no dispararse — sin esto se queda atascada en "cargando".
+  useEffect(() => {
+    if (imgRef.current?.complete) {
+      setIsLoaded(true);
+    }
+  }, []);
 
   const focalX = Math.max(0, Math.min(100, focalPoint?.x ?? 50));
   const focalY = Math.max(0, Math.min(100, focalPoint?.y ?? 50));
@@ -58,6 +70,7 @@ export function ResponsiveImage({
   return (
     <figure className={`group overflow-hidden ${fill ? "w-full h-full" : "rounded-2xl bg-neutral-surface"} ${className}`} style={containerStyle}>
       <img
+        ref={imgRef}
         src={safeSrc}
         alt={alt}
         width={width}
@@ -72,7 +85,7 @@ export function ResponsiveImage({
           height: fill || aspectRatio ? "100%" : height ? `${height}px` : "auto",
         }}
         className={`transition-all duration-300 ease-out ${
-          isLoaded ? "opacity-100 scale-100 blur-0" : "opacity-90 blur-0"
+          isLoaded ? "opacity-100 scale-100 blur-0" : "opacity-0 blur-sm"
         } ${imgClassName}`}
         onLoad={() => setIsLoaded(true)}
         onError={() => setIsLoaded(true)}

@@ -74,7 +74,7 @@ export function Footer({
           <path d={ARRIVAL_PAPER_PATH} className="fill-surface-ivory" />
         </svg>
 
-        <div className="relative mx-auto max-w-[1600px] px-6 pb-16 pt-10 sm:pt-12 md:px-10 md:pb-20 xl:px-16">
+        <div className="relative mx-auto max-w-[1440px] px-6 pb-16 pt-10 sm:pt-12 md:px-10 md:pb-20 xl:px-16">
           <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between xl:gap-10">
             <div className="flex max-w-[560px] flex-col gap-2.5 xl:max-w-[650px]">
               <p className="font-inter text-[10px] font-semibold uppercase tracking-[0.08em] text-brand-accent sm:text-xs">
@@ -111,7 +111,7 @@ export function Footer({
 
       {/* Información principal — una sola fuente de contenido (configuración
           global del sitio), nunca repetida a mano en otros componentes. */}
-      <div className="relative mx-auto max-w-[1600px] px-6 pb-10 pt-14 md:px-10 xl:px-16">
+      <div className="relative mx-auto max-w-[1440px] px-6 pb-10 pt-14 md:px-10 xl:px-16">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 xl:flex xl:flex-row xl:gap-[50px]">
           {/* Marca */}
           <div className="flex flex-col gap-4 xl:w-[360px]">

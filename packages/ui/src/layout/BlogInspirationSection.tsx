@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { BlogPostDTO, HomeBlogInspirationDTO } from "@vc/api-client";
+import { Reveal } from "../primitives/Reveal";
 
 export interface BlogInspirationSectionProps {
   config?: HomeBlogInspirationDTO;
@@ -163,9 +164,9 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
         className="pointer-events-none absolute bottom-0 right-[6%] w-[79%] max-w-[310px] opacity-[0.18] md:bottom-auto md:right-0 md:top-[25%] md:w-[44%] md:max-w-none md:opacity-[0.24] xl:hidden"
       />
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1600px] xl:px-16">
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
         {/* Encabezado */}
-        <div className="relative mb-10 flex flex-col gap-6 xl:mb-16 xl:flex-row xl:items-start xl:justify-between">
+        <Reveal className="relative mb-10 flex flex-col gap-6 xl:mb-16 xl:flex-row xl:items-start xl:justify-between">
           <div className="max-w-xl">
             <svg
               aria-hidden="true"
@@ -193,38 +194,46 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
           >
             {config.ctaText || "Ver todos los artículos"} →
           </a>
-        </div>
+        </Reveal>
 
         {/* Mobile — destacado a ancho completo, secundarios en flujo vertical */}
         <div className="md:hidden">
-          <FeaturedArticleCard post={featuredPost} />
+          <Reveal delayMs={80}>
+            <FeaturedArticleCard post={featuredPost} />
+          </Reveal>
           <div className="mt-10 flex flex-col gap-8">
-            {secondaryPosts.map((p) => (
-              <SecondaryArticle key={p.id} post={p} />
+            {secondaryPosts.map((p, i) => (
+              <Reveal key={p.id} delayMs={160 + i * 80}>
+                <SecondaryArticle post={p} />
+              </Reveal>
             ))}
           </div>
         </div>
 
         {/* Tablet — destacado a la izquierda, secundarios apilados a la derecha */}
         <div className="hidden md:flex md:flex-row md:items-start md:gap-10 xl:hidden">
-          <div className="md:w-[62%]">
+          <Reveal delayMs={80} className="md:w-[62%]">
             <FeaturedArticleCard post={featuredPost} />
-          </div>
+          </Reveal>
           <div className="flex md:w-[32%] flex-col gap-10">
-            {secondaryPosts.map((p) => (
-              <SecondaryArticle key={p.id} post={p} />
+            {secondaryPosts.map((p, i) => (
+              <Reveal key={p.id} delayMs={160 + i * 80}>
+                <SecondaryArticle post={p} />
+              </Reveal>
             ))}
           </div>
         </div>
 
         {/* Desktop/Wide — hoja editorial a la izquierda, secundarios en columna a la derecha */}
         <div className="relative hidden xl:block xl:min-h-[500px]">
-          <div className="xl:w-[48%]">
+          <Reveal delayMs={80} className="xl:w-[48%]">
             <FeaturedArticleCard post={featuredPost} paper />
-          </div>
+          </Reveal>
           <div className="absolute right-0 top-0 flex w-[36%] flex-col gap-[52px]">
-            {secondaryPosts.map((p) => (
-              <SecondaryArticle key={p.id} post={p} />
+            {secondaryPosts.map((p, i) => (
+              <Reveal key={p.id} delayMs={160 + i * 80}>
+                <SecondaryArticle post={p} />
+              </Reveal>
             ))}
           </div>
         </div>

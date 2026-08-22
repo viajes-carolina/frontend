@@ -3,6 +3,7 @@
 import React, { useId, useState } from "react";
 import { FaqItemDTO, SiteSettingsDTO } from "@vc/api-client";
 import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
+import { Reveal } from "../primitives/Reveal";
 
 export interface FaqSectionProps {
   faqs: FaqItemDTO[];
@@ -107,35 +108,39 @@ export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) 
       id="faq"
       className={`relative w-full overflow-hidden bg-white xl:bg-atmosphere-cloud py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
     >
-      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 xl:max-w-[1600px] xl:px-16">
+      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
         {/* Mobile — una columna */}
         <div className="md:hidden">
-          <svg aria-hidden="true" viewBox="0 0 268.8 23.04" className="mb-4 h-4 w-[180px]" fill="none">
-            <path d={ROUTE_HORIZONTAL_PATH} className="stroke-brand-navy" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-            <circle cx="264.5" cy="3.84" r="4" className="fill-brand-accent" />
-          </svg>
-          <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-            05 · Antes de continuar
-          </span>
-          <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy">
-            Lo que solemos conversar antes de viajar
-          </h2>
-          <p className="font-inter mt-3 text-sm leading-relaxed text-brand-navy">
-            Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.
-          </p>
+          <Reveal>
+            <svg aria-hidden="true" viewBox="0 0 268.8 23.04" className="mb-4 h-4 w-[180px]" fill="none">
+              <path d={ROUTE_HORIZONTAL_PATH} className="stroke-brand-navy" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+              <circle cx="264.5" cy="3.84" r="4" className="fill-brand-accent" />
+            </svg>
+            <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
+              05 · Antes de continuar
+            </span>
+            <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy">
+              Lo que solemos conversar antes de viajar
+            </h2>
+            <p className="font-inter mt-3 text-sm leading-relaxed text-brand-navy">
+              Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.
+            </p>
+          </Reveal>
 
-          <div className="mt-10">
+          <Reveal delayMs={160} className="mt-10">
             {faqs.map((faq, idx) => (
               <AccordionItem key={faq.id || idx} faq={faq} isOpen={openIndex === idx} onToggle={() => toggleIndex(idx)} />
             ))}
-          </div>
+          </Reveal>
 
-          <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-[#e0f0f2]" textClassName="text-[13px]" />
+          <Reveal delayMs={240}>
+            <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-[#e0f0f2]" textClassName="text-[13px]" />
+          </Reveal>
         </div>
 
         {/* Tablet — encabezado a la izquierda, acordeón a la derecha */}
         <div className="hidden md:flex md:gap-16 xl:hidden">
-          <div className="w-[38%]">
+          <Reveal className="w-[38%]">
             <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
               05 · Antes de continuar
             </span>
@@ -145,20 +150,22 @@ export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) 
             <p className="font-inter mt-3 text-[15px] leading-relaxed text-brand-navy">
               Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.
             </p>
-          </div>
+          </Reveal>
           <div className="flex-1">
-            <div>
+            <Reveal delayMs={160}>
               {faqs.map((faq, idx) => (
                 <AccordionItem key={faq.id || idx} faq={faq} isOpen={openIndex === idx} onToggle={() => toggleIndex(idx)} />
               ))}
-            </div>
-            <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-[#e0f0f2]" />
+            </Reveal>
+            <Reveal delayMs={240}>
+              <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-[#e0f0f2]" />
+            </Reveal>
           </div>
         </div>
 
         {/* Desktop / Wide — con ruta punteada y respuesta abierta destacada */}
         <div className="hidden xl:block">
-          <div className="mb-12 max-w-2xl">
+          <Reveal className="mb-12 max-w-2xl">
             <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
               05 · Antes de continuar
             </span>
@@ -168,7 +175,7 @@ export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) 
             <p className="font-inter mt-3 text-[15px] leading-relaxed text-brand-navy">
               Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.
             </p>
-          </div>
+          </Reveal>
           <div className="relative ml-[14%]">
             {/* Ruta "hacia la llegada" — un punto por pregunta, aspect ratio real
                 para que los puntos se vean circulares, no ovalados. */}
@@ -186,7 +193,7 @@ export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) 
                 />
               ))}
             </div>
-            <div>
+            <Reveal delayMs={160}>
               {faqs.map((faq, idx) => (
                 <AccordionItem
                   key={faq.id || idx}
@@ -196,9 +203,11 @@ export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) 
                   variant="highlighted"
                 />
               ))}
-            </div>
+            </Reveal>
             <div className="mt-12 flex justify-end">
-              <AskDifferentBox phone={settings?.whatsappPhone} className="w-[46%] bg-[#f2e2c3]" />
+              <Reveal delayMs={240} className="w-[46%]">
+                <AskDifferentBox phone={settings?.whatsappPhone} className="w-full bg-[#f2e2c3]" />
+              </Reveal>
             </div>
           </div>
         </div>

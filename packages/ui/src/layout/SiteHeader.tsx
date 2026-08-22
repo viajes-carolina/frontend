@@ -38,7 +38,7 @@ export function SiteHeader({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-surface-ivory border-b border-neutral-border">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Brand Logo Oficial */}
         <a
           href="/"

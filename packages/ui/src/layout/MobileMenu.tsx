@@ -26,14 +26,37 @@ export function MobileMenu({
   whatsappMessage,
 }: MobileMenuProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
 
-  // Focus trap and Escape key listener
+  // Trampa de foco: guarda quién abrió el menú, mueve el foco al drawer,
+  // cicla Tab/Shift+Tab dentro de sus límites y devuelve el foco al cerrar.
   useEffect(() => {
     if (!isOpen) return;
+
+    triggerRef.current = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
+        return;
+      }
+      if (e.key !== "Tab" || !drawerRef.current) return;
+
+      const focusable = drawerRef.current.querySelectorAll<HTMLElement>(
+        "a[href], button:not([disabled])"
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
       }
     };
 
@@ -43,21 +66,25 @@ export function MobileMenu({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "unset";
+      triggerRef.current?.focus();
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end bg-brand-navy/40 backdrop-blur-sm transition-opacity duration-300"
+      className={`fixed inset-0 z-50 flex justify-end bg-brand-navy/40 backdrop-blur-sm transition-opacity duration-[320ms] ${
+        isOpen ? "opacity-100" : "pointer-events-none opacity-0"
+      }`}
       onClick={onClose}
       aria-modal="true"
       role="dialog"
+      inert={!isOpen}
     >
       <div
         ref={drawerRef}
-        className="w-full max-w-xs bg-surface-ivory h-full p-6 flex flex-col justify-between shadow-floating border-l border-neutral-border transition-transform duration-300"
+        className={`w-full max-w-xs bg-surface-ivory h-full p-6 flex flex-col justify-between shadow-floating border-l border-neutral-border transition-transform duration-[320ms] ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top bar with close button */}
@@ -65,6 +92,7 @@ export function MobileMenu({
           <div className="flex items-center justify-between pb-6 border-b border-neutral-border">
             <span className="font-sora font-bold text-lg text-brand-navy">Menú</span>
             <button
+              ref={closeButtonRef}
               onClick={onClose}
               className="p-2 rounded-lg text-brand-navy hover:bg-brand-navy/5 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-accent cursor-pointer"
               aria-label="Cerrar menú"

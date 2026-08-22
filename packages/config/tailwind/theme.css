@@ -94,7 +94,7 @@
 @keyframes hero-fade-up {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -123,7 +123,7 @@
 }
 
 .animate-hero-fade-up {
-  animation: hero-fade-up 600ms cubic-bezier(0, 0, 0.2, 1) both;
+  animation: hero-fade-up 570ms cubic-bezier(0, 0, 0.2, 1) both;
 }
 
 .animate-hero-fade-in {
@@ -132,6 +132,26 @@
 
 .animate-hero-scale-in {
   animation: hero-scale-in 700ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+/* Entrada de la "postal" del Hero (foto principal + polaroids). Anima solo
+   `translate` (no `transform`) porque cada `PolaroidPhoto` ya usa `transform`
+   inline para su rotación final propia — así ambas propiedades componen sin
+   pelear, y la inclinación de cada polaroid se mantiene igual bajo
+   `prefers-reduced-motion` en vez de perderse junto con la animación. */
+@keyframes hero-postal-in {
+  from {
+    opacity: 0;
+    translate: 0 38px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.animate-hero-postal-in {
+  animation: hero-postal-in 740ms cubic-bezier(0, 0, 0.2, 1) both;
 }
 
 .animation-delay-100 {
@@ -150,6 +170,30 @@
   animation-delay: 400ms;
 }
 
+/* ==========================================================================
+   Revelado por Scroll (Reveal.tsx)
+   ========================================================================== */
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.reveal-pending {
+  opacity: 0;
+  translate: 0 24px;
+}
+
+.reveal-revealed {
+  animation: reveal-up var(--motion-slow) var(--ease-enter) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-hero-fade-up,
   .animate-hero-fade-in,
@@ -157,6 +201,24 @@
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .animate-hero-postal-in {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+  }
+
+  .reveal-pending {
+    opacity: 0;
+    translate: none;
+    transition: opacity var(--motion-fast) ease-out;
+  }
+
+  .reveal-revealed {
+    animation: none;
+    opacity: 1;
+    transition: opacity var(--motion-fast) ease-out;
   }
 }
 

@@ -1,6 +1,7 @@
 export * from "./primitives/Button";
 export * from "./primitives/WhatsAppButton";
 export * from "./primitives/ResponsiveImage";
+export * from "./primitives/Reveal";
 export * from "./primitives/TravelMaskFrame";
 export * from "./primitives/OrganicPhoto";
 export * from "./primitives/PolaroidPhoto";

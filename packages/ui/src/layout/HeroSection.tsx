@@ -103,7 +103,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
       {/* Canvas capado: todo lo que sí debe alinearse con el texto (foto
           principal, polaroids, velo, atmósfera, texto) comparte este mismo
           sistema de coordenadas — se achica un poco pero nunca se corta. */}
-      <div className="relative w-full h-[calc(100vh-5rem)] min-h-[600px] max-h-[900px] xl:max-w-[1600px] xl:mx-auto">
+      <div className="relative w-full h-[calc(100vh-5rem)] min-h-[600px] max-h-[900px] xl:max-w-[1440px] xl:mx-auto">
         {/* Atmósfera: misma elipse a escala, posición/tamaño por breakpoint */}
         <svg
           className="absolute z-0 pointer-events-none left-[18.46%] top-[47.69%] w-full h-[46.26%] md:left-[38.09%] md:top-[3.52%] md:w-[60.55%] md:h-[71.59%] xl:left-[45.14%] xl:top-[1.45%] xl:w-[52.78%] xl:h-[78.5%]"

@@ -3,17 +3,16 @@
 import React from "react";
 
 export interface JourneyConnectorProps {
-  /** Número de etapa, ej. "01" — mismo lenguaje visual en las 3 apariciones de la ruta. */
+  /** Número de etapa, ej. "01" — mismo lenguaje visual en cada aparición de la ruta. */
   step: string;
   /** Ej. "Imaginar → Explorar" — describe la transición narrativa, no la sección en sí. */
   label: string;
 }
 
 /**
- * Aparece solo en las 3 transiciones narrativas clave de Inicio (no entre cada bloque):
- * Hero→Descubrir, Explorar→Prepararte, Prepararte→Conversar. Comparte el mismo hilo
- * naranja y marcador numerado en las tres para sentirse una sola ruta, no decoraciones
- * independientes.
+ * Conector narrativo genérico entre pasos, usado fuera de Inicio (`/contacto`,
+ * `/nosotros`). En Inicio ya no aparece entre secciones: esa continuidad la
+ * resuelve el papel continuo (olas) más la ruta inline propia de cada sección.
  */
 export function JourneyConnector({ step, label }: JourneyConnectorProps) {
   return (
