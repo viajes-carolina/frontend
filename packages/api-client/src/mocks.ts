@@ -38,6 +38,14 @@ import {
   HomeBlogInspirationDTO,
   UpdateHomeBlogInspirationRequest,
   PublicHomeBlogInspirationResponse,
+  HomeConversationalPauseDTO,
+  UpdateHomeConversationalPauseRequest,
+  HomePromotionsSectionDTO,
+  UpdateHomePromotionsSectionRequest,
+  HomeTestimonialsSectionDTO,
+  UpdateHomeTestimonialsSectionRequest,
+  HomeFaqSectionDTO,
+  UpdateHomeFaqSectionRequest,
   ClaimRecordDTO,
   SubmitClaimRequest,
   UpdateClaimStatusRequest,
@@ -102,13 +110,6 @@ export const DEFAULT_HOME_HERO: HomeHeroDTO = {
   backgroundMediaUrl: "/media/demo-hero-travel.webp",
   backgroundFocalX: 50.0,
   backgroundFocalY: 40.0,
-  featuredCardBadge: "Próxima Parada · Cusco",
-  featuredCardTitle: "Machu Picchu & Valle Sagrado",
-  featuredCardSubtitle: "Experiencia personalizada de 5 días / 4 noches",
-  featuredCardPricePen: 1922,
-  featuredCardOrigin: "Desde Lima",
-  featuredCardMediaId: 3,
-  featuredCardMediaUrl: "/media/demo-cusco-machupicchu.webp",
   // Collage de fotos de clientes (Hero H6): sin URL hasta que el admin suba
   // fotos reales — el componente muestra un placeholder abstracto mientras tanto.
   secondaryMedia1FocalX: 50.0,
@@ -117,8 +118,6 @@ export const DEFAULT_HOME_HERO: HomeHeroDTO = {
   secondaryMedia2FocalY: 50.0,
   secondaryMedia3FocalX: 50.0,
   secondaryMedia3FocalY: 50.0,
-  secondaryMedia4FocalX: 50.0,
-  secondaryMedia4FocalY: 50.0,
   trustStatText: "Cada foto pertenece a viajeros que confiaron en nosotros.",
   eyebrowText: "Empecemos por lo que sueñas",
   revision: 1,
@@ -1329,6 +1328,95 @@ export function updateMockHomeBlogInspiration(req: UpdateHomeBlogInspirationRequ
     updatedAt: new Date().toISOString(),
   };
   return MOCK_HOME_BLOG_INSPIRATION;
+}
+
+// Home Conversational Pause Mocks — sección "04 · Antes de seguir"
+export const DEFAULT_HOME_CONVERSATIONAL_PAUSE: HomeConversationalPauseDTO = {
+  id: 1,
+  badgeText: "04 · Antes de seguir",
+  title: "¿Ya imaginas cómo podría sentirse tu próximo viaje?",
+  subtitle: "No necesitas tener todo decidido. Cuéntanos qué te ilusiona y una asesora te ayuda a darle forma.",
+  whatsappCtaText: "Conversarlo por WhatsApp",
+  whatsappMessageTemplate: "Hola Viajes Carolina, quiero contarles qué tengo en mente para mi próximo viaje.",
+  createdAt: "2026-08-22T00:00:00.000Z",
+  updatedAt: "2026-08-22T00:00:00.000Z",
+};
+
+export let MOCK_HOME_CONVERSATIONAL_PAUSE: HomeConversationalPauseDTO = { ...DEFAULT_HOME_CONVERSATIONAL_PAUSE };
+
+export function getMockHomeConversationalPause(): HomeConversationalPauseDTO {
+  return MOCK_HOME_CONVERSATIONAL_PAUSE;
+}
+
+export function updateMockHomeConversationalPause(req: UpdateHomeConversationalPauseRequest): HomeConversationalPauseDTO {
+  MOCK_HOME_CONVERSATIONAL_PAUSE = { ...MOCK_HOME_CONVERSATIONAL_PAUSE, ...req, updatedAt: new Date().toISOString() };
+  return MOCK_HOME_CONVERSATIONAL_PAUSE;
+}
+
+// Home Promotions Section Mocks — copy de "02 · Promociones" + CTA de cierre
+export const DEFAULT_HOME_PROMOTIONS_SECTION: HomePromotionsSectionDTO = {
+  id: 1,
+  badgeText: "02 · Viajes para empezar a imaginar",
+  title: "Algunas formas de vivir tu próximo viaje",
+  subtitle: "Experiencias que podemos ajustar a tus tiempos, compañía y presupuesto.",
+  bottomCtaQuestion: "¿Cuál de estos viajes te gustaría vivir?",
+  bottomCtaWhatsappText: "Cuéntanos cuál te gustó",
+  bottomCtaWhatsappMessage: "Hola Viajes Carolina, me gustaría conversar sobre una de sus promociones.",
+  createdAt: "2026-08-22T00:00:00.000Z",
+  updatedAt: "2026-08-22T00:00:00.000Z",
+};
+
+export let MOCK_HOME_PROMOTIONS_SECTION: HomePromotionsSectionDTO = { ...DEFAULT_HOME_PROMOTIONS_SECTION };
+
+export function getMockHomePromotionsSection(): HomePromotionsSectionDTO {
+  return MOCK_HOME_PROMOTIONS_SECTION;
+}
+
+export function updateMockHomePromotionsSection(req: UpdateHomePromotionsSectionRequest): HomePromotionsSectionDTO {
+  MOCK_HOME_PROMOTIONS_SECTION = { ...MOCK_HOME_PROMOTIONS_SECTION, ...req, updatedAt: new Date().toISOString() };
+  return MOCK_HOME_PROMOTIONS_SECTION;
+}
+
+// Home Testimonials Section Mocks — copy de "05 · Historias reales"
+export const DEFAULT_HOME_TESTIMONIALS_SECTION: HomeTestimonialsSectionDTO = {
+  id: 1,
+  badgeText: "05 · Historias reales",
+  title: "Viajes que hoy se recuerdan así",
+  subtitle: "Cada fotografía guarda una experiencia que comenzó con una conversación.",
+  createdAt: "2026-08-22T00:00:00.000Z",
+  updatedAt: "2026-08-22T00:00:00.000Z",
+};
+
+export let MOCK_HOME_TESTIMONIALS_SECTION: HomeTestimonialsSectionDTO = { ...DEFAULT_HOME_TESTIMONIALS_SECTION };
+
+export function getMockHomeTestimonialsSection(): HomeTestimonialsSectionDTO {
+  return MOCK_HOME_TESTIMONIALS_SECTION;
+}
+
+export function updateMockHomeTestimonialsSection(req: UpdateHomeTestimonialsSectionRequest): HomeTestimonialsSectionDTO {
+  MOCK_HOME_TESTIMONIALS_SECTION = { ...MOCK_HOME_TESTIMONIALS_SECTION, ...req, updatedAt: new Date().toISOString() };
+  return MOCK_HOME_TESTIMONIALS_SECTION;
+}
+
+// Home FAQ Section Mocks — copy de "06 · Antes de continuar"
+export const DEFAULT_HOME_FAQ_SECTION: HomeFaqSectionDTO = {
+  id: 1,
+  badgeText: "06 · Antes de continuar",
+  title: "Lo que solemos conversar antes de viajar",
+  subtitle: "Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.",
+  createdAt: "2026-08-22T00:00:00.000Z",
+  updatedAt: "2026-08-22T00:00:00.000Z",
+};
+
+export let MOCK_HOME_FAQ_SECTION: HomeFaqSectionDTO = { ...DEFAULT_HOME_FAQ_SECTION };
+
+export function getMockHomeFaqSection(): HomeFaqSectionDTO {
+  return MOCK_HOME_FAQ_SECTION;
+}
+
+export function updateMockHomeFaqSection(req: UpdateHomeFaqSectionRequest): HomeFaqSectionDTO {
+  MOCK_HOME_FAQ_SECTION = { ...MOCK_HOME_FAQ_SECTION, ...req, updatedAt: new Date().toISOString() };
+  return MOCK_HOME_FAQ_SECTION;
 }
 
 // Claims & Contact Explore Links Mocks (Corte 13)

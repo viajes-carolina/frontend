@@ -36,6 +36,14 @@ import {
   HomeBlogInspirationDTO,
   UpdateHomeBlogInspirationRequest,
   PublicHomeBlogInspirationResponse,
+  HomeConversationalPauseDTO,
+  UpdateHomeConversationalPauseRequest,
+  HomePromotionsSectionDTO,
+  UpdateHomePromotionsSectionRequest,
+  HomeTestimonialsSectionDTO,
+  UpdateHomeTestimonialsSectionRequest,
+  HomeFaqSectionDTO,
+  UpdateHomeFaqSectionRequest,
   ClaimRecordDTO,
   SubmitClaimRequest,
   UpdateClaimStatusRequest,
@@ -43,6 +51,8 @@ import {
   AdminUserDTO,
   LoginRequest,
   LoginResponse,
+  ChangeOwnPasswordRequest,
+  ChangeOwnPasswordResponse,
   CreateAdminUserRequest,
   UpdateAdminUserRequest,
   AuditLogDTO,
@@ -69,6 +79,10 @@ import {
   getMockBlogPostBySlug,
   getMockGlobalSearch,
   getMockHomeBlogInspiration,
+  getMockHomeConversationalPause,
+  getMockHomePromotionsSection,
+  getMockHomeTestimonialsSection,
+  getMockHomeFaqSection,
   getMockContactExploreLinks,
   getMockClaimByCode,
 } from "./mocks";
@@ -383,6 +397,16 @@ export class ViajesCarolinaApiClient {
       method: "DELETE",
     });
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+  }
+
+  async syncPromotionsFromFacebook(): Promise<{ created: number }> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/promotions/sync-facebook"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   // ==========================================
@@ -857,6 +881,162 @@ export class ViajesCarolinaApiClient {
   }
 
   // ==========================================
+  // Home Conversational Pause API
+  // ==========================================
+
+  async getPublicHomeConversationalPause(): Promise<HomeConversationalPauseDTO> {
+    let res: Response;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      res = await fetch(this.getEffectiveUrl("public/v1/home/conversational-pause"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch {
+      return getMockHomeConversationalPause();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminHomeConversationalPause(): Promise<HomeConversationalPauseDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/conversational-pause"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminHomeConversationalPause(payload: UpdateHomeConversationalPauseRequest): Promise<HomeConversationalPauseDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/conversational-pause"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  // ==========================================
+  // Home Promotions Section API
+  // ==========================================
+
+  async getPublicHomePromotionsSection(): Promise<HomePromotionsSectionDTO> {
+    let res: Response;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      res = await fetch(this.getEffectiveUrl("public/v1/home/promotions-section"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch {
+      return getMockHomePromotionsSection();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminHomePromotionsSection(): Promise<HomePromotionsSectionDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/promotions-section"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminHomePromotionsSection(payload: UpdateHomePromotionsSectionRequest): Promise<HomePromotionsSectionDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/promotions-section"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  // ==========================================
+  // Home Testimonials Section API
+  // ==========================================
+
+  async getPublicHomeTestimonialsSection(): Promise<HomeTestimonialsSectionDTO> {
+    let res: Response;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      res = await fetch(this.getEffectiveUrl("public/v1/home/testimonials-section"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch {
+      return getMockHomeTestimonialsSection();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminHomeTestimonialsSection(): Promise<HomeTestimonialsSectionDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/testimonials-section"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminHomeTestimonialsSection(payload: UpdateHomeTestimonialsSectionRequest): Promise<HomeTestimonialsSectionDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/testimonials-section"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  // ==========================================
+  // Home FAQ Section API
+  // ==========================================
+
+  async getPublicHomeFaqSection(): Promise<HomeFaqSectionDTO> {
+    let res: Response;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      res = await fetch(this.getEffectiveUrl("public/v1/home/faq-section"), {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch {
+      return getMockHomeFaqSection();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminHomeFaqSection(): Promise<HomeFaqSectionDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/faq-section"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminHomeFaqSection(payload: UpdateHomeFaqSectionRequest): Promise<HomeFaqSectionDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/home/faq-section"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  // ==========================================
   // Claims: Libro de Reclamaciones & Office Links (Corte 13)
   // ==========================================
 
@@ -945,6 +1125,16 @@ export class ViajesCarolinaApiClient {
   async getCurrentAdminUser(): Promise<AdminUserDTO> {
     const res = await fetch(this.getEffectiveUrl("admin/v1/auth/me"), {
       cache: "no-store",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async changeOwnPassword(req: ChangeOwnPasswordRequest): Promise<ChangeOwnPasswordResponse> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/auth/password"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
     });
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();

@@ -515,6 +515,16 @@ export async function handleProxyRequest(
       return NextResponse.json(current, { status: 200 });
     }
 
+    // Sincronización con Facebook: mutación real contra un servicio externo,
+    // nunca debe fabricar un resultado falso si el backend está inalcanzable
+    // (a diferencia del resto de "promotions", que sí tiene fallback offline).
+    if (targetPath.includes("promotions/sync-facebook")) {
+      return NextResponse.json(
+        { message: "El backend no está disponible para sincronizar con Facebook. Intenta nuevamente en unos segundos." },
+        { status: 503 }
+      );
+    }
+
     if (targetPath.includes("promotions")) {
       const current = readStoredJson<PromotionDTO[]>("promotions.json", DEFAULT_PROMOTIONS);
       if (method === "POST") {
@@ -982,7 +992,7 @@ export async function handleProxyRequest(
 
     // Auth & Session (Corte 14): la autenticación NUNCA se simula localmente.
     // Si el backend real no responde, se rechaza en vez de aceptar cualquier credencial (ver SEC-020).
-    if (targetPath.includes("auth/login") || targetPath.includes("auth/me")) {
+    if (targetPath.includes("auth/login") || targetPath.includes("auth/me") || targetPath.includes("auth/password")) {
       return NextResponse.json(
         { message: "El backend de autenticación no está disponible. Intenta nuevamente en unos segundos." },
         { status: 503 }

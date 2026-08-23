@@ -2,6 +2,7 @@ import {
   HeroSection,
   PromotionsSection,
   BlogInspirationSection,
+  ConversationalPauseSection,
   TestimonialsSection,
   FaqSection,
 } from "@vc/ui";
@@ -10,12 +11,26 @@ import { apiClient } from "@vc/api-client";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [siteSettings, homeHero, promotions, blogInspiration, trustData] = await Promise.all([
+  const [
+    siteSettings,
+    homeHero,
+    promotions,
+    blogInspiration,
+    trustData,
+    promotionsSectionConfig,
+    conversationalPauseConfig,
+    testimonialsSectionConfig,
+    faqSectionConfig,
+  ] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getHomeHero(),
     apiClient.getFeaturedPromotions(),
     apiClient.getPublicHomeBlogInspiration(),
     apiClient.getPublicTrust(),
+    apiClient.getPublicHomePromotionsSection(),
+    apiClient.getPublicHomeConversationalPause(),
+    apiClient.getPublicHomeTestimonialsSection(),
+    apiClient.getPublicHomeFaqSection(),
   ]);
 
   return (
@@ -28,7 +43,7 @@ export default async function HomePage() {
       {/* =========================================================================
           02 · Promociones Destacadas — Descubrir
           ========================================================================= */}
-      <PromotionsSection promotions={promotions} settings={siteSettings} />
+      <PromotionsSection promotions={promotions} settings={siteSettings} config={promotionsSectionConfig} />
 
       {/* =========================================================================
           03 · Inspiración desde Blog — Prepararse
@@ -36,7 +51,12 @@ export default async function HomePage() {
       <BlogInspirationSection config={blogInspiration.config} posts={blogInspiration.posts} />
 
       {/* =========================================================================
-          04 · Testimonios y Experiencias de Clientes — Prepararte
+          04 · Pausa Conversacional — Antes de seguir
+          ========================================================================= */}
+      <ConversationalPauseSection settings={siteSettings} config={conversationalPauseConfig} />
+
+      {/* =========================================================================
+          05 · Testimonios y Experiencias de Clientes — Prepararte
           ========================================================================= */}
       <TestimonialsSection
         testimonials={trustData.testimonials}
@@ -45,12 +65,13 @@ export default async function HomePage() {
           focalX: homeHero.secondaryMedia2FocalX,
           focalY: homeHero.secondaryMedia2FocalY,
         }}
+        config={testimonialsSectionConfig}
       />
 
       {/* =========================================================================
-          05 · Preguntas Frecuentes FAQ — Prepararte
+          06 · Preguntas Frecuentes FAQ — Prepararte
           ========================================================================= */}
-      <FaqSection faqs={trustData.faqs} settings={siteSettings} />
+      <FaqSection faqs={trustData.faqs} settings={siteSettings} config={faqSectionConfig} />
     </main>
   );
 }

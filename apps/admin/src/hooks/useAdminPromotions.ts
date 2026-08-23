@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import {
   PromotionDTO,
+  PromotionGalleryItemDTO,
   CreateOrUpdatePromotionRequest,
   MediaAssetDTO,
   apiClient,
@@ -32,6 +33,7 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
   );
   const [featuredMediaId, setFeaturedMediaId] = useState<number | undefined>(undefined);
   const [featuredMediaUrl, setFeaturedMediaUrl] = useState<string | undefined>(undefined);
+  const [gallery, setGallery] = useState<PromotionGalleryItemDTO[]>([]);
   const [isFeatured, setIsFeatured] = useState(true);
   const [inclusionsInput, setInclusionsInput] = useState("");
   const [exclusionsInput, setExclusionsInput] = useState("");
@@ -72,6 +74,7 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
     setValidUntil(new Date(Date.now() + 180 * 86400000).toISOString().split("T")[0]);
     setFeaturedMediaId(undefined);
     setFeaturedMediaUrl(undefined);
+    setGallery([]);
     setIsFeatured(true);
     setInclusionsInput("Vuelos ida y vuelta con equipaje, Hotel 4 estrellas con desayuno, Traslados aeropuerto - hotel");
     setExclusionsInput("Gastos personales, Tarjeta de asistencia médica");
@@ -96,6 +99,7 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
     setValidUntil(promo.validUntil);
     setFeaturedMediaId(promo.featuredMediaId);
     setFeaturedMediaUrl(promo.featuredMediaUrl);
+    setGallery(promo.gallery || []);
     setIsFeatured(promo.isFeatured);
     setInclusionsInput((promo.inclusions || []).join("\n"));
     setExclusionsInput((promo.exclusions || []).join("\n"));
@@ -124,6 +128,20 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
   const handleSelectMedia = (media: MediaAssetDTO) => {
     setFeaturedMediaId(media.id);
     setFeaturedMediaUrl(media.storagePath);
+  };
+
+  const addToGallery = (media: MediaAssetDTO) => {
+    setGallery((prev) => {
+      if (prev.some((item) => item.mediaId === media.id)) return prev;
+      return [
+        ...prev,
+        { mediaId: media.id, mediaUrl: media.storagePath, focalX: media.focalX, focalY: media.focalY },
+      ];
+    });
+  };
+
+  const removeFromGallery = (mediaId: number) => {
+    setGallery((prev) => prev.filter((item) => item.mediaId !== mediaId));
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -159,6 +177,7 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
       whatsappMessageTemplate: whatsappTemplate.trim(),
       displayOrder: Number(displayOrder),
       active,
+      galleryMediaIds: gallery.map((item) => item.mediaId),
     };
 
     try {
@@ -189,6 +208,27 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
     }
   };
 
+  const [isSyncingFacebook, setIsSyncingFacebook] = useState(false);
+
+  const handleSyncFacebook = async () => {
+    setIsSyncingFacebook(true);
+    setStatusMessage(null);
+    try {
+      const { created } = await apiClient.syncPromotionsFromFacebook();
+      setStatusMessage(
+        created > 0
+          ? `${created} promoción(es) nueva(s) sincronizada(s) desde Facebook — revísalas antes de activarlas.`
+          : "No hay publicaciones nuevas en Facebook para sincronizar."
+      );
+      await refreshList();
+    } catch (err) {
+      console.error(err);
+      setStatusMessage("No se pudo sincronizar con Facebook.");
+    } finally {
+      setIsSyncingFacebook(false);
+    }
+  };
+
   return {
     promotions,
     isLoading,
@@ -209,6 +249,7 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
     validFrom, setValidFrom,
     validUntil, setValidUntil,
     featuredMediaId, featuredMediaUrl,
+    gallery, addToGallery, removeFromGallery,
     isFeatured, setIsFeatured,
     inclusionsInput, setInclusionsInput,
     exclusionsInput, setExclusionsInput,
@@ -222,5 +263,7 @@ export function useAdminPromotions(initialPromotions: PromotionDTO[]) {
     handleSelectMedia,
     handleSave,
     handleDelete,
+    isSyncingFacebook,
+    handleSyncFacebook,
   };
 }

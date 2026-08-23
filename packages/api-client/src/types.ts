@@ -137,13 +137,6 @@ export interface HomeHeroDTO {
   backgroundMediaUrl?: string;
   backgroundFocalX?: number;
   backgroundFocalY?: number;
-  featuredCardBadge?: string;
-  featuredCardTitle?: string;
-  featuredCardSubtitle?: string;
-  featuredCardPricePen?: number;
-  featuredCardOrigin?: string;
-  featuredCardMediaId?: number;
-  featuredCardMediaUrl?: string;
   secondaryMedia1Id?: number;
   secondaryMedia1Url?: string;
   secondaryMedia1FocalX?: number;
@@ -156,10 +149,6 @@ export interface HomeHeroDTO {
   secondaryMedia3Url?: string;
   secondaryMedia3FocalX?: number;
   secondaryMedia3FocalY?: number;
-  secondaryMedia4Id?: number;
-  secondaryMedia4Url?: string;
-  secondaryMedia4FocalX?: number;
-  secondaryMedia4FocalY?: number;
   trustStatText?: string;
   eyebrowText?: string;
   revision?: number;
@@ -177,12 +166,6 @@ export interface UpdateHomeHeroRequest {
   secondaryCtaUrl?: string;
   trustIndicators: string[];
   backgroundMediaId?: number;
-  featuredCardBadge?: string;
-  featuredCardTitle?: string;
-  featuredCardSubtitle?: string;
-  featuredCardPricePen?: number;
-  featuredCardOrigin?: string;
-  featuredCardMediaId?: number;
   secondaryMedia1Id?: number;
   secondaryMedia1Url?: string;
   secondaryMedia1FocalX?: number;
@@ -195,15 +178,18 @@ export interface UpdateHomeHeroRequest {
   secondaryMedia3Url?: string;
   secondaryMedia3FocalX?: number;
   secondaryMedia3FocalY?: number;
-  secondaryMedia4Id?: number;
-  secondaryMedia4Url?: string;
-  secondaryMedia4FocalX?: number;
-  secondaryMedia4FocalY?: number;
   trustStatText?: string;
   eyebrowText?: string;
 }
 
 // Promotions DTOs (Corte 6)
+export interface PromotionGalleryItemDTO {
+  mediaId: number;
+  mediaUrl: string;
+  focalX?: number;
+  focalY?: number;
+}
+
 export interface PromotionDTO {
   id: number;
   slug: string;
@@ -229,6 +215,10 @@ export interface PromotionDTO {
   active: boolean;
   createdAt?: string;
   updatedAt?: string;
+  gallery?: PromotionGalleryItemDTO[];
+  source?: "MANUAL" | "FACEBOOK" | string;
+  facebookPostId?: string;
+  facebookPermalinkUrl?: string;
 }
 
 export interface CreateOrUpdatePromotionRequest {
@@ -250,6 +240,7 @@ export interface CreateOrUpdatePromotionRequest {
   whatsappMessageTemplate?: string;
   displayOrder?: number;
   active?: boolean;
+  galleryMediaIds?: number[];
 }
 
 // Trust: Testimonials & FAQ DTOs (Corte 7)
@@ -575,6 +566,80 @@ export interface PublicHomeBlogInspirationResponse {
   posts: BlogPostDTO[];
 }
 
+// Home Conversational Pause DTOs — sección "04 · Antes de seguir"
+export interface HomeConversationalPauseDTO {
+  id?: number;
+  badgeText: string;
+  title: string;
+  subtitle: string;
+  whatsappCtaText: string;
+  whatsappMessageTemplate?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateHomeConversationalPauseRequest {
+  badgeText: string;
+  title: string;
+  subtitle: string;
+  whatsappCtaText: string;
+  whatsappMessageTemplate?: string;
+}
+
+// Home Promotions Section DTOs — copy de "02 · Promociones" + CTA de cierre
+export interface HomePromotionsSectionDTO {
+  id?: number;
+  badgeText: string;
+  title: string;
+  subtitle: string;
+  bottomCtaQuestion: string;
+  bottomCtaWhatsappText: string;
+  bottomCtaWhatsappMessage?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateHomePromotionsSectionRequest {
+  badgeText: string;
+  title: string;
+  subtitle: string;
+  bottomCtaQuestion: string;
+  bottomCtaWhatsappText: string;
+  bottomCtaWhatsappMessage?: string;
+}
+
+// Home Testimonials Section DTOs — copy de "05 · Historias reales"
+export interface HomeTestimonialsSectionDTO {
+  id?: number;
+  badgeText: string;
+  title: string;
+  subtitle: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateHomeTestimonialsSectionRequest {
+  badgeText: string;
+  title: string;
+  subtitle: string;
+}
+
+// Home FAQ Section DTOs — copy de "06 · Antes de continuar"
+export interface HomeFaqSectionDTO {
+  id?: number;
+  badgeText: string;
+  title: string;
+  subtitle: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpdateHomeFaqSectionRequest {
+  badgeText: string;
+  title: string;
+  subtitle: string;
+}
+
 // Claims & Contact Explore Links DTOs (Corte 13)
 export interface ClaimRecordDTO {
   id: number;
@@ -673,6 +738,15 @@ export interface LoginResponse {
   tokenType: string;
   expiresInSeconds: number;
   user: AdminUserDTO;
+}
+
+export interface ChangeOwnPasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ChangeOwnPasswordResponse {
+  status: string;
 }
 
 export interface CreateAdminUserRequest {

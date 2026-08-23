@@ -1,15 +1,22 @@
 "use client";
 
 import React, { useId, useState } from "react";
-import { FaqItemDTO, SiteSettingsDTO } from "@vc/api-client";
+import { FaqItemDTO, SiteSettingsDTO, HomeFaqSectionDTO } from "@vc/api-client";
 import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
 import { Reveal } from "../primitives/Reveal";
 
 export interface FaqSectionProps {
   faqs: FaqItemDTO[];
   settings?: SiteSettingsDTO;
+  config?: HomeFaqSectionDTO;
   className?: string;
 }
+
+const DEFAULT_CONFIG: HomeFaqSectionDTO = {
+  badgeText: "06 · Antes de continuar",
+  title: "Lo que solemos conversar antes de viajar",
+  subtitle: "Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.",
+};
 
 // Ruta "hacia la llegada" (Desktop/Wide) — Figma node 408:40, un punto por
 // pregunta (el primero relleno, los siguientes huecos) que termina en el
@@ -94,7 +101,7 @@ function AccordionItem({
   );
 }
 
-export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) {
+export function FaqSection({ faqs, settings, config = DEFAULT_CONFIG, className = "" }: FaqSectionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   if (!faqs || faqs.length === 0) return null;
@@ -117,13 +124,13 @@ export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) 
               <circle cx="264.5" cy="3.84" r="4" className="fill-brand-accent" />
             </svg>
             <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              05 · Antes de continuar
+              {config.badgeText}
             </span>
             <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy">
-              Lo que solemos conversar antes de viajar
+              {config.title}
             </h2>
             <p className="font-inter mt-3 text-sm leading-relaxed text-brand-navy">
-              Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.
+              {config.subtitle}
             </p>
           </Reveal>
 
@@ -142,13 +149,13 @@ export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) 
         <div className="hidden md:flex md:gap-16 xl:hidden">
           <Reveal className="w-[38%]">
             <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              05 · Antes de continuar
+              {config.badgeText}
             </span>
             <h2 className="font-display mt-3 text-[32px] font-semibold leading-[1.13] text-brand-navy">
-              Lo que solemos conversar antes de viajar
+              {config.title}
             </h2>
             <p className="font-inter mt-3 text-[15px] leading-relaxed text-brand-navy">
-              Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.
+              {config.subtitle}
             </p>
           </Reveal>
           <div className="flex-1">
@@ -167,13 +174,13 @@ export function FaqSection({ faqs, settings, className = "" }: FaqSectionProps) 
         <div className="hidden xl:block">
           <Reveal className="mb-12 max-w-2xl">
             <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              05 · Antes de continuar
+              {config.badgeText}
             </span>
             <h2 className="font-display mt-3 text-[42px] font-semibold leading-[1.12] text-brand-navy">
-              Lo que solemos conversar antes de viajar
+              {config.title}
             </h2>
             <p className="font-inter mt-3 text-[15px] leading-relaxed text-brand-navy">
-              Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.
+              {config.subtitle}
             </p>
           </Reveal>
           <div className="relative ml-[14%]">

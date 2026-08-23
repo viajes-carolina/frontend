@@ -4,8 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { HomeHeroDTO } from "@vc/api-client";
 import { useAdminHomeHero } from "../../hooks/useAdminHomeHero";
-import { useMediaPicker } from "../../hooks/useMediaPicker";
-import { Button, CheckIcon, ImageIcon, MediaPickerModal } from "@vc/ui";
+import { Button, CheckIcon } from "@vc/ui";
+import { HeroPhotoSlot } from "./HeroPhotoSlot";
 
 export interface HeroFormProps {
   initialHero: HomeHeroDTO;
@@ -24,39 +24,18 @@ export function HeroForm({ initialHero }: HeroFormProps) {
     trustIndicators, setTrustIndicators,
     backgroundMediaId, backgroundMediaUrl,
     backgroundFocalX, backgroundFocalY,
-    featuredCardBadge, setFeaturedCardBadge,
-    featuredCardTitle, setFeaturedCardTitle,
-    featuredCardSubtitle, setFeaturedCardSubtitle,
-    featuredCardPricePen, setFeaturedCardPricePen,
-    featuredCardOrigin, setFeaturedCardOrigin,
-    featuredCardMediaId, featuredCardMediaUrl,
     secondaryMedia1Id, secondaryMedia1Url, secondaryMedia1FocalX, secondaryMedia1FocalY,
     secondaryMedia2Id, secondaryMedia2Url, secondaryMedia2FocalX, secondaryMedia2FocalY,
     secondaryMedia3Id, secondaryMedia3Url, secondaryMedia3FocalX, secondaryMedia3FocalY,
-    secondaryMedia4Id, secondaryMedia4Url, secondaryMedia4FocalX, secondaryMedia4FocalY,
     trustStatText, setTrustStatText,
     isSaving,
     statusMessage,
-    isBgModalOpen, setIsBgModalOpen,
-    isCardMediaModalOpen, setIsCardMediaModalOpen,
-    isSecondary1ModalOpen, setIsSecondary1ModalOpen,
-    isSecondary2ModalOpen, setIsSecondary2ModalOpen,
-    isSecondary3ModalOpen, setIsSecondary3ModalOpen,
-    isSecondary4ModalOpen, setIsSecondary4ModalOpen,
     handleSelectBgMedia,
-    handleSelectCardMedia,
     handleSelectSecondary1Media,
     handleSelectSecondary2Media,
     handleSelectSecondary3Media,
-    handleSelectSecondary4Media,
     handleSave,
   } = useAdminHomeHero(initialHero);
-
-  const bgMediaPicker = useMediaPicker(isBgModalOpen);
-  const secondary1MediaPicker = useMediaPicker(isSecondary1ModalOpen);
-  const secondary2MediaPicker = useMediaPicker(isSecondary2ModalOpen);
-  const secondary3MediaPicker = useMediaPicker(isSecondary3ModalOpen);
-  const secondary4MediaPicker = useMediaPicker(isSecondary4ModalOpen);
 
   const updateTrustIndicator = (index: number, value: string) => {
     const updated = [...trustIndicators];
@@ -88,13 +67,6 @@ export function HeroForm({ initialHero }: HeroFormProps) {
               Vista previa (texto + foto principal)
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsBgModalOpen(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-brand-navy/5 hover:bg-brand-navy/10 border border-neutral-border text-xs font-bold text-brand-navy transition-all"
-          >
-            🖼️ Cambiar Foto Principal
-          </button>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-6 items-start">
@@ -135,7 +107,7 @@ export function HeroForm({ initialHero }: HeroFormProps) {
         </div>
 
         <div className="mt-5 pt-3 border-t border-neutral-border text-[11px] text-neutral-muted font-inter">
-          Punto focal de la foto principal: <strong>X {backgroundFocalX || 50}% · Y {backgroundFocalY || 50}%</strong> — las 2 fotos de apoyo se configuran más abajo, en &quot;Collage de fotos de clientes&quot;.
+          Punto focal de la foto principal: <strong>X {backgroundFocalX || 50}% · Y {backgroundFocalY || 50}%</strong> — las 3 fotos de apoyo se configuran más abajo, en &quot;Collage de fotos de clientes&quot;.
         </div>
       </div>
 
@@ -330,275 +302,50 @@ export function HeroForm({ initialHero }: HeroFormProps) {
             4. Collage de fotos de clientes
           </h2>
           <p className="font-inter text-xs text-neutral-muted mt-1">
-            1 foto principal + 4 fotos de apoyo, siempre de clientes reales viviendo su viaje — nunca fotos del equipo de la agencia. Sin foto, el Hero muestra un placeholder de color, no una imagen de archivo.
+            1 foto principal + 3 fotos de apoyo, siempre de clientes reales viviendo su viaje — nunca fotos del equipo de la agencia. Sin foto, el Hero muestra un placeholder de color, no una imagen de archivo.
           </p>
         </div>
 
-        <div className="space-y-6">
-          {/* Foto principal */}
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Foto Principal (grande)
-            </label>
-            <div className="flex items-center gap-4">
-              <div className="relative w-36 aspect-video rounded-xl bg-neutral-surface border border-neutral-border overflow-hidden shrink-0 shadow-sm">
-                {backgroundMediaUrl ? (
-                  <Image
-                    src={bgImageSrc}
-                    alt="Foto principal del Hero"
-                    fill
-                    unoptimized
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: `${backgroundFocalX || 50}% ${backgroundFocalY || 50}%`,
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-muted">
-                    <ImageIcon size={24} />
-                  </div>
-                )}
-              </div>
-              <div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="button"
-                  onClick={() => setIsBgModalOpen(true)}
-                >
-                  🖼️ {backgroundMediaId ? "Cambiar Foto Principal" : "Seleccionar Foto"}
-                </Button>
-                {backgroundMediaId && (
-                  <span className="block font-inter text-xs text-neutral-muted mt-1">
-                    ID Activo: #{backgroundMediaId} • Punto Focal: ({backgroundFocalX || 50}%, {backgroundFocalY || 50}%)
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+        <HeroPhotoSlot
+          variant="main"
+          label="Foto Principal (grande)"
+          mediaId={backgroundMediaId}
+          mediaUrl={backgroundMediaUrl}
+          focalX={backgroundFocalX}
+          focalY={backgroundFocalY}
+          onSelect={handleSelectBgMedia}
+          modalTitle="Seleccionar Foto Principal del Hero"
+        />
 
-          {/* Foto de apoyo 1 */}
-          <div className="pt-4 border-t border-neutral-border">
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Foto de Apoyo 1
-            </label>
-            <div className="flex items-center gap-4">
-              <div className="relative w-36 aspect-video rounded-xl bg-neutral-surface border border-neutral-border overflow-hidden shrink-0 shadow-sm">
-                {secondaryMedia1Url ? (
-                  <Image
-                    src={secondaryMedia1Url.startsWith("http") || secondaryMedia1Url.startsWith("/") ? secondaryMedia1Url : `/${secondaryMedia1Url}`}
-                    alt="Foto de apoyo 1 del Hero"
-                    fill
-                    unoptimized
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: `${secondaryMedia1FocalX || 50}% ${secondaryMedia1FocalY || 50}%`,
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-muted">
-                    <ImageIcon size={24} />
-                  </div>
-                )}
-              </div>
-              <div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="button"
-                  onClick={() => setIsSecondary1ModalOpen(true)}
-                >
-                  🖼️ {secondaryMedia1Id ? "Cambiar Foto" : "Seleccionar Foto"}
-                </Button>
-                {secondaryMedia1Id && (
-                  <span className="block font-inter text-xs text-neutral-muted mt-1">
-                    ID Activo: #{secondaryMedia1Id} • Punto Focal: ({secondaryMedia1FocalX || 50}%, {secondaryMedia1FocalY || 50}%)
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Foto de apoyo 2 */}
-          <div className="pt-4 border-t border-neutral-border">
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Foto de Apoyo 2
-            </label>
-            <div className="flex items-center gap-4">
-              <div className="relative w-36 aspect-video rounded-xl bg-neutral-surface border border-neutral-border overflow-hidden shrink-0 shadow-sm">
-                {secondaryMedia2Url ? (
-                  <Image
-                    src={secondaryMedia2Url.startsWith("http") || secondaryMedia2Url.startsWith("/") ? secondaryMedia2Url : `/${secondaryMedia2Url}`}
-                    alt="Foto de apoyo 2 del Hero"
-                    fill
-                    unoptimized
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: `${secondaryMedia2FocalX || 50}% ${secondaryMedia2FocalY || 50}%`,
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-muted">
-                    <ImageIcon size={24} />
-                  </div>
-                )}
-              </div>
-              <div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="button"
-                  onClick={() => setIsSecondary2ModalOpen(true)}
-                >
-                  🖼️ {secondaryMedia2Id ? "Cambiar Foto" : "Seleccionar Foto"}
-                </Button>
-                {secondaryMedia2Id && (
-                  <span className="block font-inter text-xs text-neutral-muted mt-1">
-                    ID Activo: #{secondaryMedia2Id} • Punto Focal: ({secondaryMedia2FocalX || 50}%, {secondaryMedia2FocalY || 50}%)
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Foto de apoyo 3 */}
-          <div className="pt-4 border-t border-neutral-border">
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Foto de Apoyo 3
-            </label>
-            <div className="flex items-center gap-4">
-              <div className="relative w-36 aspect-video rounded-xl bg-neutral-surface border border-neutral-border overflow-hidden shrink-0 shadow-sm">
-                {secondaryMedia3Url ? (
-                  <Image
-                    src={secondaryMedia3Url.startsWith("http") || secondaryMedia3Url.startsWith("/") ? secondaryMedia3Url : `/${secondaryMedia3Url}`}
-                    alt="Foto de apoyo 3 del Hero"
-                    fill
-                    unoptimized
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: `${secondaryMedia3FocalX || 50}% ${secondaryMedia3FocalY || 50}%`,
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-muted">
-                    <ImageIcon size={24} />
-                  </div>
-                )}
-              </div>
-              <div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="button"
-                  onClick={() => setIsSecondary3ModalOpen(true)}
-                >
-                  🖼️ {secondaryMedia3Id ? "Cambiar Foto" : "Seleccionar Foto"}
-                </Button>
-                {secondaryMedia3Id && (
-                  <span className="block font-inter text-xs text-neutral-muted mt-1">
-                    ID Activo: #{secondaryMedia3Id} • Punto Focal: ({secondaryMedia3FocalX || 50}%, {secondaryMedia3FocalY || 50}%)
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Foto de apoyo 4 */}
-          <div className="pt-4 border-t border-neutral-border">
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Foto de Apoyo 4
-            </label>
-            <div className="flex items-center gap-4">
-              <div className="relative w-36 aspect-video rounded-xl bg-neutral-surface border border-neutral-border overflow-hidden shrink-0 shadow-sm">
-                {secondaryMedia4Url ? (
-                  <Image
-                    src={secondaryMedia4Url.startsWith("http") || secondaryMedia4Url.startsWith("/") ? secondaryMedia4Url : `/${secondaryMedia4Url}`}
-                    alt="Foto de apoyo 4 del Hero"
-                    fill
-                    unoptimized
-                    style={{
-                      objectFit: "cover",
-                      objectPosition: `${secondaryMedia4FocalX || 50}% ${secondaryMedia4FocalY || 50}%`,
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-muted">
-                    <ImageIcon size={24} />
-                  </div>
-                )}
-              </div>
-              <div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="button"
-                  onClick={() => setIsSecondary4ModalOpen(true)}
-                >
-                  🖼️ {secondaryMedia4Id ? "Cambiar Foto" : "Seleccionar Foto"}
-                </Button>
-                {secondaryMedia4Id && (
-                  <span className="block font-inter text-xs text-neutral-muted mt-1">
-                    ID Activo: #{secondaryMedia4Id} • Punto Focal: ({secondaryMedia4FocalX || 50}%, {secondaryMedia4FocalY || 50}%)
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Featured Card Fields — sin uso en el Hero actual, se conservan por compatibilidad */}
-          <p className="font-inter text-xs text-neutral-muted pt-4 border-t border-neutral-border">
-            Los campos de "tarjeta destacada" de abajo quedan guardados pero no se muestran en el Hero actual — pertenecían a un diseño anterior.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-                Insignia de Tarjeta
-              </label>
-              <input
-                type="text"
-                value={featuredCardBadge}
-                onChange={(e) => setFeaturedCardBadge(e.target.value)}
-                placeholder="Ej: Próxima Parada · Cusco"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              />
-            </div>
-            <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-                Título del Destino
-              </label>
-              <input
-                type="text"
-                value={featuredCardTitle}
-                onChange={(e) => setFeaturedCardTitle(e.target.value)}
-                placeholder="Ej: Machu Picchu & Valle Sagrado"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              />
-            </div>
-            <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-                Subtítulo / Duración
-              </label>
-              <input
-                type="text"
-                value={featuredCardSubtitle}
-                onChange={(e) => setFeaturedCardSubtitle(e.target.value)}
-                placeholder="Ej: Experiencia personalizada de 5 días / 4 noches"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              />
-            </div>
-            <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-                Precio Referencial (S/)
-              </label>
-              <input
-                type="number"
-                value={featuredCardPricePen || ""}
-                onChange={(e) => setFeaturedCardPricePen(e.target.value ? Number(e.target.value) : undefined)}
-                placeholder="Ej: 1922"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              />
-            </div>
-          </div>
+        <div className="pt-2 border-t border-neutral-border grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <HeroPhotoSlot
+            label="Foto de Apoyo 1 (arriba)"
+            mediaId={secondaryMedia1Id}
+            mediaUrl={secondaryMedia1Url}
+            focalX={secondaryMedia1FocalX}
+            focalY={secondaryMedia1FocalY}
+            onSelect={handleSelectSecondary1Media}
+            modalTitle="Seleccionar Foto de Apoyo 1"
+          />
+          <HeroPhotoSlot
+            label="Foto de Apoyo 2 (lateral)"
+            helperText="Solo visible en pantallas de escritorio."
+            mediaId={secondaryMedia2Id}
+            mediaUrl={secondaryMedia2Url}
+            focalX={secondaryMedia2FocalX}
+            focalY={secondaryMedia2FocalY}
+            onSelect={handleSelectSecondary2Media}
+            modalTitle="Seleccionar Foto de Apoyo 2"
+          />
+          <HeroPhotoSlot
+            label="Foto de Apoyo 3 (abajo)"
+            mediaId={secondaryMedia3Id}
+            mediaUrl={secondaryMedia3Url}
+            focalX={secondaryMedia3FocalX}
+            focalY={secondaryMedia3FocalY}
+            onSelect={handleSelectSecondary3Media}
+            modalTitle="Seleccionar Foto de Apoyo 3"
+          />
         </div>
       </div>
 
@@ -613,63 +360,6 @@ export function HeroForm({ initialHero }: HeroFormProps) {
           {isSaving ? "Publicando Cambios..." : "Guardar y Publicar Hero"}
         </Button>
       </div>
-
-      {/* Media Picker Modals */}
-      <MediaPickerModal
-        isOpen={isBgModalOpen}
-        onClose={() => setIsBgModalOpen(false)}
-        onSelect={handleSelectBgMedia}
-        selectedMediaId={backgroundMediaId}
-        title="Seleccionar Foto Principal del Hero"
-        items={bgMediaPicker.items}
-        loading={bgMediaPicker.loading}
-        onUploadFile={bgMediaPicker.uploadFile}
-        onFocalPointSave={bgMediaPicker.saveFocalPoint}
-      />
-      <MediaPickerModal
-        isOpen={isSecondary1ModalOpen}
-        onClose={() => setIsSecondary1ModalOpen(false)}
-        onSelect={handleSelectSecondary1Media}
-        selectedMediaId={secondaryMedia1Id}
-        title="Seleccionar Foto de Apoyo 1"
-        items={secondary1MediaPicker.items}
-        loading={secondary1MediaPicker.loading}
-        onUploadFile={secondary1MediaPicker.uploadFile}
-        onFocalPointSave={secondary1MediaPicker.saveFocalPoint}
-      />
-      <MediaPickerModal
-        isOpen={isSecondary2ModalOpen}
-        onClose={() => setIsSecondary2ModalOpen(false)}
-        onSelect={handleSelectSecondary2Media}
-        selectedMediaId={secondaryMedia2Id}
-        title="Seleccionar Foto de Apoyo 2"
-        items={secondary2MediaPicker.items}
-        loading={secondary2MediaPicker.loading}
-        onUploadFile={secondary2MediaPicker.uploadFile}
-        onFocalPointSave={secondary2MediaPicker.saveFocalPoint}
-      />
-      <MediaPickerModal
-        isOpen={isSecondary3ModalOpen}
-        onClose={() => setIsSecondary3ModalOpen(false)}
-        onSelect={handleSelectSecondary3Media}
-        selectedMediaId={secondaryMedia3Id}
-        title="Seleccionar Foto de Apoyo 3"
-        items={secondary3MediaPicker.items}
-        loading={secondary3MediaPicker.loading}
-        onUploadFile={secondary3MediaPicker.uploadFile}
-        onFocalPointSave={secondary3MediaPicker.saveFocalPoint}
-      />
-      <MediaPickerModal
-        isOpen={isSecondary4ModalOpen}
-        onClose={() => setIsSecondary4ModalOpen(false)}
-        onSelect={handleSelectSecondary4Media}
-        selectedMediaId={secondaryMedia4Id}
-        title="Seleccionar Foto de Apoyo 4"
-        items={secondary4MediaPicker.items}
-        loading={secondary4MediaPicker.loading}
-        onUploadFile={secondary4MediaPicker.uploadFile}
-        onFocalPointSave={secondary4MediaPicker.saveFocalPoint}
-      />
     </form>
   );
 }

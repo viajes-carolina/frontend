@@ -31,6 +31,7 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
     validFrom, setValidFrom,
     validUntil, setValidUntil,
     featuredMediaId, featuredMediaUrl,
+    gallery, addToGallery, removeFromGallery,
     isFeatured, setIsFeatured,
     inclusionsInput, setInclusionsInput,
     exclusionsInput, setExclusionsInput,
@@ -43,6 +44,8 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
     handleSelectMedia,
     handleSave,
     handleDelete,
+    isSyncingFacebook,
+    handleSyncFacebook,
   } = useAdminPromotions(initialPromotions);
 
   const mediaPicker = useMediaPicker(isMediaPickerOpen);
@@ -64,14 +67,24 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
             Total Paquetes: {promotions.length} ofertas
           </span>
         </div>
-        <Button
-          variant="primary"
-          size="sm"
-          icon={<PlusIcon size={18} />}
-          onClick={openCreateModal}
-        >
-          Nueva Promoción
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSyncFacebook}
+            disabled={isSyncingFacebook}
+          >
+            {isSyncingFacebook ? "Sincronizando..." : "📘 Sincronizar desde Facebook"}
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={<PlusIcon size={18} />}
+            onClick={openCreateModal}
+          >
+            Nueva Promoción
+          </Button>
+        </div>
       </div>
 
       {/* Promotions Table */}
@@ -82,6 +95,7 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
               <tr className="border-b border-neutral-border bg-neutral-surface/50 text-[11px] font-sora font-bold text-neutral-muted uppercase tracking-wider">
                 <th className="py-4 px-6">Foto</th>
                 <th className="py-4 px-6">Paquete & Destino</th>
+                <th className="py-4 px-6">Fuente</th>
                 <th className="py-4 px-6">Duración</th>
                 <th className="py-4 px-6">Precio (USD / PEN)</th>
                 <th className="py-4 px-6">Destacado</th>
@@ -106,6 +120,11 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
                           <ImageIcon size={16} />
                         </div>
                       )}
+                      {item.gallery && item.gallery.length > 0 && (
+                        <span className="absolute bottom-0.5 right-0.5 px-1.5 py-0.5 rounded bg-brand-navy/80 text-white text-[9px] font-bold">
+                          +{item.gallery.length}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="py-4 px-6 max-w-xs">
@@ -119,6 +138,17 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
                     <span className="font-mono text-[10px] text-neutral-muted">
                       /{item.slug}
                     </span>
+                  </td>
+                  <td className="py-4 px-6">
+                    {item.source === "FACEBOOK" ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-xs font-semibold">
+                        📘 Facebook
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-neutral-surface text-neutral-muted border border-neutral-border text-xs font-semibold">
+                        Manual
+                      </span>
+                    )}
                   </td>
                   <td className="py-4 px-6 font-inter text-xs text-brand-navy">
                     {item.durationDays}D / {item.durationNights}N
@@ -186,6 +216,9 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSave}
         isEditing={!!editingPromotion}
+        source={editingPromotion?.source}
+        facebookPermalinkUrl={editingPromotion?.facebookPermalinkUrl}
+        createdAt={editingPromotion?.createdAt}
         slug={slug}
         setSlug={setSlug}
         title={title}
@@ -210,6 +243,9 @@ export function PromotionList({ initialPromotions }: PromotionListProps) {
         setValidUntil={setValidUntil}
         featuredMediaId={featuredMediaId}
         featuredMediaUrl={featuredMediaUrl}
+        gallery={gallery}
+        onAddToGallery={addToGallery}
+        onRemoveFromGallery={removeFromGallery}
         isFeatured={isFeatured}
         setIsFeatured={setIsFeatured}
         inclusionsInput={inclusionsInput}

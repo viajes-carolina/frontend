@@ -3,13 +3,17 @@
 import React from "react";
 import Image from "next/image";
 import { Button, CloseIcon, ImageIcon, MediaPickerModal } from "@vc/ui";
-import { MediaAssetDTO } from "@vc/api-client";
+import { MediaAssetDTO, PromotionGalleryItemDTO } from "@vc/api-client";
+import { PromotionGalleryGrid } from "./PromotionGalleryGrid";
 
 export interface PromotionFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
   isEditing: boolean;
+  source?: string;
+  facebookPermalinkUrl?: string;
+  createdAt?: string;
   slug: string;
   setSlug: (val: string) => void;
   title: string;
@@ -34,6 +38,9 @@ export interface PromotionFormModalProps {
   setValidUntil: (val: string) => void;
   featuredMediaId?: number;
   featuredMediaUrl?: string;
+  gallery: PromotionGalleryItemDTO[];
+  onAddToGallery: (media: MediaAssetDTO) => void;
+  onRemoveFromGallery: (mediaId: number) => void;
   isFeatured: boolean;
   setIsFeatured: (val: boolean) => void;
   inclusionsInput: string;
@@ -60,6 +67,9 @@ export function PromotionFormModal({
   onClose,
   onSubmit,
   isEditing,
+  source,
+  facebookPermalinkUrl,
+  createdAt,
   slug,
   setSlug,
   title,
@@ -84,6 +94,9 @@ export function PromotionFormModal({
   setValidUntil,
   featuredMediaId,
   featuredMediaUrl,
+  gallery,
+  onAddToGallery,
+  onRemoveFromGallery,
   isFeatured,
   setIsFeatured,
   inclusionsInput,
@@ -117,7 +130,7 @@ export function PromotionFormModal({
               {isEditing ? "Editar Paquete / Promoción" : "Nueva Promoción de Viaje"}
             </h2>
             <p className="font-inter text-xs text-neutral-muted mt-0.5">
-              Define los precios, destinos, días, noches, inclusiones y fotografía de portada.
+              Define los precios, destinos, días, noches, inclusiones, fotografía de portada y galería.
             </p>
           </div>
           <button
@@ -131,6 +144,25 @@ export function PromotionFormModal({
 
         {/* Form Body */}
         <form onSubmit={onSubmit} className="space-y-5">
+          {source === "FACEBOOK" && (
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 text-xs font-inter flex items-center justify-between gap-3">
+              <span>
+                📘 Sincronizado desde Facebook{createdAt ? ` el ${new Date(createdAt).toLocaleDateString("es-PE")}` : ""}.
+                Revisa precio, duración y destino antes de activarla.
+              </span>
+              {facebookPermalinkUrl && (
+                <a
+                  href={facebookPermalinkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 font-semibold underline hover:no-underline"
+                >
+                  Ver publicación original ↗
+                </a>
+              )}
+            </div>
+          )}
+
           {/* Main Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -160,6 +192,41 @@ export function PromotionFormModal({
                 required
               />
             </div>
+          </div>
+
+          {/* Fotos — portada + galería adicional, arriba y prominente */}
+          <div className="p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border space-y-5">
+            <div>
+              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
+                Foto de Portada
+              </label>
+              <div className="flex items-center gap-4">
+                <div className="relative w-40 aspect-video rounded-xl bg-white border border-neutral-border overflow-hidden shrink-0 shadow-sm">
+                  {featuredMediaUrl ? (
+                    <Image
+                      src={featuredMediaUrl.startsWith("http") || featuredMediaUrl.startsWith("/") ? featuredMediaUrl : `/${featuredMediaUrl}`}
+                      alt="Portada"
+                      fill
+                      style={{ objectFit: "cover" }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-neutral-muted">
+                      <ImageIcon size={24} />
+                    </div>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  onClick={() => setIsMediaPickerOpen(true)}
+                >
+                  🖼️ {featuredMediaId ? "Cambiar Imagen" : "Elegir de Galería"}
+                </Button>
+              </div>
+            </div>
+
+            <PromotionGalleryGrid gallery={gallery} onAdd={onAddToGallery} onRemove={onRemoveFromGallery} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -309,37 +376,6 @@ export function PromotionFormModal({
               placeholder="Hola Viajes Carolina, me interesa la promoción..."
               className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
-          </div>
-
-          {/* Cover Media Picker */}
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-              Fotografía de la Promoción (Biblioteca de Medios)
-            </label>
-            <div className="flex items-center gap-4">
-              <div className="relative w-24 aspect-video rounded-xl bg-neutral-surface border border-neutral-border overflow-hidden shrink-0">
-                {featuredMediaUrl ? (
-                  <Image
-                    src={featuredMediaUrl.startsWith("http") || featuredMediaUrl.startsWith("/") ? featuredMediaUrl : `/${featuredMediaUrl}`}
-                    alt="Portada"
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-muted">
-                    <ImageIcon size={20} />
-                  </div>
-                )}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                type="button"
-                onClick={() => setIsMediaPickerOpen(true)}
-              >
-                🖼️ {featuredMediaId ? "Cambiar Imagen" : "Elegir de Galería"}
-              </Button>
-            </div>
           </div>
 
           {/* Toggles */}

@@ -28,27 +28,6 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
   const [backgroundMediaUrl, setBackgroundMediaUrl] = useState<string | undefined>(
     initialHero.backgroundMediaUrl
   );
-  const [featuredCardBadge, setFeaturedCardBadge] = useState(
-    initialHero.featuredCardBadge || ""
-  );
-  const [featuredCardTitle, setFeaturedCardTitle] = useState(
-    initialHero.featuredCardTitle || ""
-  );
-  const [featuredCardSubtitle, setFeaturedCardSubtitle] = useState(
-    initialHero.featuredCardSubtitle || ""
-  );
-  const [featuredCardPricePen, setFeaturedCardPricePen] = useState<number | undefined>(
-    initialHero.featuredCardPricePen
-  );
-  const [featuredCardOrigin, setFeaturedCardOrigin] = useState(
-    initialHero.featuredCardOrigin || ""
-  );
-  const [featuredCardMediaId, setFeaturedCardMediaId] = useState<number | undefined>(
-    initialHero.featuredCardMediaId
-  );
-  const [featuredCardMediaUrl, setFeaturedCardMediaUrl] = useState<string | undefined>(
-    initialHero.featuredCardMediaUrl
-  );
   const [secondaryMedia1Id, setSecondaryMedia1Id] = useState<number | undefined>(
     initialHero.secondaryMedia1Id
   );
@@ -85,29 +64,14 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
   const [secondaryMedia3FocalY, setSecondaryMedia3FocalY] = useState<number>(
     initialHero.secondaryMedia3FocalY || 50
   );
-  const [secondaryMedia4Id, setSecondaryMedia4Id] = useState<number | undefined>(
-    initialHero.secondaryMedia4Id
-  );
-  const [secondaryMedia4Url, setSecondaryMedia4Url] = useState<string | undefined>(
-    initialHero.secondaryMedia4Url
-  );
-  const [secondaryMedia4FocalX, setSecondaryMedia4FocalX] = useState<number>(
-    initialHero.secondaryMedia4FocalX || 50
-  );
-  const [secondaryMedia4FocalY, setSecondaryMedia4FocalY] = useState<number>(
-    initialHero.secondaryMedia4FocalY || 50
-  );
   const [trustStatText, setTrustStatText] = useState(initialHero.trustStatText || "");
   const [eyebrowText, setEyebrowText] = useState(initialHero.eyebrowText || "");
 
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [isBgModalOpen, setIsBgModalOpen] = useState(false);
-  const [isCardMediaModalOpen, setIsCardMediaModalOpen] = useState(false);
-  const [isSecondary1ModalOpen, setIsSecondary1ModalOpen] = useState(false);
-  const [isSecondary2ModalOpen, setIsSecondary2ModalOpen] = useState(false);
-  const [isSecondary3ModalOpen, setIsSecondary3ModalOpen] = useState(false);
-  const [isSecondary4ModalOpen, setIsSecondary4ModalOpen] = useState(false);
+
+  const [backgroundFocalX, setBackgroundFocalX] = useState<number>(initialHero.backgroundFocalX || 50);
+  const [backgroundFocalY, setBackgroundFocalY] = useState<number>(initialHero.backgroundFocalY || 50);
 
   // Fresh rehydration on mount
   useEffect(() => {
@@ -127,13 +91,6 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         setBackgroundMediaUrl(fresh.backgroundMediaUrl);
         setBackgroundFocalX(fresh.backgroundFocalX || 50);
         setBackgroundFocalY(fresh.backgroundFocalY || 50);
-        setFeaturedCardBadge(fresh.featuredCardBadge || "");
-        setFeaturedCardTitle(fresh.featuredCardTitle || "");
-        setFeaturedCardSubtitle(fresh.featuredCardSubtitle || "");
-        setFeaturedCardPricePen(fresh.featuredCardPricePen);
-        setFeaturedCardOrigin(fresh.featuredCardOrigin || "");
-        setFeaturedCardMediaId(fresh.featuredCardMediaId);
-        setFeaturedCardMediaUrl(fresh.featuredCardMediaUrl);
         setSecondaryMedia1Id(fresh.secondaryMedia1Id);
         setSecondaryMedia1Url(fresh.secondaryMedia1Url);
         setSecondaryMedia1FocalX(fresh.secondaryMedia1FocalX || 50);
@@ -146,29 +103,17 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         setSecondaryMedia3Url(fresh.secondaryMedia3Url);
         setSecondaryMedia3FocalX(fresh.secondaryMedia3FocalX || 50);
         setSecondaryMedia3FocalY(fresh.secondaryMedia3FocalY || 50);
-        setSecondaryMedia4Id(fresh.secondaryMedia4Id);
-        setSecondaryMedia4Url(fresh.secondaryMedia4Url);
-        setSecondaryMedia4FocalX(fresh.secondaryMedia4FocalX || 50);
-        setSecondaryMedia4FocalY(fresh.secondaryMedia4FocalY || 50);
         setTrustStatText(fresh.trustStatText || "");
         setEyebrowText(fresh.eyebrowText || "");
       }
     });
   }, []);
 
-  const [backgroundFocalX, setBackgroundFocalX] = useState<number>(initialHero.backgroundFocalX || 50);
-  const [backgroundFocalY, setBackgroundFocalY] = useState<number>(initialHero.backgroundFocalY || 50);
-
   const handleSelectBgMedia = (media: MediaAssetDTO) => {
     setBackgroundMediaId(media.id);
     setBackgroundMediaUrl(media.storagePath);
     setBackgroundFocalX(media.focalX || 50);
     setBackgroundFocalY(media.focalY || 50);
-  };
-
-  const handleSelectCardMedia = (media: MediaAssetDTO) => {
-    setFeaturedCardMediaId(media.id);
-    setFeaturedCardMediaUrl(media.storagePath);
   };
 
   const handleSelectSecondary1Media = (media: MediaAssetDTO) => {
@@ -192,13 +137,6 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     setSecondaryMedia3FocalY(media.focalY || 50);
   };
 
-  const handleSelectSecondary4Media = (media: MediaAssetDTO) => {
-    setSecondaryMedia4Id(media.id);
-    setSecondaryMedia4Url(media.storagePath);
-    setSecondaryMedia4FocalX(media.focalX || 50);
-    setSecondaryMedia4FocalY(media.focalY || 50);
-  };
-
   const handleSave = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setIsSaving(true);
@@ -219,13 +157,6 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         backgroundMediaUrl,
         backgroundFocalX,
         backgroundFocalY,
-        featuredCardBadge,
-        featuredCardTitle,
-        featuredCardSubtitle,
-        featuredCardPricePen,
-        featuredCardOrigin,
-        featuredCardMediaId,
-        featuredCardMediaUrl,
         secondaryMedia1Id,
         secondaryMedia1Url,
         secondaryMedia1FocalX,
@@ -238,10 +169,6 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         secondaryMedia3Url,
         secondaryMedia3FocalX,
         secondaryMedia3FocalY,
-        secondaryMedia4Id,
-        secondaryMedia4Url,
-        secondaryMedia4FocalX,
-        secondaryMedia4FocalY,
         trustStatText,
         eyebrowText,
       };
@@ -270,32 +197,17 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     trustIndicators, setTrustIndicators,
     backgroundMediaId, backgroundMediaUrl,
     backgroundFocalX, backgroundFocalY,
-    featuredCardBadge, setFeaturedCardBadge,
-    featuredCardTitle, setFeaturedCardTitle,
-    featuredCardSubtitle, setFeaturedCardSubtitle,
-    featuredCardPricePen, setFeaturedCardPricePen,
-    featuredCardOrigin, setFeaturedCardOrigin,
-    featuredCardMediaId, featuredCardMediaUrl,
     secondaryMedia1Id, secondaryMedia1Url, secondaryMedia1FocalX, secondaryMedia1FocalY,
     secondaryMedia2Id, secondaryMedia2Url, secondaryMedia2FocalX, secondaryMedia2FocalY,
     secondaryMedia3Id, secondaryMedia3Url, secondaryMedia3FocalX, secondaryMedia3FocalY,
-    secondaryMedia4Id, secondaryMedia4Url, secondaryMedia4FocalX, secondaryMedia4FocalY,
     trustStatText, setTrustStatText,
     eyebrowText, setEyebrowText,
     isSaving,
     statusMessage,
-    isBgModalOpen, setIsBgModalOpen,
-    isCardMediaModalOpen, setIsCardMediaModalOpen,
-    isSecondary1ModalOpen, setIsSecondary1ModalOpen,
-    isSecondary2ModalOpen, setIsSecondary2ModalOpen,
-    isSecondary3ModalOpen, setIsSecondary3ModalOpen,
-    isSecondary4ModalOpen, setIsSecondary4ModalOpen,
     handleSelectBgMedia,
-    handleSelectCardMedia,
     handleSelectSecondary1Media,
     handleSelectSecondary2Media,
     handleSelectSecondary3Media,
-    handleSelectSecondary4Media,
     handleSave,
   };
 }

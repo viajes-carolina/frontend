@@ -17,10 +17,11 @@ const ROUTE_DIAGONAL_PATH = "M0 46C290 190 510 12 770 154C1010 286 1028 464 1240
 // 396:634), mismo trazo proporcionalmente escalado en ambos.
 const ROUTE_HORIZONTAL_PATH = "M0.96 15.36C48.48 3.36 80.16 21.6 127.68 10.56C178.08 -1.44 204.48 12.48 264 3.84";
 
-// Papel continuo hacia Experiencias — ola en la base con el color real de
-// la siguiente sección (blanco en base/md, navy en xl). Mismo criterio que
-// la ola Promociones→Blog.
-const WAVE_TO_EXPERIENCIAS_PATH = "M0 58C170 16 330 88 495 52C665 14 830 84 995 48C1160 12 1305 68 1440 34V120H0V58Z";
+// Papel continuo hacia Pausa Conversacional — ola en la base con el color
+// real de la siguiente sección (arena en los 4 breakpoints, la nueva
+// sección "04 · Pausa conversacional" no cambia de color por breakpoint
+// como sí hacían Experiencias/FAQ). Mismo criterio que la ola Promociones→Blog.
+const WAVE_TO_PAUSA_PATH = "M0 58C170 16 330 88 495 52C665 14 830 84 995 48C1160 12 1305 68 1440 34V120H0V58Z";
 
 // "Atmósfera editorial" — mancha suave sin trazo interior (a diferencia del
 // blob de Promociones). 2 variantes reales: compacta (Mobile/Tablet) y
@@ -50,19 +51,22 @@ function toMeta(post: BlogPostDTO) {
 
 function SecondaryArticle({ post, className = "" }: { post: BlogPostDTO; className?: string }) {
   return (
-    <a href={`/blog/${post.slug}`} className={`group block ${className}`}>
-      <span className="font-sora text-[9px] font-semibold uppercase tracking-wider text-brand-accent">
-        {toMeta(post)}
-      </span>
-      <h4 className="font-display mt-1.5 text-lg font-semibold leading-snug text-brand-navy xl:text-[19px]">
-        {post.title}
-      </h4>
-      <p className="font-inter mt-1.5 text-[11px] leading-[16px] text-brand-navy">
-        {post.summary}
-        <span className="mx-1.5 text-brand-navy/40">·</span>
-        <span className="font-semibold text-brand-navy group-hover:text-brand-accent">Leer →</span>
-      </p>
-    </a>
+    <div className={`flex flex-col items-start gap-2.5 ${className}`}>
+      <div>
+        <span className="font-sora text-[9px] font-semibold uppercase tracking-wider text-brand-accent">
+          {toMeta(post)}
+        </span>
+        <h4 className="font-display mt-1.5 text-lg font-semibold leading-snug text-brand-navy xl:text-[19px]">
+          {post.title}
+        </h4>
+      </div>
+      <a
+        href={`/blog/${post.slug}`}
+        className="inline-flex w-fit items-center justify-center rounded-full bg-brand-navy px-6 py-3 font-inter text-sm font-semibold text-neutral-white transition-colors hover:bg-brand-navy/90"
+      >
+        Leer artículo
+      </a>
+    </div>
   );
 }
 
@@ -80,8 +84,11 @@ function FeaturedArticleCard({ post, paper = false }: { post: BlogPostDTO; paper
         {post.title}
       </h3>
       <p className="font-inter text-sm leading-relaxed text-brand-navy xl:text-base">{post.summary}</p>
-      <a href={`/blog/${post.slug}`} className="font-inter text-sm font-semibold text-brand-navy hover:text-brand-accent transition-colors">
-        Leer guía completa →
+      <a
+        href={`/blog/${post.slug}`}
+        className="inline-flex w-fit items-center justify-center rounded-full bg-brand-accent px-6 py-3 font-inter text-sm font-semibold text-brand-navy transition-colors hover:bg-brand-sunset"
+      >
+        Leer la guía completa
       </a>
     </div>
   );
@@ -127,10 +134,10 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
       id="inspiracion"
       className="relative w-full overflow-hidden bg-white xl:bg-atmosphere-sky text-neutral-ink py-16 sm:py-20 xl:py-28"
     >
-      {/* Papel continuo hacia Experiencias — ola full-bleed en la base. */}
+      {/* Papel continuo hacia Pausa Conversacional — ola full-bleed en la base. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
         <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
-          <path d={WAVE_TO_EXPERIENCIAS_PATH} className="fill-white xl:fill-brand-navy" />
+          <path d={WAVE_TO_PAUSA_PATH} className="fill-atmosphere-sand" />
         </svg>
       </div>
 
@@ -190,9 +197,9 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
 
           <a
             href={config.ctaUrl || "/blog"}
-            className="font-inter self-start text-sm font-semibold text-brand-navy hover:text-brand-accent transition-colors xl:pt-1"
+            className="inline-flex w-fit shrink-0 items-center justify-center self-start rounded-full bg-brand-navy px-6 py-3 font-inter text-sm font-semibold text-neutral-white transition-colors hover:bg-brand-navy/90"
           >
-            {config.ctaText || "Ver todos los artículos"} →
+            {config.ctaText || "Ver todos los artículos"}
           </a>
         </Reveal>
 
@@ -201,7 +208,7 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
           <Reveal delayMs={80}>
             <FeaturedArticleCard post={featuredPost} />
           </Reveal>
-          <div className="mt-10 flex flex-col gap-8">
+          <div className="mt-10 flex flex-col gap-14">
             {secondaryPosts.map((p, i) => (
               <Reveal key={p.id} delayMs={160 + i * 80}>
                 <SecondaryArticle post={p} />
@@ -215,7 +222,7 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
           <Reveal delayMs={80} className="md:w-[62%]">
             <FeaturedArticleCard post={featuredPost} />
           </Reveal>
-          <div className="flex md:w-[32%] flex-col gap-10">
+          <div className="flex md:w-[32%] flex-col gap-16">
             {secondaryPosts.map((p, i) => (
               <Reveal key={p.id} delayMs={160 + i * 80}>
                 <SecondaryArticle post={p} />
@@ -229,7 +236,7 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
           <Reveal delayMs={80} className="xl:w-[48%]">
             <FeaturedArticleCard post={featuredPost} paper />
           </Reveal>
-          <div className="absolute right-0 top-0 flex w-[36%] flex-col gap-[52px]">
+          <div className="absolute right-0 top-0 flex w-[36%] flex-col gap-[105px]">
             {secondaryPosts.map((p, i) => (
               <Reveal key={p.id} delayMs={160 + i * 80}>
                 <SecondaryArticle post={p} />

@@ -262,12 +262,6 @@ async function runE2ETests() {
         secondaryCtaUrl: "#promociones",
         trustIndicators: ["Asesoría sin costo", "Respuesta rápida", "Acompañamiento real"],
         backgroundMediaId: 1,
-        featuredCardBadge: "Próxima Parada · Cusco",
-        featuredCardTitle: "Machu Picchu & Valle Sagrado",
-        featuredCardSubtitle: "Experiencia personalizada de 5 días / 4 noches",
-        featuredCardPricePen: 1922.00,
-        featuredCardOrigin: "Desde Lima",
-        featuredCardMediaId: 3,
       }),
     });
     assert(heroPut.status === 200, `PUT /api/proxy/admin/v1/home/hero responde 200 OK (${heroPut.status})`);

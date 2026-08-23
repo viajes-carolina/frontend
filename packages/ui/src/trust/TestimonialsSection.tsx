@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useId } from "react";
-import { TestimonialDTO } from "@vc/api-client";
+import { TestimonialDTO, HomeTestimonialsSectionDTO } from "@vc/api-client";
 import { PolaroidPhoto } from "../primitives/PolaroidPhoto";
 import { Reveal } from "../primitives/Reveal";
 import type { FocalPoint } from "../primitives/ResponsiveImage";
@@ -14,8 +14,15 @@ export interface TestimonialsSectionProps {
    * Experiencias, es la misma foto que ya se sube una vez para el Hero.
    */
   memoryPhoto?: { url?: string; focalX?: number; focalY?: number };
+  config?: HomeTestimonialsSectionDTO;
   className?: string;
 }
+
+const DEFAULT_CONFIG: HomeTestimonialsSectionDTO = {
+  badgeText: "05 · Historias reales",
+  title: "Viajes que hoy se recuerdan así",
+  subtitle: "Cada fotografía guarda una experiencia que comenzó con una conversación.",
+};
 
 // Papel continuo hacia FAQ — ola en la base con el color real de la
 // siguiente sección (blanco en base/md, cloud en xl).
@@ -30,10 +37,14 @@ const ROUTE_WIDE_PATH =
 // 396:663), propia de esta sección (no la misma curva que Promociones/Blog).
 const ROUTE_COMPACT_PATH = "M0.96 16.32C48.96 1.44 87.84 21.12 133.44 9.6C178.08 -1.92 212.64 12.96 264 3.84";
 
-// "Foto real" — silueta orgánica ilustrativa (mismo criterio que el blob de
-// Promociones/Blog: aún sin foto real cargada, el mockup usa esta
-// ilustración). 2 variantes reales: compacta (Mobile/Tablet) y panorámica
-// (Desktop/Wide, nodes 396:435 / 409:890).
+// "Foto real" — silueta orgánica. `PhotoBlob` recorta la foto real (reutilizada
+// del Hero, ver `memoryPhoto` más abajo) contra este mismo path vía
+// `<clipPath>`; sin foto cargada aún cae a esta ilustración degradada. 2
+// variantes reales: compacta (Mobile/Tablet) y panorámica (Desktop/Wide,
+// nodes 396:435 / 409:890). Los paths tienen puntos de control fuera de su
+// propio viewBox (p.ej. x negativo) — el `<svg>` raíz necesita
+// `overflow: visible` explícito o el navegador recorta esa punta (default
+// UA es `overflow: hidden` en <svg>), cortando el borde izquierdo del blob.
 const PHOTO_BLOB_COMPACT_PATH =
   "M15.95 43.45C48.4 5.49999 106.7 18.15 157.85 12.1C218.35 4.94999 288.75 -8.80001 326.7 42.9C360.25 89.1 333.3 154.55 287.1 183.15C238.15 213.4 187 191.4 136.4 195.8C80.3 200.2 26.4 188.65 8.25 143C-7.15 105.05 -9.9 73.7 15.95 43.45Z";
 const PHOTO_BLOB_COMPACT_ROUTE = "M52.25 155.65C100.65 119.35 135.85 141.9 179.85 106.15C226.05 68.2 262.9 102.3 302.5 56.65";
@@ -43,16 +54,36 @@ const PHOTO_BLOB_WIDE_PATH =
 const PHOTO_BLOB_WIDE_ROUTE =
   "M85.8064 275.351C165.29 211.135 223.097 251.027 295.355 187.784C371.226 120.649 431.742 180.973 496.774 100.216";
 
-function PhotoBlob({ variant, className }: { variant: "compact" | "wide"; className?: string }) {
+function PhotoBlob({
+  variant,
+  className,
+  imageUrl,
+}: {
+  variant: "compact" | "wide";
+  className?: string;
+  imageUrl?: string;
+}) {
   const isWide = variant === "wide";
   const rawId = useId();
   const gradientId = `exp-blob-${variant}-${rawId.replace(/:/g, "")}`;
+  const clipId = `exp-blob-clip-${variant}-${rawId.replace(/:/g, "")}`;
+  const [vbWidth, vbHeight] = isWide ? [560, 360] : [341, 203.5];
+  const blobPath = isWide ? PHOTO_BLOB_WIDE_PATH : PHOTO_BLOB_COMPACT_PATH;
+  // Igual que en PromoBlob (PromotionsSection.tsx): `<image>` solo pinta
+  // dentro de su propia caja x/y/width/height, que debe cubrir la extensión
+  // real del path orgánico (con margen), no el viewBox nominal.
+  // `preserveAspectRatio="none"` en vez de "slice" — "slice" no calcula el
+  // cover-fit correctamente contra una caja con coordenadas negativas (ver
+  // comentario largo en PromoBlob); "none" estira la imagen para llenar la
+  // caja exacta sin ese bug, con una distorsión leve aceptable.
+  const imgBox = isWide ? { x: -30, y: -30, w: 620, h: 420 } : { x: -20, y: -20, w: 390, h: 250 };
   return (
     <svg
-      viewBox={isWide ? "0 0 560 360" : "0 0 341 203.5"}
+      viewBox={`0 0 ${vbWidth} ${vbHeight}`}
       className={className}
       fill="none"
       aria-hidden="true"
+      style={{ overflow: "visible" }}
     >
       <defs>
         <linearGradient id={gradientId} x1="5%" y1="5%" x2="95%" y2="90%" gradientUnits="userSpaceOnUse">
@@ -60,8 +91,25 @@ function PhotoBlob({ variant, className }: { variant: "compact" | "wide"; classN
           <stop offset="0.52" stopColor="#F1C995" />
           <stop offset="1" stopColor="#F38E65" />
         </linearGradient>
+        {imageUrl && (
+          <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
+            <path d={blobPath} />
+          </clipPath>
+        )}
       </defs>
-      <path d={isWide ? PHOTO_BLOB_WIDE_PATH : PHOTO_BLOB_COMPACT_PATH} fill={`url(#${gradientId})`} />
+      {imageUrl ? (
+        <image
+          href={imageUrl}
+          x={imgBox.x}
+          y={imgBox.y}
+          width={imgBox.w}
+          height={imgBox.h}
+          preserveAspectRatio="none"
+          clipPath={`url(#${clipId})`}
+        />
+      ) : (
+        <path d={blobPath} fill={`url(#${gradientId})`} />
+      )}
       <path
         d={isWide ? PHOTO_BLOB_WIDE_ROUTE : PHOTO_BLOB_COMPACT_ROUTE}
         opacity={0.78}
@@ -72,10 +120,6 @@ function PhotoBlob({ variant, className }: { variant: "compact" | "wide"; classN
       />
     </svg>
   );
-}
-
-function Stars({ rating, className = "" }: { rating: number; className?: string }) {
-  return <p className={`font-inter text-xs font-semibold text-brand-accent ${className}`}>{"★".repeat(Math.max(0, Math.min(5, rating)))}</p>;
 }
 
 function FeaturedTestimonialCard({
@@ -101,7 +145,6 @@ function FeaturedTestimonialCard({
       >
         {testimonial.comment}
       </p>
-      <Stars rating={testimonial.rating || 5} />
       <p className={`font-inter text-sm font-semibold ${dark ? "text-neutral-white" : "text-brand-navy"}`}>
         {testimonial.clientName}
         {testimonial.tripDestination ? `  ·  ${testimonial.tripDestination}` : ""}
@@ -113,7 +156,6 @@ function FeaturedTestimonialCard({
 function SupportVoice({ testimonial, light = false }: { testimonial: TestimonialDTO; light?: boolean }) {
   return (
     <div className="flex flex-col items-start gap-2">
-      <Stars rating={testimonial.rating || 5} />
       <p
         className={`font-display text-base italic leading-snug xl:text-lg ${
           light ? "text-neutral-white/80" : "text-brand-navy"
@@ -129,7 +171,7 @@ function SupportVoice({ testimonial, light = false }: { testimonial: Testimonial
   );
 }
 
-export function TestimonialsSection({ testimonials, memoryPhoto, className = "" }: TestimonialsSectionProps) {
+export function TestimonialsSection({ testimonials, memoryPhoto, config = DEFAULT_CONFIG, className = "" }: TestimonialsSectionProps) {
   if (!testimonials || testimonials.length === 0) return null;
 
   const [featured, ...rest] = testimonials;
@@ -176,13 +218,13 @@ export function TestimonialsSection({ testimonials, memoryPhoto, className = "" 
               <circle cx="264.5" cy="3.84" r="4" className="fill-brand-accent" />
             </svg>
             <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              04 · Historias reales
+              {config.badgeText}
             </span>
             <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy sm:text-4xl xl:text-[44px] xl:leading-[49px] xl:text-neutral-white">
-              Viajes que hoy se recuerdan así
+              {config.title}
             </h2>
             <p className="font-inter mt-3 text-base leading-relaxed text-brand-navy sm:text-lg xl:text-neutral-white/70">
-              Cada fotografía guarda una experiencia que comenzó con una conversación.
+              {config.subtitle}
             </p>
           </div>
         </Reveal>
@@ -190,7 +232,11 @@ export function TestimonialsSection({ testimonials, memoryPhoto, className = "" 
         {/* Mobile — flujo secuencial */}
         <div className="md:hidden">
           <div className="relative">
-            <PhotoBlob variant="compact" className="w-full aspect-[341/203.5]" />
+            <PhotoBlob
+              variant="compact"
+              className="w-full aspect-[341/203.5]"
+              imageUrl={memoryPhoto?.url}
+            />
             <Reveal delayMs={80} className="absolute right-[4%] top-[8%] w-[36%] aspect-[137.5/99]">
               <PolaroidPhoto
                 imageUrl={memoryPhoto?.url}
@@ -224,7 +270,11 @@ export function TestimonialsSection({ testimonials, memoryPhoto, className = "" 
         {/* Tablet — cluster de foto+recuerdo con tarjeta superpuesta */}
         <div className="relative hidden md:block xl:hidden">
           <div className="relative xl:hidden">
-            <PhotoBlob variant="compact" className="w-[62%] aspect-[514.6/307.1]" />
+            <PhotoBlob
+              variant="compact"
+              className="w-[62%] aspect-[514.6/307.1]"
+              imageUrl={memoryPhoto?.url}
+            />
             <Reveal delayMs={80} className="absolute left-[42%] top-[-8%] w-[24%] aspect-[205/147.6]">
               <PolaroidPhoto
                 imageUrl={memoryPhoto?.url}
@@ -257,7 +307,11 @@ export function TestimonialsSection({ testimonials, memoryPhoto, className = "" 
 
         {/* Desktop / Wide — álbum colectivo sobre fondo navy */}
         <div className="relative hidden xl:block xl:min-h-[520px]">
-          <PhotoBlob variant="wide" className="absolute left-0 top-0 w-[39%] aspect-[560/360]" />
+          <PhotoBlob
+            variant="wide"
+            className="absolute left-0 top-0 w-[39%] aspect-[560/360]"
+            imageUrl={memoryPhoto?.url}
+          />
           <Reveal delayMs={80} className="absolute left-[28%] top-[-6%] w-[20%] aspect-[270/190]">
             <PolaroidPhoto
               imageUrl={memoryPhoto?.url}
