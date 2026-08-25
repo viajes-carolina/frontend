@@ -111,7 +111,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <ellipse cx="380" cy="325" rx="380" ry="325" className="fill-atmosphere-sky" opacity="0.42" />
+          <ellipse cx="380" cy="325" rx="380" ry="325" className="fill-atmosphere-pale-sky" opacity="0.42" />
         </svg>
 
         <TravelMemoriesCollage memories={memories} className="absolute inset-0" />

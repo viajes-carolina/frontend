@@ -5,6 +5,7 @@ import {
   ConversationalPauseSection,
   TestimonialsSection,
   FaqSection,
+  ArrivalSection,
 } from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
@@ -67,6 +68,11 @@ export default async function HomePage() {
           06 · Preguntas Frecuentes FAQ — Prepararte
           ========================================================================= */}
       <FaqSection faqs={trustData.faqs} settings={siteSettings} config={faqSectionConfig} />
+
+      {/* =========================================================================
+          07 · Llegada — Punto de arribo de la ruta narrativa
+          ========================================================================= */}
+      <ArrivalSection whatsappPhone={siteSettings.whatsappPhone} whatsappMessage={siteSettings.whatsappDefaultMessage} />
     </main>
   );
 }

@@ -1,30 +1,18 @@
 "use client";
 
 import React from "react";
-import { UpdateContactPageRequest, StarterPhraseDTO } from "@vc/api-client";
+import { UpdateContactPageRequest } from "@vc/api-client";
 import { Button, CheckIcon } from "@vc/ui";
 
 export interface ContactSettingsFormProps {
   formData: UpdateContactPageRequest;
   updateField: <K extends keyof UpdateContactPageRequest>(field: K, value: UpdateContactPageRequest[K]) => void;
-  addStarterPhrase: () => void;
-  removeStarterPhrase: (index: number) => void;
-  updateStarterPhrase: (index: number, field: keyof StarterPhraseDTO, value: string) => void;
   onSubmit: (e?: React.FormEvent) => void;
   saving: boolean;
   saveSuccess: boolean;
 }
 
-export function ContactSettingsForm({
-  formData,
-  updateField,
-  addStarterPhrase,
-  removeStarterPhrase,
-  updateStarterPhrase,
-  onSubmit,
-  saving,
-  saveSuccess,
-}: ContactSettingsFormProps) {
+export function ContactSettingsForm({ formData, updateField, onSubmit, saving, saveSuccess }: ContactSettingsFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(e);
@@ -38,7 +26,7 @@ export function ContactSettingsForm({
             Configuración Editorial de Contacto
           </h2>
           <p className="font-inter text-neutral-muted text-xs mt-1">
-            Personaliza los textos del Hero, la sección &quot;Cómo empezar&quot; y la sección de Oficina.
+            Personaliza los textos del Hero y la sección de Oficina.
           </p>
         </div>
         <Button
@@ -145,171 +133,98 @@ export function ContactSettingsForm({
 
         <div className="space-y-3 pt-2">
           <label className="block text-xs font-semibold text-neutral-dark font-inter uppercase tracking-wide">
-            Mockup de chat (ilustrativo)
+            Tarjeta &quot;Información de contacto&quot;
           </label>
+          <p className="text-xs text-neutral-muted font-inter -mt-1">
+            El correo, el horario y la dirección se muestran automáticamente desde Identidad &amp; WhatsApp y Oficina &amp; Horarios — aquí solo editas el título y las etiquetas.
+          </p>
 
           <div className="space-y-2">
             <label className="block text-xs font-semibold text-neutral-dark font-inter">
-              Etiqueta de la respuesta humana
+              Título de la tarjeta
             </label>
             <input
               type="text"
               required
-              value={formData.heroChatLabel}
-              onChange={(e) => updateField("heroChatLabel", e.target.value)}
+              value={formData.heroInfoTitle}
+              onChange={(e) => updateField("heroInfoTitle", e.target.value)}
               className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-xs font-semibold text-neutral-dark font-inter">
-              Burbuja 1 (viajero)
-            </label>
-            <textarea
-              required
-              rows={2}
-              value={formData.heroChatBubble1}
-              onChange={(e) => updateField("heroChatBubble1", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors resize-none"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-neutral-dark font-inter">
+                Etiqueta &quot;WhatsApp&quot;
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.heroInfoWhatsappLabel}
+                onChange={(e) => updateField("heroInfoWhatsappLabel", e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-neutral-dark font-inter">
+                Valor de WhatsApp
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.heroInfoWhatsappValue}
+                onChange={(e) => updateField("heroInfoWhatsappValue", e.target.value)}
+                placeholder="Ej: Atención inmediata"
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-xs font-semibold text-neutral-dark font-inter">
-              Burbuja 2 (respuesta humana)
-            </label>
-            <textarea
-              required
-              rows={2}
-              value={formData.heroChatBubble2}
-              onChange={(e) => updateField("heroChatBubble2", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors resize-none"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-xs font-semibold text-neutral-dark font-inter">
-              Burbuja 3 (cierre)
-            </label>
-            <textarea
-              required
-              rows={2}
-              value={formData.heroChatBubble3}
-              onChange={(e) => updateField("heroChatBubble3", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors resize-none"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-neutral-dark font-inter">
+                Etiqueta &quot;Correo&quot;
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.heroInfoEmailLabel}
+                onChange={(e) => updateField("heroInfoEmailLabel", e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-neutral-dark font-inter">
+                Etiqueta &quot;Horario&quot;
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.heroInfoScheduleLabel}
+                onChange={(e) => updateField("heroInfoScheduleLabel", e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-neutral-dark font-inter">
+                Etiqueta &quot;Oficina&quot;
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.heroInfoOfficeLabel}
+                onChange={(e) => updateField("heroInfoOfficeLabel", e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Seccion 2: Cómo empezar */}
+      {/* Seccion 2: Oficina */}
       <div className="space-y-4 pt-4 border-t border-neutral-border">
         <h3 className="font-sora font-semibold text-sm text-brand-navy uppercase tracking-wider text-xs">
-          2. Cómo Empezar
-        </h3>
-
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-neutral-dark font-inter">
-            Insignia / Eyebrow Badge
-          </label>
-          <input
-            type="text"
-            required
-            value={formData.startersBadge}
-            onChange={(e) => updateField("startersBadge", e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-neutral-dark font-inter">
-            Título de sección
-          </label>
-          <input
-            type="text"
-            required
-            value={formData.startersTitle}
-            onChange={(e) => updateField("startersTitle", e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-neutral-dark font-inter">
-            Subtítulo
-          </label>
-          <textarea
-            required
-            rows={2}
-            value={formData.startersSubtitle}
-            onChange={(e) => updateField("startersSubtitle", e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors resize-none"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-neutral-dark font-inter">
-            Frase de cierre
-          </label>
-          <input
-            type="text"
-            required
-            value={formData.startersClosing}
-            onChange={(e) => updateField("startersClosing", e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-          />
-        </div>
-
-        {/* Frases editables */}
-        <div className="space-y-3 pt-2">
-          <label className="block text-xs font-semibold text-neutral-dark font-inter uppercase tracking-wide">
-            Frases de ejemplo
-          </label>
-
-          <div className="space-y-3">
-            {formData.starterPhrases.map((phrase, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col sm:flex-row gap-2 sm:items-start bg-neutral-light/50 border border-neutral-border/80 rounded-xl p-3.5"
-              >
-                <div className="flex-1 space-y-2">
-                  <input
-                    type="text"
-                    placeholder="Frase (Ej: Solo tengo unos días libres.)"
-                    value={phrase.quote}
-                    onChange={(e) => updateStarterPhrase(idx, "quote", e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Respuesta de apoyo (Ej: Empezamos por el tiempo disponible.)"
-                    value={phrase.support}
-                    onChange={(e) => updateStarterPhrase(idx, "support", e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-neutral-border text-sm font-inter text-neutral-muted focus:outline-none focus:border-brand-accent transition-colors"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeStarterPhrase(idx)}
-                  aria-label="Quitar frase"
-                  className="text-neutral-muted hover:text-red-500 font-bold shrink-0 px-2 py-1"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <Button type="button" variant="secondary" size="sm" onClick={addStarterPhrase}>
-            + Agregar frase
-          </Button>
-        </div>
-      </div>
-
-      {/* Seccion 3: Oficina */}
-      <div className="space-y-4 pt-4 border-t border-neutral-border">
-        <h3 className="font-sora font-semibold text-sm text-brand-navy uppercase tracking-wider text-xs">
-          3. Oficina & Mapa
+          2. Oficina & Mapa
         </h3>
 
         <div className="space-y-2">
@@ -338,61 +253,55 @@ export function ContactSettingsForm({
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-neutral-dark font-inter">
-            Subtítulo de sección
-          </label>
-          <textarea
-            required
-            rows={2}
-            value={formData.officeSectionSubtitle}
-            onChange={(e) => updateField("officeSectionSubtitle", e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors resize-none"
-          />
-        </div>
+        <p className="text-xs text-neutral-muted font-inter">
+          La dirección junto al título y el horario del panel se muestran automáticamente desde{" "}
+          <strong>Oficina &amp; Horarios</strong>.
+        </p>
 
         <div className="space-y-2">
           <label className="block text-xs font-semibold text-neutral-dark font-inter">
-            Título de la tarjeta del mapa
+            Título del panel de horario
           </label>
           <input
             type="text"
             required
             value={formData.officeMapTitle}
             onChange={(e) => updateField("officeMapTitle", e.target.value)}
+            placeholder="Ej: Horario de atención"
             className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-neutral-dark font-inter">
-            Subtítulo de la tarjeta del mapa
-          </label>
-          <input
-            type="text"
-            required
-            value={formData.officeMapSubtitle}
-            onChange={(e) => updateField("officeMapSubtitle", e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="block text-xs font-semibold text-neutral-dark font-inter">
-            Nota de coordinación de visita
-          </label>
-          <input
-            type="text"
-            required
-            value={formData.officeVisitNote}
-            onChange={(e) => updateField("officeVisitNote", e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-neutral-dark font-inter">
+              Etiqueta &quot;Antes de venir&quot;
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.officeVisitLabel}
+              onChange={(e) => updateField("officeVisitLabel", e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-xs font-semibold text-neutral-dark font-inter">
+              Nota de &quot;antes de venir&quot;
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.officeVisitNote}
+              onChange={(e) => updateField("officeVisitNote", e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
+            />
+          </div>
         </div>
 
         <div className="space-y-3 pt-2">
           <label className="block text-xs font-semibold text-neutral-dark font-inter uppercase tracking-wide">
-            Mapa ilustrado y etiquetas
+            Mapa y etiquetas
           </label>
 
           <div className="space-y-2">
@@ -445,59 +354,6 @@ export function ContactSettingsForm({
               value={formData.officeMapsLinkText}
               onChange={(e) => updateField("officeMapsLinkText", e.target.value)}
               className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-neutral-dark font-inter">
-                Etiqueta &quot;Ubicación oficial&quot;
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.officeLocationLabel}
-                onChange={(e) => updateField("officeLocationLabel", e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-neutral-dark font-inter">
-                Etiqueta &quot;Antes de venir&quot;
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.officeVisitLabel}
-                onChange={(e) => updateField("officeVisitLabel", e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-xs font-semibold text-neutral-dark font-inter">
-              Texto del botón &quot;Coordinar visita por WhatsApp&quot;
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.officeVisitCtaText}
-              onChange={(e) => updateField("officeVisitCtaText", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-xs font-semibold text-neutral-dark font-inter">
-              Mensaje predefinido de WhatsApp (visita a oficina)
-            </label>
-            <textarea
-              required
-              rows={2}
-              value={formData.officeVisitCtaMessage}
-              onChange={(e) => updateField("officeVisitCtaMessage", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-sm font-inter text-neutral-dark focus:outline-none focus:border-brand-accent transition-colors resize-none"
             />
           </div>
         </div>

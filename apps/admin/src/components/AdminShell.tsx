@@ -23,7 +23,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           {/* Brand Logo Oficial */}
           <div className="flex flex-col gap-2 pb-6 border-b border-white/10">
             <BrandLogo variant="light" className="h-7 w-auto" />
-            <span className="font-inter text-[10px] text-atmosphere-sky uppercase tracking-wider font-semibold">
+            <span className="font-inter text-[10px] text-atmosphere-pale-sky uppercase tracking-wider font-semibold">
               Panel Administrativo
             </span>
           </div>

@@ -53,7 +53,7 @@ export function TornEdgePhoto({
             className="w-full h-full"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-atmosphere-sky via-brand-blue to-brand-navy flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-br from-atmosphere-pale-sky via-brand-blue to-brand-navy flex items-center justify-center">
             <ImageIcon size={44} className="text-white/25" />
           </div>
         )}

@@ -509,11 +509,6 @@ export interface BlogPostDetailResponse {
 }
 
 // Contact Page & Inquiry DTOs (Corte 9)
-export interface StarterPhraseDTO {
-  quote: string;
-  support: string;
-}
-
 export interface ContactPageDTO {
   id?: number;
   heroBadge: string;
@@ -522,29 +517,21 @@ export interface ContactPageDTO {
   heroCtaText: string;
   heroNoteText: string;
   heroCtaMessage: string;
-  heroChatLabel: string;
-  heroChatBubble1: string;
-  heroChatBubble2: string;
-  heroChatBubble3: string;
-  startersBadge: string;
-  startersTitle: string;
-  startersSubtitle: string;
-  startersClosing: string;
-  starterPhrases: StarterPhraseDTO[];
+  heroInfoTitle: string;
+  heroInfoWhatsappLabel: string;
+  heroInfoWhatsappValue: string;
+  heroInfoEmailLabel: string;
+  heroInfoScheduleLabel: string;
+  heroInfoOfficeLabel: string;
   officeSectionBadge: string;
   officeSectionTitle: string;
-  officeSectionSubtitle: string;
   officeMapTitle: string;
-  officeMapSubtitle: string;
   officeVisitNote: string;
   officeMapEyebrow: string;
   officeMapPinTitle: string;
   officeMapPinSubtitle: string;
   officeMapsLinkText: string;
-  officeLocationLabel: string;
   officeVisitLabel: string;
-  officeVisitCtaText: string;
-  officeVisitCtaMessage: string;
   revision?: number;
   updatedAt?: string;
 }
@@ -556,29 +543,21 @@ export interface UpdateContactPageRequest {
   heroCtaText: string;
   heroNoteText: string;
   heroCtaMessage: string;
-  heroChatLabel: string;
-  heroChatBubble1: string;
-  heroChatBubble2: string;
-  heroChatBubble3: string;
-  startersBadge: string;
-  startersTitle: string;
-  startersSubtitle: string;
-  startersClosing: string;
-  starterPhrases: StarterPhraseDTO[];
+  heroInfoTitle: string;
+  heroInfoWhatsappLabel: string;
+  heroInfoWhatsappValue: string;
+  heroInfoEmailLabel: string;
+  heroInfoScheduleLabel: string;
+  heroInfoOfficeLabel: string;
   officeSectionBadge: string;
   officeSectionTitle: string;
-  officeSectionSubtitle: string;
   officeMapTitle: string;
-  officeMapSubtitle: string;
   officeVisitNote: string;
   officeMapEyebrow: string;
   officeMapPinTitle: string;
   officeMapPinSubtitle: string;
   officeMapsLinkText: string;
-  officeLocationLabel: string;
   officeVisitLabel: string;
-  officeVisitCtaText: string;
-  officeVisitCtaMessage: string;
 }
 
 export interface ContactInquiryDTO {
@@ -620,6 +599,7 @@ export interface PublicContactResponse {
   contactEmail: string;
   officeAddress: string;
   officeHours: string;
+  officeScheduleSaturdays?: string;
   officeGoogleMapsUrl?: string;
   officeLatitude?: number;
   officeLongitude?: number;

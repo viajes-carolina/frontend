@@ -58,8 +58,6 @@ export function FooterWrapper({ settings: initialSettings, office: initialOffice
     <Footer
       siteName={settings.siteName}
       contactEmail={settings.contactEmail}
-      whatsappPhone={settings.whatsappPhone}
-      whatsappMessage={settings.whatsappDefaultMessage}
       address={office.addressLine}
       district={office.district}
       city={office.city}

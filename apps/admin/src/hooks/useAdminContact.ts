@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { FormEvent } from "react";
-import { apiClient, ContactPageDTO, UpdateContactPageRequest, StarterPhraseDTO } from "@vc/api-client";
+import { apiClient, ContactPageDTO, UpdateContactPageRequest } from "@vc/api-client";
 
 const EMPTY_FORM: UpdateContactPageRequest = {
   heroBadge: "",
@@ -11,29 +11,21 @@ const EMPTY_FORM: UpdateContactPageRequest = {
   heroCtaText: "",
   heroNoteText: "",
   heroCtaMessage: "",
-  heroChatLabel: "",
-  heroChatBubble1: "",
-  heroChatBubble2: "",
-  heroChatBubble3: "",
-  startersBadge: "",
-  startersTitle: "",
-  startersSubtitle: "",
-  startersClosing: "",
-  starterPhrases: [],
+  heroInfoTitle: "",
+  heroInfoWhatsappLabel: "",
+  heroInfoWhatsappValue: "",
+  heroInfoEmailLabel: "",
+  heroInfoScheduleLabel: "",
+  heroInfoOfficeLabel: "",
   officeSectionBadge: "",
   officeSectionTitle: "",
-  officeSectionSubtitle: "",
   officeMapTitle: "",
-  officeMapSubtitle: "",
   officeVisitNote: "",
   officeMapEyebrow: "",
   officeMapPinTitle: "",
   officeMapPinSubtitle: "",
   officeMapsLinkText: "",
-  officeLocationLabel: "",
   officeVisitLabel: "",
-  officeVisitCtaText: "",
-  officeVisitCtaMessage: "",
 };
 
 function toFormData(page: ContactPageDTO): UpdateContactPageRequest {
@@ -44,29 +36,21 @@ function toFormData(page: ContactPageDTO): UpdateContactPageRequest {
     heroCtaText: page.heroCtaText,
     heroNoteText: page.heroNoteText,
     heroCtaMessage: page.heroCtaMessage,
-    heroChatLabel: page.heroChatLabel,
-    heroChatBubble1: page.heroChatBubble1,
-    heroChatBubble2: page.heroChatBubble2,
-    heroChatBubble3: page.heroChatBubble3,
-    startersBadge: page.startersBadge,
-    startersTitle: page.startersTitle,
-    startersSubtitle: page.startersSubtitle,
-    startersClosing: page.startersClosing,
-    starterPhrases: page.starterPhrases || [],
+    heroInfoTitle: page.heroInfoTitle,
+    heroInfoWhatsappLabel: page.heroInfoWhatsappLabel,
+    heroInfoWhatsappValue: page.heroInfoWhatsappValue,
+    heroInfoEmailLabel: page.heroInfoEmailLabel,
+    heroInfoScheduleLabel: page.heroInfoScheduleLabel,
+    heroInfoOfficeLabel: page.heroInfoOfficeLabel,
     officeSectionBadge: page.officeSectionBadge,
     officeSectionTitle: page.officeSectionTitle,
-    officeSectionSubtitle: page.officeSectionSubtitle,
     officeMapTitle: page.officeMapTitle,
-    officeMapSubtitle: page.officeMapSubtitle,
     officeVisitNote: page.officeVisitNote,
     officeMapEyebrow: page.officeMapEyebrow,
     officeMapPinTitle: page.officeMapPinTitle,
     officeMapPinSubtitle: page.officeMapPinSubtitle,
     officeMapsLinkText: page.officeMapsLinkText,
-    officeLocationLabel: page.officeLocationLabel,
     officeVisitLabel: page.officeVisitLabel,
-    officeVisitCtaText: page.officeVisitCtaText,
-    officeVisitCtaMessage: page.officeVisitCtaMessage,
   };
 }
 
@@ -103,31 +87,6 @@ export function useAdminContact() {
     []
   );
 
-  // Frases de ejemplo de "Cómo empezar" (starterPhrases)
-  const addStarterPhrase = useCallback(() => {
-    const phrase: StarterPhraseDTO = { quote: "", support: "" };
-    setFormData((prev) => ({ ...prev, starterPhrases: [...prev.starterPhrases, phrase] }));
-  }, []);
-
-  const removeStarterPhrase = useCallback((index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      starterPhrases: prev.starterPhrases.filter((_, i) => i !== index),
-    }));
-  }, []);
-
-  const updateStarterPhrase = useCallback(
-    (index: number, field: keyof StarterPhraseDTO, value: string) => {
-      setFormData((prev) => ({
-        ...prev,
-        starterPhrases: prev.starterPhrases.map((phrase, i) =>
-          i === index ? { ...phrase, [field]: value } : phrase
-        ),
-      }));
-    },
-    []
-  );
-
   const handleSaveSettings = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     setSaving(true);
@@ -152,9 +111,6 @@ export function useAdminContact() {
     pageSettings,
     formData,
     updateField,
-    addStarterPhrase,
-    removeStarterPhrase,
-    updateStarterPhrase,
     loading,
     saving,
     saveSuccess,

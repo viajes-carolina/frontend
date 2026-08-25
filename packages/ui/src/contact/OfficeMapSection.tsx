@@ -2,16 +2,15 @@
 
 import React from "react";
 import { ContactPageDTO } from "@vc/api-client";
-import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
-import { WhatsAppButton } from "../primitives/WhatsAppButton";
 
 export interface OfficeMapSectionProps {
   page: ContactPageDTO;
   officeGoogleMapsUrl?: string;
   officeAddress?: string;
+  officeHours?: string;
+  officeScheduleSaturdays?: string;
   officeLatitude?: number;
   officeLongitude?: number;
-  whatsappPhone?: string;
   className?: string;
 }
 
@@ -19,9 +18,10 @@ export function OfficeMapSection({
   page,
   officeGoogleMapsUrl,
   officeAddress,
+  officeHours,
+  officeScheduleSaturdays,
   officeLatitude,
   officeLongitude,
-  whatsappPhone = DEFAULT_WHATSAPP_PHONE,
   className = "",
 }: OfficeMapSectionProps) {
   if (!page.officeSectionTitle) return null;
@@ -49,7 +49,7 @@ export function OfficeMapSection({
             </h2>
           </div>
           <div className="lg:col-span-6 lg:pt-2">
-            <p className="font-inter text-base text-brand-navy/75 sm:text-lg">{page.officeSectionSubtitle}</p>
+            <p className="font-inter text-base text-brand-navy/75 sm:text-lg">{officeAddress}</p>
           </div>
         </div>
 
@@ -92,24 +92,14 @@ export function OfficeMapSection({
             >
               {page.officeMapTitle}
             </h3>
-            <p className="font-inter mt-3 text-base text-brand-navy/75">{page.officeMapSubtitle}</p>
-
-            <div className="mt-8 border-t border-brand-navy/15 pt-6">
-              <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">{page.officeLocationLabel}</p>
-              <p className="font-inter mt-2 text-base font-semibold text-brand-navy">
-                {officeAddress || page.officeMapPinSubtitle}
-              </p>
+            <div className="font-inter mt-3 text-base text-brand-navy/75">
+              {officeHours && <p>{officeHours}</p>}
+              {officeScheduleSaturdays && <p>{officeScheduleSaturdays}</p>}
             </div>
 
-            <div className="mt-6 border-t border-brand-navy/15 pt-6">
+            <div className="mt-6">
               <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">{page.officeVisitLabel}</p>
-              <p className="font-inter mt-2 text-base text-brand-navy/85">{page.officeVisitNote}</p>
-            </div>
-
-            <div className="mt-8">
-              <WhatsAppButton phone={whatsappPhone} message={page.officeVisitCtaMessage}>
-                {page.officeVisitCtaText}
-              </WhatsAppButton>
+              <p className="font-inter mt-2 text-base font-semibold text-brand-navy">{page.officeVisitNote}</p>
             </div>
           </div>
         </div>

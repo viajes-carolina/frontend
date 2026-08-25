@@ -101,7 +101,7 @@ export function TravelMaskFrame({
         {(originText || priceText) && (
           <div className="absolute -bottom-4 right-2 sm:-right-4 px-4 py-2 rounded-2xl bg-brand-navy/95 backdrop-blur-md border border-white/20 text-white shadow-floating flex flex-col text-left space-y-0.5 animate-fade-in">
             {originText && (
-              <span className="font-inter text-[11px] text-atmosphere-sky font-medium">
+              <span className="font-inter text-[11px] text-atmosphere-pale-sky font-medium">
                 {originText}
               </span>
             )}

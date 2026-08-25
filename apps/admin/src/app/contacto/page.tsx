@@ -10,9 +10,6 @@ export default function AdminContactPage() {
     pageSettings,
     formData,
     updateField,
-    addStarterPhrase,
-    removeStarterPhrase,
-    updateStarterPhrase,
     loading,
     saving,
     saveSuccess,
@@ -71,9 +68,6 @@ export default function AdminContactPage() {
       <ContactSettingsForm
         formData={formData}
         updateField={updateField}
-        addStarterPhrase={addStarterPhrase}
-        removeStarterPhrase={removeStarterPhrase}
-        updateStarterPhrase={updateStarterPhrase}
         onSubmit={handleSaveSettings}
         saving={saving}
         saveSuccess={saveSuccess}

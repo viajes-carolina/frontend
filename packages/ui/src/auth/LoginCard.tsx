@@ -40,7 +40,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       {/* Header Corporativo */}
       <div className="bg-brand-navy p-8 text-center text-white relative" role="img" aria-label={brandName}>
         <BrandLogo variant="light" className="h-8 w-auto mx-auto mb-4" />
-        <p className="font-inter text-xs font-medium text-atmosphere-sky mt-1 uppercase tracking-widest">{brandTagline}</p>
+        <p className="font-inter text-xs font-medium text-atmosphere-pale-sky mt-1 uppercase tracking-widest">{brandTagline}</p>
       </div>
 
       {/* Formulario */}

@@ -1,5 +1,5 @@
 import { apiClient } from "@vc/api-client";
-import { ContactHeroSection, StartersSection, OfficeMapSection } from "@vc/ui";
+import { ContactHeroSection, OfficeMapSection } from "@vc/ui";
 
 export const dynamic = "force-dynamic";
 
@@ -17,19 +17,24 @@ export default async function ContactoPage() {
   return (
     <main className="w-full bg-surface-ivory text-neutral-ink min-h-screen">
       {/* 01. Hero conversación */}
-      <ContactHeroSection page={contactData.page} whatsappPhone={siteSettings.whatsappPhone} />
+      <ContactHeroSection
+        page={contactData.page}
+        contactEmail={contactData.contactEmail}
+        officeAddress={contactData.officeAddress}
+        officeHours={contactData.officeHours}
+        officeScheduleSaturdays={contactData.officeScheduleSaturdays}
+        whatsappPhone={siteSettings.whatsappPhone}
+      />
 
-      {/* 02. Cómo empezar */}
-      <StartersSection page={contactData.page} />
-
-      {/* 03. Oficina y Google Maps */}
+      {/* 02. Oficina y Google Maps */}
       <OfficeMapSection
         page={contactData.page}
         officeGoogleMapsUrl={contactData.officeGoogleMapsUrl}
         officeAddress={contactData.officeAddress}
+        officeHours={contactData.officeHours}
+        officeScheduleSaturdays={contactData.officeScheduleSaturdays}
         officeLatitude={contactData.officeLatitude}
         officeLongitude={contactData.officeLongitude}
-        whatsappPhone={siteSettings.whatsappPhone}
       />
     </main>
   );
