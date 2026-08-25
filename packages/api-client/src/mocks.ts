@@ -1483,6 +1483,10 @@ export const DEFAULT_CLAIM_RECORDS: ClaimRecordDTO[] = [
     status: "PENDING",
     createdAt: "2026-08-18T00:00:00.000Z",
     updatedAt: "2026-08-18T00:00:00.000Z",
+    relatedService: "paquete",
+    reservationCode: "RES-48291",
+    serviceDate: "2026-07-01",
+    responseChannel: "EMAIL",
   },
 ];
 
@@ -1531,6 +1535,10 @@ export function submitMockClaim(req: SubmitClaimRequest): ClaimRecordDTO {
     status: "PENDING",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    relatedService: req.relatedService || "otro",
+    reservationCode: req.reservationCode,
+    serviceDate: req.serviceDate,
+    responseChannel: req.responseChannel || "EMAIL",
   };
 
   MOCK_CLAIM_RECORDS.unshift(newClaim);

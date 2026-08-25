@@ -48,6 +48,7 @@ import {
   ClaimRecordDTO,
   SubmitClaimRequest,
   UpdateClaimStatusRequest,
+  ClaimAttachmentDTO,
   ContactExploreLinkDTO,
   AdminUserDTO,
   LoginRequest,
@@ -84,6 +85,9 @@ import {
   getMockHomeFaqSection,
   getMockContactExploreLinks,
   getMockClaimByCode,
+  submitMockClaim,
+  getMockAdminClaims,
+  updateMockClaimStatus,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -999,13 +1003,44 @@ export class ViajesCarolinaApiClient {
   // ==========================================
 
   async submitClaim(payload: SubmitClaimRequest): Promise<ClaimRecordDTO> {
-    const res = await fetch(this.getEffectiveUrl("public/v1/claims"), {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/claims"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      // Excepción de red real (backend inalcanzable): permite seguir probando el
+      // asistente de 4 pasos de forma autónoma sin backend levantado.
+      return submitMockClaim(payload);
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  // Sube un adjunto opcional a una hoja de reclamación ya registrada. Nunca debe
+  // bloquear el registro exitoso del reclamo: el llamador decide qué hacer si falla
+  // (ver useClaimWizard — solo se advierte, no se revierte el envío).
+  async uploadClaimAttachment(claimId: number, file: File): Promise<ClaimAttachmentDTO> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(this.getEffectiveUrl(`public/v1/claims/${claimId}/attachments`), {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: formData,
     });
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();
+  }
+
+  // Arma la URL absoluta de descarga de la constancia PDF — nunca hace fetch, se usa
+  // directamente en un <a href> / window.open para que el navegador maneje la
+  // descarga del binario (evita el proxy JSON de /api/proxy/*, que no soporta binarios).
+  getClaimConstanciaPdfUrl(claimCode: string, documentNumber: string): string {
+    const base = this.baseUrl.replace(/\/$/, "");
+    const params = new URLSearchParams({ documentNumber });
+    return `${base}/api/public/v1/claims/${encodeURIComponent(claimCode)}/constancia.pdf?${params.toString()}`;
   }
 
   async getClaimByCode(claimCode: string): Promise<ClaimRecordDTO> {
@@ -1027,21 +1062,38 @@ export class ViajesCarolinaApiClient {
     const url = status && status !== "ALL"
       ? `admin/v1/claims?status=${encodeURIComponent(status)}`
       : "admin/v1/claims";
-    const res = await fetch(this.getEffectiveUrl(url), await this.withServerAuthCookie({
-      cache: "no-store",
-    }));
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl(url), await this.withServerAuthCookie({
+        cache: "no-store",
+      }));
+    } catch {
+      return getMockAdminClaims(status);
+    }
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();
   }
 
   async updateClaimStatus(id: number, status: string, responseNotes?: string): Promise<ClaimRecordDTO> {
-    const res = await fetch(this.getEffectiveUrl(`admin/v1/claims/${id}/status`), {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, responseNotes }),
-    });
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl(`admin/v1/claims/${id}/status`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status, responseNotes }),
+      });
+    } catch {
+      return updateMockClaimStatus(id, status, responseNotes);
+    }
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();
+  }
+
+  // Arma la URL de descarga de un adjunto de reclamo desde el panel admin — pasa por
+  // el proxy admin existente (igual que el resto de llamadas admin/v1/*) para que la
+  // cookie de sesión vc_admin_jwt viaje junto con la navegación del navegador.
+  getAdminClaimAttachmentUrl(claimId: number, attachmentId: number): string {
+    return this.getEffectiveUrl(`admin/v1/claims/${claimId}/attachments/${attachmentId}`);
   }
 
   async getContactExploreLinks(): Promise<ContactExploreLinkDTO[]> {

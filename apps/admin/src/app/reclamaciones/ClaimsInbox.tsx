@@ -1,9 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
+import { apiClient } from "@vc/api-client";
 import type { ClaimRecordDTO } from "@vc/api-client";
 import { useAdminClaims } from "../../hooks/useAdminClaims";
 import { buildWhatsAppUrl } from "../../lib/whatsapp";
+
+const RELATED_SERVICE_LABELS: Record<string, string> = {
+  PAQUETE: "Paquete turístico",
+  PASAJE: "Pasaje",
+  ALOJAMIENTO: "Alojamiento",
+  ASESORIA: "Asesoría",
+  OTRO: "Otro",
+};
+
+const RESPONSE_CHANNEL_LABELS: Record<string, string> = {
+  EMAIL: "Correo electrónico",
+  CARTA: "Carta al domicilio",
+};
 
 interface ClaimsInboxProps {
   initialClaims: ClaimRecordDTO[];
@@ -197,6 +211,51 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
                   {selectedClaim.consumerRequest}
                 </p>
               </div>
+            </div>
+
+            {/* Servicio relacionado, reserva, fecha y canal de respuesta */}
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-xs space-y-2">
+              <div className="font-bold text-slate-900 text-sm mb-1">3. Servicio y Canal de Respuesta</div>
+              <div className="grid grid-cols-2 gap-2 text-slate-700">
+                <div>
+                  <strong>Servicio relacionado:</strong>{" "}
+                  {RELATED_SERVICE_LABELS[(selectedClaim.relatedService || "").toUpperCase()] ||
+                    selectedClaim.relatedService ||
+                    "—"}
+                </div>
+                <div>
+                  <strong>Código de reserva:</strong> {selectedClaim.reservationCode || "—"}
+                </div>
+                <div>
+                  <strong>Fecha del servicio:</strong> {selectedClaim.serviceDate || "—"}
+                </div>
+                <div>
+                  <strong>Canal de respuesta:</strong>{" "}
+                  {RESPONSE_CHANNEL_LABELS[(selectedClaim.responseChannel || "").toUpperCase()] ||
+                    selectedClaim.responseChannel ||
+                    "—"}
+                </div>
+              </div>
+
+              {selectedClaim.attachments && selectedClaim.attachments.length > 0 && (
+                <div className="pt-2">
+                  <strong className="text-slate-900">Adjuntos:</strong>
+                  <ul className="mt-1 space-y-1">
+                    {selectedClaim.attachments.map((attachment) => (
+                      <li key={attachment.id}>
+                        <a
+                          href={apiClient.getAdminClaimAttachmentUrl(selectedClaim.id, attachment.id)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-brand-accent hover:text-brand-navy font-semibold underline"
+                        >
+                          {attachment.originalFilename}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             {/* Response Section */}

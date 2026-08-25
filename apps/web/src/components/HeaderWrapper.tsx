@@ -38,6 +38,13 @@ export function HeaderWrapper({ settings: initialSettings }: HeaderWrapperProps)
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
+  // El asistente del Libro de Reclamaciones usa su propio header minimalista
+  // (ver ClaimWizardShell) — el Figma muestra un layout distinto al resto del
+  // sitio público, sin la nav completa.
+  if (currentPath.startsWith("/reclamaciones/registrar")) {
+    return null;
+  }
+
   return (
     <SiteHeader
       siteName={settings.siteName}

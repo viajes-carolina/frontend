@@ -41,6 +41,7 @@ import {
   PublicHomeBlogInspirationResponse,
   DEFAULT_CLAIM_RECORDS,
   ClaimRecordDTO,
+  ClaimAttachmentDTO,
   DEFAULT_CONTACT_EXPLORE_LINKS,
   ContactExploreLinkDTO,
   DEFAULT_ADMIN_USERS,
@@ -238,6 +239,18 @@ export async function handleProxyRequest(
       clearTimeout(timeoutId);
 
       if (response.ok) {
+        const responseContentType = response.headers.get("content-type") || "";
+        if (!responseContentType.includes("application/json")) {
+          // Passthrough binario (ej. constancia.pdf, adjuntos de reclamos): no se puede
+          // reconstruir como JSON, así que se reenvía el cuerpo y encabezados tal cual.
+          const buffer = await response.arrayBuffer();
+          const passthroughHeaders = new Headers();
+          passthroughHeaders.set("content-type", responseContentType || "application/octet-stream");
+          const contentDisposition = response.headers.get("content-disposition");
+          if (contentDisposition) passthroughHeaders.set("content-disposition", contentDisposition);
+          return new NextResponse(buffer, { status: response.status, headers: passthroughHeaders });
+        }
+
         const data = await response.json();
         const nextRes = NextResponse.json(data, { status: response.status });
         // Reenviar Set-Cookie del backend real (ej. vc_admin_jwt en /auth/login) — sin esto
@@ -959,6 +972,27 @@ export async function handleProxyRequest(
     }
 
     if (targetPath.includes("claims")) {
+      // Adjuntos (Corte 16): se resuelve ANTES que el POST genérico de creación de
+      // reclamo de más abajo, porque la ruta también contiene "claims" — sin este
+      // guard, una subida de adjunto offline crearía por error una hoja de
+      // reclamación duplicada en vez de simular el adjunto.
+      if (targetPath.includes("attachments")) {
+        if (method === "POST") {
+          const idMatch = targetPath.match(/claims\/(\d+)\/attachments/);
+          const claimId = idMatch ? parseInt(idMatch[1], 10) : 0;
+          const newAttachment: ClaimAttachmentDTO = {
+            id: Date.now(),
+            claimId,
+            originalFilename: uploadedFileName || "archivo-adjunto",
+            mimeType: uploadedMimeType,
+            fileSizeBytes: uploadedFileSize || (uploadedFileBuffer ? uploadedFileBuffer.length : 0),
+            createdAt: new Date().toISOString(),
+          };
+          return NextResponse.json(newAttachment, { status: 201 });
+        }
+        return NextResponse.json([], { status: 200 });
+      }
+
       const claims = readStoredJson<ClaimRecordDTO[]>("claims.json", DEFAULT_CLAIM_RECORDS);
       if (method === "POST") {
         const year = new Date().getFullYear();
@@ -986,6 +1020,10 @@ export async function handleProxyRequest(
           status: "PENDING",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          relatedService: String(bodyJson?.relatedService || "otro"),
+          reservationCode: bodyJson?.reservationCode ? String(bodyJson.reservationCode) : undefined,
+          serviceDate: bodyJson?.serviceDate ? String(bodyJson.serviceDate) : undefined,
+          responseChannel: String(bodyJson?.responseChannel || "EMAIL"),
         };
         const updated = [newClaim, ...claims];
         writeStoredJson("claims.json", updated);

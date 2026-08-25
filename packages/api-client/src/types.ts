@@ -783,6 +783,15 @@ export interface ClaimRecordDTO {
   responseAt?: string;
   createdAt?: string;
   updatedAt?: string;
+  // Asistente de 4 pasos (Corte 16): identificación del servicio y canal de
+  // respuesta elegido por el consumidor al registrar la hoja de reclamación.
+  relatedService: string;
+  reservationCode?: string;
+  serviceDate?: string;
+  responseChannel: string;
+  // Presente solo si el backend embebe la lista de adjuntos en la respuesta
+  // de la hoja de reclamación (ver GET /api/admin/v1/claims y detalle público).
+  attachments?: ClaimAttachmentDTO[];
 }
 
 export interface SubmitClaimRequest {
@@ -803,6 +812,22 @@ export interface SubmitClaimRequest {
   consumerDetail: string;
   consumerRequest: string;
   turnstileToken?: string;
+  relatedService: string;
+  reservationCode?: string;
+  serviceDate?: string;
+  responseChannel: string;
+}
+
+// Adjuntos de una hoja de reclamación (Corte 16) — subidos después de crear el
+// reclamo vía POST /api/public/v1/claims/{id}/attachments. Son opcionales y
+// nunca bloquean el registro de la hoja de reclamación en sí.
+export interface ClaimAttachmentDTO {
+  id: number;
+  claimId: number;
+  originalFilename: string;
+  mimeType: string;
+  fileSizeBytes: number;
+  createdAt: string;
 }
 
 export interface UpdateClaimStatusRequest {
