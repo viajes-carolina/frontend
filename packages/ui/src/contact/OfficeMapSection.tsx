@@ -1,0 +1,108 @@
+"use client";
+
+import React from "react";
+import { ContactPageDTO } from "@vc/api-client";
+import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
+import { WhatsAppButton } from "../primitives/WhatsAppButton";
+
+export interface OfficeMapSectionProps {
+  page: ContactPageDTO;
+  officeGoogleMapsUrl?: string;
+  officeAddress?: string;
+  whatsappPhone?: string;
+  className?: string;
+}
+
+export function OfficeMapSection({
+  page,
+  officeGoogleMapsUrl,
+  officeAddress,
+  whatsappPhone = DEFAULT_WHATSAPP_PHONE,
+  className = "",
+}: OfficeMapSectionProps) {
+  if (!page.officeSectionTitle) return null;
+
+  return (
+    <section className={`relative w-full overflow-hidden bg-atmosphere-pale-sky py-16 sm:py-20 lg:py-24 ${className}`}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            {page.officeSectionBadge && (
+              <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">{page.officeSectionBadge}</p>
+            )}
+            <h2
+              className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy sm:text-4xl lg:text-[48px]"
+              style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+            >
+              {page.officeSectionTitle}
+            </h2>
+          </div>
+          <div className="lg:col-span-6 lg:pt-2">
+            <p className="font-inter text-base text-brand-navy/75 sm:text-lg">{page.officeSectionSubtitle}</p>
+          </div>
+        </div>
+
+        <div className="mt-12 grid grid-cols-1 gap-10 lg:mt-16 lg:grid-cols-12 lg:gap-10">
+          {/* Mapa real de Google Maps */}
+          <div className="lg:col-span-7">
+            <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[32px] border border-neutral-border bg-surface-ivory">
+              <iframe
+                src={`https://www.google.com/maps?q=${encodeURIComponent(officeAddress || page.officeMapPinSubtitle || "")}&output=embed`}
+                className="absolute inset-0 h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`Ubicación de ${page.officeMapPinTitle || "Viajes Carolina"} en Google Maps`}
+              />
+
+              <div className="pointer-events-none absolute bottom-5 left-5 max-w-[75%] rounded-[18px] bg-white p-4 shadow-hover sm:p-5">
+                <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-navy">{page.officeMapPinTitle}</p>
+                <p className="font-inter mt-1 text-sm text-brand-navy/70">{page.officeMapPinSubtitle}</p>
+              </div>
+            </div>
+
+            {officeGoogleMapsUrl && (
+              <a
+                href={officeGoogleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-inter mt-4 inline-block text-sm font-semibold text-brand-navy underline decoration-brand-accent/40 underline-offset-4 hover:text-brand-accent"
+              >
+                {page.officeMapsLinkText} ↗
+              </a>
+            )}
+          </div>
+
+          {/* Panel de información */}
+          <div className="lg:col-span-5 lg:pt-2">
+            <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">{page.officeMapEyebrow}</p>
+            <h3
+              className="font-display mt-2 text-2xl font-semibold leading-tight text-brand-navy sm:text-3xl"
+              style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+            >
+              {page.officeMapTitle}
+            </h3>
+            <p className="font-inter mt-3 text-base text-brand-navy/75">{page.officeMapSubtitle}</p>
+
+            <div className="mt-8 border-t border-brand-navy/15 pt-6">
+              <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">{page.officeLocationLabel}</p>
+              <p className="font-inter mt-2 text-base font-semibold text-brand-navy">
+                {officeAddress || page.officeMapPinSubtitle}
+              </p>
+            </div>
+
+            <div className="mt-6 border-t border-brand-navy/15 pt-6">
+              <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">{page.officeVisitLabel}</p>
+              <p className="font-inter mt-2 text-base text-brand-navy/85">{page.officeVisitNote}</p>
+            </div>
+
+            <div className="mt-8">
+              <WhatsAppButton phone={whatsappPhone} message={page.officeVisitCtaMessage}>
+                {page.officeVisitCtaText}
+              </WhatsAppButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

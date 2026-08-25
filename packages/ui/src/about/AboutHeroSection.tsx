@@ -2,76 +2,83 @@
 
 import React from "react";
 import { AboutPageDTO } from "@vc/api-client";
+import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
+import { OrganicPhoto } from "../primitives/OrganicPhoto";
+import { WhatsAppButton } from "../primitives/WhatsAppButton";
 
 export interface AboutHeroSectionProps {
   page: AboutPageDTO;
+  whatsappPhone?: string;
   className?: string;
 }
 
-export function AboutHeroSection({ page, className = "" }: AboutHeroSectionProps) {
+export function AboutHeroSection({ page, whatsappPhone = DEFAULT_WHATSAPP_PHONE, className = "" }: AboutHeroSectionProps) {
   return (
-    <section
-      className={`relative w-full overflow-hidden bg-neutral-soft pt-24 pb-16 sm:pt-32 sm:pb-20 border-b border-neutral-border text-neutral-ink ${className}`}
-    >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
-        
-        {/* Eyebrow Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-neutral-border shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
-          <span className="font-sora text-xs font-bold uppercase tracking-[0.08em] text-brand-accent">
-            {page.heroBadge || "Conoce Nuestra Esencia"}
-          </span>
+    <section className={`relative w-full overflow-hidden bg-surface-ivory pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28 ${className}`}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-6">
+            <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">
+              {page.heroBadge}
+            </p>
+            <h1
+              className="font-display mt-4 text-4xl font-semibold leading-[1.05] text-brand-navy sm:text-5xl lg:text-[58px]"
+              style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+            >
+              {page.heroTitle}
+            </h1>
+            <p className="font-inter mt-5 max-w-lg text-base text-brand-navy/75 sm:text-lg">
+              {page.heroSubtitle}
+            </p>
+            <div className="mt-8">
+              <WhatsAppButton phone={whatsappPhone} message="Hola Viajes Carolina, me gustaría conversar sobre mi próximo viaje.">
+                Cuéntanos qué imaginas
+              </WhatsAppButton>
+            </div>
+            <p className="font-inter mt-4 text-sm text-brand-navy/60">
+              Una persona te responde. Sin formularios impersonales.
+            </p>
+          </div>
+
+          <div className="relative lg:col-span-6">
+            <div className="relative w-full max-w-[570px] pb-14 mx-auto">
+              <OrganicPhoto
+                imageUrl={page.heroMediaUrl}
+                alt="Viajeros reales de Viajes Carolina"
+                focalPoint={{ x: page.heroFocalX ?? 50, y: page.heroFocalY ?? 50 }}
+                priority
+                className="aspect-[4/3] w-full"
+              />
+
+              {page.heroNoteText && (
+                <div className="absolute -bottom-2 right-0 z-0 max-w-[42%] -rotate-2 rounded-[18px] bg-[#f0e5d2] p-5 shadow-sm">
+                  <p
+                    className="font-display text-base italic leading-snug text-brand-navy sm:text-lg"
+                    style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+                  >
+                    {page.heroNoteText}
+                  </p>
+                </div>
+              )}
+
+              {page.heroCardTitle && (
+                <div className="absolute bottom-6 left-4 z-10 max-w-[60%] rotate-2 rounded-[18px] bg-white p-6 shadow-[0px_14px_28px_0px_rgba(20,41,59,0.16)] sm:left-8">
+                  {page.heroCardBadge && (
+                    <p className="font-sora text-[9px] font-semibold uppercase tracking-wider text-brand-accent">
+                      {page.heroCardBadge}
+                    </p>
+                  )}
+                  <p
+                    className="font-display mt-2 text-lg font-semibold text-brand-navy sm:text-xl"
+                    style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+                  >
+                    {page.heroCardTitle}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-
-        {/* Headline */}
-        <h1 className="font-sora font-extrabold text-3xl sm:text-5xl lg:text-6xl text-brand-navy max-w-4xl mx-auto leading-tight">
-          {page.heroTitle}
-        </h1>
-
-        {/* Subtitle */}
-        <p className="font-inter text-neutral-muted text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-          {page.heroSubtitle}
-        </p>
-
-        {/* Stats Grid */}
-        <div className="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto">
-          <div className="bg-white border border-neutral-border rounded-2xl p-5 text-center shadow-sm">
-            <span className="font-sora font-extrabold text-3xl sm:text-4xl text-brand-navy block">
-              {page.experienceYears}+
-            </span>
-            <span className="font-inter text-xs text-neutral-muted mt-1 block font-medium">
-              Años de Experiencia
-            </span>
-          </div>
-
-          <div className="bg-white border border-neutral-border rounded-2xl p-5 text-center shadow-sm">
-            <span className="font-sora font-extrabold text-3xl sm:text-4xl text-brand-accent block">
-              {page.happyTravelers >= 1000 ? `${(page.happyTravelers / 1000).toFixed(0)}k+` : `${page.happyTravelers}+`}
-            </span>
-            <span className="font-inter text-xs text-neutral-muted mt-1 block font-medium">
-              Viajeros Felices
-            </span>
-          </div>
-
-          <div className="bg-white border border-neutral-border rounded-2xl p-5 text-center shadow-sm">
-            <span className="font-sora font-extrabold text-3xl sm:text-4xl text-brand-navy block">
-              {page.destinationsCount}+
-            </span>
-            <span className="font-inter text-xs text-neutral-muted mt-1 block font-medium">
-              Destinos Globales
-            </span>
-          </div>
-
-          <div className="bg-white border border-neutral-border rounded-2xl p-5 text-center shadow-sm">
-            <span className="font-sora font-extrabold text-3xl sm:text-4xl text-brand-accent block">
-              {page.satisfactionRatePercent}%
-            </span>
-            <span className="font-inter text-xs text-neutral-muted mt-1 block font-medium">
-              Satisfacción
-            </span>
-          </div>
-        </div>
-
       </div>
     </section>
   );

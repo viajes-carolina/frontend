@@ -183,13 +183,6 @@ export interface UpdateHomeHeroRequest {
 }
 
 // Promotions DTOs (Corte 6)
-export interface PromotionGalleryItemDTO {
-  mediaId: number;
-  mediaUrl: string;
-  focalX?: number;
-  focalY?: number;
-}
-
 export interface PromotionDTO {
   id: number;
   slug: string;
@@ -207,22 +200,27 @@ export interface PromotionDTO {
   featuredMediaUrl?: string;
   featuredMediaFocalX?: number;
   featuredMediaFocalY?: number;
-  isFeatured: boolean;
   inclusions: string[];
   exclusions: string[];
   whatsappMessageTemplate?: string;
-  displayOrder?: number;
   active: boolean;
   createdAt?: string;
   updatedAt?: string;
-  gallery?: PromotionGalleryItemDTO[];
   source?: "MANUAL" | "FACEBOOK" | string;
   facebookPostId?: string;
   facebookPermalinkUrl?: string;
 }
 
+export interface SetPromotionActiveRequest {
+  active: boolean;
+}
+
+// El slug se autogenera en el backend a partir del título — no se envía aquí.
+// Sin campos de galería adicional, destacado, orden de visualización ni
+// activo/inactivo: esos conceptos ya no existen para Promotions (ver
+// PromotionDTO arriba). Al crear, el backend publica automáticamente un post
+// en la Página de Facebook usando estos mismos campos.
 export interface CreateOrUpdatePromotionRequest {
-  slug: string;
   title: string;
   destination: string;
   summary: string;
@@ -234,13 +232,9 @@ export interface CreateOrUpdatePromotionRequest {
   validFrom?: string;
   validUntil?: string;
   featuredMediaId?: number;
-  isFeatured?: boolean;
   inclusions: string[];
   exclusions: string[];
   whatsappMessageTemplate?: string;
-  displayOrder?: number;
-  active?: boolean;
-  galleryMediaIds?: number[];
 }
 
 // Trust: Testimonials & FAQ DTOs (Corte 7)
@@ -297,6 +291,20 @@ export interface PublicTrustResponse {
 }
 
 // About Us & Advisors DTOs (Corte 8)
+export interface JourneyStepDTO {
+  label: string;
+}
+
+export interface AccompanyStepDTO {
+  title: string;
+  body: string;
+}
+
+export interface AboutMomentDTO {
+  title: string;
+  body: string;
+}
+
 export interface AboutPageDTO {
   id?: number;
   heroBadge: string;
@@ -304,19 +312,40 @@ export interface AboutPageDTO {
   heroSubtitle: string;
   heroMediaId?: number;
   heroMediaUrl?: string;
+  heroFocalX?: number;
+  heroFocalY?: number;
+  heroCardBadge?: string;
+  heroCardTitle?: string;
+  heroNoteText?: string;
   storyTitle: string;
   storyBody: string;
   storyMediaId?: number;
   storyMediaUrl?: string;
+  storyFocalX?: number;
+  storyFocalY?: number;
   missionTitle: string;
   missionBody: string;
-  visionTitle: string;
-  visionBody: string;
+  missionQuote?: string;
+  journeySteps: JourneyStepDTO[];
   values: string[];
-  experienceYears: number;
-  happyTravelers: number;
-  destinationsCount: number;
-  satisfactionRatePercent: number;
+  accompanyBadge?: string;
+  accompanyTitle?: string;
+  accompanySubtitle?: string;
+  accompanySteps: AccompanyStepDTO[];
+  accompanyQuote?: string;
+  accompanyQuoteAttribution?: string;
+  momentsBadge?: string;
+  momentsTitle?: string;
+  momentsSubtitle?: string;
+  momentsMediaId?: number;
+  momentsMediaUrl?: string;
+  momentsFocalX?: number;
+  momentsFocalY?: number;
+  moments: AboutMomentDTO[];
+  humanBadge?: string;
+  humanTitle?: string;
+  humanSubtitle?: string;
+  humanTagline?: string;
   revision?: number;
   updatedAt?: string;
 }
@@ -326,18 +355,38 @@ export interface UpdateAboutPageRequest {
   heroTitle: string;
   heroSubtitle: string;
   heroMediaId?: number;
+  heroFocalX?: number;
+  heroFocalY?: number;
+  heroCardBadge?: string;
+  heroCardTitle?: string;
+  heroNoteText?: string;
   storyTitle: string;
   storyBody: string;
   storyMediaId?: number;
+  storyFocalX?: number;
+  storyFocalY?: number;
   missionTitle: string;
   missionBody: string;
-  visionTitle: string;
-  visionBody: string;
+  missionQuote?: string;
+  journeySteps: JourneyStepDTO[];
   values: string[];
-  experienceYears: number;
-  happyTravelers: number;
-  destinationsCount: number;
-  satisfactionRatePercent: number;
+  accompanyBadge?: string;
+  accompanyTitle?: string;
+  accompanySubtitle?: string;
+  accompanySteps: AccompanyStepDTO[];
+  accompanyQuote?: string;
+  accompanyQuoteAttribution?: string;
+  momentsBadge?: string;
+  momentsTitle?: string;
+  momentsSubtitle?: string;
+  momentsMediaId?: number;
+  momentsFocalX?: number;
+  momentsFocalY?: number;
+  moments: AboutMomentDTO[];
+  humanBadge?: string;
+  humanTitle?: string;
+  humanSubtitle?: string;
+  humanTagline?: string;
 }
 
 export interface TravelAdvisorDTO {
@@ -346,6 +395,7 @@ export interface TravelAdvisorDTO {
   roleTitle: string;
   specialty: string;
   bio: string;
+  quote?: string;
   photoMediaId?: number;
   photoMediaUrl?: string;
   whatsappPhone?: string;
@@ -361,6 +411,7 @@ export interface CreateOrUpdateAdvisorRequest {
   roleTitle: string;
   specialty: string;
   bio: string;
+  quote?: string;
   photoMediaId?: number;
   whatsappPhone?: string;
   whatsappMessageTemplate?: string;
@@ -404,7 +455,13 @@ export interface BlogPostDTO {
   categorySlug?: string;
   coverMediaId?: number;
   coverMediaUrl?: string;
+  coverFocalX?: number;
+  coverFocalY?: number;
   authorName: string;
+  authorAvatarMediaId?: number;
+  authorAvatarUrl?: string;
+  authorAvatarFocalX?: number;
+  authorAvatarFocalY?: number;
   readingTimeMinutes: number;
   tags: string[];
   status: string; // 'DRAFT', 'PUBLISHED', 'ARCHIVED'
@@ -423,7 +480,12 @@ export interface CreateOrUpdateBlogPostRequest {
   contentMarkdown: string;
   categoryId: number;
   coverMediaId?: number;
+  coverFocalX?: number;
+  coverFocalY?: number;
   authorName?: string;
+  authorAvatarMediaId?: number;
+  authorAvatarFocalX?: number;
+  authorAvatarFocalY?: number;
   readingTimeMinutes?: number;
   tags?: string[];
   status?: string;
@@ -447,15 +509,42 @@ export interface BlogPostDetailResponse {
 }
 
 // Contact Page & Inquiry DTOs (Corte 9)
+export interface StarterPhraseDTO {
+  quote: string;
+  support: string;
+}
+
 export interface ContactPageDTO {
   id?: number;
   heroBadge: string;
   heroTitle: string;
   heroSubtitle: string;
-  whatsappBoxTitle: string;
-  whatsappBoxSubtitle: string;
-  formTitle: string;
-  formSubtitle: string;
+  heroCtaText: string;
+  heroNoteText: string;
+  heroCtaMessage: string;
+  heroChatLabel: string;
+  heroChatBubble1: string;
+  heroChatBubble2: string;
+  heroChatBubble3: string;
+  startersBadge: string;
+  startersTitle: string;
+  startersSubtitle: string;
+  startersClosing: string;
+  starterPhrases: StarterPhraseDTO[];
+  officeSectionBadge: string;
+  officeSectionTitle: string;
+  officeSectionSubtitle: string;
+  officeMapTitle: string;
+  officeMapSubtitle: string;
+  officeVisitNote: string;
+  officeMapEyebrow: string;
+  officeMapPinTitle: string;
+  officeMapPinSubtitle: string;
+  officeMapsLinkText: string;
+  officeLocationLabel: string;
+  officeVisitLabel: string;
+  officeVisitCtaText: string;
+  officeVisitCtaMessage: string;
   revision?: number;
   updatedAt?: string;
 }
@@ -464,10 +553,32 @@ export interface UpdateContactPageRequest {
   heroBadge: string;
   heroTitle: string;
   heroSubtitle: string;
-  whatsappBoxTitle: string;
-  whatsappBoxSubtitle: string;
-  formTitle: string;
-  formSubtitle: string;
+  heroCtaText: string;
+  heroNoteText: string;
+  heroCtaMessage: string;
+  heroChatLabel: string;
+  heroChatBubble1: string;
+  heroChatBubble2: string;
+  heroChatBubble3: string;
+  startersBadge: string;
+  startersTitle: string;
+  startersSubtitle: string;
+  startersClosing: string;
+  starterPhrases: StarterPhraseDTO[];
+  officeSectionBadge: string;
+  officeSectionTitle: string;
+  officeSectionSubtitle: string;
+  officeMapTitle: string;
+  officeMapSubtitle: string;
+  officeVisitNote: string;
+  officeMapEyebrow: string;
+  officeMapPinTitle: string;
+  officeMapPinSubtitle: string;
+  officeMapsLinkText: string;
+  officeLocationLabel: string;
+  officeVisitLabel: string;
+  officeVisitCtaText: string;
+  officeVisitCtaMessage: string;
 }
 
 export interface ContactInquiryDTO {
@@ -509,6 +620,7 @@ export interface PublicContactResponse {
   contactEmail: string;
   officeAddress: string;
   officeHours: string;
+  officeGoogleMapsUrl?: string;
 }
 
 // Search DTOs (Corte 11)
@@ -595,6 +707,10 @@ export interface HomePromotionsSectionDTO {
   bottomCtaQuestion: string;
   bottomCtaWhatsappText: string;
   bottomCtaWhatsappMessage?: string;
+  mediaId?: number;
+  mediaUrl?: string;
+  mediaFocalX?: number;
+  mediaFocalY?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -606,6 +722,10 @@ export interface UpdateHomePromotionsSectionRequest {
   bottomCtaQuestion: string;
   bottomCtaWhatsappText: string;
   bottomCtaWhatsappMessage?: string;
+  mediaId?: number;
+  mediaUrl?: string;
+  mediaFocalX?: number;
+  mediaFocalY?: number;
 }
 
 // Home Testimonials Section DTOs — copy de "05 · Historias reales"
@@ -614,6 +734,14 @@ export interface HomeTestimonialsSectionDTO {
   badgeText: string;
   title: string;
   subtitle: string;
+  blobMediaId?: number;
+  blobMediaUrl?: string;
+  blobFocalX?: number;
+  blobFocalY?: number;
+  polaroidMediaId?: number;
+  polaroidMediaUrl?: string;
+  polaroidFocalX?: number;
+  polaroidFocalY?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -622,6 +750,14 @@ export interface UpdateHomeTestimonialsSectionRequest {
   badgeText: string;
   title: string;
   subtitle: string;
+  blobMediaId?: number;
+  blobMediaUrl?: string;
+  blobFocalX?: number;
+  blobFocalY?: number;
+  polaroidMediaId?: number;
+  polaroidMediaUrl?: string;
+  polaroidFocalX?: number;
+  polaroidFocalY?: number;
 }
 
 // Home FAQ Section DTOs — copy de "06 · Antes de continuar"

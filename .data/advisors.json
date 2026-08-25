@@ -25,7 +25,7 @@
     "whatsappPhone": "+51987654321",
     "whatsappMessageTemplate": "Hola Lucía, deseo cotizar un paquete al Caribe y recibir tu recomendación de resorts.",
     "displayOrder": 2,
-    "active": true,
+    "active": false,
     "createdAt": "2026-08-18T00:00:00.000Z",
     "updatedAt": "2026-08-18T00:00:00.000Z"
   },
@@ -40,7 +40,7 @@
     "whatsappPhone": "+51987654321",
     "whatsappMessageTemplate": "Hola Valeria, me interesa cotizar un viaje a Cusco / Selva peruana con tu asesoría.",
     "displayOrder": 3,
-    "active": true,
+    "active": false,
     "createdAt": "2026-08-18T00:00:00.000Z",
     "updatedAt": "2026-08-18T00:00:00.000Z"
   }

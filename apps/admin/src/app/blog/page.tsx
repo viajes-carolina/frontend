@@ -3,7 +3,6 @@
 import React from "react";
 import { useAdminBlog } from "../../hooks/useAdminBlog";
 import { BlogFormModal } from "./BlogFormModal";
-import { CategoryManagerModal } from "./CategoryManagerModal";
 
 export default function AdminBlogPage() {
   const {
@@ -18,15 +17,21 @@ export default function AdminBlogPage() {
     message,
     editingPost,
     isPostModalOpen,
-    isCategoryModalOpen,
-    setIsCategoryModalOpen,
+    coverMediaId,
+    coverMediaUrl,
+    coverFocalX,
+    coverFocalY,
+    authorAvatarMediaId,
+    authorAvatarUrl,
+    authorAvatarFocalX,
+    authorAvatarFocalY,
+    handleCoverSelect,
+    handleAvatarSelect,
     handleOpenCreatePost,
     handleOpenEditPost,
     handleClosePostModal,
     handleSavePost,
     handleDeletePost,
-    handleSaveCategory,
-    handleDeleteCategory,
   } = useAdminBlog();
 
   return (
@@ -43,15 +48,6 @@ export default function AdminBlogPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl border border-neutral-300 bg-white text-neutral-700 font-bold text-xs sm:text-sm hover:bg-neutral-50 shadow-sm transition flex items-center gap-2"
-          >
-            <span>🏷️</span>
-            <span>Categorías ({categories.length})</span>
-          </button>
-
           <button
             type="button"
             onClick={handleOpenCreatePost}
@@ -242,16 +238,16 @@ export default function AdminBlogPage() {
         editingPost={editingPost}
         categories={categories}
         saving={saving}
-      />
-
-      {/* Categories Manager Modal */}
-      <CategoryManagerModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        categories={categories}
-        onSaveCategory={handleSaveCategory}
-        onDeleteCategory={handleDeleteCategory}
-        saving={saving}
+        coverMediaId={coverMediaId}
+        coverMediaUrl={coverMediaUrl}
+        coverFocalX={coverFocalX}
+        coverFocalY={coverFocalY}
+        authorAvatarMediaId={authorAvatarMediaId}
+        authorAvatarUrl={authorAvatarUrl}
+        authorAvatarFocalX={authorAvatarFocalX}
+        authorAvatarFocalY={authorAvatarFocalY}
+        handleCoverSelect={handleCoverSelect}
+        handleAvatarSelect={handleAvatarSelect}
       />
     </div>
   );

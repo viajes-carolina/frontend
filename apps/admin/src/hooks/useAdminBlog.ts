@@ -5,7 +5,7 @@ import {
   BlogPostDTO,
   BlogCategoryDTO,
   CreateOrUpdateBlogPostRequest,
-  CreateOrUpdateBlogCategoryRequest,
+  MediaAssetDTO,
   apiClient,
 } from "@vc/api-client";
 
@@ -18,10 +18,20 @@ export function useAdminBlog() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Modals state
+  // Post modal state
   const [editingPost, setEditingPost] = useState<BlogPostDTO | null>(null);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  // Foto de portada y foto del autor — mismo patrón (media: MediaAssetDTO) => {...}
+  // usado hoy en useAdminPromotionsCatalog.ts / useAdminTestimonialsSection.ts.
+  const [coverMediaId, setCoverMediaId] = useState<number | undefined>(undefined);
+  const [coverMediaUrl, setCoverMediaUrl] = useState<string>("/media/demo-cartagena-caribe.webp");
+  const [coverFocalX, setCoverFocalX] = useState<number | undefined>(undefined);
+  const [coverFocalY, setCoverFocalY] = useState<number | undefined>(undefined);
+  const [authorAvatarMediaId, setAuthorAvatarMediaId] = useState<number | undefined>(undefined);
+  const [authorAvatarUrl, setAuthorAvatarUrl] = useState<string | undefined>(undefined);
+  const [authorAvatarFocalX, setAuthorAvatarFocalX] = useState<number | undefined>(undefined);
+  const [authorAvatarFocalY, setAuthorAvatarFocalY] = useState<number | undefined>(undefined);
 
   const loadData = useCallback(async () => {
     try {
@@ -45,17 +55,47 @@ export function useAdminBlog() {
 
   const handleOpenCreatePost = () => {
     setEditingPost(null);
+    setCoverMediaId(undefined);
+    setCoverMediaUrl("/media/demo-cartagena-caribe.webp");
+    setCoverFocalX(undefined);
+    setCoverFocalY(undefined);
+    setAuthorAvatarMediaId(undefined);
+    setAuthorAvatarUrl(undefined);
+    setAuthorAvatarFocalX(undefined);
+    setAuthorAvatarFocalY(undefined);
     setIsPostModalOpen(true);
   };
 
   const handleOpenEditPost = (post: BlogPostDTO) => {
     setEditingPost(post);
+    setCoverMediaId(post.coverMediaId);
+    setCoverMediaUrl(post.coverMediaUrl || "");
+    setCoverFocalX(post.coverFocalX);
+    setCoverFocalY(post.coverFocalY);
+    setAuthorAvatarMediaId(post.authorAvatarMediaId);
+    setAuthorAvatarUrl(post.authorAvatarUrl);
+    setAuthorAvatarFocalX(post.authorAvatarFocalX);
+    setAuthorAvatarFocalY(post.authorAvatarFocalY);
     setIsPostModalOpen(true);
   };
 
   const handleClosePostModal = () => {
     setIsPostModalOpen(false);
     setEditingPost(null);
+  };
+
+  const handleCoverSelect = (media: MediaAssetDTO) => {
+    setCoverMediaId(media.id);
+    setCoverMediaUrl(media.storagePath);
+    setCoverFocalX(media.focalX || 50);
+    setCoverFocalY(media.focalY || 50);
+  };
+
+  const handleAvatarSelect = (media: MediaAssetDTO) => {
+    setAuthorAvatarMediaId(media.id);
+    setAuthorAvatarUrl(media.storagePath);
+    setAuthorAvatarFocalX(media.focalX || 50);
+    setAuthorAvatarFocalY(media.focalY || 50);
   };
 
   const handleSavePost = async (req: CreateOrUpdateBlogPostRequest) => {
@@ -91,38 +131,6 @@ export function useAdminBlog() {
     }
   };
 
-  const handleSaveCategory = async (id: number | null, req: CreateOrUpdateBlogCategoryRequest) => {
-    try {
-      setSaving(true);
-      if (id) {
-        await apiClient.updateBlogCategory(id, req);
-        setMessage({ type: "success", text: "Categoría actualizada con éxito." });
-      } else {
-        await apiClient.createBlogCategory(req);
-        setMessage({ type: "success", text: "Categoría creada con éxito." });
-      }
-      await loadData();
-    } catch {
-      setMessage({ type: "error", text: "Error al guardar la categoría." });
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDeleteCategory = async (id: number) => {
-    if (!confirm("¿Estás seguro de desactivar esta categoría?")) return;
-    try {
-      setSaving(true);
-      await apiClient.deleteBlogCategory(id);
-      setMessage({ type: "success", text: "Categoría desactivada." });
-      await loadData();
-    } catch {
-      setMessage({ type: "error", text: "Error al desactivar la categoría." });
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return {
     posts,
     categories,
@@ -136,15 +144,21 @@ export function useAdminBlog() {
     setMessage,
     editingPost,
     isPostModalOpen,
-    isCategoryModalOpen,
-    setIsCategoryModalOpen,
+    coverMediaId,
+    coverMediaUrl,
+    coverFocalX,
+    coverFocalY,
+    authorAvatarMediaId,
+    authorAvatarUrl,
+    authorAvatarFocalX,
+    authorAvatarFocalY,
+    handleCoverSelect,
+    handleAvatarSelect,
     handleOpenCreatePost,
     handleOpenEditPost,
     handleClosePostModal,
     handleSavePost,
     handleDeletePost,
-    handleSaveCategory,
-    handleDeleteCategory,
     loadData,
   };
 }

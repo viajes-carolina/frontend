@@ -43,8 +43,9 @@ const ROUTE_HORIZONTAL_PATH = "M0.96 16.32C45.12 1.92 81.12 22.56 128.16 10.56C1
 const WAVE_TO_BLOG_PATH = "M0 60C180 20 340 92 500 55C660 18 820 88 980 50C1140 12 1300 72 1440 38V120H0V60Z";
 
 // Ilustración "escaparate" — silueta orgánica con degradado cielo→atardecer y
-// trazo de ruta interior. `PromoBlob` recorta la foto real de la promoción
-// destacada (`featuredMediaUrl`, ya editable desde el admin de Promociones)
+// trazo de ruta interior. `PromoBlob` recorta la foto de fondo configurada
+// directamente en la sección (`config.mediaUrl`, editable desde el admin de
+// Promociones, independiente de cuál promoción individual esté activa)
 // contra este mismo path vía `<clipPath>`; sin foto cargada cae a esta
 // ilustración degradada. 2 variantes reales exportadas de Figma, no la misma
 // forma reescalada: compacta (Mobile/Tablet, ~1.52:1) y panorámica (Desktop/
@@ -160,14 +161,20 @@ function FeaturedPromoCard({
     <div
       className={`flex flex-col gap-2.5 rounded-[28px] xl:rounded-[22px] bg-white/70 p-6 shadow-[0_18px_40px_-8px_rgba(20,41,59,0.18)] backdrop-blur-md ${className}`}
     >
-      <span className="font-sora text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
-        {toMeta(promo)}
-      </span>
+      {promo.destination?.trim() && (
+        <span className="font-sora text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
+          {toMeta(promo)}
+        </span>
+      )}
       <h3 className="font-display text-[28px] font-semibold leading-[32px] text-brand-navy">{promo.title}</h3>
-      <p className="font-inter text-[13px] leading-[19px] text-brand-navy">{promo.summary}</p>
-      <p className="font-inter text-[17px] font-semibold text-brand-navy">
-        Desde US$ {Number(promo.priceUsd).toLocaleString()}
-      </p>
+      {promo.summary?.trim() && (
+        <p className="font-inter text-[13px] leading-[19px] text-brand-navy">{promo.summary}</p>
+      )}
+      {Number(promo.priceUsd) > 0 && (
+        <p className="font-inter text-[17px] font-semibold text-brand-navy">
+          Desde US$ {Number(promo.priceUsd).toLocaleString()}
+        </p>
+      )}
       <button
         type="button"
         onClick={() => openWhatsApp(whatsappPhone, message)}
@@ -198,16 +205,24 @@ function SecondaryPromoCard({
       aria-label={`Cotizar ${promo.title} por WhatsApp`}
       className={`group block w-full text-left rounded-xl border border-dashed border-brand-navy/20 bg-neutral-white/90 px-5 py-[22px] transition-colors hover:border-brand-accent/50 ${className}`}
     >
-      <span className="font-sora text-[9px] font-semibold uppercase tracking-wider text-brand-accent">
-        {toMeta(promo, true)}
-      </span>
+      {promo.destination?.trim() && (
+        <span className="font-sora text-[9px] font-semibold uppercase tracking-wider text-brand-accent">
+          {toMeta(promo, true)}
+        </span>
+      )}
       <h4 className="font-display mt-1.5 text-[21px] font-semibold leading-[25px] text-brand-navy">
         {promo.title}
       </h4>
-      <p className="font-inter mt-1.5 text-xs leading-[18px] text-brand-navy">{promo.summary}</p>
+      {promo.summary?.trim() && (
+        <p className="font-inter mt-1.5 text-xs leading-[18px] text-brand-navy">{promo.summary}</p>
+      )}
       <p className="font-inter mt-2 text-[13px] font-semibold text-brand-navy">
-        Desde US$ {Number(promo.priceUsd).toLocaleString()}
-        <span className="mx-1.5 text-brand-navy/40">·</span>
+        {Number(promo.priceUsd) > 0 && (
+          <>
+            Desde US$ {Number(promo.priceUsd).toLocaleString()}
+            <span className="mx-1.5 text-brand-navy/40">·</span>
+          </>
+        )}
         <span className="text-brand-navy underline decoration-brand-navy/30 underline-offset-2 group-hover:text-brand-accent group-hover:decoration-brand-accent">
           Cotizar este viaje →
         </span>
@@ -249,8 +264,10 @@ export function PromotionsSection({ promotions, settings, config = DEFAULT_CONFI
     return null;
   }
 
-  const ordered = [...promotions].sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
-  const [featuredPromo, ...rest] = ordered;
+  // El backend ya devuelve como máximo 3 promociones activas, ordenadas por
+  // recencia (la más reciente/protagonista primero) — no hace falta reordenar
+  // aquí. El .slice(0, 2) se mantiene como defensa si algún día llegaran más.
+  const [featuredPromo, ...rest] = promotions;
   const secondaryPromos = rest.slice(0, 2);
   // Las promociones no tienen página de detalle propia — el catálogo completo
   // vive en Facebook. Si aún no hay facebookUrl configurado, cae al ancla de
@@ -261,13 +278,13 @@ export function PromotionsSection({ promotions, settings, config = DEFAULT_CONFI
   return (
     <section
       id="promociones"
-      className={`relative w-full overflow-hidden bg-atmosphere-sand py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
+      className={`relative w-full overflow-hidden bg-atmosphere-paper py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
     >
       {/* Papel continuo hacia Blog — ola full-bleed en la base, con el color
           real de la siguiente sección (blanco en base/md, cielo en xl). */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
         <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
-          <path d={WAVE_TO_BLOG_PATH} className="fill-white xl:fill-atmosphere-sky" />
+          <path d={WAVE_TO_BLOG_PATH} className="fill-atmosphere-fog" />
         </svg>
       </div>
 
@@ -312,7 +329,7 @@ export function PromotionsSection({ promotions, settings, config = DEFAULT_CONFI
             <PromoBlob
               variant="compact"
               className="mx-auto w-full aspect-[328.5/216]"
-              imageUrl={featuredPromo.featuredMediaUrl}
+              imageUrl={config.mediaUrl}
             />
             <Reveal delayMs={80} className="-mt-4 relative">
               <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} />
@@ -337,7 +354,7 @@ export function PromotionsSection({ promotions, settings, config = DEFAULT_CONFI
             <PromoBlob
               variant="compact"
               className="w-[64%] aspect-[620.5/408]"
-              imageUrl={featuredPromo.featuredMediaUrl}
+              imageUrl={config.mediaUrl}
             />
             <Reveal delayMs={80} className="absolute right-0 top-[34%] w-[46%]">
               <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} />
@@ -401,7 +418,7 @@ export function PromotionsSection({ promotions, settings, config = DEFAULT_CONFI
           <PromoBlob
             variant="wide"
             className="absolute left-[300px] top-[15.96%] w-[1050px] aspect-[850/500]"
-            imageUrl={featuredPromo.featuredMediaUrl}
+            imageUrl={config.mediaUrl}
           />
 
           <Reveal className="absolute left-0 top-[10.85%] max-w-xl">

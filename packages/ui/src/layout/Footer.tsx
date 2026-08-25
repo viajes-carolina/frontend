@@ -40,7 +40,6 @@ const ARRIVAL_ROUTE_PATH = "M10 72C88 20 154 86 236 50C314 16 378 52 472 24";
 
 const SITE_LINKS = [
   { label: "Inicio", href: "/" },
-  { label: "Promociones", href: "/#promociones" },
   { label: "Nosotros", href: "/nosotros" },
   { label: "Blog", href: "/blog" },
   { label: "Contacto", href: "/contacto" },
@@ -139,7 +138,7 @@ export function Footer({
             </ul>
             {/* Móvil: enlaces del sitio en dos líneas, no una lista vertical */}
             <p className="font-inter text-sm leading-relaxed text-white/80 md:hidden">
-              Inicio · Promociones · Nosotros
+              Inicio · Nosotros
               <br />
               Blog · Contacto
             </p>

@@ -113,7 +113,7 @@ export function FaqSection({ faqs, settings, config = DEFAULT_CONFIG, className 
   return (
     <section
       id="faq"
-      className={`relative w-full overflow-hidden bg-white xl:bg-atmosphere-cloud py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
+      className={`relative w-full overflow-hidden bg-surface-ivory py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
     >
       <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
         {/* Mobile — una columna */}
@@ -141,7 +141,7 @@ export function FaqSection({ faqs, settings, config = DEFAULT_CONFIG, className 
           </Reveal>
 
           <Reveal delayMs={240}>
-            <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-[#e0f0f2]" textClassName="text-[13px]" />
+            <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-atmosphere-pale-sky" textClassName="text-[13px]" />
           </Reveal>
         </div>
 
@@ -165,7 +165,7 @@ export function FaqSection({ faqs, settings, config = DEFAULT_CONFIG, className 
               ))}
             </Reveal>
             <Reveal delayMs={240}>
-              <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-[#e0f0f2]" />
+              <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-atmosphere-pale-sky" />
             </Reveal>
           </div>
         </div>
@@ -194,7 +194,7 @@ export function FaqSection({ faqs, settings, config = DEFAULT_CONFIG, className 
                 <span
                   key={i}
                   className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full ${
-                    dot.hollow ? "h-3.5 w-3.5 border-2 border-brand-navy bg-[#FFFDF8]" : "h-4 w-4 bg-brand-accent"
+                    dot.hollow ? "h-3.5 w-3.5 border-2 border-brand-navy bg-neutral-white" : "h-4 w-4 bg-brand-accent"
                   }`}
                   style={{ left: `${(dot.cx / 760) * 100}%`, top: `${(dot.cy / 390) * 100}%` }}
                 />
@@ -213,7 +213,7 @@ export function FaqSection({ faqs, settings, config = DEFAULT_CONFIG, className 
             </Reveal>
             <div className="mt-12 flex justify-end">
               <Reveal delayMs={240} className="w-[46%]">
-                <AskDifferentBox phone={settings?.whatsappPhone} className="w-full bg-[#f2e2c3]" />
+                <AskDifferentBox phone={settings?.whatsappPhone} className="w-full bg-atmosphere-honey" />
               </Reveal>
             </div>
           </div>

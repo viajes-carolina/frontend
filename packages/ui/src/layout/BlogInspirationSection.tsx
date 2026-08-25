@@ -103,7 +103,7 @@ function FeaturedArticleCard({ post, paper = false }: { post: BlogPostDTO; paper
   return (
     <div className="relative">
       <div className="absolute inset-0 rotate-[1.2deg] rounded-lg bg-neutral-white/95 shadow-[0_18px_38px_-4px_rgba(20,41,59,0.12)]" aria-hidden="true" />
-      <div className="absolute -top-2 left-1/2 h-4 w-[92px] -translate-x-1/2 -rotate-[1.5deg] bg-[#F2E2C3]/55" aria-hidden="true" />
+      <div className="absolute -top-2 left-1/2 h-4 w-[92px] -translate-x-1/2 -rotate-[1.5deg] bg-atmosphere-honey/55" aria-hidden="true" />
       <div className="relative rotate-[1.5deg]">{content}</div>
     </div>
   );
@@ -132,12 +132,12 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
   return (
     <section
       id="inspiracion"
-      className="relative w-full overflow-hidden bg-white xl:bg-atmosphere-sky text-neutral-ink py-16 sm:py-20 xl:py-28"
+      className="relative w-full overflow-hidden bg-atmosphere-fog text-neutral-ink py-16 sm:py-20 xl:py-28"
     >
       {/* Papel continuo hacia Pausa Conversacional — ola full-bleed en la base. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
         <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
-          <path d={WAVE_TO_PAUSA_PATH} className="fill-atmosphere-sand" />
+          <path d={WAVE_TO_PAUSA_PATH} className="fill-surface-ivory" />
         </svg>
       </div>
 

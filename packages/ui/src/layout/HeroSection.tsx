@@ -96,7 +96,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <path d={WAVE_SAND_PATH} className="fill-surface-sand" />
+          <path d={WAVE_SAND_PATH} className="fill-atmosphere-sand" />
         </svg>
       </div>
 

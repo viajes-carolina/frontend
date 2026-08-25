@@ -8,12 +8,6 @@ import type { FocalPoint } from "../primitives/ResponsiveImage";
 
 export interface TestimonialsSectionProps {
   testimonials: TestimonialDTO[];
-  /**
-   * Recuerdo real reutilizado del Hero (regla "fotos de clientes
-   * reutilizables en secciones de confianza") — no es una foto propia de
-   * Experiencias, es la misma foto que ya se sube una vez para el Hero.
-   */
-  memoryPhoto?: { url?: string; focalX?: number; focalY?: number };
   config?: HomeTestimonialsSectionDTO;
   className?: string;
 }
@@ -37,9 +31,9 @@ const ROUTE_WIDE_PATH =
 // 396:663), propia de esta sección (no la misma curva que Promociones/Blog).
 const ROUTE_COMPACT_PATH = "M0.96 16.32C48.96 1.44 87.84 21.12 133.44 9.6C178.08 -1.92 212.64 12.96 264 3.84";
 
-// "Foto real" — silueta orgánica. `PhotoBlob` recorta la foto real (reutilizada
-// del Hero, ver `memoryPhoto` más abajo) contra este mismo path vía
-// `<clipPath>`; sin foto cargada aún cae a esta ilustración degradada. 2
+// "Foto real" — silueta orgánica. `PhotoBlob` recorta `config.blobMediaUrl`
+// (foto propia de esta sección, configurable por el admin) contra este mismo
+// path vía `<clipPath>`; sin foto cargada aún cae a esta ilustración degradada. 2
 // variantes reales: compacta (Mobile/Tablet) y panorámica (Desktop/Wide,
 // nodes 396:435 / 409:890). Los paths tienen puntos de control fuera de su
 // propio viewBox (p.ej. x negativo) — el `<svg>` raíz necesita
@@ -171,13 +165,13 @@ function SupportVoice({ testimonial, light = false }: { testimonial: Testimonial
   );
 }
 
-export function TestimonialsSection({ testimonials, memoryPhoto, config = DEFAULT_CONFIG, className = "" }: TestimonialsSectionProps) {
+export function TestimonialsSection({ testimonials, config = DEFAULT_CONFIG, className = "" }: TestimonialsSectionProps) {
   if (!testimonials || testimonials.length === 0) return null;
 
   const [featured, ...rest] = testimonials;
   const [voice1, voice2] = rest.slice(0, 2);
-  const focalPoint: FocalPoint | undefined = memoryPhoto?.focalX
-    ? { x: memoryPhoto.focalX, y: memoryPhoto.focalY ?? 50 }
+  const polaroidFocalPoint: FocalPoint | undefined = config.polaroidFocalX
+    ? { x: config.polaroidFocalX, y: config.polaroidFocalY ?? 50 }
     : undefined;
 
   return (
@@ -188,7 +182,7 @@ export function TestimonialsSection({ testimonials, memoryPhoto, config = DEFAUL
       {/* Papel continuo hacia FAQ — ola full-bleed en la base. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
         <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
-          <path d={WAVE_TO_FAQ_PATH} className="fill-white xl:fill-atmosphere-cloud" />
+          <path d={WAVE_TO_FAQ_PATH} className="fill-surface-ivory" />
         </svg>
       </div>
 
@@ -235,13 +229,14 @@ export function TestimonialsSection({ testimonials, memoryPhoto, config = DEFAUL
             <PhotoBlob
               variant="compact"
               className="w-full aspect-[341/203.5]"
-              imageUrl={memoryPhoto?.url}
+              imageUrl={config.blobMediaUrl}
             />
             <Reveal delayMs={80} className="absolute right-[4%] top-[8%] w-[36%] aspect-[137.5/99]">
               <PolaroidPhoto
-                imageUrl={memoryPhoto?.url}
+                imageUrl={config.polaroidMediaUrl}
                 alt="Recuerdo de un viaje con Viajes Carolina"
-                focalPoint={focalPoint}
+                focalPoint={polaroidFocalPoint}
+                priority
                 rotate={-4}
                 tape="top"
                 className="w-full h-full"
@@ -273,13 +268,14 @@ export function TestimonialsSection({ testimonials, memoryPhoto, config = DEFAUL
             <PhotoBlob
               variant="compact"
               className="w-[62%] aspect-[514.6/307.1]"
-              imageUrl={memoryPhoto?.url}
+              imageUrl={config.blobMediaUrl}
             />
             <Reveal delayMs={80} className="absolute left-[42%] top-[-8%] w-[24%] aspect-[205/147.6]">
               <PolaroidPhoto
-                imageUrl={memoryPhoto?.url}
+                imageUrl={config.polaroidMediaUrl}
                 alt="Recuerdo de un viaje con Viajes Carolina"
-                focalPoint={focalPoint}
+                focalPoint={polaroidFocalPoint}
+                priority
                 rotate={-4}
                 tape="top"
                 className="w-full h-full"
@@ -310,13 +306,14 @@ export function TestimonialsSection({ testimonials, memoryPhoto, config = DEFAUL
           <PhotoBlob
             variant="wide"
             className="absolute left-0 top-0 w-[39%] aspect-[560/360]"
-            imageUrl={memoryPhoto?.url}
+            imageUrl={config.blobMediaUrl}
           />
           <Reveal delayMs={80} className="absolute left-[28%] top-[-6%] w-[20%] aspect-[270/190]">
             <PolaroidPhoto
-              imageUrl={memoryPhoto?.url}
+              imageUrl={config.polaroidMediaUrl}
               alt="Recuerdo de un viaje con Viajes Carolina"
-              focalPoint={focalPoint}
+              focalPoint={polaroidFocalPoint}
+              priority
               rotate={-4}
               tape="top"
               className="w-full h-full"

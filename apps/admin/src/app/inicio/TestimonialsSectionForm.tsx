@@ -3,6 +3,7 @@
 import React from "react";
 import type { HomeTestimonialsSectionDTO } from "@vc/api-client";
 import { useAdminTestimonialsSection } from "../../hooks/useAdminTestimonialsSection";
+import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 
 interface TestimonialsSectionFormProps {
   initialConfig?: HomeTestimonialsSectionDTO;
@@ -17,6 +18,8 @@ export const TestimonialsSectionForm: React.FC<TestimonialsSectionFormProps> = (
     success,
     updateField,
     saveConfig,
+    handleSelectBlobMedia,
+    handleSelectPolaroidMedia,
   } = useAdminTestimonialsSection(initialConfig);
 
   if (loading) {
@@ -46,10 +49,10 @@ export const TestimonialsSectionForm: React.FC<TestimonialsSectionFormProps> = (
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-8 border border-neutral-border shadow-sm space-y-6">
       <div className="border-b border-neutral-border pb-4">
         <h2 className="text-xl font-bold text-brand-navy">
-          Encabezado de Experiencias / Testimonios (sección 05)
+          Experiencias / Testimonios (sección 05)
         </h2>
         <p className="text-xs text-neutral-muted mt-1">
-          Título y descripción de la sección. Los testimonios y fotos individuales se editan en "Confianza".
+          Título, descripción y fotos de la sección. Los testimonios de clientes se editan más abajo en esta misma página.
         </p>
       </div>
 
@@ -64,6 +67,33 @@ export const TestimonialsSectionForm: React.FC<TestimonialsSectionFormProps> = (
           Configuración guardada exitosamente en el servidor.
         </div>
       )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border">
+          <HeroPhotoSlot
+            variant="secondary"
+            label="Foto de Fondo (blob)"
+            mediaId={config.blobMediaId}
+            mediaUrl={config.blobMediaUrl}
+            focalX={config.blobFocalX}
+            focalY={config.blobFocalY}
+            onSelect={handleSelectBlobMedia}
+            modalTitle="Seleccionar Foto de Fondo de Experiencias"
+          />
+        </div>
+        <div className="p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border">
+          <HeroPhotoSlot
+            variant="secondary"
+            label="Foto Polaroid"
+            mediaId={config.polaroidMediaId}
+            mediaUrl={config.polaroidMediaUrl}
+            focalX={config.polaroidFocalX}
+            focalY={config.polaroidFocalY}
+            onSelect={handleSelectPolaroidMedia}
+            modalTitle="Seleccionar Foto Polaroid de Experiencias"
+          />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 gap-6">
         <div>

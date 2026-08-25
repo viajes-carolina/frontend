@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import {
   apiClient,
   HomePromotionsSectionDTO,
+  MediaAssetDTO,
   UpdateHomePromotionsSectionRequest,
 } from "@vc/api-client";
 
@@ -41,6 +42,16 @@ export function useAdminPromotionsSection(initialConfig?: HomePromotionsSectionD
     []
   );
 
+  const handleSelectMedia = useCallback(
+    (media: MediaAssetDTO) => {
+      updateField("mediaId", media.id);
+      updateField("mediaUrl", media.storagePath);
+      updateField("mediaFocalX", media.focalX || 50);
+      updateField("mediaFocalY", media.focalY || 50);
+    },
+    [updateField]
+  );
+
   const saveConfig = useCallback(
     async (payload?: UpdateHomePromotionsSectionRequest) => {
       const dataToSave = payload || (config ? {
@@ -50,6 +61,10 @@ export function useAdminPromotionsSection(initialConfig?: HomePromotionsSectionD
         bottomCtaQuestion: config.bottomCtaQuestion,
         bottomCtaWhatsappText: config.bottomCtaWhatsappText,
         bottomCtaWhatsappMessage: config.bottomCtaWhatsappMessage,
+        mediaId: config.mediaId,
+        mediaUrl: config.mediaUrl,
+        mediaFocalX: config.mediaFocalX,
+        mediaFocalY: config.mediaFocalY,
       } : null);
 
       if (!dataToSave) return;
@@ -78,6 +93,7 @@ export function useAdminPromotionsSection(initialConfig?: HomePromotionsSectionD
     error,
     success,
     updateField,
+    handleSelectMedia,
     saveConfig,
     refetch: fetchConfig,
   };

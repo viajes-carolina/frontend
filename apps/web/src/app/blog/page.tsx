@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { apiClient } from "@vc/api-client";
-import { BlogClientView } from "./BlogClientView";
+import { BlogHeroSection, BlogEditorialIndexSection, BlogQuestionsPauseSection } from "@vc/ui";
 
 export const metadata: Metadata = {
   title: "Blog de Viajes | Guías, Consejos e Inspiración — Viajes Carolina",
@@ -14,7 +14,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function BlogPage() {
-  const initialData = await apiClient.getPublicBlog();
-  return <BlogClientView initialData={initialData} />;
+interface BlogPageProps {
+  searchParams: Promise<{ categoria?: string }>;
+}
+
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const { categoria } = await searchParams;
+  const [blogData, trust] = await Promise.all([
+    apiClient.getPublicBlog(categoria, undefined, 0, 6),
+    apiClient.getPublicTrust(),
+  ]);
+
+  const heroPost = blogData.featuredPost ?? blogData.items[0];
+  const secondaryStories = blogData.items.filter((p) => p.id !== heroPost?.id);
+  const [mainStory, ...restStories] = secondaryStories;
+  const faqs = trust.faqs.filter((f) => f.active).slice(0, 4);
+
+  return (
+    <main className="min-h-screen bg-surface-ivory">
+      <BlogHeroSection categories={blogData.categories} selectedCategorySlug={categoria || "all"} heroPost={heroPost} />
+
+      {mainStory && (
+        <BlogEditorialIndexSection mainStory={mainStory} secondaryStories={restStories.slice(0, 2)} />
+      )}
+
+      <BlogQuestionsPauseSection faqs={faqs} />
+    </main>
+  );
 }

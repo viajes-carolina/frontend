@@ -37,7 +37,7 @@ export function ConversationalPauseSection({ config = DEFAULT_CONFIG, settings, 
   return (
     <section
       id="antes-de-seguir"
-      className={`relative w-full overflow-hidden bg-atmosphere-sand py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
+      className={`relative w-full overflow-hidden bg-surface-ivory py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
     >
       {/* Papel continuo hacia Experiencias — ola full-bleed en la base. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">

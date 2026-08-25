@@ -4,20 +4,22 @@
      ========================================================================== */
 
   /* --- Primitivos Maestros (Viaje Cálido Editorial) --- */
-  --color-brand-navy: #14293b;
+  --color-brand-navy: #1b2a38;
   --color-brand-blue: #2389c6;
-  --color-brand-accent: #ff8a1f;
+  --color-brand-accent: #ff7900;
   --color-brand-sunset: #ffb238;
   --color-brand-whatsapp: #25d366;
 
   /* --- Atmósfera & Superficies Cálidas --- */
   --color-atmosphere-twilight: #102432;
   --color-atmosphere-sky: #b9d4e2;
-  --color-atmosphere-cloud: #f8f5ef;
   --color-atmosphere-sea: #77c5e8;
-  --color-atmosphere-sand: #f1e9dd;
-  --color-surface-sand: #f1e9dd;
+  --color-atmosphere-sand: #f3ebdd;
   --color-surface-ivory: #f8f5ef;
+  --color-atmosphere-honey: #f2e2c3;
+  --color-atmosphere-pale-sky: #e0f0f2;
+  --color-atmosphere-paper: #f5efe5;
+  --color-atmosphere-fog: #f3f6f5;
 
   /* --- Neutros & Lectura --- */
   --color-neutral-white: #fffdfc;
@@ -27,30 +29,10 @@
   --color-neutral-subtle: #94a3b8;
   --color-neutral-ink: #0d1e2a;
 
-  /* --- Semánticos (Modo Despegue / Vuelo) --- */
-  --color-bg-canvas: #f8f5ef;
-  --color-bg-section: #14293b;
-  --color-bg-surface: #fffdfc;
-  --color-bg-surface-soft: #f8f5ef;
-  --color-text-primary: #14293b;
-  --color-text-secondary: #617180;
-  --color-text-on-light: #14293b;
-  --color-text-on-dark: #fffdfc;
-  --color-action-primary: #ff8a1f;
-  --color-action-primary-text: #14293b;
-  --color-action-secondary: #fffdfc;
-  --color-action-secondary-text: #14293b;
-  --color-action-whatsapp: #25d366;
-  --color-action-whatsapp-text: #14293b;
-  --color-route-primary: #ffb238;
-  --color-route-secondary: #2389c6;
-  --color-border-default: #e5ded3;
+  /* Único sobreviviente del antiguo bloque "Semánticos" — los demás (20
+     tokens) no tenían ningún uso real en el código, solo repetían los
+     valores de arriba con otro nombre. Este sí se consume (globals.css). */
   --color-border-focus: #2389c6;
-  --color-icon-primary: #14293b;
-  --color-icon-accent: #ff8a1f;
-  --color-badge-promo: #ff8a1f;
-  --color-badge-promo-text: #14293b;
-  --color-overlay-photo: #14293b;
 
   /* --- Tipografía Oficial --- */
   --font-sora: "Sora", system-ui, -apple-system, sans-serif;

@@ -13,8 +13,8 @@ interface AdminNavItem {
   label: string;
   href: string;
   badge?: { text: string; className: string };
-  // Solo "Inicio & Hero" trae children esta ronda — el modelo queda listo
-  // para reusarse en Confianza/Nosotros/Contacto en una ronda futura.
+  // "Inicio & Hero", "Nosotros & Asesoras" y "Blog & Contenidos" traen children —
+  // el modelo queda listo para reusarse en Contacto en una ronda futura.
   children?: AdminNavChild[];
 }
 
@@ -32,11 +32,24 @@ const ADMIN_NAV_ITEMS: AdminNavItem[] = [
       { id: "faq", label: "❓ Encabezado de FAQ", href: "/inicio/preguntas-frecuentes" },
     ],
   },
-  { label: "Promociones & Paquetes", href: "/promociones" },
-  { label: "Confianza, Testimonios & FAQ", href: "/confianza" },
-  { label: "Nosotros & Asesoras", href: "/nosotros" },
-  { label: "Contacto & Leads", href: "/contacto" },
-  { label: "Blog & Contenidos", href: "/blog", badge: { text: "CMS", className: "bg-brand-accent text-brand-navy" } },
+  {
+    label: "Nosotros & Asesoras",
+    href: "/nosotros",
+    children: [
+      { id: "contenido", label: "📝 Contenido", href: "/nosotros" },
+      { id: "equipo", label: "👥 Equipo", href: "/nosotros/equipo" },
+    ],
+  },
+  { label: "Contacto", href: "/contacto" },
+  {
+    label: "Blog & Contenidos",
+    href: "/blog",
+    badge: { text: "CMS", className: "bg-brand-accent text-brand-navy" },
+    children: [
+      { id: "articulos", label: "📝 Artículos", href: "/blog" },
+      { id: "categorias", label: "🏷️ Categorías", href: "/blog/categorias" },
+    ],
+  },
   { label: "Reclamaciones", href: "/reclamaciones", badge: { text: "Libro", className: "bg-amber-400 text-slate-900" } },
   { label: "Usuarios & Roles", href: "/usuarios", badge: { text: "RBAC", className: "bg-purple-400 text-slate-950" } },
   { label: "Bitácora de Auditoría", href: "/auditoria" },

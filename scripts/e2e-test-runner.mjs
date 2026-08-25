@@ -92,11 +92,14 @@ async function runE2ETests() {
     const inicioRes = await fetch(`${BASE_ADMIN_URL}/inicio`);
     assert(inicioRes.status === 200, `Módulo Inicio & Hero responde con HTTP 200 OK (${inicioRes.status})`);
 
-    const promoRes = await fetch(`${BASE_ADMIN_URL}/promociones`);
+    const promoRes = await fetch(`${BASE_ADMIN_URL}/inicio/promociones`);
     assert(promoRes.status === 200, `Módulo Promociones & Paquetes responde con HTTP 200 OK (${promoRes.status})`);
 
-    const confianzaRes = await fetch(`${BASE_ADMIN_URL}/confianza`);
-    assert(confianzaRes.status === 200, `Módulo Confianza, Testimonios & FAQ responde con HTTP 200 OK (${confianzaRes.status})`);
+    const experienciasRes = await fetch(`${BASE_ADMIN_URL}/inicio/experiencias`);
+    assert(experienciasRes.status === 200, `Módulo Experiencias (testimonios) responde con HTTP 200 OK (${experienciasRes.status})`);
+
+    const faqRes = await fetch(`${BASE_ADMIN_URL}/inicio/preguntas-frecuentes`);
+    assert(faqRes.status === 200, `Módulo Preguntas Frecuentes (FAQ) responde con HTTP 200 OK (${faqRes.status})`);
 
     const nosotrosAdminRes = await fetch(`${BASE_ADMIN_URL}/nosotros`);
     assert(nosotrosAdminRes.status === 200, `Módulo Nosotros & Asesoras responde con HTTP 200 OK (${nosotrosAdminRes.status})`);
@@ -277,46 +280,40 @@ async function runE2ETests() {
     const promoGet = await fetch(`${BASE_ADMIN_URL}/api/proxy/public/v1/promotions/featured`);
     assert(promoGet.status === 200, `GET /api/proxy/public/v1/promotions/featured responde 200 OK (${promoGet.status})`);
     const promoList = await promoGet.json();
-    assert(Array.isArray(promoList) && promoList.length >= 4, `Listado de promociones destacadas contiene ${promoList.length} paquetes`);
+    assert(Array.isArray(promoList) && promoList.length === 3, `Listado de promociones destacadas contiene ${promoList.length} paquetes`);
 
     const firstPromo = promoList[0];
-    assert(firstPromo.slug === "cartagena-donde-el-mar-te-espera" || !!firstPromo.title, `Primera promoción: "${firstPromo.title}"`);
+    assert(!!firstPromo.title, `Primera promoción: "${firstPromo.title}"`);
     assert(Array.isArray(firstPromo.inclusions) && firstPromo.inclusions.length > 0, `Inclusiones del paquete presentes: ${firstPromo.inclusions.length} inclusiones`);
 
-    // Mutación E2E de Promoción en PostgreSQL
-    const testSummary = "Disfruta del encanto caribeño con playas de arena cálida, murallas históricas y atardeceres mágicos frente al mar.";
-    const promoPut = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/promotions/1`, {
-      method: "PUT",
+    // Mutación E2E: ocultar una de las 4 promociones legacy (deja el pool en 3,
+    // dentro del límite permitido) vía el nuevo endpoint de solo-visibilidad.
+    const hidePatch = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/promotions/4/active`, {
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        slug: "cartagena-donde-el-mar-te-espera",
-        title: "Cartagena: Donde el mar te espera",
-        destination: "Cartagena de Indias, Colombia",
-        summary: testSummary,
-        priceUsd: 429.00,
-        pricePen: 1590.00,
-        durationDays: 4,
-        durationNights: 3,
-        departureCity: "Lima",
-        validFrom: "2026-08-18",
-        validUntil: "2027-02-14",
-        featuredMediaId: 2,
-        isFeatured: true,
-        inclusions: [
-          "Vuelos ida y vuelta con equipaje",
-          "Hotel 4 estrellas con desayuno buffet",
-          "Traslados aeropuerto - hotel - aeropuerto",
-          "Tour en lancha a Islas del Rosario"
-        ],
-        exclusions: ["Gastos no especificados", "Tarjeta de asistencia médica opcional"],
-        whatsappMessageTemplate: 'Hola Viajes Carolina, me interesa la promoción "Cartagena: Donde el mar te espera" desde USD 429. ¿Tienen fechas disponibles?',
-        displayOrder: 1,
-        active: true,
-      }),
+      body: JSON.stringify({ active: false }),
     });
-    assert(promoPut.status === 200, `PUT /api/proxy/admin/v1/promotions/1 responde 200 OK (${promoPut.status})`);
-    const updatedPromo = await promoPut.json();
-    assert(updatedPromo.summary === testSummary, `Resumen de promoción actualizado y persistido: "${updatedPromo.summary}"`);
+    assert(hidePatch.status === 200, `PATCH /api/proxy/admin/v1/promotions/4/active {active:false} responde 200 OK (${hidePatch.status})`);
+    const hiddenPromo = await hidePatch.json();
+    assert(hiddenPromo.active === false, `Promoción #4 ocultada y persistida: active=${hiddenPromo.active}`);
+
+    // Intentar ocultar una segunda (dejaría el pool en 2) debe rechazarse con 409.
+    const overHidePatch = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/promotions/3/active`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: false }),
+    });
+    assert(overHidePatch.status === 409, `PATCH /api/proxy/admin/v1/promotions/3/active responde 409 al dejar menos de 3 activas (${overHidePatch.status})`);
+
+    // Restaurar el estado antes de terminar, para que el script sea idempotente entre corridas.
+    const restorePatch = await fetch(`${BASE_ADMIN_URL}/api/proxy/admin/v1/promotions/4/active`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: true }),
+    });
+    assert(restorePatch.status === 200, `PATCH /api/proxy/admin/v1/promotions/4/active {active:true} responde 200 OK (${restorePatch.status})`);
+    const restoredPromo = await restorePatch.json();
+    assert(restoredPromo.active === true, `Promoción #4 restaurada a visible: active=${restoredPromo.active}`);
   } catch (err) {
     assert(false, `Error en prueba E2E de Promociones: ${err.message}`);
   }
@@ -488,12 +485,23 @@ async function runE2ETests() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         heroBadge: testHeroBadge,
-        heroTitle: "Hablemos de tu próximo destino soñado",
-        heroSubtitle: "Elige el medio que prefieras: conversemos por WhatsApp o completa el formulario.",
-        whatsappBoxTitle: "¿Prefieres atención inmediata?",
-        whatsappBoxSubtitle: "Nuestras asesoras responden en minutos para cotizar tu viaje.",
-        formTitle: "Envíanos un Mensaje",
-        formSubtitle: "Completa el formulario y te responderemos en menos de 24 horas.",
+        heroTitle: "¿Qué te gustaría vivir en tu próximo viaje?",
+        heroSubtitle: "Cuéntanos qué tienes en mente y empezamos a darle forma contigo.",
+        heroCtaText: "Cuéntanos tu idea por WhatsApp",
+        heroNoteText: "Una persona te lee y te responde.",
+        startersBadge: "02 · Puedes empezar con poco",
+        startersTitle: "No hace falta llegar con todo resuelto.",
+        startersSubtitle: "Una conversación puede comenzar con lo que ya sabes.",
+        startersClosing: "Todo puede empezar con una frase.",
+        starterPhrases: [
+          { quote: "Solo tengo unos días libres.", support: "Empezamos por el tiempo disponible." },
+        ],
+        officeSectionBadge: "03 · Nuestra oficina",
+        officeSectionTitle: "Cuando quieras venir, aquí nos encontramos.",
+        officeSectionSubtitle: "Coordinamos previamente cada visita.",
+        officeMapTitle: "Visítanos cuando lo necesites.",
+        officeMapSubtitle: "Consulta en el mapa la dirección exacta.",
+        officeVisitNote: "Escríbenos para confirmar el horario y preparar tu atención.",
       }),
     });
     assert(contactPut.status === 200, `PUT /api/proxy/admin/v1/contact responde 200 OK (${contactPut.status})`);

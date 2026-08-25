@@ -48,7 +48,7 @@ export function PolaroidPhoto({
           <span
             aria-hidden="true"
             className={[
-              "absolute z-20 h-[30px] w-[110px] bg-surface-sand/70 shadow-sm",
+              "absolute z-20 h-[30px] w-[110px] bg-atmosphere-sand/70 shadow-sm",
               tape === "top" && "-top-3.5 left-1/2 -translate-x-1/2 -rotate-4",
               tape === "left" && "left-1/2 top-2 -translate-x-1/2 -rotate-3",
               tape === "right" && "right-4 top-1 rotate-3",

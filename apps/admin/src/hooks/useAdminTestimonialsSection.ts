@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import {
   apiClient,
   HomeTestimonialsSectionDTO,
+  MediaAssetDTO,
   UpdateHomeTestimonialsSectionRequest,
 } from "@vc/api-client";
 
@@ -41,12 +42,40 @@ export function useAdminTestimonialsSection(initialConfig?: HomeTestimonialsSect
     []
   );
 
+  const handleSelectBlobMedia = useCallback(
+    (media: MediaAssetDTO) => {
+      updateField("blobMediaId", media.id);
+      updateField("blobMediaUrl", media.storagePath);
+      updateField("blobFocalX", media.focalX || 50);
+      updateField("blobFocalY", media.focalY || 50);
+    },
+    [updateField]
+  );
+
+  const handleSelectPolaroidMedia = useCallback(
+    (media: MediaAssetDTO) => {
+      updateField("polaroidMediaId", media.id);
+      updateField("polaroidMediaUrl", media.storagePath);
+      updateField("polaroidFocalX", media.focalX || 50);
+      updateField("polaroidFocalY", media.focalY || 50);
+    },
+    [updateField]
+  );
+
   const saveConfig = useCallback(
     async (payload?: UpdateHomeTestimonialsSectionRequest) => {
       const dataToSave = payload || (config ? {
         badgeText: config.badgeText,
         title: config.title,
         subtitle: config.subtitle,
+        blobMediaId: config.blobMediaId,
+        blobMediaUrl: config.blobMediaUrl,
+        blobFocalX: config.blobFocalX,
+        blobFocalY: config.blobFocalY,
+        polaroidMediaId: config.polaroidMediaId,
+        polaroidMediaUrl: config.polaroidMediaUrl,
+        polaroidFocalX: config.polaroidFocalX,
+        polaroidFocalY: config.polaroidFocalY,
       } : null);
 
       if (!dataToSave) return;
@@ -76,6 +105,8 @@ export function useAdminTestimonialsSection(initialConfig?: HomeTestimonialsSect
     success,
     updateField,
     saveConfig,
+    handleSelectBlobMedia,
+    handleSelectPolaroidMedia,
     refetch: fetchConfig,
   };
 }

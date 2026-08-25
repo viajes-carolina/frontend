@@ -1,9 +1,7 @@
-import { USD_TO_PEN_RATE } from "@vc/config";
 import {
   SiteSettingsDTO,
   OfficeLocationDTO,
   PromotionDTO,
-  CreateOrUpdatePromotionRequest,
   ApiInfoDTO,
   MediaAssetDTO,
   MediaPageResponse,
@@ -142,7 +140,6 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
     featuredMediaUrl: "/media/demo-cartagena-caribe.webp",
     featuredMediaFocalX: 60.0,
     featuredMediaFocalY: 50.0,
-    isFeatured: true,
     inclusions: [
       "Vuelos ida y vuelta con equipaje",
       "Hotel 4 estrellas con desayuno buffet",
@@ -152,7 +149,6 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
     exclusions: ["Gastos no especificados", "Tarjeta de asistencia médica opcional"],
     whatsappMessageTemplate:
       'Hola Viajes Carolina, me interesa la promoción "Cartagena: Donde el mar te espera" desde USD 429. ¿Tienen fechas disponibles?',
-    displayOrder: 1,
     active: true,
   },
   {
@@ -172,7 +168,6 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
     featuredMediaUrl: "/media/demo-cusco-machupicchu.webp",
     featuredMediaFocalX: 50.0,
     featuredMediaFocalY: 35.0,
-    isFeatured: true,
     inclusions: [
       "Vuelos Lima - Cusco - Lima",
       "Tren turístico Expedition a Machu Picchu",
@@ -182,7 +177,6 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
     exclusions: ["Almuerzos libres en Aguas Calientes", "Gastos personales"],
     whatsappMessageTemplate:
       'Hola Viajes Carolina, deseo cotizar el paquete "Cusco Mágico & Machu Picchu" desde S/ 1,922. ¿Me podrían brindar detalles?',
-    displayOrder: 2,
     active: true,
   },
   {
@@ -202,7 +196,6 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
     featuredMediaUrl: "/media/demo-cartagena-caribe.webp",
     featuredMediaFocalX: 60.0,
     featuredMediaFocalY: 50.0,
-    isFeatured: true,
     inclusions: [
       "Vuelos internacionales ida y vuelta",
       "Resort 5 estrellas Todo Incluido 24h",
@@ -212,7 +205,6 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
     exclusions: ["Impuestos de entrada a República Dominicana", "Propinas voluntarias"],
     whatsappMessageTemplate:
       'Hola Viajes Carolina, quiero consultar sobre la oferta "Punta Cana All-Inclusive Deluxe". ¿Cuáles son las fechas disponibles?',
-    displayOrder: 3,
     active: true,
   },
   {
@@ -232,7 +224,6 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
     featuredMediaUrl: "/media/demo-hero-travel.webp",
     featuredMediaFocalX: 72.5,
     featuredMediaFocalY: 28.0,
-    isFeatured: true,
     inclusions: [
       "Vuelos Lima - Iquitos - Lima",
       "Lodge ecológico en la selva",
@@ -242,7 +233,6 @@ export const DEFAULT_PROMOTIONS: PromotionDTO[] = [
     exclusions: ["Bebidas alcohólicas", "Souvenirs"],
     whatsappMessageTemplate:
       'Hola Viajes Carolina, me encanta la opción "Iquitos & Selva Mágica Amazonas". ¿Me asesoran con las salidas?',
-    displayOrder: 4,
     active: true,
   },
 ];
@@ -340,24 +330,58 @@ export const DEFAULT_FAQS: FaqItemDTO[] = [
 
 export const DEFAULT_ABOUT_PAGE: AboutPageDTO = {
   id: 1,
-  heroBadge: "Conoce Nuestra Esencia",
-  heroTitle: "Más de 12 años transformando viajes en recuerdos inolvidables",
-  heroSubtitle: "Somos una agencia peruana apasionada por diseñar experiencias turísticas personalizadas, con atención cálida y respaldo antes, durante y después de tu viaje.",
+  heroBadge: "Detrás de cada viaje",
+  heroTitle: "¿Qué cambia cuando alguien realmente te escucha?",
+  heroSubtitle: "No empezamos por venderte un destino. Empezamos por entender qué quieres vivir, qué necesitas cuidar y cómo te gustaría recordarlo.",
   heroMediaId: 1,
   heroMediaUrl: "/media/demo-hero-travel.webp",
+  heroFocalX: 50,
+  heroFocalY: 50,
+  heroCardBadge: "Lo primero es escuchar",
+  heroCardTitle: "No necesitas tener el destino decidido para empezar.",
+  heroNoteText: "Seguimos contigo hasta el regreso.",
   storyTitle: "Nuestra Historia",
   storyBody: "Viajes Carolina nació con el propósito de devolver la calidez humana y la tranquilidad a la planificación de viajes. Lo que comenzó como un sueño familiar hoy es una agencia boutique consolidada en Miraflores, Lima, con un equipo de asesoras especializadas que cuidan cada detalle de tu itinerario.",
   storyMediaId: 3,
   storyMediaUrl: "/media/demo-cusco-machupicchu.webp",
-  missionTitle: "Nuestra Misión",
-  missionBody: "Brindar asesoría turística experta, honesta y personalizada, garantizando experiencias de viaje seguras y memorables que superen las expectativas de cada familia y viajero.",
-  visionTitle: "Nuestra Visión",
-  visionBody: "Ser la agencia de viajes boutique referente en el Perú por nuestra excelencia en el servicio al cliente, innovación y acompañamiento constante.",
+  storyFocalX: 50,
+  storyFocalY: 50,
+  missionTitle: "Que viajar se sienta posible, claro y tuyo.",
+  missionBody: "Nuestra misión es ayudarte a convertir una idea —por pequeña o incompleta que parezca— en una experiencia que haga sentido con tu tiempo, tu presupuesto y tu manera de viajar.",
+  missionQuote: "Por eso empezamos escuchando: una buena recomendación no se impone, se construye contigo.",
+  journeySteps: [
+    { label: "Una idea" },
+    { label: "Decisiones claras" },
+    { label: "Un viaje a tu ritmo" },
+    { label: "Un recuerdo propio" },
+  ],
   values: ["Atención humana y cálida", "Transparencia sin letra chica", "Acompañamiento 24/7", "Pasión por los detalles"],
-  experienceYears: 12,
-  happyTravelers: 15000,
-  destinationsCount: 85,
-  satisfactionRatePercent: 99,
+  accompanyBadge: "03 · Cómo te acompañamos",
+  accompanyTitle: "Acompañarte no es darte un itinerario y desaparecer.",
+  accompanySubtitle: "Es permanecer disponible cuando aparecen dudas, cambios o nuevas ideas.",
+  accompanySteps: [
+    { title: "Escucharte", body: "Partimos de tu ritmo, tus prioridades y lo que realmente quieres vivir." },
+    { title: "Dar forma contigo", body: "Ordenamos destinos, tiempos y decisiones para que el plan se sienta posible." },
+    { title: "Permanecer presente", body: "Si algo cambia, sabes que hay una persona al otro lado del mensaje." },
+  ],
+  accompanyQuote: "No queremos que sientas que compraste un viaje. Queremos que sientas que alguien lo pensó contigo.",
+  accompanyQuoteAttribution: "— La forma Viajes Carolina",
+  momentsBadge: "04 · Lo que queda del viaje",
+  momentsTitle: "Una agencia también se conoce por lo que sus viajeros recuerdan.",
+  momentsSubtitle: "Estas escenas representan historias reales que luego podrán mostrarse con las fotografías de clientes administradas desde el panel.",
+  momentsMediaId: 2,
+  momentsMediaUrl: "/media/demo-cartagena-caribe.webp",
+  momentsFocalX: 50,
+  momentsFocalY: 50,
+  moments: [
+    { title: "Una familia que necesitaba ir sin prisa", body: "El viaje se diseñó pensando en pausas, compañía y tiempo para disfrutar juntos." },
+    { title: "Una pareja que aún no tenía destino", body: "La conversación empezó por lo que querían sentir, no por una lista de lugares." },
+    { title: "Un grupo que quería sentirse acompañado", body: "Cada decisión quedó clara y siempre supieron dónde escribir si algo cambiaba." },
+  ],
+  humanBadge: "05 · Quién te acompaña",
+  humanTitle: "Al otro lado no hay respuestas automáticas.",
+  humanSubtitle: "Hay una persona que lee tu mensaje, entiende el contexto y piensa contigo el siguiente paso.",
+  humanTagline: "Te lee · Te orienta · Permanece",
   revision: 1,
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
@@ -369,6 +393,7 @@ export const DEFAULT_ADVISORS: TravelAdvisorDTO[] = [
     roleTitle: "Fundadora & Directora de Experiencias",
     specialty: "Destinos Internacionales & Lunas de Miel",
     bio: "Más de 15 años diseñando itinerarios de ensueño en el Caribe y Europa. Apasionada por hacer de cada viaje una experiencia irrepetible.",
+    quote: "Quiero que cada persona sienta que puede preguntar, decidir con calma y disfrutar desde antes de viajar.",
     photoMediaId: 2,
     photoMediaUrl: "/media/demo-cartagena-caribe.webp",
     whatsappPhone: "+51987654321",
@@ -535,90 +560,21 @@ export function updateMockHomeHero(updated: Partial<HomeHeroDTO>): HomeHeroDTO {
   return MOCK_HOME_HERO;
 }
 
+// Devuelve como máximo 3 promociones activas, ordenadas por recencia
+// (createdAt desc, id como desempate) — la primera es la más reciente/
+// protagonista. Espeja el contrato de GET /api/public/v1/promotions/featured.
 export function getMockFeaturedPromotions(): PromotionDTO[] {
-  return MOCK_PROMOTIONS.filter((p) => p.isFeatured && p.active);
-}
-
-export function getMockPromotions(): PromotionDTO[] {
-  return MOCK_PROMOTIONS.filter((p) => p.active);
+  return MOCK_PROMOTIONS
+    .filter((p) => p.active)
+    .sort((a, b) => {
+      const diff = new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      return diff !== 0 ? diff : b.id - a.id;
+    })
+    .slice(0, 3);
 }
 
 export function getMockAdminPromotions(): PromotionDTO[] {
   return MOCK_PROMOTIONS;
-}
-
-export function getMockPromotionBySlug(slug: string): PromotionDTO | null {
-  return MOCK_PROMOTIONS.find((p) => p.slug === slug) || null;
-}
-
-export function createMockPromotion(req: CreateOrUpdatePromotionRequest): PromotionDTO {
-  const newPromo: PromotionDTO = {
-    id: Date.now(),
-    slug: req.slug,
-    title: req.title,
-    destination: req.destination,
-    summary: req.summary,
-    priceUsd: Number(req.priceUsd),
-    pricePen: req.pricePen ? Number(req.pricePen) : Number(req.priceUsd) * USD_TO_PEN_RATE,
-    durationDays: Number(req.durationDays),
-    durationNights: Number(req.durationNights),
-    departureCity: req.departureCity || "Lima",
-    validFrom: req.validFrom || new Date().toISOString().split("T")[0],
-    validUntil: req.validUntil || new Date(Date.now() + 180 * 86400000).toISOString().split("T")[0],
-    featuredMediaId: req.featuredMediaId,
-    featuredMediaUrl: "/media/demo-cartagena-caribe.webp",
-    featuredMediaFocalX: 50.0,
-    featuredMediaFocalY: 50.0,
-    isFeatured: req.isFeatured ?? true,
-    inclusions: req.inclusions,
-    exclusions: req.exclusions,
-    whatsappMessageTemplate: req.whatsappMessageTemplate,
-    displayOrder: req.displayOrder || MOCK_PROMOTIONS.length + 1,
-    active: req.active ?? true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  MOCK_PROMOTIONS.push(newPromo);
-  return newPromo;
-}
-
-export function updateMockPromotion(id: number, req: CreateOrUpdatePromotionRequest): PromotionDTO {
-  const index = MOCK_PROMOTIONS.findIndex((p) => p.id === id);
-  if (index === -1) {
-    throw new Error(`Promoción no encontrada con ID: ${id}`);
-  }
-  const current = MOCK_PROMOTIONS[index];
-  const updated: PromotionDTO = {
-    ...current,
-    slug: req.slug,
-    title: req.title,
-    destination: req.destination,
-    summary: req.summary,
-    priceUsd: Number(req.priceUsd),
-    pricePen: req.pricePen ? Number(req.pricePen) : current.pricePen,
-    durationDays: Number(req.durationDays),
-    durationNights: Number(req.durationNights),
-    departureCity: req.departureCity || current.departureCity,
-    validFrom: req.validFrom || current.validFrom,
-    validUntil: req.validUntil || current.validUntil,
-    featuredMediaId: req.featuredMediaId,
-    isFeatured: req.isFeatured ?? current.isFeatured,
-    inclusions: req.inclusions,
-    exclusions: req.exclusions,
-    whatsappMessageTemplate: req.whatsappMessageTemplate,
-    displayOrder: req.displayOrder ?? current.displayOrder,
-    active: req.active ?? current.active,
-    updatedAt: new Date().toISOString(),
-  };
-  MOCK_PROMOTIONS[index] = updated;
-  return updated;
-}
-
-export function deleteMockPromotion(id: number): void {
-  const index = MOCK_PROMOTIONS.findIndex((p) => p.id === id);
-  if (index !== -1) {
-    MOCK_PROMOTIONS[index].active = false;
-  }
 }
 
 // Trust Mock Helpers (Corte 7)
@@ -753,6 +709,7 @@ export function createMockAdvisor(req: CreateOrUpdateAdvisorRequest): TravelAdvi
     roleTitle: req.roleTitle,
     specialty: req.specialty,
     bio: req.bio,
+    quote: req.quote,
     photoMediaId: req.photoMediaId,
     photoMediaUrl: "/media/demo-cartagena-caribe.webp",
     whatsappPhone: req.whatsappPhone || "+51987654321",
@@ -776,6 +733,7 @@ export function updateMockAdvisor(id: number, req: CreateOrUpdateAdvisorRequest)
     roleTitle: req.roleTitle,
     specialty: req.specialty,
     bio: req.bio,
+    quote: req.quote ?? current.quote,
     photoMediaId: req.photoMediaId,
     whatsappPhone: req.whatsappPhone || current.whatsappPhone,
     whatsappMessageTemplate: req.whatsappMessageTemplate || current.whatsappMessageTemplate,
@@ -866,7 +824,11 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
     categorySlug: "guias-de-destinos",
     coverMediaId: 2,
     coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    coverFocalX: 50,
+    coverFocalY: 50,
     authorName: "Carolina Zúñiga",
+    authorAvatarFocalX: 50,
+    authorAvatarFocalY: 50,
     readingTimeMinutes: 6,
     tags: ["Cartagena", "Caribe", "Colombia", "Playas", "Consejos"],
     status: "PUBLISHED",
@@ -886,7 +848,11 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
     categorySlug: "guias-de-destinos",
     coverMediaId: 3,
     coverMediaUrl: "/media/demo-cusco-machupicchu.webp",
+    coverFocalX: 50,
+    coverFocalY: 50,
     authorName: "Valeria Gómez",
+    authorAvatarFocalX: 50,
+    authorAvatarFocalY: 50,
     readingTimeMinutes: 8,
     tags: ["Cusco", "Machu Picchu", "Perú", "Aventura", "Historia"],
     status: "PUBLISHED",
@@ -906,7 +872,11 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
     categorySlug: "lunas-de-miel",
     coverMediaId: 2,
     coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    coverFocalX: 50,
+    coverFocalY: 50,
     authorName: "Lucía Ramos",
+    authorAvatarFocalX: 50,
+    authorAvatarFocalY: 50,
     readingTimeMinutes: 5,
     tags: ["Punta Cana", "All Inclusive", "Caribe", "Lunas de Miel", "Resorts"],
     status: "PUBLISHED",
@@ -926,7 +896,11 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
     categorySlug: "consejos-de-viaje",
     coverMediaId: 1,
     coverMediaUrl: "/media/demo-hero-travel.webp",
+    coverFocalX: 50,
+    coverFocalY: 50,
     authorName: "Carolina Zúñiga",
+    authorAvatarFocalX: 50,
+    authorAvatarFocalY: 50,
     readingTimeMinutes: 4,
     tags: ["Documentación", "Seguros", "Tips", "Aeropuertos", "DNI"],
     status: "PUBLISHED",
@@ -1013,7 +987,13 @@ export function createMockBlogPost(req: CreateOrUpdateBlogPostRequest): BlogPost
     categorySlug: cat.slug,
     coverMediaId: req.coverMediaId,
     coverMediaUrl: "/media/demo-cartagena-caribe.webp",
+    coverFocalX: req.coverFocalX ?? 50,
+    coverFocalY: req.coverFocalY ?? 50,
     authorName: req.authorName || "Equipo Viajes Carolina",
+    authorAvatarMediaId: req.authorAvatarMediaId,
+    authorAvatarUrl: req.authorAvatarMediaId ? "/media/demo-hero-travel.webp" : undefined,
+    authorAvatarFocalX: req.authorAvatarFocalX ?? 50,
+    authorAvatarFocalY: req.authorAvatarFocalY ?? 50,
     readingTimeMinutes: req.readingTimeMinutes || 5,
     tags: req.tags || [],
     status: req.status || "PUBLISHED",
@@ -1043,7 +1023,12 @@ export function updateMockBlogPost(id: number, req: CreateOrUpdateBlogPostReques
     categoryName: (cat as any).name || current.categoryName,
     categorySlug: (cat as any).slug || current.categorySlug,
     coverMediaId: req.coverMediaId !== undefined ? req.coverMediaId : current.coverMediaId,
+    coverFocalX: req.coverFocalX ?? current.coverFocalX,
+    coverFocalY: req.coverFocalY ?? current.coverFocalY,
     authorName: req.authorName || current.authorName,
+    authorAvatarMediaId: req.authorAvatarMediaId !== undefined ? req.authorAvatarMediaId : current.authorAvatarMediaId,
+    authorAvatarFocalX: req.authorAvatarFocalX ?? current.authorAvatarFocalX,
+    authorAvatarFocalY: req.authorAvatarFocalY ?? current.authorAvatarFocalY,
     readingTimeMinutes: req.readingTimeMinutes || current.readingTimeMinutes,
     tags: req.tags || current.tags,
     status: req.status || current.status,
@@ -1104,13 +1089,41 @@ export function deleteMockBlogCategory(id: number): void {
 
 export const DEFAULT_CONTACT_PAGE: ContactPageDTO = {
   id: 1,
-  heroBadge: "Estamos para Ayudarte",
-  heroTitle: "Hablemos de tu próximo destino soñado",
-  heroSubtitle: "Déjanos tus datos o escríbenos directamente por WhatsApp. Una de nuestras asesoras te responderá con una propuesta personalizada.",
-  whatsappBoxTitle: "¿Prefieres atención inmediata?",
-  whatsappBoxSubtitle: "Escríbenos por WhatsApp y una asesora experta te atenderá en minutos en horario de oficina.",
-  formTitle: "Envíanos un mensaje",
-  formSubtitle: "Completa el formulario y te enviaremos una cotización detallada a tu correo o WhatsApp.",
+  heroBadge: "UNA CONVERSACIÓN PUEDE SER EL PRIMER PASO",
+  heroTitle: "¿Qué te gustaría vivir en tu próximo viaje?",
+  heroSubtitle:
+    "No necesitas tener el destino, las fechas ni el presupuesto resueltos. Cuéntanos qué tienes en mente y empezamos a darle forma contigo.",
+  heroCtaText: "Cuéntanos tu idea por WhatsApp",
+  heroNoteText: "Una persona te lee y te responde.",
+  heroCtaMessage: "Hola Viajes Carolina, quiero contarles qué tengo en mente para mi próximo viaje.",
+  heroChatLabel: "Respuesta humana",
+  heroChatBubble1: "Tengo unos días libres, pero todavía no sé a dónde ir.",
+  heroChatBubble2: "Está bien. Empecemos por cómo quieres sentirte y cuánto tiempo tienes.",
+  heroChatBubble3: "Con eso ya podemos dar el primer paso.",
+  startersBadge: "02 · Puedes empezar con poco",
+  startersTitle: "No hace falta llegar con todo resuelto.",
+  startersSubtitle: "Una conversación puede comenzar con lo que ya sabes —o incluso con lo que todavía no sabes.",
+  startersClosing: "Todo puede empezar con una frase.",
+  starterPhrases: [
+    { quote: "Solo tengo unos días libres.", support: "Empezamos por el tiempo disponible." },
+    { quote: "Tengo un destino en mente.", support: "Revisamos qué experiencia buscas allí." },
+    { quote: "Todavía necesito ideas.", support: "Te orientamos a partir de tu ritmo y presupuesto." },
+  ],
+  officeSectionBadge: "03 · Nuestra oficina",
+  officeSectionTitle: "Cuando quieras venir, aquí nos encontramos.",
+  officeSectionSubtitle:
+    "El mapa muestra la ubicación oficial de Viajes Carolina. Para atenderte con tiempo y calma, coordinamos previamente cada visita.",
+  officeMapTitle: "Visítanos cuando lo necesites.",
+  officeMapSubtitle: "Consulta en el mapa la dirección exacta y las indicaciones para llegar.",
+  officeVisitNote: "Escríbenos para confirmar el horario y preparar tu atención.",
+  officeMapEyebrow: "Mapa real integrado",
+  officeMapPinTitle: "Viajes Carolina",
+  officeMapPinSubtitle: "Ubicación verificada en Google Maps",
+  officeMapsLinkText: "Abrir ubicación en Google Maps",
+  officeLocationLabel: "Ubicación oficial",
+  officeVisitLabel: "Antes de venir",
+  officeVisitCtaText: "Coordinar visita por WhatsApp",
+  officeVisitCtaMessage: "Hola Viajes Carolina, quisiera coordinar una visita a la oficina.",
   revision: 1,
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
@@ -1159,6 +1172,7 @@ export function getMockPublicContact(): PublicContactResponse {
     contactEmail: MOCK_SITE_SETTINGS.contactEmail,
     officeAddress: `${MOCK_OFFICE_LOCATION.addressLine}, ${MOCK_OFFICE_LOCATION.district}, ${MOCK_OFFICE_LOCATION.city}`,
     officeHours: MOCK_OFFICE_LOCATION.scheduleWeekdays,
+    officeGoogleMapsUrl: MOCK_OFFICE_LOCATION.googleMapsUrl,
   };
 }
 

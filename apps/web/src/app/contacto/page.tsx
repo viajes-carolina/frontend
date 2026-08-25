@@ -1,39 +1,34 @@
 import { apiClient } from "@vc/api-client";
-import { ContactClientView } from "./ContactClientView";
-import { FaqSection, ClosingCtaSection, JourneyConnector, ContactExploreSection } from "@vc/ui";
+import { ContactHeroSection, StartersSection, OfficeMapSection } from "@vc/ui";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Contacto & Cotizaciones | Viajes Carolina - Miraflores, Lima",
-  description: "Ponte en contacto con una asesora de Viajes Carolina por WhatsApp, formulario o visítanos en Miraflores. Asesoría 100% personalizada sin costo.",
+  title: "Contacto | Viajes Carolina - Miraflores, Lima",
+  description: "Escríbenos por WhatsApp y conversemos sobre tu próximo viaje. Asesoría 100% personalizada, sin formularios impersonales.",
 };
 
 export default async function ContactoPage() {
-  const [contactData, trustData, siteSettings, exploreLinks] = await Promise.all([
+  const [contactData, siteSettings] = await Promise.all([
     apiClient.getPublicContact(),
-    apiClient.getPublicTrust(),
     apiClient.getSiteSettings(),
-    apiClient.getContactExploreLinks(),
   ]);
 
   return (
-    <main className="w-full bg-neutral-soft text-neutral-ink min-h-screen">
-      {/* 01. Contact Client Hero & Form Grid */}
-      <ContactClientView contactData={contactData} />
+    <main className="w-full bg-surface-ivory text-neutral-ink min-h-screen">
+      {/* 01. Hero conversación */}
+      <ContactHeroSection page={contactData.page} whatsappPhone={siteSettings.whatsappPhone} />
 
-      {/* 02. Enlaces de Exploración, Soporte y Libro de Reclamaciones */}
-      <ContactExploreSection links={exploreLinks} />
+      {/* 02. Cómo empezar */}
+      <StartersSection page={contactData.page} />
 
-      {/* 03. FAQ Reminders */}
-      {trustData.faqs && trustData.faqs.length > 0 && (
-        <FaqSection faqs={trustData.faqs} settings={siteSettings} />
-      )}
-
-      <JourneyConnector step="01" label="¿Todo listo? Conversemos" />
-
-      {/* 04. Closing CTA */}
-      <ClosingCtaSection settings={siteSettings} />
+      {/* 03. Oficina y Google Maps */}
+      <OfficeMapSection
+        page={contactData.page}
+        officeGoogleMapsUrl={contactData.officeGoogleMapsUrl}
+        officeAddress={contactData.officeAddress}
+        whatsappPhone={siteSettings.whatsappPhone}
+      />
     </main>
   );
 }

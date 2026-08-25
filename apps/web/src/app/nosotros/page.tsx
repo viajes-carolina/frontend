@@ -1,47 +1,45 @@
 import { apiClient } from "@vc/api-client";
 import {
   AboutHeroSection,
-  StorySection,
-  MissionVisionSection,
+  MissionSection,
+  AccompanySection,
   AdvisorsSection,
-  ClosingCtaSection,
-  JourneyConnector,
+  MomentsSection,
+  HumanReplySection,
 } from "@vc/ui";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Nosotros | Viajes Carolina - Agencia Boutique en Miraflores",
-  description: "Conoce la historia, misión, valores y al equipo de asesoras especializadas de Viajes Carolina. Más de 12 años diseñando experiencias turísticas inolvidables.",
+  description: "Conoce la historia, la misión y al equipo de asesoras que acompaña cada viaje en Viajes Carolina.",
 };
 
 export default async function NosotrosPage() {
-  const [data, settings, office] = await Promise.all([
+  const [data, settings] = await Promise.all([
     apiClient.getPublicAbout(),
     apiClient.getSiteSettings(),
-    apiClient.getOfficeLocation(),
   ]);
 
   return (
-    <main className="w-full bg-neutral-soft text-neutral-ink min-h-screen">
-      {/* 01. Hero & Stats */}
-      <AboutHeroSection page={data.page} />
+    <main className="w-full bg-surface-ivory text-neutral-ink min-h-screen">
+      {/* 01. Hero humano */}
+      <AboutHeroSection page={data.page} whatsappPhone={settings.whatsappPhone} />
 
-      <JourneyConnector step="01" label="Nuestra historia" />
+      {/* 02. Misión */}
+      <MissionSection page={data.page} />
 
-      {/* 02. Story & Values */}
-      <StorySection page={data.page} office={office} />
+      {/* 03. Cómo te acompañamos */}
+      <AccompanySection page={data.page} />
 
-      {/* 03. Mission & Vision */}
-      <MissionVisionSection page={data.page} />
-
-      {/* 04. Team / Advisors */}
+      {/* 04. Equipo — quién te acompaña */}
       <AdvisorsSection advisors={data.advisors} />
 
-      <JourneyConnector step="02" label="Conversemos" />
+      {/* 05. Experiencias que humanizan */}
+      <MomentsSection page={data.page} />
 
-      {/* 05. Closing CTA */}
-      <ClosingCtaSection settings={settings} />
+      {/* 06. Una persona al otro lado */}
+      <HumanReplySection page={data.page} />
     </main>
   );
 }

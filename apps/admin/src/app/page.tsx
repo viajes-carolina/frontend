@@ -24,7 +24,6 @@ export default async function AdminDashboardPage() {
     promotions,
     testimonials,
     faqs,
-    inquiries,
     blogPosts,
     claims,
     users,
@@ -37,14 +36,12 @@ export default async function AdminDashboardPage() {
     apiClient.getAdminPromotions(),
     apiClient.getTestimonials(),
     apiClient.getFaqs(),
-    apiClient.getAdminInquiries(),
     apiClient.getAdminBlogPosts(),
     apiClient.getAdminClaims(),
     apiClient.getAdminUsers(),
     apiClient.getAuditLogs("ALL", 10),
   ]);
 
-  const newInquiriesCount = inquiries.filter((i) => i.status === "NEW").length;
   const pendingClaimsCount = claims.filter((c) => c.status === "PENDING").length;
 
   return (
@@ -56,7 +53,7 @@ export default async function AdminDashboardPage() {
             Panel de Control · {siteSettings.siteName}
           </h1>
           <p className="font-inter text-neutral-muted text-sm mt-1">
-            Gestión centralizada de contenidos, testimonios, FAQ, promociones, medios, leads e identidad.
+            Gestión centralizada de contenidos, testimonios, FAQ, promociones, medios e identidad.
           </p>
         </div>
         <div className="flex gap-3">
@@ -202,7 +199,7 @@ export default async function AdminDashboardPage() {
             Control de Caché &rarr;
           </span>
         </Link>
-        {/* Card: Contacto & Leads (Corte 9) */}
+        {/* Card: Página de Contacto (Corte 9) */}
         <Link
           href="/contacto"
           className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
@@ -210,24 +207,21 @@ export default async function AdminDashboardPage() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase tracking-wider font-semibold text-brand-accent">
-                Corte 9 · Leads & Consultas
+                Corte 9 · Contacto
               </span>
-              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent relative">
+              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent">
                 <MailIcon size={20} />
-                {newInquiriesCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
-                )}
               </div>
             </div>
             <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
-              Bandeja de Consultas
+              Página de Contacto
             </h3>
             <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
-              {inquiries.length} solicitudes recibidas ({newInquiriesCount} nuevas por atender).
+              Hero, &quot;Cómo empezar&quot; y sección de oficina — toda la conversión pasa por WhatsApp.
             </p>
           </div>
           <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-            Ver Bandeja de Leads &rarr;
+            Editar Contacto &rarr;
           </span>
         </Link>
 
@@ -257,41 +251,41 @@ export default async function AdminDashboardPage() {
           </span>
         </Link>
 
-        {/* Card: Promociones & Paquetes (Corte 6) */}
+        {/* Card: Promociones en Inicio (Corte 6) */}
         <Link
-          href="/promociones"
+          href="/inicio/promociones"
           className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-sunset/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase tracking-wider font-semibold text-brand-sunset">
-                Corte 6 · Catálogo
+                Corte 6 · Visibilidad
               </span>
               <div className="p-2 rounded-xl bg-brand-sunset/10 text-brand-sunset">
                 <SunIcon size={20} />
               </div>
             </div>
             <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-sunset transition-colors">
-              Promociones & Paquetes
+              Promociones en Inicio
             </h3>
             <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
-              {promotions.length} paquetes y ofertas activas en catálogo.
+              {promotions.filter((p) => p.active).length} de {promotions.length} promociones visibles en portada.
             </p>
           </div>
           <span className="text-xs font-semibold text-brand-sunset mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-            Gestionar Promociones &rarr;
+            Elegir Promociones &rarr;
           </span>
         </Link>
 
-        {/* Card: Confianza, Testimonios & FAQ (Corte 7) */}
+        {/* Card: Testimonios (ahora dentro de Inicio & Hero > Experiencias) */}
         <Link
-          href="/confianza"
+          href="/inicio/experiencias"
           className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-amber-500/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
         >
           <div>
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs uppercase tracking-wider font-semibold text-amber-600">
-                Corte 7 · Confianza
+                Experiencias
               </span>
               <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
                 <StarIcon size={20} />
@@ -305,7 +299,7 @@ export default async function AdminDashboardPage() {
             </p>
           </div>
           <span className="text-xs font-semibold text-amber-600 mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-            Gestionar Confianza &rarr;
+            Ir a Experiencias &rarr;
           </span>
         </Link>
 

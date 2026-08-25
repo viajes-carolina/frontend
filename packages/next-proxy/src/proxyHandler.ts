@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs";
 import path from "node:path";
-import { USD_TO_PEN_RATE } from "@vc/config";
 import {
   DEFAULT_SITE_SETTINGS,
   DEFAULT_OFFICE_LOCATION,
@@ -110,6 +109,19 @@ function writeStoredJson<T>(filename: string, data: T): void {
   } catch {
     // ignore
   }
+}
+
+// Slug simple para el mock offline de creación de promociones — el backend
+// real autogenera el suyo; este solo necesita ser único y legible dentro del
+// almacén local persistido en disco.
+function slugifyPromotionTitle(title: string, uniqueSuffix: number): string {
+  const base = title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  return base ? `${base}-${uniqueSuffix}` : `promocion-${uniqueSuffix}`;
 }
 
 function saveUploadedMediaFile(filename: string, buffer: Buffer) {
@@ -274,6 +286,7 @@ export async function handleProxyRequest(
         contactEmail: settings.contactEmail,
         officeAddress: `${office.addressLine}, ${office.district}, ${office.city}`,
         officeHours: office.scheduleWeekdays,
+        officeGoogleMapsUrl: office.googleMapsUrl,
       };
       return NextResponse.json(res, { status: 200 });
     }
@@ -515,77 +528,101 @@ export async function handleProxyRequest(
       return NextResponse.json(current, { status: 200 });
     }
 
-    // Sincronización con Facebook: mutación real contra un servicio externo,
-    // nunca debe fabricar un resultado falso si el backend está inalcanzable
-    // (a diferencia del resto de "promotions", que sí tiene fallback offline).
-    if (targetPath.includes("promotions/sync-facebook")) {
-      return NextResponse.json(
-        { message: "El backend no está disponible para sincronizar con Facebook. Intenta nuevamente en unos segundos." },
-        { status: 503 }
-      );
-    }
-
     if (targetPath.includes("promotions")) {
       const current = readStoredJson<PromotionDTO[]>("promotions.json", DEFAULT_PROMOTIONS);
-      if (method === "POST") {
-        const newPromo: PromotionDTO = {
-          id: Date.now(),
-          slug: String(bodyJson?.slug || `promo-${Date.now()}`),
+
+      // Creación estructurada (título, precio, fechas, foto, inclusiones) — el mock
+      // offline no publica de verdad en Facebook, así que la promoción se crea sin
+      // facebookPostId/facebookPermalinkUrl (a diferencia del backend real, que sí
+      // publica automáticamente al crear).
+      if (method === "POST" && /promotions\/?$/.test(targetPath)) {
+        const id = Date.now();
+        const newPromotion: PromotionDTO = {
+          id,
+          slug: slugifyPromotionTitle(String(bodyJson?.title || "promocion"), id),
           title: String(bodyJson?.title || "Nueva Promoción"),
-          destination: String(bodyJson?.destination || "Destino"),
+          destination: String(bodyJson?.destination || ""),
           summary: String(bodyJson?.summary || ""),
-          priceUsd: Number(bodyJson?.priceUsd || 499),
-          pricePen: bodyJson?.pricePen ? Number(bodyJson.pricePen) : Number(bodyJson?.priceUsd || 499) * USD_TO_PEN_RATE,
-          durationDays: Number(bodyJson?.durationDays || 4),
-          durationNights: Number(bodyJson?.durationNights || 3),
-          departureCity: String(bodyJson?.departureCity || "Lima"),
-          validFrom: String(bodyJson?.validFrom || new Date().toISOString().split("T")[0]),
-          validUntil: String(bodyJson?.validUntil || new Date(Date.now() + 180 * 86400000).toISOString().split("T")[0]),
-          featuredMediaId: bodyJson?.featuredMediaId ? Number(bodyJson.featuredMediaId) : undefined,
-          featuredMediaUrl: "/media/demo-cartagena-caribe.webp",
-          featuredMediaFocalX: 50.0,
-          featuredMediaFocalY: 50.0,
-          isFeatured: bodyJson?.isFeatured !== undefined ? Boolean(bodyJson.isFeatured) : true,
+          priceUsd: Number(bodyJson?.priceUsd || 0),
+          pricePen: bodyJson?.pricePen !== undefined ? Number(bodyJson.pricePen) : undefined,
+          durationDays: Number(bodyJson?.durationDays || 1),
+          durationNights: Number(bodyJson?.durationNights || 0),
+          departureCity: String(bodyJson?.departureCity || ""),
+          validFrom: bodyJson?.validFrom ? String(bodyJson.validFrom) : "",
+          validUntil: bodyJson?.validUntil ? String(bodyJson.validUntil) : "",
+          featuredMediaId: bodyJson?.featuredMediaId !== undefined ? Number(bodyJson.featuredMediaId) : undefined,
           inclusions: Array.isArray(bodyJson?.inclusions) ? (bodyJson?.inclusions as string[]) : [],
           exclusions: Array.isArray(bodyJson?.exclusions) ? (bodyJson?.exclusions as string[]) : [],
-          whatsappMessageTemplate: String(bodyJson?.whatsappMessageTemplate || ""),
-          displayOrder: bodyJson?.displayOrder ? Number(bodyJson.displayOrder) : current.length + 1,
-          active: bodyJson?.active !== undefined ? Boolean(bodyJson.active) : true,
+          whatsappMessageTemplate: bodyJson?.whatsappMessageTemplate ? String(bodyJson.whatsappMessageTemplate) : undefined,
+          active: true,
+          source: "MANUAL",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        const updated = [...current, newPromo];
+        const updated = [newPromotion, ...current];
         writeStoredJson("promotions.json", updated);
-        return NextResponse.json(newPromo, { status: 201 });
+        return NextResponse.json(newPromotion, { status: 201 });
       }
-      if (method === "PUT") {
-        const idMatch = targetPath.match(/promotions\/(\d+)/);
+
+      // Mostrar/Ocultar en portada: guarda la misma regla de negocio del backend real:
+      // el Home siempre debe tener al menos 3 promociones activas para mostrar.
+      if (method === "PATCH" && /promotions\/\d+\/active$/.test(targetPath)) {
+        const idMatch = targetPath.match(/promotions\/(\d+)\/active/);
         const id = idMatch ? parseInt(idMatch[1], 10) : 1;
         const index = current.findIndex((p) => p.id === id);
-        if (index !== -1) {
-          const updatedItem = {
-            ...current[index],
-            ...(bodyJson || {}),
-            updatedAt: new Date().toISOString(),
-          };
-          current[index] = updatedItem as PromotionDTO;
-          writeStoredJson("promotions.json", current);
-          return NextResponse.json(updatedItem, { status: 200 });
+        if (index === -1) {
+          return NextResponse.json({ message: "Promoción no encontrada." }, { status: 404 });
         }
+        const nextActive = bodyJson?.active !== undefined ? Boolean(bodyJson.active) : current[index].active;
+        const activeCount = current.filter((p) => p.active).length;
+        if (current[index].active && !nextActive && activeCount <= 3) {
+          return NextResponse.json(
+            { message: "No se puede ocultar esta promoción: quedarían menos de 3 promociones activas para mostrar en Inicio." },
+            { status: 409 }
+          );
+        }
+        const updatedItem = {
+          ...current[index],
+          active: nextActive,
+          updatedAt: new Date().toISOString(),
+        };
+        current[index] = updatedItem as PromotionDTO;
+        writeStoredJson("promotions.json", current);
+        return NextResponse.json(updatedItem, { status: 200 });
       }
-      if (method === "DELETE") {
-        const idMatch = targetPath.match(/promotions\/(\d+)/);
-        const id = idMatch ? parseInt(idMatch[1], 10) : 1;
+
+      if (targetPath.includes("featured")) {
+        // Como máximo 3 promociones activas, ordenadas por recencia (createdAt desc,
+        // id como desempate) — la primera del array es la más reciente/protagonista.
+        const sorted = [...current]
+          .filter((p) => p.active)
+          .sort((a, b) => {
+            const diff = new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+            return diff !== 0 ? diff : b.id - a.id;
+          });
+        return NextResponse.json(sorted.slice(0, 3), { status: 200 });
+      }
+
+      // Borrado definitivo: mismo guard de "nunca menos de 3 activas" que el toggle.
+      if (method === "DELETE" && /promotions\/\d+$/.test(targetPath)) {
+        const idMatch = targetPath.match(/promotions\/(\d+)$/);
+        const id = idMatch ? parseInt(idMatch[1], 10) : -1;
         const index = current.findIndex((p) => p.id === id);
-        if (index !== -1) {
-          current[index].active = false;
-          writeStoredJson("promotions.json", current);
+        if (index === -1) {
+          return NextResponse.json({ message: "Promoción no encontrada." }, { status: 404 });
         }
+        const activeCount = current.filter((p) => p.active).length;
+        if (current[index].active && activeCount <= 3) {
+          return NextResponse.json(
+            { message: "No se puede borrar esta promoción: quedarían menos de 3 promociones activas para mostrar en Inicio." },
+            { status: 409 }
+          );
+        }
+        const updated = current.filter((p) => p.id !== id);
+        writeStoredJson("promotions.json", updated);
         return new NextResponse(null, { status: 204 });
       }
-      if (targetPath.includes("featured")) {
-        return NextResponse.json(current.filter((p) => p.isFeatured && p.active), { status: 200 });
-      }
+
       return NextResponse.json(current, { status: 200 });
     }
 

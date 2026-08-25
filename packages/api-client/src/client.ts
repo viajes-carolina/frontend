@@ -2,6 +2,7 @@ import {
   SiteSettingsDTO,
   OfficeLocationDTO,
   PromotionDTO,
+  SetPromotionActiveRequest,
   CreateOrUpdatePromotionRequest,
   BlogPostDTO,
   ApiInfoDTO,
@@ -69,8 +70,6 @@ import {
   getMockOfficeLocation,
   getMockHomeHero,
   getMockFeaturedPromotions,
-  getMockPromotions,
-  getMockPromotionBySlug,
   getMockPublicTrust,
   getMockPublicAbout,
   getMockPublicContact,
@@ -332,23 +331,6 @@ export class ViajesCarolinaApiClient {
     return await res.json();
   }
 
-  async getPromotions(): Promise<PromotionDTO[]> {
-    let res: Response;
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
-      res = await fetch(this.getEffectiveUrl("public/v1/promotions"), {
-        cache: "no-store",
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-    } catch {
-      return getMockPromotions();
-    }
-    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
-    return await res.json();
-  }
-
   async getAdminPromotions(): Promise<PromotionDTO[]> {
     const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), await this.withServerAuthCookie({
       cache: "no-store",
@@ -357,17 +339,13 @@ export class ViajesCarolinaApiClient {
     return await res.json();
   }
 
-  async getPromotionBySlug(slug: string): Promise<PromotionDTO> {
-    let res: Response;
-    try {
-      res = await fetch(this.getEffectiveUrl(`public/v1/promotions/${slug}`), {
-        cache: "no-store",
-      });
-    } catch {
-      const found = getMockPromotionBySlug(slug);
-      if (found) return found;
-      throw new Error(`Promoción no encontrada: ${slug}`);
-    }
+  async setPromotionActive(id: number, active: boolean): Promise<PromotionDTO> {
+    const payload: SetPromotionActiveRequest = { active };
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}/active`), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();
   }
@@ -382,31 +360,11 @@ export class ViajesCarolinaApiClient {
     return await res.json();
   }
 
-  async updatePromotion(id: number, payload: CreateOrUpdatePromotionRequest): Promise<PromotionDTO> {
-    const res = await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
-    return await res.json();
-  }
-
   async deletePromotion(id: number): Promise<void> {
     const res = await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
       method: "DELETE",
     });
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
-  }
-
-  async syncPromotionsFromFacebook(): Promise<{ created: number }> {
-    const res = await fetch(this.getEffectiveUrl("admin/v1/promotions/sync-facebook"), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: "{}",
-    });
-    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
-    return await res.json();
   }
 
   // ==========================================
@@ -725,7 +683,7 @@ export class ViajesCarolinaApiClient {
   async getBlogCategories(admin = false): Promise<BlogCategoryDTO[]> {
     const url = admin ? "admin/v1/blog/categories" : "public/v1/blog/categories";
     if (admin) {
-      const res = await fetch(this.getEffectiveUrl(url), { cache: "no-store" });
+      const res = await fetch(this.getEffectiveUrl(url), await this.withServerAuthCookie({ cache: "no-store" }));
       if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
       return await res.json();
     }

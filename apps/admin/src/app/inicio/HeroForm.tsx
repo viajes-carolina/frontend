@@ -5,7 +5,7 @@ import Image from "next/image";
 import { HomeHeroDTO } from "@vc/api-client";
 import { useAdminHomeHero } from "../../hooks/useAdminHomeHero";
 import { Button, CheckIcon } from "@vc/ui";
-import { HeroPhotoSlot } from "./HeroPhotoSlot";
+import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 
 export interface HeroFormProps {
   initialHero: HomeHeroDTO;

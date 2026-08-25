@@ -60,11 +60,6 @@ export default async function HomePage() {
           ========================================================================= */}
       <TestimonialsSection
         testimonials={trustData.testimonials}
-        memoryPhoto={{
-          url: homeHero.secondaryMedia2Url,
-          focalX: homeHero.secondaryMedia2FocalX,
-          focalY: homeHero.secondaryMedia2FocalY,
-        }}
         config={testimonialsSectionConfig}
       />
 

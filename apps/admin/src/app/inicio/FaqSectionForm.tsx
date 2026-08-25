@@ -46,10 +46,10 @@ export const FaqSectionForm: React.FC<FaqSectionFormProps> = ({ initialConfig })
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-8 border border-neutral-border shadow-sm space-y-6">
       <div className="border-b border-neutral-border pb-4">
         <h2 className="text-xl font-bold text-brand-navy">
-          Encabezado de Preguntas Frecuentes (sección 06)
+          Preguntas Frecuentes (sección 06)
         </h2>
         <p className="text-xs text-neutral-muted mt-1">
-          Título y descripción de la sección. Las preguntas individuales se editan en "Confianza".
+          Título y descripción de la sección. Las preguntas individuales se editan más abajo en esta misma página.
         </p>
       </div>
 

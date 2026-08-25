@@ -1,99 +1,89 @@
-"use client";
-
 import React from "react";
-import { BlogCategoryDTO } from "@vc/api-client";
+import { BlogCategoryDTO, BlogPostDTO } from "@vc/api-client";
+import { BlogFeaturedStoryCard } from "./BlogFeaturedStoryCard";
+import { Reveal } from "../primitives/Reveal";
 
 export interface BlogHeroSectionProps {
   categories: BlogCategoryDTO[];
   selectedCategorySlug?: string;
-  onSelectCategory: (slug: string) => void;
-  searchQuery: string;
-  onSearchChange: (q: string) => void;
+  heroPost?: BlogPostDTO;
 }
 
 export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
   categories,
   selectedCategorySlug = "all",
-  onSelectCategory,
-  searchQuery,
-  onSearchChange,
+  heroPost,
 }) => {
   return (
-    <section className="relative overflow-hidden bg-neutral-soft border-b border-neutral-border py-16 lg:py-20">
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-neutral-border shadow-sm text-brand-accent text-xs font-semibold uppercase tracking-wider mb-4">
-          <span>✈️</span>
-          <span>Historias & Inspiración</span>
-        </div>
-
-        {/* Headline */}
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 text-brand-navy">
-          Guías, Consejos y Destinos para Soñar
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-base sm:text-lg text-neutral-muted max-w-2xl mx-auto mb-8 leading-relaxed">
-          Descubre itinerarios recomendados por nuestras asesoras, tips prácticos para tus vuelos y los secretos de cada rincón del mundo.
-        </p>
-
-        {/* Search Bar */}
-        <div className="max-w-xl mx-auto mb-8">
-          <div className="relative flex items-center">
-            <span className="absolute left-4 text-neutral-400">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </span>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Buscar destinos, consejos, playas, visas..."
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white border border-neutral-border text-neutral-800 placeholder-neutral-400 text-sm sm:text-base font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-accent transition"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => onSearchChange("")}
-                className="absolute right-3 p-1 rounded-full text-neutral-400 hover:text-neutral-600 focus:outline-none"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Category Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => onSelectCategory("all")}
-            className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition ${
-              selectedCategorySlug === "all"
-                ? "bg-brand-accent text-white shadow-md"
-                : "bg-white text-neutral-muted border border-neutral-border hover:border-brand-accent/40 hover:text-brand-navy"
-            }`}
-          >
-            Todos los artículos
-          </button>
-
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              type="button"
-              onClick={() => onSelectCategory(cat.slug)}
-              className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition ${
-                selectedCategorySlug === cat.slug
-                  ? "bg-brand-accent text-white shadow-md"
-                  : "bg-white text-neutral-muted border border-neutral-border hover:border-brand-accent/40 hover:text-brand-navy"
-              }`}
+    <section className="relative overflow-hidden bg-surface-ivory pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-8">
+          <Reveal className="lg:col-span-7">
+            <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">
+              Diario de viaje · Preguntas reales
+            </p>
+            <h1
+              className="font-display mt-4 text-4xl font-semibold leading-[1.05] text-brand-navy sm:text-5xl lg:text-[58px]"
+              style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
             >
-              {cat.name}
-            </button>
-          ))}
+              ¿Qué te gustaría saber
+              <br />
+              antes de viajar?
+            </h1>
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 300 16"
+              className="-mt-1 h-3 w-40 text-brand-accent sm:w-52"
+              fill="none"
+            >
+              <path
+                d="M3 10.5C40 2 90 2 130 8C175 14.5 230 3 297 6"
+                stroke="currentColor"
+                strokeWidth="6"
+                strokeLinecap="round"
+              />
+            </svg>
+            <p className="font-inter mt-5 max-w-xl text-base text-brand-navy/75 sm:text-lg">
+              Aquí reunimos respuestas, ideas y experiencias que nacieron de conversaciones con viajeros como tú.
+            </p>
+
+            <div className="mt-10">
+              <p className="font-sora text-[11px] font-semibold uppercase tracking-wider text-brand-navy/60">
+                Elige por dónde empezar
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <a
+                  href="/blog"
+                  className={`font-inter text-sm font-semibold pb-1 border-b-2 transition-colors ${
+                    selectedCategorySlug === "all"
+                      ? "border-brand-accent text-brand-navy"
+                      : "border-transparent text-brand-navy/60 hover:text-brand-navy"
+                  }`}
+                >
+                  Todo
+                </a>
+                {categories.map((cat) => (
+                  <a
+                    key={cat.id}
+                    href={`/blog?categoria=${cat.slug}`}
+                    className={`font-inter text-sm font-semibold pb-1 border-b-2 transition-colors ${
+                      selectedCategorySlug === cat.slug
+                        ? "border-brand-accent text-brand-navy"
+                        : "border-transparent text-brand-navy/60 hover:text-brand-navy"
+                    }`}
+                  >
+                    {cat.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+
+          {heroPost && (
+            <Reveal delayMs={120} className="lg:col-span-5">
+              <BlogFeaturedStoryCard post={heroPost} size="hero" />
+            </Reveal>
+          )}
         </div>
       </div>
     </section>
