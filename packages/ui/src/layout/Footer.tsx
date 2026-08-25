@@ -26,10 +26,15 @@ export interface FooterProps {
   facebookUrl?: string;
   instagramUrl?: string;
   tiktokUrl?: string;
+  legalCompanyName?: string;
+  taxId?: string;
+  whatsappDisplayNumber?: string;
+  minceturCertificateUrl?: string;
 }
 
 const SITE_LINKS = [
   { label: "Inicio", href: "/" },
+  { label: "Promociones", href: "/#promociones" },
   { label: "Nosotros", href: "/nosotros" },
   { label: "Blog", href: "/blog" },
   { label: "Contacto", href: "/contacto" },
@@ -46,6 +51,10 @@ export function Footer({
   facebookUrl = DEFAULT_FACEBOOK_URL,
   instagramUrl = DEFAULT_INSTAGRAM_URL,
   tiktokUrl = DEFAULT_TIKTOK_URL,
+  legalCompanyName,
+  taxId,
+  whatsappDisplayNumber,
+  minceturCertificateUrl,
 }: FooterProps) {
   return (
     <footer className="relative w-full overflow-hidden bg-brand-navy text-white">
@@ -61,6 +70,14 @@ export function Footer({
             <p className="max-w-[350px] font-display text-base italic leading-relaxed text-white/90">
               Viajes memorables, diseñados contigo y acompañados hasta el regreso.
             </p>
+            <div className="font-inter text-[11.5px] leading-[18px] text-white">
+              {legalCompanyName && taxId && (
+                <p>
+                  {legalCompanyName} · RUC {taxId}
+                </p>
+              )}
+              <p>Agencia de Viajes y Turismo</p>
+            </div>
           </div>
 
           {/* Recorre el sitio */}
@@ -79,7 +96,7 @@ export function Footer({
             </ul>
             {/* Móvil: enlaces del sitio en dos líneas, no una lista vertical */}
             <p className="font-inter text-sm leading-relaxed text-white/80 md:hidden">
-              Inicio · Nosotros
+              Inicio · Promociones · Nosotros
               <br />
               Blog · Contacto
             </p>
@@ -95,7 +112,10 @@ export function Footer({
               <p>
                 {district} — {city}
               </p>
-              <p className="mt-2.5">{scheduleWeekdays}</p>
+              {whatsappDisplayNumber && (
+                <p className="mt-2.5">WhatsApp · {whatsappDisplayNumber}</p>
+              )}
+              <p className={whatsappDisplayNumber ? undefined : "mt-2.5"}>{scheduleWeekdays}</p>
               <p>{scheduleSaturdays}</p>
               <a href={`mailto:${contactEmail}`} className="mt-2.5 block font-semibold text-white hover:text-brand-accent transition-colors">
                 {contactEmail}
@@ -116,6 +136,22 @@ export function Footer({
               <a href="/privacidad" className="hover:text-white transition-colors">
                 Política de privacidad
               </a>
+              <a href="/cookies" className="hover:text-white transition-colors">
+                Política de cookies
+              </a>
+              <a href="/compromiso-esnna" className="hover:text-white transition-colors">
+                Compromiso contra la ESNNA
+              </a>
+              {minceturCertificateUrl && (
+                <a
+                  href={minceturCertificateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  Constancia MINCETUR ↗
+                </a>
+              )}
             </div>
             <p className="font-inter text-[13.5px] text-white/80">
               {[
@@ -140,7 +176,18 @@ export function Footer({
           <p>
             © {new Date().getFullYear()} {siteName}. Todos los derechos reservados.
           </p>
-          <p>Agencia de Viajes y Turismo Registrada · Perú</p>
+          {minceturCertificateUrl ? (
+            <a
+              href={minceturCertificateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Registro MINCETUR · Ver constancia ↗
+            </a>
+          ) : (
+            <p>Agencia de Viajes y Turismo Registrada · Perú</p>
+          )}
         </div>
       </div>
     </footer>

@@ -55,6 +55,7 @@ export * from "./search/SearchResultsView";
 export * from "./layout/SiteHeader";
 export * from "./layout/MobileMenu";
 export * from "./layout/Footer";
+export * from "./legal/LegalPage";
 export * from "./layout/ArrivalSection";
 export * from "./brand/BrandLogo";
 export * from "./icons/icons";

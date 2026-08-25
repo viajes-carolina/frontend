@@ -92,6 +92,22 @@ export function IdentityForm({ initialSettings }: IdentityFormProps) {
             />
           </div>
         </div>
+
+        <div>
+          <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
+            Enlace a Constancia MINCETUR (opcional)
+          </label>
+          <input
+            type="url"
+            value={settings.minceturCertificateUrl || ""}
+            onChange={(e) => updateField("minceturCertificateUrl", e.target.value)}
+            placeholder="https://..."
+            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
+          />
+          <span className="text-xs text-neutral-muted mt-1 block">
+            Si se configura, el footer del sitio muestra el enlace a la constancia de registro MINCETUR. Si se deja vacío, no se muestra.
+          </span>
+        </div>
       </div>
 
       {/* Sección WhatsApp & Contacto */}

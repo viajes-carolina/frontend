@@ -26,6 +26,7 @@ export interface SiteSettingsDTO {
   tiktokUrl?: string;
   legalCompanyName?: string;
   taxId?: string;
+  minceturCertificateUrl?: string;
   revision?: number;
   updatedAt?: string;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Footer } from "@vc/ui";
 import { SiteSettingsDTO, OfficeLocationDTO } from "@vc/api-client";
 
@@ -10,6 +11,7 @@ export interface FooterWrapperProps {
 }
 
 export function FooterWrapper({ settings: initialSettings, office: initialOffice }: FooterWrapperProps) {
+  const pathname = usePathname();
   const [settings, setSettings] = useState<SiteSettingsDTO>(initialSettings);
   const [office, setOffice] = useState<OfficeLocationDTO>(initialOffice);
 
@@ -54,6 +56,12 @@ export function FooterWrapper({ settings: initialSettings, office: initialOffice
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
+  // Mismo layout minimalista que HeaderWrapper para el asistente del Libro de
+  // Reclamaciones — ver ClaimWizardShell.
+  if ((pathname || "/").startsWith("/reclamaciones/registrar")) {
+    return null;
+  }
+
   return (
     <Footer
       siteName={settings.siteName}
@@ -66,6 +74,10 @@ export function FooterWrapper({ settings: initialSettings, office: initialOffice
       facebookUrl={settings.facebookUrl}
       instagramUrl={settings.instagramUrl}
       tiktokUrl={settings.tiktokUrl}
+      legalCompanyName={settings.legalCompanyName}
+      taxId={settings.taxId}
+      whatsappDisplayNumber={settings.whatsappDisplayNumber}
+      minceturCertificateUrl={settings.minceturCertificateUrl}
     />
   );
 }
