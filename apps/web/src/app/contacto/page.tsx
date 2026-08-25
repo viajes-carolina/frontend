@@ -27,6 +27,8 @@ export default async function ContactoPage() {
         page={contactData.page}
         officeGoogleMapsUrl={contactData.officeGoogleMapsUrl}
         officeAddress={contactData.officeAddress}
+        officeLatitude={contactData.officeLatitude}
+        officeLongitude={contactData.officeLongitude}
         whatsappPhone={siteSettings.whatsappPhone}
       />
     </main>

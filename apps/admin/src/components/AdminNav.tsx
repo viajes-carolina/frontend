@@ -13,8 +13,6 @@ interface AdminNavItem {
   label: string;
   href: string;
   badge?: { text: string; className: string };
-  // "Inicio & Hero", "Nosotros & Asesoras" y "Blog & Contenidos" traen children —
-  // el modelo queda listo para reusarse en Contacto en una ronda futura.
   children?: AdminNavChild[];
 }
 
@@ -40,7 +38,14 @@ const ADMIN_NAV_ITEMS: AdminNavItem[] = [
       { id: "equipo", label: "👥 Equipo", href: "/nosotros/equipo" },
     ],
   },
-  { label: "Contacto", href: "/contacto" },
+  {
+    label: "Contacto",
+    href: "/contacto",
+    children: [
+      { id: "contenido", label: "📝 Contenido", href: "/contacto" },
+      { id: "oficina", label: "📍 Oficina & Horarios", href: "/contacto/oficina" },
+    ],
+  },
   {
     label: "Blog & Contenidos",
     href: "/blog",
@@ -56,7 +61,6 @@ const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { label: "Publicación ISR", href: "/publicacion", badge: { text: "Caché", className: "bg-emerald-400 text-slate-950" } },
   { label: "Biblioteca de Medios", href: "/medios" },
   { label: "Identidad & WhatsApp", href: "/identidad" },
-  { label: "Oficina & Horarios", href: "/oficina" },
   { label: "Mi Cuenta", href: "/perfil" },
 ];
 

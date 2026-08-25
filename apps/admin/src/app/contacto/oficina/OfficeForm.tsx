@@ -1,6 +1,6 @@
 "use client";
 
-import { useAdminOffice } from "../../hooks/useAdminOffice";
+import { useAdminOffice } from "../../../hooks/useAdminOffice";
 import { OfficeLocationDTO } from "@vc/api-client";
 import { Button, CheckIcon } from "@vc/ui";
 
@@ -125,6 +125,9 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
         <h2 className="font-sora font-bold text-lg text-brand-navy border-b border-neutral-border pb-3">
           Enlace a Google Maps
         </h2>
+        <p className="font-inter text-neutral-muted text-xs -mt-3">
+          Este es el único lugar del panel donde se edita la ubicación del mapa — el enlace y las coordenadas se usan tanto en el footer como en el mapa real embebido de la página pública de Contacto.
+        </p>
 
         <div>
           <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
@@ -138,6 +141,38 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
             className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
           />
         </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
+              Latitud
+            </label>
+            <input
+              type="number"
+              step="any"
+              value={office.latitude ?? ""}
+              onChange={(e) => updateField("latitude", parseFloat(e.target.value))}
+              placeholder="-12.058318"
+              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
+            />
+          </div>
+          <div>
+            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
+              Longitud
+            </label>
+            <input
+              type="number"
+              step="any"
+              value={office.longitude ?? ""}
+              onChange={(e) => updateField("longitude", parseFloat(e.target.value))}
+              placeholder="-77.044225"
+              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
+            />
+          </div>
+        </div>
+        <p className="font-inter text-neutral-muted text-[11px]">
+          Coordenadas GPS exactas usadas para el mapa real embebido en la página pública de Contacto — más precisas que geocodificar la dirección de texto. Consíguelas en Google Maps: clic derecho sobre el punto exacto → copiar coordenadas.
+        </p>
       </div>
 
       <div className="flex justify-end gap-4">

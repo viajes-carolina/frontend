@@ -130,7 +130,7 @@ async function runE2ETests() {
     const identidadRes = await fetch(`${BASE_ADMIN_URL}/identidad`);
     assert(identidadRes.status === 200, `Módulo Identidad & WhatsApp responde con HTTP 200 OK (${identidadRes.status})`);
 
-    const oficinaRes = await fetch(`${BASE_ADMIN_URL}/oficina`);
+    const oficinaRes = await fetch(`${BASE_ADMIN_URL}/contacto/oficina`);
     assert(oficinaRes.status === 200, `Módulo Oficina & Horarios responde con HTTP 200 OK (${oficinaRes.status})`);
 
     const mediosRes = await fetch(`${BASE_ADMIN_URL}/medios`);

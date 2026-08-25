@@ -383,7 +383,7 @@ export default async function AdminDashboardPage() {
 
         {/* Card: Oficina & Horarios (Corte 2) */}
         <Link
-          href="/oficina"
+          href="/contacto/oficina"
           className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/50 shadow-sm transition-all duration-200 flex flex-col justify-between"
         >
           <div>

@@ -9,6 +9,8 @@ export interface OfficeMapSectionProps {
   page: ContactPageDTO;
   officeGoogleMapsUrl?: string;
   officeAddress?: string;
+  officeLatitude?: number;
+  officeLongitude?: number;
   whatsappPhone?: string;
   className?: string;
 }
@@ -17,10 +19,19 @@ export function OfficeMapSection({
   page,
   officeGoogleMapsUrl,
   officeAddress,
+  officeLatitude,
+  officeLongitude,
   whatsappPhone = DEFAULT_WHATSAPP_PHONE,
   className = "",
 }: OfficeMapSectionProps) {
   if (!page.officeSectionTitle) return null;
+
+  // Coordenadas exactas > dirección en texto: el geocodificador de "output=embed"
+  // puede desviarse con direcciones de oficina/piso específico dentro de un edificio.
+  const mapQuery =
+    officeLatitude != null && officeLongitude != null
+      ? `${officeLatitude},${officeLongitude}`
+      : officeAddress || page.officeMapPinSubtitle || "";
 
   return (
     <section className={`relative w-full overflow-hidden bg-atmosphere-pale-sky py-16 sm:py-20 lg:py-24 ${className}`}>
@@ -47,7 +58,7 @@ export function OfficeMapSection({
           <div className="lg:col-span-7">
             <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[32px] border border-neutral-border bg-surface-ivory">
               <iframe
-                src={`https://www.google.com/maps?q=${encodeURIComponent(officeAddress || page.officeMapPinSubtitle || "")}&output=embed`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
                 className="absolute inset-0 h-full w-full border-0"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"

@@ -621,6 +621,8 @@ export interface PublicContactResponse {
   officeAddress: string;
   officeHours: string;
   officeGoogleMapsUrl?: string;
+  officeLatitude?: number;
+  officeLongitude?: number;
 }
 
 // Search DTOs (Corte 11)

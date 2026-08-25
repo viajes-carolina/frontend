@@ -83,9 +83,9 @@ export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
   country: "Perú",
   postalCode: "15074",
   referenceLandmark: "A media cuadra del Parque Kennedy",
-  latitude: -12.1215430,
-  longitude: -77.0298760,
-  googleMapsUrl: "https://maps.google.com/?q=Miraflores,Lima,Peru",
+  latitude: -12.058318001300801,
+  longitude: -77.04422505767273,
+  googleMapsUrl: "https://maps.app.goo.gl/e915tVtd7TCCUFqz7",
   scheduleWeekdays: "Lunes a Viernes: 9:00 AM – 7:00 PM",
   scheduleSaturdays: "Sábados: 9:00 AM – 2:00 PM",
   active: true,
@@ -1173,6 +1173,8 @@ export function getMockPublicContact(): PublicContactResponse {
     officeAddress: `${MOCK_OFFICE_LOCATION.addressLine}, ${MOCK_OFFICE_LOCATION.district}, ${MOCK_OFFICE_LOCATION.city}`,
     officeHours: MOCK_OFFICE_LOCATION.scheduleWeekdays,
     officeGoogleMapsUrl: MOCK_OFFICE_LOCATION.googleMapsUrl,
+    officeLatitude: MOCK_OFFICE_LOCATION.latitude,
+    officeLongitude: MOCK_OFFICE_LOCATION.longitude,
   };
 }
 

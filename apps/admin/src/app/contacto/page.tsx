@@ -2,9 +2,7 @@
 
 import React from "react";
 import { useAdminContact } from "../../hooks/useAdminContact";
-import { useAdminGoogleMapsLink } from "../../hooks/useAdminGoogleMapsLink";
 import { ContactSettingsForm } from "./ContactSettingsForm";
-import { GoogleMapsLinkCard } from "./GoogleMapsLinkCard";
 import { Button, ArrowUpRightIcon } from "@vc/ui";
 
 export default function AdminContactPage() {
@@ -21,15 +19,6 @@ export default function AdminContactPage() {
     error,
     handleSaveSettings,
   } = useAdminContact();
-
-  const {
-    googleMapsUrl,
-    setGoogleMapsUrl,
-    saving: savingMapsUrl,
-    saveSuccess: mapsUrlSaveSuccess,
-    error: mapsUrlError,
-    handleSave: handleSaveMapsUrl,
-  } = useAdminGoogleMapsLink();
 
   if (loading) {
     return (
@@ -78,15 +67,6 @@ export default function AdminContactPage() {
           ⚠️ {error}
         </div>
       )}
-
-      <GoogleMapsLinkCard
-        googleMapsUrl={googleMapsUrl}
-        onChange={setGoogleMapsUrl}
-        onSave={handleSaveMapsUrl}
-        saving={savingMapsUrl}
-        saveSuccess={mapsUrlSaveSuccess}
-        error={mapsUrlError}
-      />
 
       <ContactSettingsForm
         formData={formData}
