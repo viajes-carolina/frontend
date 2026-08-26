@@ -4,8 +4,8 @@ import React from "react";
 import Image from "next/image";
 import { PromotionDTO } from "@vc/api-client";
 import { Button, CheckIcon, ImageIcon, TrashIcon } from "@vc/ui";
-import { useAdminPromotionsCatalog } from "../../../hooks/useAdminPromotionsCatalog";
-import { CreatePromotionModal } from "./CreatePromotionModal";
+import { useAdminPromotionsCatalog } from "../../../../hooks/useAdminPromotionsCatalog";
+import { CreatePromotionModal } from "../CreatePromotionModal";
 
 export interface PromotionsCatalogPanelProps {
   initialPromotions: PromotionDTO[];

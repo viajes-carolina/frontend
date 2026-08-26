@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, CloseIcon } from "@vc/ui";
+import { Button, CloseIcon, FormField } from "@vc/ui";
 import { HeroPhotoSlot } from "../../../components/HeroPhotoSlot";
 import { slugify } from "../../../lib/promotionPricing";
 import type { MediaAssetDTO } from "@vc/api-client";
@@ -106,18 +106,17 @@ export function CreatePromotionModal({
 
         {/* Form Body */}
         <form onSubmit={onSubmit} className="space-y-5">
+          {/* Section: Contenido */}
+          <p className="text-xs font-bold text-brand-navy uppercase tracking-wider">Contenido</p>
+
           {/* Title */}
           <div>
-            <label htmlFor="promoTitle" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-              Título del Paquete
-            </label>
-            <input
-              id="promoTitle"
+            <FormField
+              label="Título del Paquete"
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ej: Cartagena: Donde el mar te espera"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
               required
             />
             {title.trim() && (
@@ -144,94 +143,117 @@ export function CreatePromotionModal({
           {/* Destino / Ciudad de salida */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="promoDestination" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Destino (Ciudad, País)
-              </label>
-              <input
-                id="promoDestination"
+              <FormField
+                label="Destino (Ciudad, País)"
                 type="text"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder="Cartagena de Indias, Colombia"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="promoDepartureCity" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Ciudad de Salida
-              </label>
-              <input
-                id="promoDepartureCity"
+              <FormField
+                label="Ciudad de Salida"
                 type="text"
                 value={departureCity}
                 onChange={(e) => setDepartureCity(e.target.value)}
                 placeholder="Lima"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
               />
             </div>
           </div>
 
+          {/* Summary */}
+          <div>
+            <FormField
+              label="Resumen Descriptivo"
+              multiline
+              rows={2}
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder="Disfruta del encanto caribeño con playas de arena cálida..."
+              required
+            />
+          </div>
+
+          {/* Inclusions & Exclusions */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <FormField
+                label="Inclusiones (una por línea)"
+                multiline
+                rows={4}
+                value={inclusionsInput}
+                onChange={(e) => setInclusionsInput(e.target.value)}
+                placeholder={"✈️ Ticket aéreo Lima - Buenos Aires - Lima\n🏨 Hotel 4 estrellas con desayuno\n🚐 Traslados aeropuerto - hotel"}
+              />
+            </div>
+
+            <div>
+              <FormField
+                label="Exclusiones (una por línea)"
+                multiline
+                rows={4}
+                value={exclusionsInput}
+                onChange={(e) => setExclusionsInput(e.target.value)}
+                placeholder={"❌ Gastos no especificados\n❌ Tarjeta de asistencia médica opcional"}
+              />
+            </div>
+          </div>
+
+          {/* Section: Precio & Fechas */}
+          <p className="text-xs font-bold text-brand-navy uppercase tracking-wider pt-2 border-t border-neutral-border">
+            Precio & Fechas
+          </p>
+
           {/* Pricing & Duration */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border">
             <div>
-              <label htmlFor="promoPriceUsd" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Precio (USD $)
-              </label>
-              <input
-                id="promoPriceUsd"
+              <FormField
+                label="Precio (USD $)"
                 type="number"
                 value={priceUsd}
                 onChange={(e) => setPriceUsd(e.target.value)}
                 placeholder="429"
                 min={0}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent bg-white"
+                className="bg-white"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="promoPricePen" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Precio Aprox. (PEN S/)
-              </label>
-              <input
-                id="promoPricePen"
+              <FormField
+                label="Precio Aprox. (PEN S/)"
                 type="number"
                 value={pricePen}
                 onChange={(e) => setPricePen(e.target.value)}
                 placeholder="1590"
                 min={0}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent bg-white"
+                className="bg-white"
               />
             </div>
 
             <div>
-              <label htmlFor="promoDurationDays" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Días
-              </label>
-              <input
-                id="promoDurationDays"
+              <FormField
+                label="Días"
                 type="number"
                 value={durationDays}
                 onChange={(e) => setDurationDays(Number(e.target.value))}
                 min={1}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent bg-white"
+                className="bg-white"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="promoDurationNights" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Noches
-              </label>
-              <input
-                id="promoDurationNights"
+              <FormField
+                label="Noches"
                 type="number"
                 value={durationNights}
                 onChange={(e) => setDurationNights(Number(e.target.value))}
                 min={0}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent bg-white"
+                className="bg-white"
                 required
               />
             </div>
@@ -240,91 +262,37 @@ export function CreatePromotionModal({
           {/* Vigencia */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="promoValidFrom" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Vigencia Desde (opcional)
-              </label>
-              <input
-                id="promoValidFrom"
+              <FormField
+                label="Vigencia Desde (opcional)"
                 type="date"
                 value={validFrom}
                 onChange={(e) => setValidFrom(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
               />
             </div>
 
             <div>
-              <label htmlFor="promoValidUntil" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Vigencia Hasta (opcional)
-              </label>
-              <input
-                id="promoValidUntil"
+              <FormField
+                label="Vigencia Hasta (opcional)"
                 type="date"
                 value={validUntil}
                 onChange={(e) => setValidUntil(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
               />
             </div>
           </div>
 
-          {/* Summary */}
-          <div>
-            <label htmlFor="promoSummary" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-              Resumen Descriptivo
-            </label>
-            <textarea
-              id="promoSummary"
-              rows={2}
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="Disfruta del encanto caribeño con playas de arena cálida..."
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
-              required
-            />
-          </div>
-
-          {/* Inclusions & Exclusions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="promoInclusions" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Inclusiones (una por línea)
-              </label>
-              <textarea
-                id="promoInclusions"
-                rows={4}
-                value={inclusionsInput}
-                onChange={(e) => setInclusionsInput(e.target.value)}
-                placeholder={"✈️ Ticket aéreo Lima - Buenos Aires - Lima\n🏨 Hotel 4 estrellas con desayuno\n🚐 Traslados aeropuerto - hotel"}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="promoExclusions" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Exclusiones (una por línea)
-              </label>
-              <textarea
-                id="promoExclusions"
-                rows={4}
-                value={exclusionsInput}
-                onChange={(e) => setExclusionsInput(e.target.value)}
-                placeholder={"❌ Gastos no especificados\n❌ Tarjeta de asistencia médica opcional"}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
-              />
-            </div>
-          </div>
+          {/* Section: Mensaje de WhatsApp */}
+          <p className="text-xs font-bold text-brand-navy uppercase tracking-wider pt-2 border-t border-neutral-border">
+            Mensaje de WhatsApp
+          </p>
 
           {/* WhatsApp Message Template */}
           <div>
-            <label htmlFor="promoWhatsapp" className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-              Plantilla de Mensaje de WhatsApp (opcional)
-            </label>
-            <input
-              id="promoWhatsapp"
+            <FormField
+              label="Plantilla de Mensaje de WhatsApp (opcional)"
               type="text"
               value={whatsappTemplate}
               onChange={(e) => setWhatsappTemplate(e.target.value)}
               placeholder="Hola Viajes Carolina, me interesa la promoción..."
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
           </div>
 

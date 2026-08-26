@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, CloseIcon } from "@vc/ui";
+import { Button, CloseIcon, FormField } from "@vc/ui";
 
 export interface FaqFormModalProps {
   isOpen: boolean;
@@ -41,7 +41,7 @@ export function FaqFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
       <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-neutral-border p-6 sm:p-8 space-y-6 my-8">
-        
+
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-neutral-border">
           <div>
@@ -64,58 +64,47 @@ export function FaqFormModal({
         {/* Form Body */}
         <form onSubmit={onSubmit} className="space-y-5">
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-              Pregunta Frecuente
-            </label>
-            <input
+            <FormField
+              label="Pregunta Frecuente"
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="¿La asesoría para cotizar mi viaje tiene algún costo?"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
               required
             />
           </div>
 
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-              Respuesta Detallada
-            </label>
-            <textarea
+            <FormField
+              label="Respuesta Detallada"
+              multiline
               rows={4}
               value={answer}
               onChange={(e) => setAnswer(e.target.value)}
               placeholder="No, nuestra asesoría personalizada por WhatsApp o en oficina es 100% gratuita..."
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
               required
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Categoría
-              </label>
-              <input
+              <FormField
+                label="Categoría"
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="Asesoría y Cotización"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
             </div>
 
             <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Orden de Visualización
-              </label>
-              <input
+              <FormField
+                label="Orden de Visualización"
                 type="number"
                 value={displayOrder}
                 onChange={(e) => setDisplayOrder(Number(e.target.value))}
                 min={0}
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
             </div>

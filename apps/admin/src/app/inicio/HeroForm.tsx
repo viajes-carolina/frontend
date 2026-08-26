@@ -4,12 +4,19 @@ import React from "react";
 import Image from "next/image";
 import { HomeHeroDTO } from "@vc/api-client";
 import { useAdminHomeHero } from "../../hooks/useAdminHomeHero";
-import { Button, CheckIcon } from "@vc/ui";
+import { Button, CheckIcon, ChevronDownIcon, FormField } from "@vc/ui";
 import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 
 export interface HeroFormProps {
   initialHero: HomeHeroDTO;
 }
+
+const ANCHOR_LINKS = [
+  { id: "titulares", label: "Titulares" },
+  { id: "botones", label: "Botones" },
+  { id: "confianza", label: "Confianza" },
+  { id: "fotos", label: "Fotos" },
+];
 
 export function HeroForm({ initialHero }: HeroFormProps) {
   const {
@@ -48,7 +55,7 @@ export function HeroForm({ initialHero }: HeroFormProps) {
     : "/media/demo-cartagena-caribe.webp";
 
   return (
-    <form onSubmit={handleSave} className="space-y-8 max-w-4xl">
+    <form onSubmit={handleSave} className="space-y-8 max-w-4xl pb-24 scroll-smooth">
       {/* Notifications */}
       {statusMessage && (
         <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3">
@@ -107,12 +114,28 @@ export function HeroForm({ initialHero }: HeroFormProps) {
         </div>
 
         <div className="mt-5 pt-3 border-t border-neutral-border text-[11px] text-neutral-muted font-inter">
+          <p className="mb-1">
+            Controla qué parte de la foto se ve primero al recortarla — ajústalo abajo, en la sección de fotos.
+          </p>
           Punto focal de la foto principal: <strong>X {backgroundFocalX || 50}% · Y {backgroundFocalY || 50}%</strong> — las 3 fotos de apoyo se configuran más abajo, en &quot;Collage de fotos de clientes&quot;.
         </div>
       </div>
 
+      {/* Nav de anclas internas */}
+      <nav aria-label="Navegación interna del formulario de Hero" className="flex flex-wrap gap-2">
+        {ANCHOR_LINKS.map((link) => (
+          <a
+            key={link.id}
+            href={`#${link.id}`}
+            className="px-3.5 py-1.5 rounded-full bg-white border border-neutral-border font-sora text-xs font-bold text-brand-navy hover:border-brand-accent hover:bg-neutral-surface transition-colors"
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
+
       {/* Section 1: Headline & Main Copy */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+      <div id="titulares" className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
         <div>
           <h2 className="font-sora font-bold text-lg text-brand-navy">
             1. Titulares & Mensaje Principal (Hero Display)
@@ -125,43 +148,34 @@ export function HeroForm({ initialHero }: HeroFormProps) {
         <div className="space-y-4">
           {/* Badge */}
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Insignia Superior (Pill Eyebrow)
-            </label>
-            <input
+            <FormField
+              label="Insignia Superior (Pill Eyebrow)"
               type="text"
               value={eyebrowText}
               onChange={(e) => setEyebrowText(e.target.value)}
               placeholder="Ej: Empieza con una conversación"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
           </div>
 
           {/* Title and Accent */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-                Título Principal (Blanco)
-              </label>
-              <input
+              <FormField
+                label="Título Principal (Blanco)"
                 type="text"
                 value={titleHighlight}
                 onChange={(e) => setTitleHighlight(e.target.value)}
                 placeholder="Ej: Tu viaje comienza"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
             </div>
             <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-                Texto de Acento (Naranja Sunset)
-              </label>
-              <input
+              <FormField
+                label="Texto de Acento (Naranja Sunset)"
                 type="text"
                 value={titleAccent}
                 onChange={(e) => setTitleAccent(e.target.value)}
                 placeholder="Ej: antes de despegar"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
             </div>
@@ -169,15 +183,13 @@ export function HeroForm({ initialHero }: HeroFormProps) {
 
           {/* Description */}
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Descripción de Acompañamiento
-            </label>
-            <textarea
+            <FormField
+              label="Descripción de Acompañamiento"
+              multiline
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Desde la primera idea hasta tu regreso, una asesora te acompaña..."
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
               required
             />
           </div>
@@ -185,7 +197,7 @@ export function HeroForm({ initialHero }: HeroFormProps) {
       </div>
 
       {/* Section 2: Actions & WhatsApp */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+      <div id="botones" className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
         <div>
           <h2 className="font-sora font-bold text-lg text-brand-navy">
             2. Botones de Acción & Conversación
@@ -197,59 +209,47 @@ export function HeroForm({ initialHero }: HeroFormProps) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Texto del Botón WhatsApp
-            </label>
-            <input
+            <FormField
+              label="Texto del Botón WhatsApp"
               type="text"
               value={whatsappCtaText}
               onChange={(e) => setWhatsappCtaText(e.target.value)}
               placeholder="Ej: Cuéntame tu viaje"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
               required
             />
           </div>
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Mensaje Predefinido para WhatsApp
-            </label>
-            <input
+            <FormField
+              label="Mensaje Predefinido para WhatsApp"
               type="text"
               value={whatsappMessageOverride}
               onChange={(e) => setWhatsappMessageOverride(e.target.value)}
               placeholder="Ej: Hola Viajes Carolina, quiero empezar a planear mi próximo viaje."
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
           </div>
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Texto Botón Secundario (Opcional)
-            </label>
-            <input
+            <FormField
+              label="Texto Botón Secundario (Opcional)"
               type="text"
               value={secondaryCtaText}
               onChange={(e) => setSecondaryCtaText(e.target.value)}
               placeholder="Ej: Explorar promociones"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
           </div>
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Enlace Botón Secundario (URL o Ancla)
-            </label>
-            <input
+            <FormField
+              label="Enlace Botón Secundario (URL o Ancla)"
               type="text"
               value={secondaryCtaUrl}
               onChange={(e) => setSecondaryCtaUrl(e.target.value)}
               placeholder="Ej: #promociones o /promociones"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
           </div>
         </div>
       </div>
 
       {/* Section 3: Trust Indicators */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+      <div id="confianza" className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
         <div>
           <h2 className="font-sora font-bold text-lg text-brand-navy">
             3. Línea de Confianza
@@ -260,43 +260,42 @@ export function HeroForm({ initialHero }: HeroFormProps) {
         </div>
 
         <div>
-          <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-            Texto de confianza (con cifra real, no inventada)
-          </label>
-          <input
+          <FormField
+            label="Texto de confianza (con cifra real, no inventada)"
             type="text"
             value={trustStatText}
             onChange={(e) => setTrustStatText(e.target.value)}
             placeholder="Ej: Más de 1,000 viajeros han confiado en nosotros para vivir recuerdos inolvidables."
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
           />
         </div>
 
-        <div className="pt-4 border-t border-neutral-border">
-          <p className="font-inter text-xs text-neutral-muted mb-3">
+        <details className="group pt-4 border-t border-neutral-border">
+          <summary className="flex items-center gap-2 cursor-pointer select-none list-none font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted">
+            <ChevronDownIcon size={14} className="shrink-0 transition-transform group-open:rotate-180" />
+            Campos heredados (sin uso actual en el Hero)
+          </summary>
+
+          <p className="font-inter text-xs text-neutral-muted mt-3 mb-3">
             Los 3 pilares de abajo (Asesoría sin costo, etc.) quedan guardados pero no se muestran en el Hero actual — se usaban en un diseño anterior. Se conservan por si se necesitan en otra sección.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[0, 1, 2].map((idx) => (
               <div key={idx}>
-                <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-                  Pilar #{idx + 1}
-                </label>
-                <input
+                <FormField
+                  label={`Pilar #${idx + 1}`}
                   type="text"
                   value={trustIndicators[idx] || ""}
                   onChange={(e) => updateTrustIndicator(idx, e.target.value)}
                   placeholder={`Pilar ${idx + 1}`}
-                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 />
               </div>
             ))}
           </div>
-        </div>
+        </details>
       </div>
 
       {/* Section 4: Collage de fotos de clientes */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+      <div id="fotos" className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
         <div>
           <h2 className="font-sora font-bold text-lg text-brand-navy">
             4. Collage de fotos de clientes
@@ -349,16 +348,20 @@ export function HeroForm({ initialHero }: HeroFormProps) {
         </div>
       </div>
 
-      {/* Submit Button */}
-      <div className="flex justify-end gap-4 pt-4">
-        <Button
-          variant="primary"
-          size="lg"
-          type="submit"
-          disabled={isSaving}
-        >
-          {isSaving ? "Publicando Cambios..." : "Guardar y Publicar Hero"}
-        </Button>
+      {/* Submit Button — fijo al fondo del viewport, siempre alcanzable sin scrollear hasta el final */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-border bg-neutral-soft/95 backdrop-blur lg:left-64">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8">
+          <div className="flex justify-end gap-4 py-4 max-w-4xl">
+            <Button
+              variant="primary"
+              size="lg"
+              type="submit"
+              disabled={isSaving}
+            >
+              {isSaving ? "Publicando Cambios..." : "Guardar y Publicar Hero"}
+            </Button>
+          </div>
+        </div>
       </div>
     </form>
   );

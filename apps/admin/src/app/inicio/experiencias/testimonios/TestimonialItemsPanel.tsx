@@ -3,10 +3,10 @@
 import React from "react";
 import Image from "next/image";
 import { TestimonialDTO } from "@vc/api-client";
-import { useAdminTestimonialItems } from "../../../hooks/useAdminTestimonialItems";
-import { useMediaPicker } from "../../../hooks/useMediaPicker";
+import { useAdminTestimonialItems } from "../../../../hooks/useAdminTestimonialItems";
+import { useMediaPicker } from "../../../../hooks/useMediaPicker";
 import { Button, PlusIcon, EditIcon, TrashIcon, CheckIcon, StarIcon } from "@vc/ui";
-import { TestimonialFormModal } from "./TestimonialFormModal";
+import { TestimonialFormModal } from "../TestimonialFormModal";
 
 export interface TestimonialItemsPanelProps {
   initialTestimonials: TestimonialDTO[];

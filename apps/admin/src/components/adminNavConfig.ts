@@ -46,10 +46,13 @@ export const ADMIN_NAV: AdminNavCategory[] = [
         children: [
           { label: "Hero Principal", href: "/inicio/hero" },
           { label: "Encabezado de Promociones", href: "/inicio/promociones" },
+          { label: "Catálogo de Promociones", href: "/inicio/promociones/catalogo" },
           { label: "Inspiración desde Blog", href: "/inicio/inspiracion" },
           { label: "Pausa Conversacional", href: "/inicio/pausa" },
           { label: "Encabezado de Experiencias", href: "/inicio/experiencias" },
+          { label: "Testimonios", href: "/inicio/experiencias/testimonios" },
           { label: "Encabezado de FAQ", href: "/inicio/preguntas-frecuentes" },
+          { label: "Preguntas Frecuentes", href: "/inicio/preguntas-frecuentes/preguntas" },
         ],
       },
       {

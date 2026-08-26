@@ -3,8 +3,8 @@
 import React from "react";
 import { FaqItemDTO } from "@vc/api-client";
 import { Button, PlusIcon, EditIcon, TrashIcon, CheckIcon } from "@vc/ui";
-import { useAdminFaqItems } from "../../../hooks/useAdminFaqItems";
-import { FaqFormModal } from "./FaqFormModal";
+import { useAdminFaqItems } from "../../../../hooks/useAdminFaqItems";
+import { FaqFormModal } from "../FaqFormModal";
 
 export interface FaqItemsPanelProps {
   initialFaqs: FaqItemDTO[];

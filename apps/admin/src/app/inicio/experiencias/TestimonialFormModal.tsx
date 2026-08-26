@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Button, CloseIcon, ImageIcon, MediaPickerModal, StarIcon } from "@vc/ui";
+import { Button, CloseIcon, FormField, ImageIcon, MediaPickerModal, StarIcon } from "@vc/ui";
 import { MediaAssetDTO } from "@vc/api-client";
 
 export interface TestimonialFormModalProps {
@@ -73,7 +73,7 @@ export function TestimonialFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
       <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-neutral-border p-6 sm:p-8 space-y-6 my-8">
-        
+
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-4 border-b border-neutral-border">
           <div>
@@ -97,44 +97,35 @@ export function TestimonialFormModal({
         <form onSubmit={onSubmit} className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Nombre del Cliente o Familia
-              </label>
-              <input
+              <FormField
+                label="Nombre del Cliente o Familia"
                 type="text"
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder="Mariana & Gonzalo Torres"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
             </div>
 
             <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Ubicación o Procedencia
-              </label>
-              <input
+              <FormField
+                label="Ubicación o Procedencia"
                 type="text"
                 value={clientLocation}
                 onChange={(e) => setClientLocation(e.target.value)}
                 placeholder="Lima, Perú"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Destino o Tipo de Viaje
-              </label>
-              <input
+              <FormField
+                label="Destino o Tipo de Viaje"
                 type="text"
                 value={tripDestination}
                 onChange={(e) => setTripDestination(e.target.value)}
                 placeholder="Luna de Miel en Punta Cana"
-                className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
                 required
               />
             </div>
@@ -161,15 +152,13 @@ export function TestimonialFormModal({
           </div>
 
           <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-              Cita / Testimonio del Cliente
-            </label>
-            <textarea
+            <FormField
+              label="Cita / Testimonio del Cliente"
+              multiline
               rows={3}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Desde que escribimos por WhatsApp nos atendieron con muchísima paciencia..."
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent resize-none"
               required
             />
           </div>
