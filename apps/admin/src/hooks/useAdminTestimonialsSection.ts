@@ -52,16 +52,6 @@ export function useAdminTestimonialsSection(initialConfig?: HomeTestimonialsSect
     [updateField]
   );
 
-  const handleSelectPolaroidMedia = useCallback(
-    (media: MediaAssetDTO) => {
-      updateField("polaroidMediaId", media.id);
-      updateField("polaroidMediaUrl", media.storagePath);
-      updateField("polaroidFocalX", media.focalX || 50);
-      updateField("polaroidFocalY", media.focalY || 50);
-    },
-    [updateField]
-  );
-
   const saveConfig = useCallback(
     async (payload?: UpdateHomeTestimonialsSectionRequest) => {
       const dataToSave = payload || (config ? {
@@ -72,10 +62,6 @@ export function useAdminTestimonialsSection(initialConfig?: HomeTestimonialsSect
         blobMediaUrl: config.blobMediaUrl,
         blobFocalX: config.blobFocalX,
         blobFocalY: config.blobFocalY,
-        polaroidMediaId: config.polaroidMediaId,
-        polaroidMediaUrl: config.polaroidMediaUrl,
-        polaroidFocalX: config.polaroidFocalX,
-        polaroidFocalY: config.polaroidFocalY,
       } : null);
 
       if (!dataToSave) return;
@@ -106,7 +92,6 @@ export function useAdminTestimonialsSection(initialConfig?: HomeTestimonialsSect
     updateField,
     saveConfig,
     handleSelectBlobMedia,
-    handleSelectPolaroidMedia,
     refetch: fetchConfig,
   };
 }

@@ -688,6 +688,8 @@ export interface HomePromotionsSectionDTO {
   title: string;
   subtitle: string;
   bottomCtaQuestion: string;
+  bottomCtaEyebrow: string;
+  bottomCtaCopy: string;
   bottomCtaWhatsappText: string;
   bottomCtaWhatsappMessage?: string;
   mediaId?: number;
@@ -703,6 +705,8 @@ export interface UpdateHomePromotionsSectionRequest {
   title: string;
   subtitle: string;
   bottomCtaQuestion: string;
+  bottomCtaEyebrow: string;
+  bottomCtaCopy: string;
   bottomCtaWhatsappText: string;
   bottomCtaWhatsappMessage?: string;
   mediaId?: number;

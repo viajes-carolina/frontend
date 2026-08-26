@@ -19,7 +19,6 @@ export const TestimonialsSectionForm: React.FC<TestimonialsSectionFormProps> = (
     updateField,
     saveConfig,
     handleSelectBlobMedia,
-    handleSelectPolaroidMedia,
   } = useAdminTestimonialsSection(initialConfig);
 
   if (loading) {
@@ -68,31 +67,17 @@ export const TestimonialsSectionForm: React.FC<TestimonialsSectionFormProps> = (
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border">
-          <HeroPhotoSlot
-            variant="secondary"
-            label="Foto de Fondo (blob)"
-            mediaId={config.blobMediaId}
-            mediaUrl={config.blobMediaUrl}
-            focalX={config.blobFocalX}
-            focalY={config.blobFocalY}
-            onSelect={handleSelectBlobMedia}
-            modalTitle="Seleccionar Foto de Fondo de Experiencias"
-          />
-        </div>
-        <div className="p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border">
-          <HeroPhotoSlot
-            variant="secondary"
-            label="Foto Polaroid"
-            mediaId={config.polaroidMediaId}
-            mediaUrl={config.polaroidMediaUrl}
-            focalX={config.polaroidFocalX}
-            focalY={config.polaroidFocalY}
-            onSelect={handleSelectPolaroidMedia}
-            modalTitle="Seleccionar Foto Polaroid de Experiencias"
-          />
-        </div>
+      <div className="p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border">
+        <HeroPhotoSlot
+          variant="secondary"
+          label="Foto real del viajero"
+          mediaId={config.blobMediaId}
+          mediaUrl={config.blobMediaUrl}
+          focalX={config.blobFocalX}
+          focalY={config.blobFocalY}
+          onSelect={handleSelectBlobMedia}
+          modalTitle="Seleccionar Foto de Experiencias"
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6">

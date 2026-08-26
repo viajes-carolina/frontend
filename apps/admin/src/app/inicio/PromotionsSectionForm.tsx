@@ -3,7 +3,6 @@
 import React from "react";
 import type { HomePromotionsSectionDTO } from "@vc/api-client";
 import { useAdminPromotionsSection } from "../../hooks/useAdminPromotionsSection";
-import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 
 interface PromotionsSectionFormProps {
   initialConfig?: HomePromotionsSectionDTO;
@@ -17,7 +16,6 @@ export const PromotionsSectionForm: React.FC<PromotionsSectionFormProps> = ({ in
     error,
     success,
     updateField,
-    handleSelectMedia,
     saveConfig,
   } = useAdminPromotionsSection(initialConfig);
 
@@ -51,10 +49,12 @@ export const PromotionsSectionForm: React.FC<PromotionsSectionFormProps> = ({ in
           Encabezado de Promociones (sección 02)
         </h2>
         <p className="text-xs text-neutral-muted mt-1">
-          Título y descripción de la sección, más el CTA único de WhatsApp al final de las tarjetas. El título,
-          precio y fotos de cada promoción se crean más abajo en esta misma página — al crear una promoción se
-          publica automáticamente un post en la Página de Facebook, y desde ahí también puedes elegir cuáles
-          mostrar u ocultar en Inicio.
+          Título y descripción de la sección, más el cierre "Propuesta a medida" al final de las tarjetas. El
+          título, precio, foto e inclusiones de cada promoción se crean más abajo en esta misma página — la
+          tarjeta protagonista y las secundarias usan la foto de cada promoción (`featuredMediaUrl`); si una
+          promoción no tiene foto, se muestra un color de fondo en su lugar. Al crear una promoción se publica
+          automáticamente un post en la Página de Facebook, y desde ahí también puedes elegir cuáles mostrar u
+          ocultar en Inicio.
         </p>
       </div>
 
@@ -69,29 +69,6 @@ export const PromotionsSectionForm: React.FC<PromotionsSectionFormProps> = ({ in
           Configuración guardada exitosamente en el servidor.
         </div>
       )}
-
-      <div className="pt-2 space-y-3">
-        <div>
-          <h3 className="text-sm font-bold text-brand-navy">
-            Foto de fondo de la sección
-          </h3>
-          <p className="text-xs text-neutral-muted mt-1">
-            Foto grande del blob decorativo detrás de las tarjetas de promociones. Es independiente de las
-            promociones individuales (creadas más abajo) — se controla directamente aquí, igual que la
-            foto principal del Hero.
-          </p>
-        </div>
-        <HeroPhotoSlot
-          variant="main"
-          label="Foto de Fondo (blob)"
-          mediaId={config.mediaId}
-          mediaUrl={config.mediaUrl}
-          focalX={config.mediaFocalX}
-          focalY={config.mediaFocalY}
-          onSelect={handleSelectMedia}
-          modalTitle="Seleccionar Foto de Fondo de Promociones"
-        />
-      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="md:col-span-2 pt-2 border-t border-neutral-border">
@@ -138,20 +115,48 @@ export const PromotionsSectionForm: React.FC<PromotionsSectionFormProps> = ({ in
 
         <div className="md:col-span-2 pt-2 border-t border-neutral-border">
           <p className="text-xs font-bold text-brand-navy uppercase tracking-wider">
-            CTA único de cierre (panel navy después de las tarjetas)
+            Cierre "Propuesta a medida" (panel navy después de las tarjetas)
           </p>
         </div>
 
         <div className="md:col-span-2">
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Pregunta
+            Eyebrow
+          </label>
+          <input
+            type="text"
+            value={config.bottomCtaEyebrow}
+            onChange={(e) => updateField("bottomCtaEyebrow", e.target.value)}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
+            placeholder="SI NINGUNO ENCAJA EXACTAMENTE"
+            required
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+            Título
           </label>
           <input
             type="text"
             value={config.bottomCtaQuestion}
             onChange={(e) => updateField("bottomCtaQuestion", e.target.value)}
             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
-            placeholder="¿Cuál de estos viajes te gustaría vivir?"
+            placeholder="Cuéntanos qué imaginas y lo armamos contigo."
+            required
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+            Copy
+          </label>
+          <textarea
+            value={config.bottomCtaCopy}
+            onChange={(e) => updateField("bottomCtaCopy", e.target.value)}
+            rows={2}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
+            placeholder="Fechas, presupuesto y tipo de viaje: una asesora prepara opciones reales para ti."
             required
           />
         </div>

@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { BrandLogo } from "@vc/ui";
 import { AdminNav } from "./AdminNav";
+import { useAdminSessionGuard } from "../hooks/useAdminSessionGuard";
 
 // El login no debe verse dentro del "shell" del panel — sin sidebar, sin
 // nav — es la única ruta pública de apps/admin, antes de que exista sesión.
@@ -10,6 +11,7 @@ const ROUTES_WITHOUT_SHELL = ["/login"];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  useAdminSessionGuard();
 
   if (ROUTES_WITHOUT_SHELL.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
     return <>{children}</>;

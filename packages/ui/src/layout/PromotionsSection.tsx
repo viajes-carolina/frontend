@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useId } from "react";
+import React, { useState } from "react";
 import { PromotionDTO, SiteSettingsDTO, HomePromotionsSectionDTO } from "@vc/api-client";
 import { DEFAULT_WHATSAPP_PHONE } from "@vc/config";
 import { Reveal } from "../primitives/Reveal";
+import { ResponsiveImage } from "../primitives/ResponsiveImage";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
 
 export interface PromotionsSectionProps {
@@ -14,11 +15,13 @@ export interface PromotionsSectionProps {
 }
 
 const DEFAULT_CONFIG: HomePromotionsSectionDTO = {
-  badgeText: "02 · Viajes para empezar a imaginar",
-  title: "Algunas formas de vivir tu próximo viaje",
-  subtitle: "Experiencias que podemos ajustar a tus tiempos, compañía y presupuesto.",
-  bottomCtaQuestion: "¿Cuál de estos viajes te gustaría vivir?",
-  bottomCtaWhatsappText: "Cuéntanos cuál te gustó",
+  badgeText: "VIAJES LISTOS PARA COTIZAR",
+  title: "Elige una experiencia. Nosotros la adaptamos a ti.",
+  subtitle: "Paquetes que podemos ajustar a tus fechas, presupuesto y forma de viajar.",
+  bottomCtaQuestion: "Cuéntanos qué imaginas y lo armamos contigo.",
+  bottomCtaEyebrow: "SI NINGUNO ENCAJA EXACTAMENTE",
+  bottomCtaCopy: "Fechas, presupuesto y tipo de viaje: una asesora prepara opciones reales para ti.",
+  bottomCtaWhatsappText: "Quiero una propuesta a mi medida",
   bottomCtaWhatsappMessage: "Hola Viajes Carolina, me gustaría conversar sobre una de sus promociones.",
 };
 
@@ -28,121 +31,95 @@ function openWhatsApp(phone: string | undefined, message: string) {
   window.open(url, "_blank", "noopener,noreferrer");
 }
 
-// Ruta vertical (Desktop/Wide) — Figma "Ruta continua · Promociones · Vertical"
-// (nodes 401:36 / 409:37, idéntica entre ambos tramos). viewBox 150x760.
-const ROUTE_VERTICAL_PATH = "M92 0C26 128 132 214 70 342C20 447 132 526 72 662C57 696 60 730 82 760";
-
-// Ruta horizontal (Mobile/Tablet) — Figma "Ruta · 02 Descubrir" (nodes 396:832 /
-// 396:597), mismo trazo proporcionalmente escalado en ambos — un solo path.
-const ROUTE_HORIZONTAL_PATH = "M0.96 16.32C45.12 1.92 81.12 22.56 128.16 10.56C169.92 0 206.4 15.36 264 3.84";
-
-// Papel continuo hacia Blog — ola suave en la base de Promociones que se
-// mete en el color real de la siguiente sección (blanco en base/md, cielo
-// en xl), para que el cambio de fondo se sienta como marea, no un corte de
-// regla. Mismo criterio que las olas del Hero (WAVE_BLUE_PATH/WAVE_SAND_PATH).
-const WAVE_TO_BLOG_PATH = "M0 60C180 20 340 92 500 55C660 18 820 88 980 50C1140 12 1300 72 1440 38V120H0V60Z";
-
-// Ilustración "escaparate" — silueta orgánica con degradado cielo→atardecer y
-// trazo de ruta interior. `PromoBlob` recorta la foto de fondo configurada
-// directamente en la sección (`config.mediaUrl`, editable desde el admin de
-// Promociones, independiente de cuál promoción individual esté activa)
-// contra este mismo path vía `<clipPath>`; sin foto cargada cae a esta
-// ilustración degradada. 2 variantes reales exportadas de Figma, no la misma
-// forma reescalada: compacta (Mobile/Tablet, ~1.52:1) y panorámica (Desktop/
-// Wide, 1.7:1, nodes 396:370 / 409:45). Los paths tienen puntos de control
-// fuera de su propio viewBox (p.ej. x negativo) — el `<svg>` raíz necesita
-// `overflow: visible` explícito o el navegador recorta esa punta (default
-// UA es `overflow: hidden` en <svg>).
-const BLOB_COMPACT_PATH =
-  "M11.2499 40.5C36.8999 8.10002 95.8499 10.35 142.65 17.55C198.45 26.1 261.45 3.60002 307.8 34.65C339.75 56.25 323.1 109.35 320.4 148.95C317.7 189 279.45 207.45 231.75 202.95C179.55 198 145.35 214.65 92.2499 204.75C40.9499 195.3 7.1999 174.15 5.3999 131.85C3.5999 95.85 -11.2501 68.85 11.2499 40.5Z";
-const BLOB_COMPACT_ROUTE = "M25.2 165.6C73.35 123.3 108.45 152.55 152.1 107.55C189.45 69.3 226.35 102.6 302.85 40.95";
-const BLOB_COMPACT_DOT = { cx: 303.3, cy: 40.95, r: 5.4 };
-
-const BLOB_WIDE_PATH =
-  "M29.1096 93.75C95.4794 18.75 248.014 23.9583 369.11 40.625C513.493 60.4167 676.507 8.33333 796.438 80.2083C879.11 130.208 836.027 253.125 829.041 344.792C822.055 437.5 723.082 480.208 599.657 469.792C464.589 458.333 376.096 496.875 238.699 473.958C105.959 452.083 18.6301 403.125 13.9726 305.208C9.31507 221.875 -29.1096 159.375 29.1096 93.75Z";
-const BLOB_WIDE_ROUTE = "M65.2055 383.333C189.795 285.417 280.616 353.125 393.562 248.958C490.206 160.417 585.685 237.5 783.63 94.7917";
-const BLOB_WIDE_DOT = { cx: 784.795, cy: 94.7917, r: 13.5 };
-
-function PromoBlob({
-  variant,
-  className,
-  imageUrl,
-}: {
-  variant: "compact" | "wide";
-  className?: string;
-  imageUrl?: string;
-}) {
-  const isWide = variant === "wide";
-  const rawId = useId();
-  const gradientId = `promo-blob-${variant}-${rawId.replace(/:/g, "")}`;
-  const clipId = `promo-blob-clip-${variant}-${rawId.replace(/:/g, "")}`;
-  const [vbWidth, vbHeight] = isWide ? [850, 500] : [328.5, 216];
-  const blobPath = isWide ? BLOB_WIDE_PATH : BLOB_COMPACT_PATH;
-  // El path orgánico tiene puntos de control fuera de su propio viewBox
-  // (ver comentario arriba de BLOB_COMPACT_PATH) — `<image>` solo pinta
-  // dentro de su propia caja x/y/width/height, así que esa caja debe cubrir
-  // la extensión real del path (con margen), no el viewBox nominal, o el
-  // recorte final (vía clipPath) queda sin imagen que mostrar en esos bordes
-  // y se ve una línea recta en vez de la curva orgánica.
-  //
-  // `preserveAspectRatio="none"` (en vez de "xMidYMid slice"): probado
-  // empíricamente que "slice" no calcula el cover-fit correctamente contra
-  // esta caja con coordenadas negativas — deja huecos visibles a los lados
-  // aunque la caja sea generosa (confirmado inyectando un relleno magenta
-  // detrás de la imagen). "none" estira la imagen para llenar la caja
-  // exactamente, sin ese bug; el estiramiento resultante es leve (~13%)
-  // dado que la caja y la foto rara vez comparten el mismo aspect ratio.
-  const imgBox = isWide ? { x: -40, y: -20, w: 930, h: 540 } : { x: -20, y: -15, w: 370, h: 250 };
+function whatsappMessageFor(promo: PromotionDTO) {
   return (
-    <svg
-      viewBox={`0 0 ${vbWidth} ${vbHeight}`}
-      className={className}
-      fill="none"
-      aria-hidden="true"
-      style={{ overflow: "visible" }}
-    >
-      <defs>
-        <linearGradient id={gradientId} x1="8%" y1="7%" x2="83%" y2="100%" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#9FD5E8" />
-          <stop offset="0.52" stopColor="#E7D7B7" />
-          <stop offset="1" stopColor="#FFB76A" />
-        </linearGradient>
-        {imageUrl && (
-          <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-            <path d={blobPath} />
-          </clipPath>
-        )}
-      </defs>
-      {imageUrl ? (
-        <image
-          href={imageUrl}
-          x={imgBox.x}
-          y={imgBox.y}
-          width={imgBox.w}
-          height={imgBox.h}
-          preserveAspectRatio="none"
-          clipPath={`url(#${clipId})`}
-        />
-      ) : (
-        <path d={blobPath} fill={`url(#${gradientId})`} />
-      )}
-      <path
-        d={isWide ? BLOB_WIDE_ROUTE : BLOB_COMPACT_ROUTE}
-        opacity={0.75}
-        className="stroke-surface-ivory"
-        strokeWidth={isWide ? 4 : 1.8}
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
-      <circle {...(isWide ? BLOB_WIDE_DOT : BLOB_COMPACT_DOT)} className="fill-brand-accent" />
-    </svg>
+    promo.whatsappMessageTemplate ||
+    `Hola Viajes Carolina, me interesa la promoción "${promo.title}". ¿Tienen fechas disponibles?`
   );
 }
 
-function toMeta(promo: PromotionDTO, short = false) {
-  return short
-    ? `${promo.destination} · ${promo.durationDays} días`
-    : `${promo.destination} · ${promo.durationDays} días / ${promo.durationNights} noches`;
+// Papel continuo hacia Blog — misma ola full-bleed que ya usaba esta sección,
+// se conserva: es continuidad visual entre secciones, independiente del
+// rediseño interno de las tarjetas.
+const WAVE_TO_BLOG_PATH = "M0 60C180 20 340 92 500 55C660 18 820 88 980 50C1140 12 1300 72 1440 38V120H0V60Z";
+
+// Paleta de respaldo cuando la promoción no tiene featuredMediaUrl — en el
+// mismo orden que las tarjetas: protagonista, secundaria 1, secundaria 2.
+// Colores tomados del Figma "Promociones más vendible" (703:4 / 703:6).
+const FALLBACK_GRADIENTS = [
+  "bg-gradient-to-br from-[#66c2e8] via-[#1a82b8] via-40% to-[#0a527a]",
+  "bg-gradient-to-br from-[#faa159] to-[#a3402e]",
+  "bg-gradient-to-br from-[#3dab85] to-[#0d5245]",
+];
+
+function DestinationMedia({
+  promo,
+  gradientClass,
+  labelClassName,
+  showSunAccent = false,
+}: {
+  promo: PromotionDTO;
+  gradientClass: string;
+  labelClassName: string;
+  showSunAccent?: boolean;
+}) {
+  const hasPhoto = Boolean(promo.featuredMediaUrl);
+  return (
+    <div className={`relative size-full ${hasPhoto ? "" : gradientClass}`}>
+      {hasPhoto ? (
+        <ResponsiveImage
+          src={promo.featuredMediaUrl!}
+          alt={promo.destination || promo.title}
+          fill
+          objectFit="cover"
+          focalPoint={{ x: promo.featuredMediaFocalX ?? 50, y: promo.featuredMediaFocalY ?? 50 }}
+          className="!rounded-none"
+        />
+      ) : (
+        showSunAccent && (
+          <span
+            aria-hidden="true"
+            className="absolute right-[8%] top-[10%] size-[26%] rounded-full bg-brand-accent/85 blur-[1px]"
+          />
+        )
+      )}
+      {/* Velo para legibilidad del nombre del destino, tanto sobre foto real como sobre gradiente. */}
+      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/45 to-transparent" />
+      {promo.destination?.trim() && (
+        <p
+          className={`font-display absolute bottom-4 left-4 right-4 truncate font-semibold uppercase leading-none text-white sm:bottom-5 sm:left-6 ${labelClassName}`}
+          style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+        >
+          {shortDestination(promo.destination)}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// El overlay grande sobre la foto quiere el nombre corto del destino ("PUNTA
+// CANA"), no la ubicación completa ("Punta Cana, República Dominicana") que
+// guarda `destination` — esa versión completa sí se usa en textos chicos.
+function shortDestination(destination: string) {
+  return destination.split(",")[0].trim();
+}
+
+function toDurationLabel(promo: PromotionDTO) {
+  return `${promo.durationDays} días / ${promo.durationNights} noches`;
+}
+
+// El resumen de una promoción suele venir pegado tal cual del post de
+// Facebook original: un solo párrafo largo con emojis que funcionan como
+// viñetas (✈️ vuelo, 🏨 hotel, 💰 precio...). Partimos en una línea nueva
+// antes de cada emoji para que se lea como lista en vez de un bloque
+// compacto — no hay forma de saber la intención real del texto libre, pero
+// esta heurística cubre bien el patrón real de estos textos.
+function formatOfferSummary(text: string): string[] {
+  return text
+    .replace(/\s*(\p{Extended_Pictographic})/gu, "\n$1")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
 function FeaturedPromoCard({
@@ -154,80 +131,135 @@ function FeaturedPromoCard({
   whatsappPhone?: string;
   className?: string;
 }) {
-  const message =
-    promo.whatsappMessageTemplate ||
-    `Hola Viajes Carolina, me interesa la promoción "${promo.title}". ¿Tienen fechas disponibles?`;
+  const [showExclusions, setShowExclusions] = useState(false);
+  const hasExclusions = promo.exclusions && promo.exclusions.length > 0;
+
   return (
-    <div
-      className={`flex flex-col gap-2.5 rounded-[28px] xl:rounded-[22px] bg-white/70 p-6 shadow-[0_18px_40px_-8px_rgba(20,41,59,0.18)] backdrop-blur-md ${className}`}
-    >
-      {promo.destination?.trim() && (
-        <span className="font-sora text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
-          {toMeta(promo)}
+    <div className={className}>
+      <div className="overflow-hidden rounded-[32px] aspect-[4/3] sm:aspect-[16/10]">
+        <DestinationMedia
+          promo={promo}
+          gradientClass={FALLBACK_GRADIENTS[0]}
+          labelClassName="text-3xl sm:text-4xl lg:text-[46px]"
+          showSunAccent
+        />
+      </div>
+
+      <div className="relative z-10 -mt-16 mx-4 flex flex-col gap-3 rounded-[26px] bg-white/95 p-6 shadow-[0_18px_40px_-8px_rgba(20,41,59,0.2)] backdrop-blur-md sm:-mt-20 sm:mx-6 sm:p-7">
+        <span className="w-fit rounded-full bg-brand-accent px-3.5 py-1.5 font-sora text-[10px] font-semibold uppercase tracking-wider text-white">
+          Más solicitado
         </span>
-      )}
-      <h3 className="font-display text-[28px] font-semibold leading-[32px] text-brand-navy">{promo.title}</h3>
-      {promo.summary?.trim() && (
-        <p className="font-inter text-[13px] leading-[19px] text-brand-navy">{promo.summary}</p>
-      )}
-      {Number(promo.priceUsd) > 0 && (
-        <p className="font-inter text-[17px] font-semibold text-brand-navy">
-          Desde US$ {Number(promo.priceUsd).toLocaleString()}
-        </p>
-      )}
-      <button
-        type="button"
-        onClick={() => openWhatsApp(whatsappPhone, message)}
-        className="mt-1 w-fit font-inter text-[13px] font-semibold text-brand-navy underline decoration-brand-navy/30 underline-offset-2 transition-colors hover:text-brand-accent hover:decoration-brand-accent"
-      >
-        Cotizar este viaje →
-      </button>
+
+        <h3 className="font-display text-[26px] font-semibold leading-[1.1] text-brand-navy sm:text-[30px]">
+          {promo.title}
+        </h3>
+
+        <p className="font-inter text-sm font-medium text-brand-navy">{toDurationLabel(promo)}</p>
+
+        {promo.summary?.trim() && (
+          <div className="flex flex-col gap-1">
+            {formatOfferSummary(promo.summary).map((line, i) => (
+              <p key={i} className="font-inter text-sm leading-[1.5] text-brand-navy/80">
+                {line}
+              </p>
+            ))}
+          </div>
+        )}
+
+        {promo.inclusions?.length > 0 && (
+          <ul className="flex flex-col gap-1 font-inter text-[13px] leading-[1.6] text-brand-navy">
+            {promo.inclusions.map((item) => (
+              <li key={item} className="flex items-start gap-1.5">
+                <span aria-hidden="true" className="text-brand-whatsapp">✓</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {Number(promo.priceUsd) > 0 && (
+          <p className="font-inter text-lg font-semibold text-brand-navy">
+            Desde US$ {Number(promo.priceUsd).toLocaleString()} por persona
+          </p>
+        )}
+
+        <div className="mt-1 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <WhatsAppButton
+            size="md"
+            phone={whatsappPhone}
+            message={whatsappMessageFor(promo)}
+            className="w-full sm:w-auto"
+          >
+            Cotizar {promo.destination ? shortDestination(promo.destination) : "este viaje"} por WhatsApp
+          </WhatsAppButton>
+
+          {hasExclusions && (
+            <button
+              type="button"
+              onClick={() => setShowExclusions((v) => !v)}
+              aria-expanded={showExclusions}
+              className="font-inter text-[13px] font-semibold text-brand-navy underline decoration-brand-navy/30 underline-offset-2 transition-colors hover:text-brand-accent hover:decoration-brand-accent"
+            >
+              {showExclusions ? "Ocultar detalles ←" : "Ver qué incluye →"}
+            </button>
+          )}
+        </div>
+
+        {showExclusions && hasExclusions && (
+          <ul className="flex flex-col gap-1 border-t border-brand-navy/10 pt-3 font-inter text-[13px] leading-[1.6] text-brand-navy/70">
+            <li className="font-semibold text-brand-navy/80">No incluye:</li>
+            {promo.exclusions.map((item) => (
+              <li key={item}>· {item}</li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
 
 function SecondaryPromoCard({
   promo,
+  gradientClass,
   whatsappPhone,
   className = "",
 }: {
   promo: PromotionDTO;
+  gradientClass: string;
   whatsappPhone?: string;
   className?: string;
 }) {
-  const message =
-    promo.whatsappMessageTemplate ||
-    `Hola Viajes Carolina, me interesa la promoción "${promo.title}". ¿Tienen fechas disponibles?`;
   return (
-    <button
-      type="button"
-      onClick={() => openWhatsApp(whatsappPhone, message)}
-      aria-label={`Cotizar ${promo.title} por WhatsApp`}
-      className={`group block w-full text-left rounded-xl border border-dashed border-brand-navy/20 bg-neutral-white/90 px-5 py-[22px] transition-colors hover:border-brand-accent/50 ${className}`}
+    <div
+      className={`flex overflow-hidden rounded-[24px] border border-neutral-border bg-neutral-white ${className}`}
     >
-      {promo.destination?.trim() && (
+      <div className="w-[112px] shrink-0 sm:w-[140px] lg:w-[156px]">
+        <DestinationMedia promo={promo} gradientClass={gradientClass} labelClassName="text-[11px] tracking-wide" />
+      </div>
+      <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
         <span className="font-sora text-[9px] font-semibold uppercase tracking-wider text-brand-accent">
-          {toMeta(promo, true)}
+          {toDurationLabel(promo)}
         </span>
-      )}
-      <h4 className="font-display mt-1.5 text-[21px] font-semibold leading-[25px] text-brand-navy">
-        {promo.title}
-      </h4>
-      {promo.summary?.trim() && (
-        <p className="font-inter mt-1.5 text-xs leading-[18px] text-brand-navy">{promo.summary}</p>
-      )}
-      <p className="font-inter mt-2 text-[13px] font-semibold text-brand-navy">
-        {Number(promo.priceUsd) > 0 && (
-          <>
-            Desde US$ {Number(promo.priceUsd).toLocaleString()}
-            <span className="mx-1.5 text-brand-navy/40">·</span>
-          </>
+        <h4 className="font-display text-lg font-semibold leading-[1.15] text-brand-navy sm:text-[21px]">
+          {promo.title}
+        </h4>
+        {promo.summary?.trim() && (
+          <p className="font-inter text-xs leading-[1.4] text-brand-navy/80 line-clamp-2">{promo.summary}</p>
         )}
-        <span className="text-brand-navy underline decoration-brand-navy/30 underline-offset-2 group-hover:text-brand-accent group-hover:decoration-brand-accent">
-          Cotizar este viaje →
-        </span>
-      </p>
-    </button>
+        {Number(promo.priceUsd) > 0 && (
+          <p className="font-inter text-sm font-semibold text-brand-navy">
+            Desde US$ {Number(promo.priceUsd).toLocaleString()}
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={() => openWhatsApp(whatsappPhone, whatsappMessageFor(promo))}
+          className="mt-auto w-fit rounded-full bg-brand-navy px-4 py-2 font-inter text-[13px] font-semibold text-white transition-colors hover:bg-brand-navy/90"
+        >
+          Ver viaje →
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -242,16 +274,26 @@ function PromotionsClosingCta({
 }) {
   return (
     <div
-      className={`flex flex-col items-start gap-5 rounded-3xl bg-brand-navy px-6 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-5 ${className}`}
+      className={`flex flex-col items-start gap-5 rounded-[28px] bg-brand-navy px-6 py-7 sm:px-8 sm:py-8 lg:flex-row lg:items-center lg:justify-between ${className}`}
     >
-      <p className="font-display text-xl font-semibold leading-snug text-neutral-white sm:max-w-md xl:text-[25px]">
-        {config.bottomCtaQuestion}
-      </p>
+      <div className="max-w-xl">
+        {config.bottomCtaEyebrow?.trim() && (
+          <p className="font-sora text-[10px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
+            {config.bottomCtaEyebrow}
+          </p>
+        )}
+        <p className="font-display mt-2 text-2xl font-semibold leading-[1.15] text-white sm:text-[28px]">
+          {config.bottomCtaQuestion}
+        </p>
+        {config.bottomCtaCopy?.trim() && (
+          <p className="font-inter mt-2.5 text-sm leading-relaxed text-white/75">{config.bottomCtaCopy}</p>
+        )}
+      </div>
       <WhatsAppButton
-        size="md"
+        size="lg"
         phone={whatsappPhone}
         message={config.bottomCtaWhatsappMessage}
-        className="w-full shrink-0 sm:w-auto"
+        className="w-full shrink-0 lg:w-auto"
       >
         {config.bottomCtaWhatsappText}
       </WhatsAppButton>
@@ -269,200 +311,56 @@ export function PromotionsSection({ promotions, settings, config = DEFAULT_CONFI
   // aquí. El .slice(0, 2) se mantiene como defensa si algún día llegaran más.
   const [featuredPromo, ...rest] = promotions;
   const secondaryPromos = rest.slice(0, 2);
-  // Las promociones no tienen página de detalle propia — el catálogo completo
-  // vive en Facebook. Si aún no hay facebookUrl configurado, cae al ancla de
-  // esta misma sección en vez de un enlace roto.
-  const discoverUrl = settings?.facebookUrl || "/#promociones";
-  const discoverIsExternal = discoverUrl.startsWith("http");
 
   return (
     <section
       id="promociones"
-      className={`relative w-full overflow-hidden bg-atmosphere-paper py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
+      className={`relative w-full overflow-hidden bg-atmosphere-sand py-16 sm:py-20 xl:py-24 text-neutral-ink ${className}`}
     >
       {/* Papel continuo hacia Blog — ola full-bleed en la base, con el color
-          real de la siguiente sección (blanco en base/md, cielo en xl). */}
+          real de la siguiente sección. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
         <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
           <path d={WAVE_TO_BLOG_PATH} className="fill-atmosphere-fog" />
         </svg>
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
-        {/* Encabezado — solo base/md; en xl vive dentro del lienzo relativo
-            de abajo, en su posición real de Figma (junto al blob, no
-            apilado arriba de todo el bloque). */}
-        <Reveal className="relative mb-10 flex flex-col gap-6 xl:hidden">
-          <div className="max-w-xl">
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 268.8 23.04"
-              className="mb-4 h-4 w-[180px]"
-              fill="none"
-            >
-              <path d={ROUTE_HORIZONTAL_PATH} className="stroke-brand-navy" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-              <circle cx="264.5" cy="3.84" r="4" className="fill-brand-accent" />
-            </svg>
-            <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              {config.badgeText}
-            </span>
-            <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy sm:text-4xl">
-              {config.title}
-            </h2>
-            <p className="font-inter mt-3 text-base leading-relaxed text-brand-navy sm:text-lg">
-              {config.subtitle}
-            </p>
-          </div>
-
-          <a
-            href={discoverUrl}
-            {...(discoverIsExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className="font-inter self-start text-sm font-semibold text-brand-navy hover:text-brand-accent transition-colors"
-          >
-            Ver todas las promociones →
-          </a>
+      <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-[1180px] lg:px-8">
+        <Reveal className="max-w-2xl">
+          <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
+            {config.badgeText}
+          </span>
+          <h2 className="font-display mt-3 text-3xl font-semibold leading-[1.08] text-brand-navy sm:text-4xl lg:text-[44px]">
+            {config.title}
+          </h2>
+          <p className="font-inter mt-3 text-base leading-relaxed text-brand-navy sm:text-lg">{config.subtitle}</p>
         </Reveal>
 
-        {/* Mobile — flujo simple, sin superposición */}
-        <div className="md:hidden">
-          <div className="relative mx-auto max-w-[420px]">
-            <PromoBlob
-              variant="compact"
-              className="mx-auto w-full aspect-[328.5/216]"
-              imageUrl={config.mediaUrl}
-            />
-            <Reveal delayMs={80} className="-mt-4 relative">
-              <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} />
-            </Reveal>
-          </div>
-          <div className="mt-8 flex flex-col gap-4">
-            {secondaryPromos.map((p, i) => (
-              <Reveal key={p.id || p.slug} delayMs={160 + i * 80}>
-                <SecondaryPromoCard promo={p} whatsappPhone={settings?.whatsappPhone} />
-              </Reveal>
-            ))}
-          </div>
-          <Reveal delayMs={320} className="mt-8">
-            <PromotionsClosingCta config={config} whatsappPhone={settings?.whatsappPhone} />
-          </Reveal>
-        </div>
-
-        {/* Tablet — protagonista a ancho completo con foto orgánica; tarjeta
-            flotante superpuesta sobre el blob; secundarios en pareja debajo */}
-        <div className="hidden md:block xl:hidden">
-          <div className="relative">
-            <PromoBlob
-              variant="compact"
-              className="w-[64%] aspect-[620.5/408]"
-              imageUrl={config.mediaUrl}
-            />
-            <Reveal delayMs={80} className="absolute right-0 top-[34%] w-[46%]">
-              <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} />
-            </Reveal>
-          </div>
-          <div className="mt-10 grid grid-cols-2 gap-6">
-            {secondaryPromos.map((p, i) => (
-              <Reveal key={p.id || p.slug} delayMs={160 + i * 80}>
-                <SecondaryPromoCard promo={p} whatsappPhone={settings?.whatsappPhone} />
-              </Reveal>
-            ))}
-          </div>
-          <Reveal delayMs={320} className="mt-8">
-            <PromotionsClosingCta config={config} whatsappPhone={settings?.whatsappPhone} />
-          </Reveal>
-        </div>
-
-        {/* Desktop / Wide — lienzo relativo único basado en Figma (node
-            409:36 "02 · Promociones · Escaparate panorámico · Wide", canvas
-            1920x940): ruta, encabezado, "ver todas", blob y tarjetas, todos
-            posicionados contra ese mismo lienzo — no bloques apilados por
-            separado. Orden en el DOM = orden de apilado visual (el blob va
-            primero para que el encabezado y la tarjeta destacada floten
-            sobre su esquina, tal como en Figma).
-
-            El encabezado ancla en `left-0` — ese punto coincide con donde
-            arranca el contenido de Blog/Testimonios/FAQ en este mismo
-            contenedor (verificado con getBoundingClientRect: ambos caen en
-            x=296.5px a 1920 de viewport), así las secciones quedan
-            alineadas al mismo margen izquierdo. El resto de los elementos
-            usa offsets en px calculados desde ese punto (diferencia real
-            entre cada elemento y el encabezado en las coordenadas de
-            Figma) en vez de un % del canvas de 1920 — con % puro, el
-            propio margen de página de Figma (274px antes de la ruta) se
-            sumaba AL padding real de este contenedor (`xl:px-16`),
-            duplicando el margen y corriendo todo el bloque hacia la
-            derecha. El ancho de las tarjetas (destacada 380px, secundarias
-            260px c/u) tampoco es literal de Figma (410px/290px) — a esa
-            medida el texto real (más largo que el mock de Figma) envolvía
-            mal o las tarjetas casi se tocaban; se ajustó a ojo verificando
-            en pantalla, no es un valor que debas "corregir" de vuelta al
-            literal de Figma. */}
-        <div className="relative hidden xl:block xl:min-h-[760px]">
-          {/* Ruta vertical — decorativa */}
-          <div aria-hidden="true" className="pointer-events-none absolute left-[-126px] top-[9.15%] w-[7.81%] h-[80.85%]">
-            <svg viewBox="0 0 150 760" className="h-full w-full" fill="none" preserveAspectRatio="none">
-              <path d={ROUTE_VERTICAL_PATH} className="stroke-brand-navy" strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-            </svg>
-            {/* Puntos como <span> aparte — dentro del SVG con preserveAspectRatio="none"
-                se ven ovalados, no circulares. */}
-            <span
-              className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-accent"
-              style={{ left: `${(92 / 150) * 100}%`, top: "0%" }}
-            />
-            <span
-              className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-accent"
-              style={{ left: `${(82 / 150) * 100}%`, top: "100%" }}
-            />
-          </div>
-
-          <PromoBlob
-            variant="wide"
-            className="absolute left-[300px] top-[15.96%] w-[1050px] aspect-[850/500]"
-            imageUrl={config.mediaUrl}
-          />
-
-          <Reveal className="absolute left-0 top-[10.85%] max-w-xl">
-            <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              {config.badgeText}
-            </span>
-            <h2 className="font-display mt-3 text-[44px] font-semibold leading-[49px] text-brand-navy">
-              {config.title}
-            </h2>
-            <p className="font-inter mt-3 text-base leading-relaxed text-brand-navy">
-              {config.subtitle}
-            </p>
-          </Reveal>
-
-          <a
-            href={discoverUrl}
-            {...(discoverIsExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className="absolute right-0 top-[13.19%] font-inter text-sm font-semibold text-brand-navy hover:text-brand-accent transition-colors"
-          >
-            Ver todas las promociones →
-          </a>
-
-          <Reveal delayMs={80} className="absolute left-[-35px] top-[46.81%] w-[420px]">
+        <div className="mt-10 flex flex-col gap-6 lg:mt-14 lg:flex-row lg:items-start lg:gap-8">
+          <Reveal delayMs={80} className="lg:flex-[1.7]">
             <FeaturedPromoCard promo={featuredPromo} whatsappPhone={settings?.whatsappPhone} />
           </Reveal>
 
-          {secondaryPromos[0] && (
-            <Reveal delayMs={160} className="absolute left-[712px] top-[67.02%] w-[280px]">
-              <SecondaryPromoCard promo={secondaryPromos[0]} whatsappPhone={settings?.whatsappPhone} />
-            </Reveal>
-          )}
-          {secondaryPromos[1] && (
-            <Reveal delayMs={240} className="absolute left-[1032px] top-[67.02%] w-[280px]">
-              <SecondaryPromoCard promo={secondaryPromos[1]} whatsappPhone={settings?.whatsappPhone} />
-            </Reveal>
-          )}
+          <div className="flex flex-col gap-5 lg:w-[380px] lg:shrink-0">
+            {secondaryPromos.map((p, i) => (
+              <Reveal key={p.id || p.slug} delayMs={160 + i * 80}>
+                <SecondaryPromoCard
+                  promo={p}
+                  gradientClass={FALLBACK_GRADIENTS[i + 1] || FALLBACK_GRADIENTS[1]}
+                  whatsappPhone={settings?.whatsappPhone}
+                />
+              </Reveal>
+            ))}
+          </div>
         </div>
 
-        {/* CTA único de cierre — flujo normal, fuera del lienzo absoluto de
-            arriba (en Figma vive muy por debajo de las tarjetas, y no
-            necesita compartir su sistema de coordenadas). */}
-        <Reveal delayMs={320} className="hidden xl:block xl:mt-16">
+        <Reveal delayMs={320} className="mt-10 lg:mt-14">
           <PromotionsClosingCta config={config} whatsappPhone={settings?.whatsappPhone} />
         </Reveal>
+
+        <p className="mt-6 text-center font-inter text-xs text-brand-navy/55 lg:text-left">
+          Asesoría sin costo · Opciones personalizadas · Tarifas sujetas a disponibilidad
+        </p>
       </div>
     </section>
   );

@@ -5,6 +5,17 @@ import { useRouter } from "next/navigation";
 import { LoginCard } from "@vc/ui";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 
+// Solo se acepta una ruta relativa propia del panel (nunca "//host" ni una
+// URL absoluta) — evita que un "from" manipulado en la URL redirija fuera
+// del panel tras iniciar sesión. Se lee de window.location en vez de
+// useSearchParams para no forzar un Suspense boundary en esta página.
+function safeRedirectTarget(): string {
+  if (typeof window === "undefined") return "/";
+  const from = new URLSearchParams(window.location.search).get("from");
+  if (!from || !from.startsWith("/") || from.startsWith("//")) return "/";
+  return from;
+}
+
 export function LoginClientView() {
   const router = useRouter();
   const { login, submitting, error, clearError } = useAdminAuth();
@@ -12,7 +23,7 @@ export function LoginClientView() {
   const handleLogin = async (req: { usernameOrEmail: string; password: string }) => {
     try {
       await login(req);
-      router.push("/");
+      router.push(safeRedirectTarget());
     } catch {
       // Error manejado en el hook
     }

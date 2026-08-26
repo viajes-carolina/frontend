@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${sora.variable} ${inter.variable}`} suppressHydrationWarning>
-      <body className="antialiased font-sans min-h-screen" suppressHydrationWarning>
+      <body className="antialiased min-h-screen" suppressHydrationWarning>
         <AdminShell>{children}</AdminShell>
       </body>
     </html>

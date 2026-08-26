@@ -44,7 +44,7 @@ export default async function RootLayout({
   return (
     <html lang="es" className={`${sora.variable} ${inter.variable} ${fraunces.variable}`} suppressHydrationWarning>
       <body
-        className="antialiased font-sans bg-neutral-soft text-neutral-ink selection:bg-brand-accent selection:text-brand-navy flex flex-col min-h-screen"
+        className="antialiased bg-neutral-soft text-neutral-ink selection:bg-brand-accent selection:text-brand-navy flex flex-col min-h-screen"
         suppressHydrationWarning
       >
         <HeaderWrapper settings={siteSettings} />
