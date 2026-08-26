@@ -44,7 +44,10 @@ export const ADMIN_NAV: AdminNavCategory[] = [
         label: "Inicio",
         icon: SunIcon,
         children: [
-          { label: "Hero Principal", href: "/inicio/hero" },
+          { label: "Titulares", href: "/inicio/hero/titulares" },
+          { label: "Botones de Acción", href: "/inicio/hero/botones" },
+          { label: "Línea de Confianza", href: "/inicio/hero/confianza" },
+          { label: "Collage de Fotos", href: "/inicio/hero/fotos" },
           { label: "Encabezado de Promociones", href: "/inicio/promociones" },
           { label: "Catálogo de Promociones", href: "/inicio/promociones/catalogo" },
           { label: "Inspiración desde Blog", href: "/inicio/inspiracion" },
@@ -59,7 +62,12 @@ export const ADMIN_NAV: AdminNavCategory[] = [
         label: "Nosotros",
         icon: CompassIcon,
         children: [
-          { label: "Contenido", href: "/nosotros" },
+          { label: "Cabecera", href: "/nosotros/cabecera" },
+          { label: "Historia", href: "/nosotros/historia" },
+          { label: "Misión", href: "/nosotros/mision" },
+          { label: "Cómo te acompañamos", href: "/nosotros/acompanamiento" },
+          { label: "Experiencias", href: "/nosotros/experiencias" },
+          { label: "Una persona al otro lado", href: "/nosotros/humano" },
           { label: "Equipo", href: "/nosotros/equipo" },
         ],
       },
@@ -67,7 +75,8 @@ export const ADMIN_NAV: AdminNavCategory[] = [
         label: "Contacto",
         icon: MailIcon,
         children: [
-          { label: "Contenido", href: "/contacto" },
+          { label: "Hero & Encabezado", href: "/contacto/hero" },
+          { label: "Encabezado de Oficina", href: "/contacto/encabezado-oficina" },
           { label: "Oficina & Horarios", href: "/contacto/oficina" },
         ],
       },
@@ -118,7 +127,16 @@ export const ADMIN_NAV: AdminNavCategory[] = [
   {
     label: "Configuración",
     items: [
-      { label: "Identidad & WhatsApp", icon: SettingsIcon, href: "/identidad" },
+      {
+        label: "Identidad & WhatsApp",
+        icon: SettingsIcon,
+        children: [
+          { label: "Identidad de Marca", href: "/identidad/marca" },
+          { label: "Información Legal", href: "/identidad/legal" },
+          { label: "Canal WhatsApp", href: "/identidad/whatsapp" },
+          { label: "Redes Sociales", href: "/identidad/redes" },
+        ],
+      },
       { label: "Mi Cuenta", icon: UserCircleIcon, href: "/perfil" },
     ],
   },

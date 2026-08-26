@@ -9,8 +9,6 @@ export * from "./primitives/FocalPointPicker";
 export * from "./primitives/MediaPickerModal";
 export * from "./primitives/Modal";
 export * from "./primitives/StepIndicator";
-export * from "./primitives/SectionRail";
-export * from "./primitives/SaveBar";
 export * from "./primitives/Disclosure";
 export * from "./forms/FormField";
 export * from "./layout/HeroSection";

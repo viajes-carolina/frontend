@@ -2,27 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ChevronDownIcon, LayoutGridIcon } from "@vc/ui";
 import { ADMIN_NAV, type AdminNavSection } from "./adminNavConfig";
-import { useUnsavedChangesContext } from "../hooks/useUnsavedChangesGuard";
-
-// Compartido por todos los <Link> del sidebar: si la página actual tiene
-// cambios sin guardar (estado compartido vía UnsavedChangesProvider),
-// intercepta la navegación con un confirm() nativo antes de dejar salir.
-// Sin cambios pendientes, es un no-op total — el <Link> navega normal.
-function useNavClickGuard() {
-  const router = useRouter();
-  const { dirty } = useUnsavedChangesContext();
-
-  return function handleNavClick(e: React.MouseEvent, href: string) {
-    if (!dirty) return;
-    e.preventDefault();
-    if (window.confirm("Tienes cambios sin guardar. ¿Salir sin guardar?")) {
-      router.push(href);
-    }
-  };
-}
 
 function isRouteActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
@@ -47,10 +29,9 @@ function NavBadge({ badge }: { badge: NonNullable<AdminNavSection["badge"]> }) {
 interface AdminNavSectionRowProps {
   section: AdminNavSection;
   pathname: string;
-  onNavClick: (e: React.MouseEvent, href: string) => void;
 }
 
-function AdminNavSectionRow({ section, pathname, onNavClick }: AdminNavSectionRowProps) {
+function AdminNavSectionRow({ section, pathname }: AdminNavSectionRowProps) {
   const Icon = section.icon;
   const active = isSectionActive(pathname, section);
   // Se inicializa según la ruta activa al montar y se auto-expande cada vez
@@ -67,7 +48,6 @@ function AdminNavSectionRow({ section, pathname, onNavClick }: AdminNavSectionRo
     return (
       <Link
         href={section.href ?? "#"}
-        onClick={(e) => onNavClick(e, section.href ?? "#")}
         className={`px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center gap-2.5 ${
           active ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
         }`}
@@ -106,7 +86,6 @@ function AdminNavSectionRow({ section, pathname, onNavClick }: AdminNavSectionRo
               <Link
                 key={child.href}
                 href={child.href}
-                onClick={(e) => onNavClick(e, child.href)}
                 className={`block px-3 py-2 rounded-lg font-sora text-xs transition-colors ${
                   childActive
                     ? "bg-white/15 text-white font-semibold"
@@ -126,13 +105,11 @@ function AdminNavSectionRow({ section, pathname, onNavClick }: AdminNavSectionRo
 export function AdminNav() {
   const pathname = usePathname();
   const dashboardActive = pathname === "/";
-  const handleNavClick = useNavClickGuard();
 
   return (
     <nav className="mt-6 flex flex-col gap-1">
       <Link
         href="/"
-        onClick={(e) => handleNavClick(e, "/")}
         className={`px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center gap-2.5 ${
           dashboardActive ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
         }`}
@@ -148,12 +125,7 @@ export function AdminNav() {
           </p>
           <div className="flex flex-col gap-1">
             {category.items.map((section) => (
-              <AdminNavSectionRow
-                key={section.label}
-                section={section}
-                pathname={pathname}
-                onNavClick={handleNavClick}
-              />
+              <AdminNavSectionRow key={section.label} section={section} pathname={pathname} />
             ))}
           </div>
         </div>

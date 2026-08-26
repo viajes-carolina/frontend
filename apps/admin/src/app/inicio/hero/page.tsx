@@ -1,9 +1,5 @@
-import { apiClient } from "@vc/api-client";
-import { HeroForm } from "../HeroForm";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function HeroPage() {
-  const hero = await apiClient.getHomeHero();
-  return <HeroForm initialHero={hero} />;
+export default function InicioHeroIndexPage() {
+  redirect("/inicio/hero/titulares");
 }
