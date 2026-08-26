@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { BrandLogo, CloseIcon, MenuIcon } from "@vc/ui";
 import { AdminNav } from "./AdminNav";
 import { useAdminSessionGuard } from "../hooks/useAdminSessionGuard";
+import { UnsavedChangesProvider } from "../hooks/useUnsavedChangesGuard";
 
 // El login no debe verse dentro del "shell" del panel — sin sidebar, sin
 // nav — es la única ruta pública de apps/admin, antes de que exista sesión.
@@ -20,6 +21,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
+    <UnsavedChangesProvider>
     <div className="antialiased font-sans bg-neutral-soft text-neutral-ink flex min-h-screen">
       {/* Overlay del drawer en mobile/tablet */}
       {sidebarOpen && (
@@ -83,5 +85,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>
+    </UnsavedChangesProvider>
   );
 }

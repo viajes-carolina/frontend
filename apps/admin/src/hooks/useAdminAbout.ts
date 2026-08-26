@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   AboutPageDTO,
   UpdateAboutPageRequest,
@@ -232,6 +232,18 @@ export function useAdminAbout() {
     setFormData((prev) => ({ ...prev, moments: prev.moments.filter((_, i) => i !== index) }));
   }, []);
 
+  // Comparación directa formData vs. el snapshot ya guardado (convertido al
+  // mismo shape con toFormData) — evita tener que trackear "dirty" campo por
+  // campo mientras el editor navega entre secciones.
+  const isDirty = useMemo(
+    () => aboutPage != null && JSON.stringify(formData) !== JSON.stringify(toFormData(aboutPage)),
+    [formData, aboutPage]
+  );
+
+  const discardChanges = useCallback(() => {
+    if (aboutPage) setFormData(toFormData(aboutPage));
+  }, [aboutPage]);
+
   const handleSave = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     try {
@@ -256,6 +268,8 @@ export function useAdminAbout() {
     loading,
     saving,
     feedbackMessage,
+    isDirty,
+    discardChanges,
     updateField,
     handleSelectHeroMedia,
     handleSelectStoryMedia,
