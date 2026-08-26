@@ -2,7 +2,7 @@
 
 import { useAdminOffice } from "../../../hooks/useAdminOffice";
 import { OfficeLocationDTO } from "@vc/api-client";
-import { Button, CheckIcon } from "@vc/ui";
+import { Button, CheckIcon, FormField } from "@vc/ui";
 
 export interface OfficeFormProps {
   initialOffice: OfficeLocationDTO;
@@ -21,154 +21,113 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
       )}
 
       {/* Dirección Física */}
-      <div className="bg-white p-6 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <h2 className="font-sora font-bold text-lg text-brand-navy border-b border-neutral-border pb-3">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+        <h2 className="font-sora font-bold text-lg text-brand-navy">
           Dirección de Oficina Principal
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="sm:col-span-2">
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Dirección Línea 1
-            </label>
-            <input
+            <FormField
+              label="Dirección Línea 1"
               type="text"
               value={office.addressLine}
               onChange={(e) => updateField("addressLine", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
               required
             />
           </div>
 
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Distrito
-            </label>
-            <input
-              type="text"
-              value={office.district}
-              onChange={(e) => updateField("district", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              required
-            />
-          </div>
+          <FormField
+            label="Distrito"
+            type="text"
+            value={office.district}
+            onChange={(e) => updateField("district", e.target.value)}
+            required
+          />
 
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Ciudad & País
-            </label>
-            <input
-              type="text"
-              value={`${office.city}, ${office.country}`}
-              onChange={(e) => {
-                const parts = e.target.value.split(",");
-                updateField("city", parts[0]?.trim() || office.city);
-                if (parts[1]) updateField("country", parts[1].trim());
-              }}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              required
-            />
-          </div>
+          <FormField
+            label="Ciudad & País"
+            type="text"
+            value={`${office.city}, ${office.country}`}
+            onChange={(e) => {
+              const parts = e.target.value.split(",");
+              updateField("city", parts[0]?.trim() || office.city);
+              if (parts[1]) updateField("country", parts[1].trim());
+            }}
+            required
+          />
 
           <div className="sm:col-span-2">
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Referencia de Ubicación
-            </label>
-            <input
+            <FormField
+              label="Referencia de Ubicación"
               type="text"
               value={office.referenceLandmark || ""}
               onChange={(e) => updateField("referenceLandmark", e.target.value)}
               placeholder="Ej: A media cuadra del Parque Kennedy"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
           </div>
         </div>
       </div>
 
       {/* Horarios de Atención */}
-      <div className="bg-white p-6 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <h2 className="font-sora font-bold text-lg text-brand-navy border-b border-neutral-border pb-3">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+        <h2 className="font-sora font-bold text-lg text-brand-navy">
           Horarios de Atención
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Lunes a Viernes
-            </label>
-            <input
-              type="text"
-              value={office.scheduleWeekdays}
-              onChange={(e) => updateField("scheduleWeekdays", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              required
-            />
-          </div>
+          <FormField
+            label="Lunes a Viernes"
+            type="text"
+            value={office.scheduleWeekdays}
+            onChange={(e) => updateField("scheduleWeekdays", e.target.value)}
+            required
+          />
 
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Sábados
-            </label>
-            <input
-              type="text"
-              value={office.scheduleSaturdays}
-              onChange={(e) => updateField("scheduleSaturdays", e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-              required
-            />
-          </div>
+          <FormField
+            label="Sábados"
+            type="text"
+            value={office.scheduleSaturdays}
+            onChange={(e) => updateField("scheduleSaturdays", e.target.value)}
+            required
+          />
         </div>
       </div>
 
       {/* Google Maps Link */}
-      <div className="bg-white p-6 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <h2 className="font-sora font-bold text-lg text-brand-navy border-b border-neutral-border pb-3">
+      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+        <h2 className="font-sora font-bold text-lg text-brand-navy">
           Enlace a Google Maps
         </h2>
         <p className="font-inter text-neutral-muted text-xs -mt-3">
           Este es el único lugar del panel donde se edita la ubicación del mapa — el enlace y las coordenadas se usan tanto en el footer como en el mapa real embebido de la página pública de Contacto.
         </p>
 
-        <div>
-          <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-            URL de Google Maps
-          </label>
-          <input
-            type="url"
-            value={office.googleMapsUrl || ""}
-            onChange={(e) => updateField("googleMapsUrl", e.target.value)}
-            placeholder="https://maps.google.com/?q=..."
-            className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-          />
-        </div>
+        <FormField
+          label="URL de Google Maps"
+          type="url"
+          value={office.googleMapsUrl || ""}
+          onChange={(e) => updateField("googleMapsUrl", e.target.value)}
+          placeholder="https://maps.google.com/?q=..."
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Latitud
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={office.latitude ?? ""}
-              onChange={(e) => updateField("latitude", parseFloat(e.target.value))}
-              placeholder="-12.058318"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-            />
-          </div>
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-2">
-              Longitud
-            </label>
-            <input
-              type="number"
-              step="any"
-              value={office.longitude ?? ""}
-              onChange={(e) => updateField("longitude", parseFloat(e.target.value))}
-              placeholder="-77.044225"
-              className="w-full px-4 py-2.5 rounded-xl border border-neutral-border text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
-            />
-          </div>
+          <FormField
+            label="Latitud"
+            type="number"
+            step="any"
+            value={office.latitude ?? ""}
+            onChange={(e) => updateField("latitude", parseFloat(e.target.value))}
+            placeholder="-12.058318"
+          />
+          <FormField
+            label="Longitud"
+            type="number"
+            step="any"
+            value={office.longitude ?? ""}
+            onChange={(e) => updateField("longitude", parseFloat(e.target.value))}
+            placeholder="-77.044225"
+          />
         </div>
         <p className="font-inter text-neutral-muted text-[11px]">
           Coordenadas GPS exactas usadas para el mapa real embebido en la página pública de Contacto — más precisas que geocodificar la dirección de texto. Consíguelas en Google Maps: clic derecho sobre el punto exacto → copiar coordenadas.

@@ -2,9 +2,9 @@
 
 import React from "react";
 
-const LABEL_CLASSES = "block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2";
+const LABEL_CLASSES = "block text-xs font-bold text-neutral-muted uppercase tracking-wider mb-2";
 const FIELD_CLASSES =
-  "w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent";
+  "w-full px-4 py-2.5 bg-neutral-soft border border-neutral-border rounded-xl text-sm text-neutral-ink focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent";
 
 interface FormFieldSingleLineProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -20,8 +20,8 @@ export type FormFieldProps = FormFieldSingleLineProps | FormFieldMultilineProps;
 
 /**
  * Campo de formulario (label + input/textarea) con el estilo oficial de admin
- * (fondo slate-50, borde slate-200, label uppercase slate-700). Reproduce
- * exactamente el bloque duplicado en los formularios de `apps/admin`.
+ * (fondo neutral-soft, borde neutral-border, label uppercase neutral-muted).
+ * Reproduce exactamente el bloque duplicado en los formularios de `apps/admin`.
  *
  * Usa `multiline` para renderizar un `<textarea>` en vez de un `<input>`.
  */
