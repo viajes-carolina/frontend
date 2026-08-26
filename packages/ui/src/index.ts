@@ -7,6 +7,7 @@ export * from "./primitives/OrganicPhoto";
 export * from "./primitives/PolaroidPhoto";
 export * from "./primitives/FocalPointPicker";
 export * from "./primitives/MediaPickerModal";
+export * from "./primitives/Modal";
 export * from "./primitives/StepIndicator";
 export * from "./forms/FormField";
 export * from "./layout/HeroSection";

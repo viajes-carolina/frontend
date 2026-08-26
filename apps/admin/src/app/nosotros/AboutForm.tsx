@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button } from "@vc/ui";
+import { Button, FormField } from "@vc/ui";
 import { useAdminAbout } from "../../hooks/useAdminAbout";
 import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 
@@ -43,32 +43,31 @@ export function AboutForm() {
 
   if (loading) {
     return (
-      <div className="p-8 text-center text-slate-400">
-        <p className="font-sora text-sm">Cargando información institucional de Nosotros...</p>
+      <div className="bg-white rounded-2xl p-8 border border-neutral-border shadow-sm animate-pulse space-y-4 max-w-4xl">
+        <div className="h-6 bg-neutral-border rounded w-1/4"></div>
+        <div className="h-10 bg-neutral-border rounded"></div>
+        <div className="h-20 bg-neutral-border rounded"></div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSave} className="space-y-8 max-w-4xl">
+    <form onSubmit={handleSave} className="space-y-8 max-w-4xl pb-24">
       {feedbackMessage && (
         <div
           className={`p-4 rounded-xl text-sm font-medium border ${
             feedbackMessage.type === "success"
-              ? "bg-emerald-950/60 border-emerald-800 text-emerald-300"
-              : "bg-red-950/60 border-red-800 text-red-300"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-red-50 border-red-200 text-red-700"
           }`}
         >
           {feedbackMessage.text}
         </div>
       )}
 
-      {/* 01. Hero */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-        <h3 className="font-sora font-bold text-lg text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-accent" />
-          Cabecera & Foto Principal
-        </h3>
+      {/* 1. Cabecera & Foto Principal */}
+      <div className="bg-white border border-neutral-border shadow-sm rounded-2xl p-6 sm:p-8 space-y-6">
+        <h2 className="font-sora font-bold text-lg text-brand-navy">1. Cabecera & Foto Principal</h2>
 
         <HeroPhotoSlot
           variant="main"
@@ -84,89 +83,69 @@ export function AboutForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Badge / Distintivo Superior
-            </label>
-            <input
+            <FormField
+              label="Badge / Distintivo Superior"
               type="text"
               value={formData.heroBadge}
               onChange={(e) => updateField("heroBadge", e.target.value)}
               required
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Nota flotante (tarjeta secundaria)
-            </label>
-            <input
+            <FormField
+              label="Nota flotante (tarjeta secundaria)"
               type="text"
               value={formData.heroNoteText || ""}
               onChange={(e) => updateField("heroNoteText", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Título Principal (H1)
-          </label>
-          <input
+          <FormField
+            label="Título Principal (H1)"
             type="text"
             value={formData.heroTitle}
             onChange={(e) => updateField("heroTitle", e.target.value)}
             required
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Subtítulo Descriptivo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo Descriptivo"
+            multiline
             rows={2}
             value={formData.heroSubtitle}
             onChange={(e) => updateField("heroSubtitle", e.target.value)}
             required
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Badge de la tarjeta flotante
-            </label>
-            <input
+            <FormField
+              label="Badge de la tarjeta flotante"
               type="text"
               value={formData.heroCardBadge || ""}
               onChange={(e) => updateField("heroCardBadge", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Título de la tarjeta flotante
-            </label>
-            <input
+            <FormField
+              label="Título de la tarjeta flotante"
               type="text"
               value={formData.heroCardTitle || ""}
               onChange={(e) => updateField("heroCardTitle", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
         </div>
       </div>
 
-      {/* 02. Historia & Valores */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-        <h3 className="font-sora font-bold text-lg text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-sunset" />
-          Historia & Principios
-        </h3>
+      {/* 2. Historia & Principios */}
+      <div className="bg-white border border-neutral-border shadow-sm rounded-2xl p-6 sm:p-8 space-y-6">
+        <h2 className="font-sora font-bold text-lg text-brand-navy">2. Historia & Principios</h2>
 
         <HeroPhotoSlot
           variant="main"
@@ -180,34 +159,29 @@ export function AboutForm() {
         />
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Título de la Historia
-          </label>
-          <input
+          <FormField
+            label="Título de la Historia"
             type="text"
             value={formData.storyTitle}
             onChange={(e) => updateField("storyTitle", e.target.value)}
             required
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Cuerpo / Narrativa de la Historia
-          </label>
-          <textarea
+          <FormField
+            label="Cuerpo / Narrativa de la Historia"
+            multiline
             rows={4}
             value={formData.storyBody}
             onChange={(e) => updateField("storyBody", e.target.value)}
             required
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         {/* Valores */}
         <div className="space-y-3 pt-2">
-          <label className="block text-xs font-semibold text-slate-400 uppercase">
+          <label className="block text-xs font-semibold text-neutral-muted uppercase">
             Principios / Valores Rectores
           </label>
           <div className="flex gap-2">
@@ -216,7 +190,7 @@ export function AboutForm() {
               value={newValueText}
               onChange={(e) => setNewValueText(e.target.value)}
               placeholder="Ej: Acompañamiento 24/7 sin letra chica"
-              className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:outline-none focus:border-brand-accent"
+              className="flex-1 bg-neutral-soft border border-neutral-border rounded-xl px-3.5 py-2 text-neutral-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
             <Button type="button" variant="secondary" onClick={addValue} className="!py-2 text-xs">
               + Agregar
@@ -227,13 +201,13 @@ export function AboutForm() {
             {formData.values.map((val, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 text-white text-xs border border-slate-700"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-soft text-brand-navy text-xs border border-neutral-border"
               >
                 {val}
                 <button
                   type="button"
                   onClick={() => removeValue(idx)}
-                  className="text-slate-400 hover:text-red-400 font-bold ml-1"
+                  className="text-neutral-muted hover:text-red-500 font-bold ml-1"
                 >
                   ×
                 </button>
@@ -243,54 +217,46 @@ export function AboutForm() {
         </div>
       </div>
 
-      {/* 03. Misión */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-        <h3 className="font-sora font-bold text-lg text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-          Misión & Ruta &quot;de idea a recuerdo&quot;
-        </h3>
+      {/* 3. Misión & Ruta "de idea a recuerdo" */}
+      <div className="bg-white border border-neutral-border shadow-sm rounded-2xl p-6 sm:p-8 space-y-6">
+        <h2 className="font-sora font-bold text-lg text-brand-navy">
+          3. Misión & Ruta &quot;de idea a recuerdo&quot;
+        </h2>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Título Misión
-          </label>
-          <input
+          <FormField
+            label="Título Misión"
             type="text"
             value={formData.missionTitle}
             onChange={(e) => updateField("missionTitle", e.target.value)}
             required
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Declaración de Misión
-          </label>
-          <textarea
+          <FormField
+            label="Declaración de Misión"
+            multiline
             rows={4}
             value={formData.missionBody}
             onChange={(e) => updateField("missionBody", e.target.value)}
             required
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Cita Editorial
-          </label>
-          <textarea
+          <FormField
+            label="Cita Editorial"
+            multiline
             rows={2}
             value={formData.missionQuote || ""}
             onChange={(e) => updateField("missionQuote", e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         {/* Journey Steps */}
         <div className="space-y-3 pt-2">
-          <label className="block text-xs font-semibold text-slate-400 uppercase">
+          <label className="block text-xs font-semibold text-neutral-muted uppercase">
             Pasos de la Ruta (4 pasos horizontales)
           </label>
           <div className="flex gap-2">
@@ -299,7 +265,7 @@ export function AboutForm() {
               value={newJourneyStepText}
               onChange={(e) => setNewJourneyStepText(e.target.value)}
               placeholder="Ej: Escuchamos tu idea"
-              className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:outline-none focus:border-brand-accent"
+              className="flex-1 bg-neutral-soft border border-neutral-border rounded-xl px-3.5 py-2 text-neutral-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
             <Button type="button" variant="secondary" onClick={addJourneyStep} className="!py-2 text-xs">
               + Agregar
@@ -310,13 +276,13 @@ export function AboutForm() {
             {formData.journeySteps.map((step, idx) => (
               <span
                 key={idx}
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 text-white text-xs border border-slate-700"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-soft text-brand-navy text-xs border border-neutral-border"
               >
                 {step.label}
                 <button
                   type="button"
                   onClick={() => removeJourneyStep(idx)}
-                  className="text-slate-400 hover:text-red-400 font-bold ml-1"
+                  className="text-neutral-muted hover:text-red-500 font-bold ml-1"
                 >
                   ×
                 </button>
@@ -326,53 +292,42 @@ export function AboutForm() {
         </div>
       </div>
 
-      {/* 04. Cómo te acompañamos */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-        <h3 className="font-sora font-bold text-lg text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-          Cómo te acompañamos
-        </h3>
+      {/* 4. Cómo te acompañamos */}
+      <div className="bg-white border border-neutral-border shadow-sm rounded-2xl p-6 sm:p-8 space-y-6">
+        <h2 className="font-sora font-bold text-lg text-brand-navy">4. Cómo te acompañamos</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Badge / Distintivo
-            </label>
-            <input
+            <FormField
+              label="Badge / Distintivo"
               type="text"
               value={formData.accompanyBadge || ""}
               onChange={(e) => updateField("accompanyBadge", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Título de sección
-            </label>
-            <input
+            <FormField
+              label="Título de sección"
               type="text"
               value={formData.accompanyTitle || ""}
               onChange={(e) => updateField("accompanyTitle", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Subtítulo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo"
+            multiline
             rows={2}
             value={formData.accompanySubtitle || ""}
             onChange={(e) => updateField("accompanySubtitle", e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         {/* Accompany Steps */}
         <div className="space-y-3 pt-2">
-          <label className="block text-xs font-semibold text-slate-400 uppercase">
+          <label className="block text-xs font-semibold text-neutral-muted uppercase">
             Pasos verticales (título + descripción)
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -381,14 +336,14 @@ export function AboutForm() {
               value={newAccompanyStepTitle}
               onChange={(e) => setNewAccompanyStepTitle(e.target.value)}
               placeholder="Título del paso"
-              className="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:outline-none focus:border-brand-accent"
+              className="bg-neutral-soft border border-neutral-border rounded-xl px-3.5 py-2 text-neutral-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
             <input
               type="text"
               value={newAccompanyStepBody}
               onChange={(e) => setNewAccompanyStepBody(e.target.value)}
               placeholder="Descripción del paso"
-              className="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:outline-none focus:border-brand-accent"
+              className="bg-neutral-soft border border-neutral-border rounded-xl px-3.5 py-2 text-neutral-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
           </div>
           <Button type="button" variant="secondary" onClick={addAccompanyStep} className="!py-2 text-xs">
@@ -399,16 +354,16 @@ export function AboutForm() {
             {formData.accompanySteps.map((step, idx) => (
               <div
                 key={idx}
-                className="flex items-start justify-between gap-3 bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-2.5"
+                className="flex items-start justify-between gap-3 bg-neutral-soft border border-neutral-border rounded-xl px-4 py-2.5"
               >
                 <div>
-                  <p className="text-white text-sm font-semibold">{step.title}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{step.body}</p>
+                  <p className="text-brand-navy text-sm font-semibold">{step.title}</p>
+                  <p className="text-neutral-muted text-xs mt-0.5">{step.body}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => removeAccompanyStep(idx)}
-                  className="text-slate-400 hover:text-red-400 font-bold shrink-0"
+                  className="text-neutral-muted hover:text-red-500 font-bold shrink-0"
                 >
                   ×
                 </button>
@@ -419,36 +374,28 @@ export function AboutForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Cita (Promesa Humana)
-            </label>
-            <textarea
+            <FormField
+              label="Cita (Promesa Humana)"
+              multiline
               rows={2}
               value={formData.accompanyQuote || ""}
               onChange={(e) => updateField("accompanyQuote", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Atribución de la Cita
-            </label>
-            <input
+            <FormField
+              label="Atribución de la Cita"
               type="text"
               value={formData.accompanyQuoteAttribution || ""}
               onChange={(e) => updateField("accompanyQuoteAttribution", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
         </div>
       </div>
 
-      {/* 05. Experiencias que humanizan */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-        <h3 className="font-sora font-bold text-lg text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-accent" />
-          Experiencias que humanizan
-        </h3>
+      {/* 5. Experiencias que humanizan */}
+      <div className="bg-white border border-neutral-border shadow-sm rounded-2xl p-6 sm:p-8 space-y-6">
+        <h2 className="font-sora font-bold text-lg text-brand-navy">5. Experiencias que humanizan</h2>
 
         <HeroPhotoSlot
           variant="main"
@@ -463,44 +410,36 @@ export function AboutForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Badge / Distintivo
-            </label>
-            <input
+            <FormField
+              label="Badge / Distintivo"
               type="text"
               value={formData.momentsBadge || ""}
               onChange={(e) => updateField("momentsBadge", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Título de sección
-            </label>
-            <input
+            <FormField
+              label="Título de sección"
               type="text"
               value={formData.momentsTitle || ""}
               onChange={(e) => updateField("momentsTitle", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Subtítulo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo"
+            multiline
             rows={2}
             value={formData.momentsSubtitle || ""}
             onChange={(e) => updateField("momentsSubtitle", e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         {/* Moments */}
         <div className="space-y-3 pt-2">
-          <label className="block text-xs font-semibold text-slate-400 uppercase">
+          <label className="block text-xs font-semibold text-neutral-muted uppercase">
             Momentos numerados (título + descripción)
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -509,14 +448,14 @@ export function AboutForm() {
               value={newMomentTitle}
               onChange={(e) => setNewMomentTitle(e.target.value)}
               placeholder="Título del momento"
-              className="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:outline-none focus:border-brand-accent"
+              className="bg-neutral-soft border border-neutral-border rounded-xl px-3.5 py-2 text-neutral-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
             <input
               type="text"
               value={newMomentBody}
               onChange={(e) => setNewMomentBody(e.target.value)}
               placeholder="Descripción del momento"
-              className="bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:outline-none focus:border-brand-accent"
+              className="bg-neutral-soft border border-neutral-border rounded-xl px-3.5 py-2 text-neutral-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent"
             />
           </div>
           <Button type="button" variant="secondary" onClick={addMoment} className="!py-2 text-xs">
@@ -527,16 +466,16 @@ export function AboutForm() {
             {formData.moments.map((moment, idx) => (
               <div
                 key={idx}
-                className="flex items-start justify-between gap-3 bg-slate-800/60 border border-slate-700 rounded-xl px-4 py-2.5"
+                className="flex items-start justify-between gap-3 bg-neutral-soft border border-neutral-border rounded-xl px-4 py-2.5"
               >
                 <div>
-                  <p className="text-white text-sm font-semibold">{moment.title}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{moment.body}</p>
+                  <p className="text-brand-navy text-sm font-semibold">{moment.title}</p>
+                  <p className="text-neutral-muted text-xs mt-0.5">{moment.body}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => removeMoment(idx)}
-                  className="text-slate-400 hover:text-red-400 font-bold shrink-0"
+                  className="text-neutral-muted hover:text-red-500 font-bold shrink-0"
                 >
                   ×
                 </button>
@@ -546,71 +485,63 @@ export function AboutForm() {
         </div>
       </div>
 
-      {/* 06. Una persona al otro lado */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-        <h3 className="font-sora font-bold text-lg text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-brand-sunset" />
-          Una persona al otro lado
-        </h3>
-        <p className="font-inter text-xs text-slate-400 -mt-3">
-          Solo la cabecera es editable — las burbujas de conversación de ejemplo quedan fijas en el sitio público.
-        </p>
+      {/* 6. Una persona al otro lado */}
+      <div className="bg-white border border-neutral-border shadow-sm rounded-2xl p-6 sm:p-8 space-y-6">
+        <div>
+          <h2 className="font-sora font-bold text-lg text-brand-navy">6. Una persona al otro lado</h2>
+          <p className="font-inter text-xs text-neutral-muted mt-1">
+            Solo la cabecera es editable — las burbujas de conversación de ejemplo quedan fijas en el sitio público.
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Badge / Distintivo
-            </label>
-            <input
+            <FormField
+              label="Badge / Distintivo"
               type="text"
               value={formData.humanBadge || ""}
               onChange={(e) => updateField("humanBadge", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-              Título de sección
-            </label>
-            <input
+            <FormField
+              label="Título de sección"
               type="text"
               value={formData.humanTitle || ""}
               onChange={(e) => updateField("humanTitle", e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Subtítulo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo"
+            multiline
             rows={2}
             value={formData.humanSubtitle || ""}
             onChange={(e) => updateField("humanSubtitle", e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase">
-            Tagline (Ej: TE LEE · TE ORIENTA · PERMANECE)
-          </label>
-          <input
+          <FormField
+            label="Tagline (Ej: TE LEE · TE ORIENTA · PERMANECE)"
             type="text"
             value={formData.humanTagline || ""}
             onChange={(e) => updateField("humanTagline", e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white text-sm focus:outline-none focus:border-brand-accent"
           />
         </div>
       </div>
 
-      {/* Save Button */}
-      <div className="flex justify-end pt-4">
-        <Button type="submit" variant="primary" disabled={saving} className="px-8 !py-3">
-          {saving ? "Guardando..." : "Guardar Cambios Institucionales"}
-        </Button>
+      {/* Save Button — fijo al fondo del viewport, siempre alcanzable sin scrollear hasta el final */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-border bg-neutral-soft/95 backdrop-blur lg:left-64">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8">
+          <div className="flex justify-end gap-4 py-4 max-w-4xl">
+            <Button variant="primary" size="lg" type="submit" disabled={saving}>
+              {saving ? "Guardando..." : "Guardar Cambios Institucionales"}
+            </Button>
+          </div>
+        </div>
       </div>
     </form>
   );

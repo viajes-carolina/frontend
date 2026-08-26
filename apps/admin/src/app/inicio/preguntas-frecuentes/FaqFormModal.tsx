@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, CloseIcon, FormField } from "@vc/ui";
+import { Button, FormField, Modal } from "@vc/ui";
 
 export interface FaqFormModalProps {
   isOpen: boolean;
@@ -39,30 +39,13 @@ export function FaqFormModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-neutral-border p-6 sm:p-8 space-y-6 my-8">
-
-        {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-neutral-border">
-          <div>
-            <h2 className="font-sora font-bold text-xl text-brand-navy">
-              {isEditing ? "Editar Pregunta Frecuente" : "Nueva Pregunta Frecuente (FAQ)"}
-            </h2>
-            <p className="font-inter text-xs text-neutral-muted mt-0.5">
-              Añade respuestas claras para resolver dudas recurrentes de los viajeros.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 rounded-xl text-neutral-muted hover:text-brand-navy hover:bg-neutral-surface transition-colors"
-          >
-            <CloseIcon size={20} />
-          </button>
-        </div>
-
-        {/* Form Body */}
-        <form onSubmit={onSubmit} className="space-y-5">
+    <Modal
+      title={isEditing ? "Editar Pregunta Frecuente" : "Nueva Pregunta Frecuente (FAQ)"}
+      description="Añade respuestas claras para resolver dudas recurrentes de los viajeros."
+      onClose={onClose}
+    >
+      {/* Form Body */}
+      <form onSubmit={onSubmit} className="space-y-5">
           <div>
             <FormField
               label="Pregunta Frecuente"
@@ -133,7 +116,6 @@ export function FaqFormModal({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

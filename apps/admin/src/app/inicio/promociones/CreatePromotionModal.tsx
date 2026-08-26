@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, CloseIcon, FormField } from "@vc/ui";
+import { Button, FormField, Modal } from "@vc/ui";
 import { HeroPhotoSlot } from "../../../components/HeroPhotoSlot";
 import { slugify } from "../../../lib/promotionPricing";
 import type { MediaAssetDTO } from "@vc/api-client";
@@ -84,28 +84,15 @@ export function CreatePromotionModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-neutral-border p-6 sm:p-8 space-y-6 my-8 max-h-[90vh] overflow-y-auto">
-        {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-neutral-border">
-          <div>
-            <h2 className="font-sora font-bold text-xl text-brand-navy">Nueva Promoción de Viaje</h2>
-            <p className="font-inter text-xs text-neutral-muted mt-0.5">
-              Al crearla se publica automáticamente un post en la Página de Facebook con estos datos.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Cerrar formulario de nueva promoción"
-            className="p-2 rounded-xl text-neutral-muted hover:text-brand-navy hover:bg-neutral-surface transition-colors"
-          >
-            <CloseIcon size={20} />
-          </button>
-        </div>
-
-        {/* Form Body */}
-        <form onSubmit={onSubmit} className="space-y-5">
+    <Modal
+      title="Nueva Promoción de Viaje"
+      description="Al crearla se publica automáticamente un post en la Página de Facebook con estos datos."
+      onClose={onClose}
+      maxWidth="3xl"
+      closeLabel="Cerrar formulario de nueva promoción"
+    >
+      {/* Form Body */}
+      <form onSubmit={onSubmit} className="space-y-5">
           {/* Section: Contenido */}
           <p className="text-xs font-bold text-brand-navy uppercase tracking-wider">Contenido</p>
 
@@ -306,7 +293,6 @@ export function CreatePromotionModal({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

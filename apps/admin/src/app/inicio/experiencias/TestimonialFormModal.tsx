@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Button, CloseIcon, FormField, ImageIcon, MediaPickerModal, StarIcon } from "@vc/ui";
+import { Button, FormField, ImageIcon, MediaPickerModal, Modal, StarIcon } from "@vc/ui";
 import { MediaAssetDTO } from "@vc/api-client";
 
 export interface TestimonialFormModalProps {
@@ -71,30 +71,13 @@ export function TestimonialFormModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
-      <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-neutral-border p-6 sm:p-8 space-y-6 my-8">
-
-        {/* Modal Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-neutral-border">
-          <div>
-            <h2 className="font-sora font-bold text-xl text-brand-navy">
-              {isEditing ? "Editar Testimonio de Viajero" : "Nuevo Testimonio"}
-            </h2>
-            <p className="font-inter text-xs text-neutral-muted mt-0.5">
-              Registra la experiencia real de un cliente con consentimiento expreso.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 rounded-xl text-neutral-muted hover:text-brand-navy hover:bg-neutral-surface transition-colors"
-          >
-            <CloseIcon size={20} />
-          </button>
-        </div>
-
-        {/* Form Body */}
-        <form onSubmit={onSubmit} className="space-y-5">
+    <Modal
+      title={isEditing ? "Editar Testimonio de Viajero" : "Nuevo Testimonio"}
+      description="Registra la experiencia real de un cliente con consentimiento expreso."
+      onClose={onClose}
+    >
+      {/* Form Body */}
+      <form onSubmit={onSubmit} className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <FormField
@@ -247,7 +230,6 @@ export function TestimonialFormModal({
           onFocalPointSave={onAvatarFocalPointSave}
           title="Seleccionar Fotografía de Cliente"
         />
-      </div>
-    </div>
+    </Modal>
   );
 }
