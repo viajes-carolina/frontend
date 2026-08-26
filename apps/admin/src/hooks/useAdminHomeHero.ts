@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { HomeHeroDTO, MediaAssetDTO, apiClient } from "@vc/api-client";
 
 export function useAdminHomeHero(initialHero: HomeHeroDTO) {
@@ -73,6 +73,11 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
   const [backgroundFocalX, setBackgroundFocalX] = useState<number>(initialHero.backgroundFocalX || 50);
   const [backgroundFocalY, setBackgroundFocalY] = useState<number>(initialHero.backgroundFocalY || 50);
 
+  // Último snapshot guardado/cargado (mismo shape que el `payload` de
+  // handleSave), usado solo para comparación de "dirty" — no reemplaza los
+  // ~26 useState individuales de arriba.
+  const snapshotRef = useRef<Record<string, unknown> | null>(null);
+
   // Fresh rehydration on mount
   useEffect(() => {
     apiClient.getHomeHero().then((fresh) => {
@@ -105,6 +110,36 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         setSecondaryMedia3FocalY(fresh.secondaryMedia3FocalY || 50);
         setTrustStatText(fresh.trustStatText || "");
         setEyebrowText(fresh.eyebrowText || "");
+
+        snapshotRef.current = {
+          badgeText: fresh.badgeText,
+          titleHighlight: fresh.titleHighlight,
+          titleAccent: fresh.titleAccent,
+          description: fresh.description,
+          whatsappCtaText: fresh.whatsappCtaText,
+          whatsappMessageOverride: fresh.whatsappMessageOverride || "",
+          secondaryCtaText: fresh.secondaryCtaText || "",
+          secondaryCtaUrl: fresh.secondaryCtaUrl || "",
+          trustIndicators: fresh.trustIndicators || [],
+          backgroundMediaId: fresh.backgroundMediaId,
+          backgroundMediaUrl: fresh.backgroundMediaUrl,
+          backgroundFocalX: fresh.backgroundFocalX || 50,
+          backgroundFocalY: fresh.backgroundFocalY || 50,
+          secondaryMedia1Id: fresh.secondaryMedia1Id,
+          secondaryMedia1Url: fresh.secondaryMedia1Url,
+          secondaryMedia1FocalX: fresh.secondaryMedia1FocalX || 50,
+          secondaryMedia1FocalY: fresh.secondaryMedia1FocalY || 50,
+          secondaryMedia2Id: fresh.secondaryMedia2Id,
+          secondaryMedia2Url: fresh.secondaryMedia2Url,
+          secondaryMedia2FocalX: fresh.secondaryMedia2FocalX || 50,
+          secondaryMedia2FocalY: fresh.secondaryMedia2FocalY || 50,
+          secondaryMedia3Id: fresh.secondaryMedia3Id,
+          secondaryMedia3Url: fresh.secondaryMedia3Url,
+          secondaryMedia3FocalX: fresh.secondaryMedia3FocalX || 50,
+          secondaryMedia3FocalY: fresh.secondaryMedia3FocalY || 50,
+          trustStatText: fresh.trustStatText || "",
+          eyebrowText: fresh.eyebrowText || "",
+        };
       }
     });
   }, []);
@@ -136,6 +171,102 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     setSecondaryMedia3FocalX(media.focalX || 50);
     setSecondaryMedia3FocalY(media.focalY || 50);
   };
+
+  // Comparación directa del shape de estados actuales vs. el último snapshot
+  // guardado/cargado — evita trackear "dirty" campo por campo mientras el
+  // editor navega entre secciones.
+  const isDirty = useMemo(() => {
+    const current: Record<string, unknown> = {
+      badgeText,
+      titleHighlight,
+      titleAccent,
+      description,
+      whatsappCtaText,
+      whatsappMessageOverride,
+      secondaryCtaText,
+      secondaryCtaUrl,
+      trustIndicators,
+      backgroundMediaId,
+      backgroundMediaUrl,
+      backgroundFocalX,
+      backgroundFocalY,
+      secondaryMedia1Id,
+      secondaryMedia1Url,
+      secondaryMedia1FocalX,
+      secondaryMedia1FocalY,
+      secondaryMedia2Id,
+      secondaryMedia2Url,
+      secondaryMedia2FocalX,
+      secondaryMedia2FocalY,
+      secondaryMedia3Id,
+      secondaryMedia3Url,
+      secondaryMedia3FocalX,
+      secondaryMedia3FocalY,
+      trustStatText,
+      eyebrowText,
+    };
+    return snapshotRef.current != null && JSON.stringify(current) !== JSON.stringify(snapshotRef.current);
+  }, [
+    badgeText,
+    titleHighlight,
+    titleAccent,
+    description,
+    whatsappCtaText,
+    whatsappMessageOverride,
+    secondaryCtaText,
+    secondaryCtaUrl,
+    trustIndicators,
+    backgroundMediaId,
+    backgroundMediaUrl,
+    backgroundFocalX,
+    backgroundFocalY,
+    secondaryMedia1Id,
+    secondaryMedia1Url,
+    secondaryMedia1FocalX,
+    secondaryMedia1FocalY,
+    secondaryMedia2Id,
+    secondaryMedia2Url,
+    secondaryMedia2FocalX,
+    secondaryMedia2FocalY,
+    secondaryMedia3Id,
+    secondaryMedia3Url,
+    secondaryMedia3FocalX,
+    secondaryMedia3FocalY,
+    trustStatText,
+    eyebrowText,
+  ]);
+
+  const discardChanges = useCallback(() => {
+    const snap = snapshotRef.current;
+    if (!snap) return;
+    setBadgeText(snap.badgeText as string);
+    setTitleHighlight(snap.titleHighlight as string);
+    setTitleAccent(snap.titleAccent as string);
+    setDescription(snap.description as string);
+    setWhatsappCtaText(snap.whatsappCtaText as string);
+    setWhatsappMessageOverride(snap.whatsappMessageOverride as string);
+    setSecondaryCtaText(snap.secondaryCtaText as string);
+    setSecondaryCtaUrl(snap.secondaryCtaUrl as string);
+    setTrustIndicators(snap.trustIndicators as string[]);
+    setBackgroundMediaId(snap.backgroundMediaId as number | undefined);
+    setBackgroundMediaUrl(snap.backgroundMediaUrl as string | undefined);
+    setBackgroundFocalX(snap.backgroundFocalX as number);
+    setBackgroundFocalY(snap.backgroundFocalY as number);
+    setSecondaryMedia1Id(snap.secondaryMedia1Id as number | undefined);
+    setSecondaryMedia1Url(snap.secondaryMedia1Url as string | undefined);
+    setSecondaryMedia1FocalX(snap.secondaryMedia1FocalX as number);
+    setSecondaryMedia1FocalY(snap.secondaryMedia1FocalY as number);
+    setSecondaryMedia2Id(snap.secondaryMedia2Id as number | undefined);
+    setSecondaryMedia2Url(snap.secondaryMedia2Url as string | undefined);
+    setSecondaryMedia2FocalX(snap.secondaryMedia2FocalX as number);
+    setSecondaryMedia2FocalY(snap.secondaryMedia2FocalY as number);
+    setSecondaryMedia3Id(snap.secondaryMedia3Id as number | undefined);
+    setSecondaryMedia3Url(snap.secondaryMedia3Url as string | undefined);
+    setSecondaryMedia3FocalX(snap.secondaryMedia3FocalX as number);
+    setSecondaryMedia3FocalY(snap.secondaryMedia3FocalY as number);
+    setTrustStatText(snap.trustStatText as string);
+    setEyebrowText(snap.eyebrowText as string);
+  }, []);
 
   const handleSave = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -175,6 +306,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
 
       const updated = await apiClient.updateHomeHero(payload);
       setHero(updated);
+      snapshotRef.current = { ...payload };
       setStatusMessage("Sección Hero actualizada y publicada exitosamente.");
     } catch (err) {
       console.error(err);
@@ -204,6 +336,8 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     eyebrowText, setEyebrowText,
     isSaving,
     statusMessage,
+    isDirty,
+    discardChanges,
     handleSelectBgMedia,
     handleSelectSecondary1Media,
     handleSelectSecondary2Media,

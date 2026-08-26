@@ -1,21 +1,22 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { HomeHeroDTO } from "@vc/api-client";
 import { useAdminHomeHero } from "../../hooks/useAdminHomeHero";
-import { Button, CheckIcon, ChevronDownIcon, FormField } from "@vc/ui";
+import { useUnsavedChangesGuard } from "../../hooks/useUnsavedChangesGuard";
+import { CheckIcon, Disclosure, FormField, SaveBar, SectionRail, type SectionRailItem } from "@vc/ui";
 import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 
 export interface HeroFormProps {
   initialHero: HomeHeroDTO;
 }
 
-const ANCHOR_LINKS = [
-  { id: "titulares", label: "Titulares" },
-  { id: "botones", label: "Botones" },
-  { id: "confianza", label: "Confianza" },
-  { id: "fotos", label: "Fotos" },
+const SECTION_DEFINITIONS: { id: string; label: string }[] = [
+  { id: "titulares", label: "Titulares & Mensaje Principal" },
+  { id: "botones", label: "Botones de Acción & Conversación" },
+  { id: "confianza", label: "Línea de Confianza" },
+  { id: "fotos", label: "Collage de fotos de clientes" },
 ];
 
 export function HeroForm({ initialHero }: HeroFormProps) {
@@ -37,12 +38,24 @@ export function HeroForm({ initialHero }: HeroFormProps) {
     trustStatText, setTrustStatText,
     isSaving,
     statusMessage,
+    isDirty,
+    discardChanges,
     handleSelectBgMedia,
     handleSelectSecondary1Media,
     handleSelectSecondary2Media,
     handleSelectSecondary3Media,
     handleSave,
   } = useAdminHomeHero(initialHero);
+
+  const [activeSection, setActiveSection] = useState("titulares");
+
+  useUnsavedChangesGuard(isDirty);
+
+  // No hay una forma barata de saber qué sub-sección específica cambió sin
+  // trackear cada campo por separado — como simplificación, el punto de
+  // "modificado" se muestra en las 4 secciones mientras exista cualquier
+  // cambio pendiente en el formulario completo.
+  const sectionItems: SectionRailItem[] = SECTION_DEFINITIONS.map((def) => ({ ...def, modified: isDirty }));
 
   const updateTrustIndicator = (index: number, value: string) => {
     const updated = [...trustIndicators];
@@ -55,10 +68,10 @@ export function HeroForm({ initialHero }: HeroFormProps) {
     : "/media/demo-cartagena-caribe.webp";
 
   return (
-    <form onSubmit={handleSave} className="space-y-8 max-w-4xl pb-24 scroll-smooth">
+    <>
       {/* Notifications */}
       {statusMessage && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3">
+        <div className="mb-8 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3">
           <CheckIcon size={20} className="text-emerald-600 shrink-0" />
           <span className="font-medium text-sm">{statusMessage}</span>
         </div>
@@ -66,7 +79,7 @@ export function HeroForm({ initialHero }: HeroFormProps) {
 
       {/* Vista previa simplificada — el Hero real es marfil con collage de 3 fotos,
           esta tarjeta solo confirma texto/CTA y la foto principal, no replica el collage completo */}
-      <div className="rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-sm border border-neutral-border bg-surface-ivory min-h-[280px] flex flex-col justify-between">
+      <div className="mb-8 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-sm border border-neutral-border bg-surface-ivory min-h-[280px] flex flex-col justify-between max-w-4xl">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-neutral-border">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -121,248 +134,246 @@ export function HeroForm({ initialHero }: HeroFormProps) {
         </div>
       </div>
 
-      {/* Nav de anclas internas */}
-      <nav aria-label="Navegación interna del formulario de Hero" className="flex flex-wrap gap-2">
-        {ANCHOR_LINKS.map((link) => (
-          <a
-            key={link.id}
-            href={`#${link.id}`}
-            className="px-3.5 py-1.5 rounded-full bg-white border border-neutral-border font-sora text-xs font-bold text-brand-navy hover:border-brand-accent hover:bg-neutral-surface transition-colors"
-          >
-            {link.label}
-          </a>
-        ))}
-      </nav>
-
-      {/* Section 1: Headline & Main Copy */}
-      <div id="titulares" className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <div>
-          <h2 className="font-sora font-bold text-lg text-brand-navy">
-            1. Titulares & Mensaje Principal (Hero Display)
-          </h2>
-          <p className="font-inter text-xs text-neutral-muted mt-1">
-            Configura la primera impresión que recibirán los viajeros al ingresar a la web.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {/* Badge */}
-          <div>
-            <FormField
-              label="Insignia Superior (Pill Eyebrow)"
-              type="text"
-              value={eyebrowText}
-              onChange={(e) => setEyebrowText(e.target.value)}
-              placeholder="Ej: Empieza con una conversación"
-            />
-          </div>
-
-          {/* Title and Accent */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <FormField
-                label="Título Principal (Blanco)"
-                type="text"
-                value={titleHighlight}
-                onChange={(e) => setTitleHighlight(e.target.value)}
-                placeholder="Ej: Tu viaje comienza"
-                required
-              />
-            </div>
-            <div>
-              <FormField
-                label="Texto de Acento (Naranja Sunset)"
-                type="text"
-                value={titleAccent}
-                onChange={(e) => setTitleAccent(e.target.value)}
-                placeholder="Ej: antes de despegar"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div>
-            <FormField
-              label="Descripción de Acompañamiento"
-              multiline
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Desde la primera idea hasta tu regreso, una asesora te acompaña..."
-              required
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Section 2: Actions & WhatsApp */}
-      <div id="botones" className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <div>
-          <h2 className="font-sora font-bold text-lg text-brand-navy">
-            2. Botones de Acción & Conversación
-          </h2>
-          <p className="font-inter text-xs text-neutral-muted mt-1">
-            Personaliza el texto del botón principal de WhatsApp y el botón secundario de exploración.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <FormField
-              label="Texto del Botón WhatsApp"
-              type="text"
-              value={whatsappCtaText}
-              onChange={(e) => setWhatsappCtaText(e.target.value)}
-              placeholder="Ej: Cuéntame tu viaje"
-              required
-            />
-          </div>
-          <div>
-            <FormField
-              label="Mensaje Predefinido para WhatsApp"
-              type="text"
-              value={whatsappMessageOverride}
-              onChange={(e) => setWhatsappMessageOverride(e.target.value)}
-              placeholder="Ej: Hola Viajes Carolina, quiero empezar a planear mi próximo viaje."
-            />
-          </div>
-          <div>
-            <FormField
-              label="Texto Botón Secundario (Opcional)"
-              type="text"
-              value={secondaryCtaText}
-              onChange={(e) => setSecondaryCtaText(e.target.value)}
-              placeholder="Ej: Explorar promociones"
-            />
-          </div>
-          <div>
-            <FormField
-              label="Enlace Botón Secundario (URL o Ancla)"
-              type="text"
-              value={secondaryCtaUrl}
-              onChange={(e) => setSecondaryCtaUrl(e.target.value)}
-              placeholder="Ej: #promociones o /promociones"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Section 3: Trust Indicators */}
-      <div id="confianza" className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <div>
-          <h2 className="font-sora font-bold text-lg text-brand-navy">
-            3. Línea de Confianza
-          </h2>
-          <p className="font-inter text-xs text-neutral-muted mt-1">
-            Frase con ícono de corazón mostrada bajo el botón de WhatsApp del Hero.
-          </p>
-        </div>
-
-        <div>
-          <FormField
-            label="Texto de confianza (con cifra real, no inventada)"
-            type="text"
-            value={trustStatText}
-            onChange={(e) => setTrustStatText(e.target.value)}
-            placeholder="Ej: Más de 1,000 viajeros han confiado en nosotros para vivir recuerdos inolvidables."
-          />
-        </div>
-
-        <details className="group pt-4 border-t border-neutral-border">
-          <summary className="flex items-center gap-2 cursor-pointer select-none list-none font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted">
-            <ChevronDownIcon size={14} className="shrink-0 transition-transform group-open:rotate-180" />
-            Campos heredados (sin uso actual en el Hero)
-          </summary>
-
-          <p className="font-inter text-xs text-neutral-muted mt-3 mb-3">
-            Los 3 pilares de abajo (Asesoría sin costo, etc.) quedan guardados pero no se muestran en el Hero actual — se usaban en un diseño anterior. Se conservan por si se necesitan en otra sección.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[0, 1, 2].map((idx) => (
-              <div key={idx}>
-                <FormField
-                  label={`Pilar #${idx + 1}`}
-                  type="text"
-                  value={trustIndicators[idx] || ""}
-                  onChange={(e) => updateTrustIndicator(idx, e.target.value)}
-                  placeholder={`Pilar ${idx + 1}`}
-                />
-              </div>
-            ))}
-          </div>
-        </details>
-      </div>
-
-      {/* Section 4: Collage de fotos de clientes */}
-      <div id="fotos" className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <div>
-          <h2 className="font-sora font-bold text-lg text-brand-navy">
-            4. Collage de fotos de clientes
-          </h2>
-          <p className="font-inter text-xs text-neutral-muted mt-1">
-            1 foto principal + 3 fotos de apoyo, siempre de clientes reales viviendo su viaje — nunca fotos del equipo de la agencia. Sin foto, el Hero muestra un placeholder de color, no una imagen de archivo.
-          </p>
-        </div>
-
-        <HeroPhotoSlot
-          variant="main"
-          label="Foto Principal (grande)"
-          mediaId={backgroundMediaId}
-          mediaUrl={backgroundMediaUrl}
-          focalX={backgroundFocalX}
-          focalY={backgroundFocalY}
-          onSelect={handleSelectBgMedia}
-          modalTitle="Seleccionar Foto Principal del Hero"
+      <div className="flex gap-8 pb-24">
+        <SectionRail
+          items={sectionItems}
+          activeId={activeSection}
+          onSelect={setActiveSection}
+          className="w-64 shrink-0"
         />
 
-        <div className="pt-2 border-t border-neutral-border grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <HeroPhotoSlot
-            label="Foto de Apoyo 1 (arriba)"
-            mediaId={secondaryMedia1Id}
-            mediaUrl={secondaryMedia1Url}
-            focalX={secondaryMedia1FocalX}
-            focalY={secondaryMedia1FocalY}
-            onSelect={handleSelectSecondary1Media}
-            modalTitle="Seleccionar Foto de Apoyo 1"
-          />
-          <HeroPhotoSlot
-            label="Foto de Apoyo 2 (lateral)"
-            helperText="Solo visible en pantallas de escritorio."
-            mediaId={secondaryMedia2Id}
-            mediaUrl={secondaryMedia2Url}
-            focalX={secondaryMedia2FocalX}
-            focalY={secondaryMedia2FocalY}
-            onSelect={handleSelectSecondary2Media}
-            modalTitle="Seleccionar Foto de Apoyo 2"
-          />
-          <HeroPhotoSlot
-            label="Foto de Apoyo 3 (abajo)"
-            mediaId={secondaryMedia3Id}
-            mediaUrl={secondaryMedia3Url}
-            focalX={secondaryMedia3FocalX}
-            focalY={secondaryMedia3FocalY}
-            onSelect={handleSelectSecondary3Media}
-            modalTitle="Seleccionar Foto de Apoyo 3"
-          />
+        <div className="flex-1 min-w-0 max-w-4xl">
+          {/* 1. Titulares & Mensaje Principal */}
+          {activeSection === "titulares" && (
+            <div role="tabpanel" id="panel-titulares" aria-labelledby="tab-titulares">
+              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+                <div>
+                  <h2 className="font-sora font-bold text-lg text-brand-navy">
+                    1. Titulares & Mensaje Principal (Hero Display)
+                  </h2>
+                  <p className="font-inter text-xs text-neutral-muted mt-1">
+                    Configura la primera impresión que recibirán los viajeros al ingresar a la web.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <FormField
+                      label="Insignia Superior (Pill Eyebrow)"
+                      type="text"
+                      value={eyebrowText}
+                      onChange={(e) => setEyebrowText(e.target.value)}
+                      placeholder="Ej: Empieza con una conversación"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <FormField
+                        label="Título Principal (Blanco)"
+                        type="text"
+                        value={titleHighlight}
+                        onChange={(e) => setTitleHighlight(e.target.value)}
+                        placeholder="Ej: Tu viaje comienza"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <FormField
+                        label="Texto de Acento (Naranja Sunset)"
+                        type="text"
+                        value={titleAccent}
+                        onChange={(e) => setTitleAccent(e.target.value)}
+                        placeholder="Ej: antes de despegar"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <FormField
+                      label="Descripción de Acompañamiento"
+                      multiline
+                      rows={3}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Desde la primera idea hasta tu regreso, una asesora te acompaña..."
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 2. Botones de Acción & Conversación */}
+          {activeSection === "botones" && (
+            <div role="tabpanel" id="panel-botones" aria-labelledby="tab-botones">
+              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+                <div>
+                  <h2 className="font-sora font-bold text-lg text-brand-navy">
+                    2. Botones de Acción & Conversación
+                  </h2>
+                  <p className="font-inter text-xs text-neutral-muted mt-1">
+                    Personaliza el texto del botón principal de WhatsApp y el botón secundario de exploración.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <FormField
+                      label="Texto del Botón WhatsApp"
+                      type="text"
+                      value={whatsappCtaText}
+                      onChange={(e) => setWhatsappCtaText(e.target.value)}
+                      placeholder="Ej: Cuéntame tu viaje"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <FormField
+                      label="Mensaje Predefinido para WhatsApp"
+                      type="text"
+                      value={whatsappMessageOverride}
+                      onChange={(e) => setWhatsappMessageOverride(e.target.value)}
+                      placeholder="Ej: Hola Viajes Carolina, quiero empezar a planear mi próximo viaje."
+                    />
+                  </div>
+                  <div>
+                    <FormField
+                      label="Texto Botón Secundario (Opcional)"
+                      type="text"
+                      value={secondaryCtaText}
+                      onChange={(e) => setSecondaryCtaText(e.target.value)}
+                      placeholder="Ej: Explorar promociones"
+                    />
+                  </div>
+                  <div>
+                    <FormField
+                      label="Enlace Botón Secundario (URL o Ancla)"
+                      type="text"
+                      value={secondaryCtaUrl}
+                      onChange={(e) => setSecondaryCtaUrl(e.target.value)}
+                      placeholder="Ej: #promociones o /promociones"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 3. Línea de Confianza */}
+          {activeSection === "confianza" && (
+            <div role="tabpanel" id="panel-confianza" aria-labelledby="tab-confianza">
+              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+                <div>
+                  <h2 className="font-sora font-bold text-lg text-brand-navy">
+                    3. Línea de Confianza
+                  </h2>
+                  <p className="font-inter text-xs text-neutral-muted mt-1">
+                    Frase con ícono de corazón mostrada bajo el botón de WhatsApp del Hero.
+                  </p>
+                </div>
+
+                <div>
+                  <FormField
+                    label="Texto de confianza (con cifra real, no inventada)"
+                    type="text"
+                    value={trustStatText}
+                    onChange={(e) => setTrustStatText(e.target.value)}
+                    placeholder="Ej: Más de 1,000 viajeros han confiado en nosotros para vivir recuerdos inolvidables."
+                  />
+                </div>
+
+                <Disclosure summary="Campos heredados (sin uso actual en el Hero)">
+                  <p className="font-inter text-xs text-neutral-muted mb-3">
+                    Los 3 pilares de abajo (Asesoría sin costo, etc.) quedan guardados pero no se muestran en el Hero actual — se usaban en un diseño anterior. Se conservan por si se necesitan en otra sección.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[0, 1, 2].map((idx) => (
+                      <div key={idx}>
+                        <FormField
+                          label={`Pilar #${idx + 1}`}
+                          type="text"
+                          value={trustIndicators[idx] || ""}
+                          onChange={(e) => updateTrustIndicator(idx, e.target.value)}
+                          placeholder={`Pilar ${idx + 1}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </Disclosure>
+              </div>
+            </div>
+          )}
+
+          {/* 4. Collage de fotos de clientes */}
+          {activeSection === "fotos" && (
+            <div role="tabpanel" id="panel-fotos" aria-labelledby="tab-fotos">
+              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
+                <div>
+                  <h2 className="font-sora font-bold text-lg text-brand-navy">
+                    4. Collage de fotos de clientes
+                  </h2>
+                  <p className="font-inter text-xs text-neutral-muted mt-1">
+                    1 foto principal + 3 fotos de apoyo, siempre de clientes reales viviendo su viaje — nunca fotos del equipo de la agencia. Sin foto, el Hero muestra un placeholder de color, no una imagen de archivo.
+                  </p>
+                </div>
+
+                <HeroPhotoSlot
+                  variant="main"
+                  label="Foto Principal (grande)"
+                  mediaId={backgroundMediaId}
+                  mediaUrl={backgroundMediaUrl}
+                  focalX={backgroundFocalX}
+                  focalY={backgroundFocalY}
+                  onSelect={handleSelectBgMedia}
+                  modalTitle="Seleccionar Foto Principal del Hero"
+                />
+
+                <div className="pt-2 border-t border-neutral-border grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <HeroPhotoSlot
+                    label="Foto de Apoyo 1 (arriba)"
+                    mediaId={secondaryMedia1Id}
+                    mediaUrl={secondaryMedia1Url}
+                    focalX={secondaryMedia1FocalX}
+                    focalY={secondaryMedia1FocalY}
+                    onSelect={handleSelectSecondary1Media}
+                    modalTitle="Seleccionar Foto de Apoyo 1"
+                  />
+                  <HeroPhotoSlot
+                    label="Foto de Apoyo 2 (lateral)"
+                    helperText="Solo visible en pantallas de escritorio."
+                    mediaId={secondaryMedia2Id}
+                    mediaUrl={secondaryMedia2Url}
+                    focalX={secondaryMedia2FocalX}
+                    focalY={secondaryMedia2FocalY}
+                    onSelect={handleSelectSecondary2Media}
+                    modalTitle="Seleccionar Foto de Apoyo 2"
+                  />
+                  <HeroPhotoSlot
+                    label="Foto de Apoyo 3 (abajo)"
+                    mediaId={secondaryMedia3Id}
+                    mediaUrl={secondaryMedia3Url}
+                    focalX={secondaryMedia3FocalX}
+                    focalY={secondaryMedia3FocalY}
+                    onSelect={handleSelectSecondary3Media}
+                    modalTitle="Seleccionar Foto de Apoyo 3"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Submit Button — fijo al fondo del viewport, siempre alcanzable sin scrollear hasta el final */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-border bg-neutral-soft/95 backdrop-blur lg:left-64">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="flex justify-end gap-4 py-4 max-w-4xl">
-            <Button
-              variant="primary"
-              size="lg"
-              type="submit"
-              disabled={isSaving}
-            >
-              {isSaving ? "Publicando Cambios..." : "Guardar y Publicar Hero"}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </form>
+      <SaveBar
+        dirty={isDirty}
+        saving={isSaving}
+        onSave={() => handleSave()}
+        onDiscard={discardChanges}
+        className="lg:left-64"
+      />
+    </>
   );
 }

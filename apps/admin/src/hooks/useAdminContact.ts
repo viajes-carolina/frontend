@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import type { FormEvent } from "react";
 import { apiClient, ContactPageDTO, UpdateContactPageRequest } from "@vc/api-client";
 
@@ -107,6 +107,18 @@ export function useAdminContact() {
     }
   };
 
+  // Comparación directa formData vs. el snapshot ya guardado (convertido al
+  // mismo shape con toFormData) — evita tener que trackear "dirty" campo por
+  // campo mientras el editor navega entre secciones.
+  const isDirty = useMemo(
+    () => pageSettings != null && JSON.stringify(formData) !== JSON.stringify(toFormData(pageSettings)),
+    [formData, pageSettings]
+  );
+
+  const discardChanges = useCallback(() => {
+    if (pageSettings) setFormData(toFormData(pageSettings));
+  }, [pageSettings]);
+
   return {
     pageSettings,
     formData,
@@ -115,6 +127,8 @@ export function useAdminContact() {
     saving,
     saveSuccess,
     error,
+    isDirty,
+    discardChanges,
     handleSaveSettings,
     refresh: loadData,
   };

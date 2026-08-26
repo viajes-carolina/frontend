@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAdminContact } from "../../hooks/useAdminContact";
+import { useUnsavedChangesGuard } from "../../hooks/useUnsavedChangesGuard";
 import { ContactSettingsForm } from "./ContactSettingsForm";
 import { Button, ArrowUpRightIcon } from "@vc/ui";
 
@@ -14,8 +15,12 @@ export default function AdminContactPage() {
     saving,
     saveSuccess,
     error,
+    isDirty,
+    discardChanges,
     handleSaveSettings,
   } = useAdminContact();
+
+  useUnsavedChangesGuard(isDirty);
 
   if (loading) {
     return (
@@ -55,6 +60,8 @@ export default function AdminContactPage() {
         onSubmit={handleSaveSettings}
         saving={saving}
         saveSuccess={saveSuccess}
+        isDirty={isDirty}
+        discardChanges={discardChanges}
       />
     </div>
   );
