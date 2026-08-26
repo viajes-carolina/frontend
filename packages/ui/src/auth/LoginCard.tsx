@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import type { LoginRequest } from "@vc/api-client";
 import { BRAND_CONFIG } from "@vc/config";
 import { BrandLogo } from "../brand/BrandLogo";
+import { CloseIcon } from "../icons/icons";
 
 export interface LoginCardProps {
   onSubmit: (req: LoginRequest) => Promise<void>;
@@ -55,9 +56,10 @@ export const LoginCard: React.FC<LoginCardProps> = ({
               <button
                 type="button"
                 onClick={onClearError}
+                aria-label="Cerrar mensaje de error"
                 className="text-rose-500 hover:text-rose-700 font-bold text-xs"
               >
-                ✕
+                <CloseIcon size={20} />
               </button>
             )}
           </div>

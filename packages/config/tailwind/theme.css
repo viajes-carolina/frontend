@@ -38,19 +38,6 @@
   /* Solo para h1/h2 de sección y citas del sitio público (apps/web) — nunca en admin. */
   --font-display: "Fraunces", Georgia, serif;
 
-  /* --- Espaciado Oficial Figma --- */
-  --spacing-050: 4px;
-  --spacing-100: 8px;
-  --spacing-150: 12px;
-  --spacing-200: 16px;
-  --spacing-300: 24px;
-  --spacing-400: 32px;
-  --spacing-500: 48px;
-  --spacing-600: 64px;
-  --spacing-700: 96px;
-  --spacing-800: 120px;
-  --spacing-900: 160px;
-
   /* --- Motion Tokens Figma --- */
   --motion-fast: 160ms;
   --motion-base: 320ms;

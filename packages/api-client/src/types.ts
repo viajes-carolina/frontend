@@ -692,10 +692,6 @@ export interface HomePromotionsSectionDTO {
   bottomCtaCopy: string;
   bottomCtaWhatsappText: string;
   bottomCtaWhatsappMessage?: string;
-  mediaId?: number;
-  mediaUrl?: string;
-  mediaFocalX?: number;
-  mediaFocalY?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -709,10 +705,6 @@ export interface UpdateHomePromotionsSectionRequest {
   bottomCtaCopy: string;
   bottomCtaWhatsappText: string;
   bottomCtaWhatsappMessage?: string;
-  mediaId?: number;
-  mediaUrl?: string;
-  mediaFocalX?: number;
-  mediaFocalY?: number;
 }
 
 // Home Testimonials Section DTOs — copy de "05 · Historias reales"
@@ -725,10 +717,6 @@ export interface HomeTestimonialsSectionDTO {
   blobMediaUrl?: string;
   blobFocalX?: number;
   blobFocalY?: number;
-  polaroidMediaId?: number;
-  polaroidMediaUrl?: string;
-  polaroidFocalX?: number;
-  polaroidFocalY?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -741,10 +729,6 @@ export interface UpdateHomeTestimonialsSectionRequest {
   blobMediaUrl?: string;
   blobFocalX?: number;
   blobFocalY?: number;
-  polaroidMediaId?: number;
-  polaroidMediaUrl?: string;
-  polaroidFocalX?: number;
-  polaroidFocalY?: number;
 }
 
 // Home FAQ Section DTOs — copy de "06 · Antes de continuar"

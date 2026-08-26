@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { HomePromotionsSectionDTO } from "@vc/api-client";
+import { FormField } from "@vc/ui";
 import { useAdminPromotionsSection } from "../../hooks/useAdminPromotionsSection";
 
 interface PromotionsSectionFormProps {
@@ -72,42 +73,34 @@ export const PromotionsSectionForm: React.FC<PromotionsSectionFormProps> = ({ in
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="md:col-span-2 pt-2 border-t border-neutral-border">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Badge Superior
-          </label>
-          <input
+          <FormField
+            label="Badge Superior"
             type="text"
             value={config.badgeText}
             onChange={(e) => updateField("badgeText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="02 · Viajes para empezar a imaginar"
             required
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Título
-          </label>
-          <input
+          <FormField
+            label="Título"
             type="text"
             value={config.title}
             onChange={(e) => updateField("title", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Algunas formas de vivir tu próximo viaje"
             required
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Subtítulo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo"
+            multiline
             value={config.subtitle}
             onChange={(e) => updateField("subtitle", e.target.value)}
             rows={2}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Experiencias que podemos ajustar a tus tiempos, compañía y presupuesto."
             required
           />
@@ -120,70 +113,56 @@ export const PromotionsSectionForm: React.FC<PromotionsSectionFormProps> = ({ in
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Eyebrow
-          </label>
-          <input
+          <FormField
+            label="Eyebrow"
             type="text"
             value={config.bottomCtaEyebrow}
             onChange={(e) => updateField("bottomCtaEyebrow", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="SI NINGUNO ENCAJA EXACTAMENTE"
             required
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Título
-          </label>
-          <input
+          <FormField
+            label="Título"
             type="text"
             value={config.bottomCtaQuestion}
             onChange={(e) => updateField("bottomCtaQuestion", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Cuéntanos qué imaginas y lo armamos contigo."
             required
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Copy
-          </label>
-          <textarea
+          <FormField
+            label="Copy"
+            multiline
             value={config.bottomCtaCopy}
             onChange={(e) => updateField("bottomCtaCopy", e.target.value)}
             rows={2}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Fechas, presupuesto y tipo de viaje: una asesora prepara opciones reales para ti."
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Texto del Botón de WhatsApp
-          </label>
-          <input
+          <FormField
+            label="Texto del Botón de WhatsApp"
             type="text"
             value={config.bottomCtaWhatsappText}
             onChange={(e) => updateField("bottomCtaWhatsappText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Cuéntanos cuál te gustó"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Mensaje Prellenado de WhatsApp
-          </label>
-          <input
+          <FormField
+            label="Mensaje Prellenado de WhatsApp"
             type="text"
             value={config.bottomCtaWhatsappMessage || ""}
             onChange={(e) => updateField("bottomCtaWhatsappMessage", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Hola Viajes Carolina, me gustaría conversar sobre una de sus promociones."
           />
         </div>

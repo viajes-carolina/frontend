@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { HomeConversationalPauseDTO } from "@vc/api-client";
+import { FormField } from "@vc/ui";
 import { useAdminConversationalPause } from "../../hooks/useAdminConversationalPause";
 
 interface ConversationalPauseFormProps {
@@ -67,70 +68,58 @@ export const ConversationalPauseForm: React.FC<ConversationalPauseFormProps> = (
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Badge Superior
-          </label>
-          <input
+          <FormField
+            label="Badge Superior"
             type="text"
             value={config.badgeText}
             onChange={(e) => updateField("badgeText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="04 · Antes de seguir"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Texto del Botón de WhatsApp
-          </label>
-          <input
+          <FormField
+            label="Texto del Botón de WhatsApp"
             type="text"
             value={config.whatsappCtaText}
             onChange={(e) => updateField("whatsappCtaText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Conversarlo por WhatsApp"
             required
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Pregunta Principal
-          </label>
-          <textarea
+          <FormField
+            label="Pregunta Principal"
+            multiline
             value={config.title}
             onChange={(e) => updateField("title", e.target.value)}
             rows={2}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="¿Ya imaginas cómo podría sentirse tu próximo viaje?"
             required
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Subtítulo Descriptivo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo Descriptivo"
+            multiline
             value={config.subtitle}
             onChange={(e) => updateField("subtitle", e.target.value)}
             rows={2}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="No necesitas tener todo decidido..."
             required
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Mensaje Prellenado de WhatsApp
-          </label>
-          <textarea
+          <FormField
+            label="Mensaje Prellenado de WhatsApp"
+            multiline
             value={config.whatsappMessageTemplate || ""}
             onChange={(e) => updateField("whatsappMessageTemplate", e.target.value)}
             rows={2}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Hola Viajes Carolina, quiero contarles qué tengo en mente para mi próximo viaje."
           />
         </div>

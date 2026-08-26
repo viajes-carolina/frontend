@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { HomeFaqSectionDTO } from "@vc/api-client";
+import { FormField } from "@vc/ui";
 import { useAdminFaqSection } from "../../hooks/useAdminFaqSection";
 
 interface FaqSectionFormProps {
@@ -67,42 +68,34 @@ export const FaqSectionForm: React.FC<FaqSectionFormProps> = ({ initialConfig })
 
       <div className="grid grid-cols-1 gap-6">
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Badge Superior
-          </label>
-          <input
+          <FormField
+            label="Badge Superior"
             type="text"
             value={config.badgeText}
             onChange={(e) => updateField("badgeText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="06 · Antes de continuar"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Título
-          </label>
-          <input
+          <FormField
+            label="Título"
             type="text"
             value={config.title}
             onChange={(e) => updateField("title", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Lo que solemos conversar antes de viajar"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Subtítulo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo"
+            multiline
             value={config.subtitle}
             onChange={(e) => updateField("subtitle", e.target.value)}
             rows={2}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes."
             required
           />

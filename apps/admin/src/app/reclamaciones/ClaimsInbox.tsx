@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { apiClient } from "@vc/api-client";
 import type { ClaimRecordDTO } from "@vc/api-client";
+import { CloseIcon } from "@vc/ui";
 import { useAdminClaims } from "../../hooks/useAdminClaims";
 import { buildWhatsAppUrl } from "../../lib/whatsapp";
 
@@ -165,9 +166,10 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
               </div>
               <button
                 onClick={() => setSelectedClaim(null)}
+                aria-label="Cerrar detalle de reclamación"
                 className="text-slate-400 hover:text-slate-600 text-xl font-bold p-2"
               >
-                ✕
+                <CloseIcon size={20} />
               </button>
             </div>
 

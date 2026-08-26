@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { FormField } from "@vc/ui";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 import { useChangeOwnPassword } from "../../hooks/useChangeOwnPassword";
 
@@ -87,46 +88,37 @@ export function PerfilClientView() {
 
         <div className="grid grid-cols-1 gap-6">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Contraseña Actual
-            </label>
-            <input
+            <FormField
+              label="Contraseña Actual"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               autoComplete="current-password"
               placeholder="••••••••••••"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Nueva Contraseña
-            </label>
-            <input
+            <FormField
+              label="Nueva Contraseña"
               type="password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="Mínimo 6 caracteres"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Confirmar Nueva Contraseña
-            </label>
-            <input
+            <FormField
+              label="Confirmar Nueva Contraseña"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
               placeholder="Repite la nueva contraseña"
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
               required
             />
           </div>

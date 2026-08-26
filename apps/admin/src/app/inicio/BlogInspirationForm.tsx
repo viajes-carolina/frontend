@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { HomeBlogInspirationDTO } from "@vc/api-client";
+import { FormField } from "@vc/ui";
 import { useAdminBlogInspiration } from "../../hooks/useAdminBlogInspiration";
 
 interface BlogInspirationFormProps {
@@ -83,14 +84,11 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Badge Superior
-          </label>
-          <input
+          <FormField
+            label="Badge Superior"
             type="text"
             value={config.badgeText}
             onChange={(e) => updateField("badgeText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Inspiración para tu viaje"
             required
           />
@@ -111,70 +109,56 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Título Principal (Texto Base)
-          </label>
-          <input
+          <FormField
+            label="Título Principal (Texto Base)"
             type="text"
             value={config.titleHighlight}
             onChange={(e) => updateField("titleHighlight", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Consejos y guías"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Título Destacado (Texto con Acento/Itálica)
-          </label>
-          <input
+          <FormField
+            label="Título Destacado (Texto con Acento/Itálica)"
             type="text"
             value={config.titleAccent}
             onChange={(e) => updateField("titleAccent", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="para explorar el mundo"
             required
           />
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Subtítulo Descriptivo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo Descriptivo"
+            multiline
             value={config.subtitle}
             onChange={(e) => updateField("subtitle", e.target.value)}
             rows={3}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Descubre recomendaciones de viaje, mejores temporadas..."
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Texto del Botón CTA
-          </label>
-          <input
+          <FormField
+            label="Texto del Botón CTA"
             type="text"
             value={config.ctaText}
             onChange={(e) => updateField("ctaText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Ver todos los artículos del blog"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Enlace URL del Botón CTA
-          </label>
-          <input
+          <FormField
+            label="Enlace URL del Botón CTA"
             type="text"
             value={config.ctaUrl}
             onChange={(e) => updateField("ctaUrl", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="/blog"
             required
           />

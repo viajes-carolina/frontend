@@ -1012,7 +1012,7 @@ export function updateMockBlogPost(id: number, req: CreateOrUpdateBlogPostReques
   const index = MOCK_BLOG_POSTS.findIndex((p) => p.id === id);
   if (index === -1) throw new Error(`Artículo no encontrado con ID: ${id}`);
   const current = MOCK_BLOG_POSTS[index];
-  const cat = req.categoryId ? MOCK_BLOG_CATEGORIES.find((c) => c.id === req.categoryId) || current : current;
+  const cat = req.categoryId ? MOCK_BLOG_CATEGORIES.find((c) => c.id === req.categoryId) : undefined;
   const updated: BlogPostDTO = {
     ...current,
     slug: req.slug || current.slug,
@@ -1020,8 +1020,8 @@ export function updateMockBlogPost(id: number, req: CreateOrUpdateBlogPostReques
     summary: req.summary || current.summary,
     contentMarkdown: req.contentMarkdown || current.contentMarkdown,
     categoryId: req.categoryId || current.categoryId,
-    categoryName: (cat as any).name || current.categoryName,
-    categorySlug: (cat as any).slug || current.categorySlug,
+    categoryName: cat?.name || current.categoryName,
+    categorySlug: cat?.slug || current.categorySlug,
     coverMediaId: req.coverMediaId !== undefined ? req.coverMediaId : current.coverMediaId,
     coverFocalX: req.coverFocalX ?? current.coverFocalX,
     coverFocalY: req.coverFocalY ?? current.coverFocalY,

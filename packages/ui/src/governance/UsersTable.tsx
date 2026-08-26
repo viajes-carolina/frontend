@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import type { AdminUserDTO, CreateAdminUserRequest, UpdateAdminUserRequest } from "@vc/api-client";
+import { CloseIcon } from "../icons/icons";
 
 export interface UsersTableProps {
   users: AdminUserDTO[];
   loading?: boolean;
-  onCreateUser: (req: CreateAdminUserRequest) => Promise<any>;
-  onUpdateUser: (id: number, req: UpdateAdminUserRequest) => Promise<any>;
+  onCreateUser: (req: CreateAdminUserRequest) => Promise<AdminUserDTO>;
+  onUpdateUser: (id: number, req: UpdateAdminUserRequest) => Promise<AdminUserDTO>;
 }
 
 export const UsersTable: React.FC<UsersTableProps> = ({
@@ -223,9 +224,10 @@ export const UsersTable: React.FC<UsersTableProps> = ({
               </h3>
               <button
                 onClick={() => setModalOpen(false)}
+                aria-label="Cerrar formulario de usuario"
                 className="text-stone-400 hover:text-stone-600 font-bold"
               >
-                ✕
+                <CloseIcon size={20} />
               </button>
             </div>
 

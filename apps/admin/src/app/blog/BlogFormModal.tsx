@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { BlogPostDTO, BlogCategoryDTO, CreateOrUpdateBlogPostRequest, MediaAssetDTO } from "@vc/api-client";
+import { CloseIcon } from "@vc/ui";
 import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 
 export interface BlogFormModalProps {
@@ -140,9 +141,10 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           <button
             type="button"
             onClick={onClose}
+            aria-label="Cerrar formulario de artículo del blog"
             className="p-1 rounded-full text-neutral-400 hover:text-white transition"
           >
-            ✕
+            <CloseIcon size={20} />
           </button>
         </div>
 

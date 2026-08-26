@@ -2,6 +2,7 @@
 
 import React from "react";
 import type { HomeTestimonialsSectionDTO } from "@vc/api-client";
+import { FormField } from "@vc/ui";
 import { useAdminTestimonialsSection } from "../../hooks/useAdminTestimonialsSection";
 import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 
@@ -82,42 +83,34 @@ export const TestimonialsSectionForm: React.FC<TestimonialsSectionFormProps> = (
 
       <div className="grid grid-cols-1 gap-6">
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Badge Superior
-          </label>
-          <input
+          <FormField
+            label="Badge Superior"
             type="text"
             value={config.badgeText}
             onChange={(e) => updateField("badgeText", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="05 · Historias reales"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Título
-          </label>
-          <input
+          <FormField
+            label="Título"
             type="text"
             value={config.title}
             onChange={(e) => updateField("title", e.target.value)}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Viajes que hoy se recuerdan así"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            Subtítulo
-          </label>
-          <textarea
+          <FormField
+            label="Subtítulo"
+            multiline
             value={config.subtitle}
             onChange={(e) => updateField("subtitle", e.target.value)}
             rows={2}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-accent"
             placeholder="Cada fotografía guarda una experiencia que comenzó con una conversación."
             required
           />
