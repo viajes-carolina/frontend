@@ -1,120 +1,130 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronDownIcon, LayoutGridIcon } from "@vc/ui";
+import { ADMIN_NAV, type AdminNavSection } from "./adminNavConfig";
 
-interface AdminNavChild {
-  id: string;
-  label: string;
-  href: string;
-}
-
-interface AdminNavItem {
-  label: string;
-  href: string;
-  badge?: { text: string; className: string };
-  children?: AdminNavChild[];
-}
-
-const ADMIN_NAV_ITEMS: AdminNavItem[] = [
-  { label: "Dashboard", href: "/" },
-  {
-    label: "Inicio & Hero",
-    href: "/inicio",
-    children: [
-      { id: "hero", label: "🚀 Hero Principal", href: "/inicio/hero" },
-      { id: "promotions", label: "🧭 Encabezado de Promociones", href: "/inicio/promociones" },
-      { id: "inspiration", label: "✨ Inspiración desde Blog", href: "/inicio/inspiracion" },
-      { id: "pause", label: "💬 Pausa Conversacional", href: "/inicio/pausa" },
-      { id: "testimonials", label: "⭐ Encabezado de Experiencias", href: "/inicio/experiencias" },
-      { id: "faq", label: "❓ Encabezado de FAQ", href: "/inicio/preguntas-frecuentes" },
-    ],
-  },
-  {
-    label: "Nosotros & Asesoras",
-    href: "/nosotros",
-    children: [
-      { id: "contenido", label: "📝 Contenido", href: "/nosotros" },
-      { id: "equipo", label: "👥 Equipo", href: "/nosotros/equipo" },
-    ],
-  },
-  {
-    label: "Contacto",
-    href: "/contacto",
-    children: [
-      { id: "contenido", label: "📝 Contenido", href: "/contacto" },
-      { id: "oficina", label: "📍 Oficina & Horarios", href: "/contacto/oficina" },
-    ],
-  },
-  {
-    label: "Blog & Contenidos",
-    href: "/blog",
-    badge: { text: "CMS", className: "bg-brand-accent text-brand-navy" },
-    children: [
-      { id: "articulos", label: "📝 Artículos", href: "/blog" },
-      { id: "categorias", label: "🏷️ Categorías", href: "/blog/categorias" },
-    ],
-  },
-  { label: "Reclamaciones", href: "/reclamaciones", badge: { text: "Libro", className: "bg-amber-400 text-slate-900" } },
-  { label: "Usuarios & Roles", href: "/usuarios", badge: { text: "RBAC", className: "bg-purple-400 text-slate-950" } },
-  { label: "Bitácora de Auditoría", href: "/auditoria" },
-  { label: "Publicación ISR", href: "/publicacion", badge: { text: "Caché", className: "bg-emerald-400 text-slate-950" } },
-  { label: "Biblioteca de Medios", href: "/medios" },
-  { label: "Identidad & WhatsApp", href: "/identidad" },
-  { label: "Mi Cuenta", href: "/perfil" },
-];
-
-function isSectionActive(pathname: string, href: string) {
+function isRouteActive(pathname: string, href: string) {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function isSectionActive(pathname: string, section: AdminNavSection) {
+  if (section.children) {
+    return section.children.some((child) => isRouteActive(pathname, child.href));
+  }
+  return section.href ? isRouteActive(pathname, section.href) : false;
+}
+
+function NavBadge({ badge }: { badge: NonNullable<AdminNavSection["badge"]> }) {
+  return (
+    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${badge.className}`}>
+      {badge.text}
+    </span>
+  );
+}
+
+function AdminNavSectionRow({ section, pathname }: { section: AdminNavSection; pathname: string }) {
+  const Icon = section.icon;
+  const active = isSectionActive(pathname, section);
+  // Se inicializa según la ruta activa al montar y se auto-expande cada vez
+  // que el grupo pasa a estar activo (ej. al llegar por un link externo o
+  // por el Dashboard sin haber tocado el sidebar antes) — pero no se fuerza
+  // a colapsar al salir, así el usuario puede colapsar un grupo activo y
+  // no se le vuelve a abrir solo por seguir dentro de esa ruta.
+  const [expanded, setExpanded] = useState(() => active);
+  useEffect(() => {
+    if (active) setExpanded(true);
+  }, [active]);
+
+  if (!section.children) {
+    return (
+      <Link
+        href={section.href ?? "#"}
+        className={`px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center gap-2.5 ${
+          active ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
+        }`}
+      >
+        <Icon size={18} className="shrink-0" />
+        <span className="flex-1">{section.label}</span>
+        {section.badge && <NavBadge badge={section.badge} />}
+      </Link>
+    );
+  }
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setExpanded((prev) => !prev)}
+        aria-expanded={expanded}
+        className={`w-full px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center gap-2.5 ${
+          active ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
+        }`}
+      >
+        <Icon size={18} className="shrink-0" />
+        <span className="flex-1 text-left">{section.label}</span>
+        {section.badge && <NavBadge badge={section.badge} />}
+        <ChevronDownIcon
+          size={16}
+          className={`shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {expanded && (
+        <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-white/10 pl-3">
+          {section.children.map((child) => {
+            const childActive = pathname === child.href;
+            return (
+              <Link
+                key={child.href}
+                href={child.href}
+                className={`block px-3 py-2 rounded-lg font-sora text-xs transition-colors ${
+                  childActive
+                    ? "bg-white/15 text-white font-semibold"
+                    : "text-white/60 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                {child.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AdminNav() {
   const pathname = usePathname();
+  const dashboardActive = pathname === "/";
 
   return (
     <nav className="mt-6 flex flex-col gap-1">
-      {ADMIN_NAV_ITEMS.map((item) => {
-        const active = isSectionActive(pathname, item.href);
-        return (
-          <div key={item.href}>
-            <Link
-              href={item.href}
-              className={`px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center justify-between ${
-                active ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
-              }`}
-            >
-              <span>{item.label}</span>
-              {item.badge && (
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${item.badge.className}`}>
-                  {item.badge.text}
-                </span>
-              )}
-            </Link>
+      <Link
+        href="/"
+        className={`px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center gap-2.5 ${
+          dashboardActive ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
+        }`}
+      >
+        <LayoutGridIcon size={18} className="shrink-0" />
+        <span>Dashboard</span>
+      </Link>
 
-            {active && item.children && (
-              <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-white/10 pl-3">
-                {item.children.map((child) => {
-                  const childActive = pathname === child.href;
-                  return (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      className={`block px-3 py-2 rounded-lg font-sora text-xs transition-colors ${
-                        childActive
-                          ? "bg-white/15 text-white font-semibold"
-                          : "text-white/60 hover:text-white hover:bg-white/10"
-                      }`}
-                    >
-                      {child.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+      {ADMIN_NAV.map((category) => (
+        <div key={category.label}>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-white/40 px-3.5 mt-4 mb-1">
+            {category.label}
+          </p>
+          <div className="flex flex-col gap-1">
+            {category.items.map((section) => (
+              <AdminNavSectionRow key={section.label} section={section} pathname={pathname} />
+            ))}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </nav>
   );
 }

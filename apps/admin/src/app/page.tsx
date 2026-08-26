@@ -4,7 +4,6 @@ import {
   MapPinIcon,
   WhatsAppIcon,
   ArrowUpRightIcon,
-  ImageIcon,
   PlaneIcon,
   CompassIcon,
   SunIcon,
@@ -19,7 +18,6 @@ export default async function AdminDashboardPage() {
   const [
     siteSettings,
     office,
-    mediaData,
     homeHero,
     promotions,
     testimonials,
@@ -31,7 +29,6 @@ export default async function AdminDashboardPage() {
   ] = await Promise.all([
     apiClient.getSiteSettings(),
     apiClient.getOfficeLocation(),
-    apiClient.getMediaList(0, 10),
     apiClient.getHomeHero(),
     apiClient.getAdminPromotions(),
     apiClient.getTestimonials(),
@@ -326,32 +323,6 @@ export default async function AdminDashboardPage() {
           </div>
           <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
             Gestionar Nosotros &rarr;
-          </span>
-        </Link>
-
-        {/* Card: Biblioteca de Medios (Corte 3) */}
-        <Link
-          href="/medios"
-          className="group bg-white p-6 rounded-2xl border border-neutral-border hover:border-brand-accent/60 shadow-sm transition-all duration-200 flex flex-col justify-between"
-        >
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs uppercase tracking-wider font-semibold text-brand-accent">
-                Corte 3 · Medios
-              </span>
-              <div className="p-2 rounded-xl bg-brand-accent/10 text-brand-accent">
-                <ImageIcon size={20} />
-              </div>
-            </div>
-            <h3 className="font-sora font-bold text-base text-brand-navy group-hover:text-brand-accent transition-colors">
-              Biblioteca de Medios
-            </h3>
-            <p className="font-inter text-neutral-muted text-xs mt-2 leading-relaxed">
-              {mediaData.total || 0} activos optimizados en WebP.
-            </p>
-          </div>
-          <span className="text-xs font-semibold text-brand-accent mt-4 inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-            Abrir Galería &rarr;
           </span>
         </Link>
 

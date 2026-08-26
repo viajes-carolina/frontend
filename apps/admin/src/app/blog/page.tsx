@@ -36,17 +36,8 @@ export default function AdminBlogPage() {
 
   return (
     <div className="space-y-8">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-neutral-900 tracking-tight">
-            Gestión de Blog & Contenidos (CMS)
-          </h1>
-          <p className="text-sm text-neutral-500 mt-1">
-            Crea, edita y organiza los artículos, guías de viaje y categorías del blog.
-          </p>
-        </div>
-
+      {/* Top Actions */}
+      <div className="flex items-center justify-end gap-4">
         <div className="flex items-center gap-3">
           <button
             type="button"

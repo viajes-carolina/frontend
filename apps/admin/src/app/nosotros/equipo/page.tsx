@@ -25,15 +25,6 @@ export default function AdminAdvisorsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="border-b border-slate-800 pb-6">
-        <h1 className="font-sora font-extrabold text-2xl sm:text-3xl text-white">
-          Nosotros — Equipo de Asesoras
-        </h1>
-        <p className="font-inter text-sm text-slate-400 mt-1">
-          Administra los perfiles del equipo, su cita personal y sus canales de WhatsApp directo.
-        </p>
-      </div>
-
       {feedbackMessage && (
         <div
           className={`p-4 rounded-xl text-sm font-medium border ${

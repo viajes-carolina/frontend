@@ -51,13 +51,6 @@ export function AboutForm() {
 
   return (
     <form onSubmit={handleSave} className="space-y-8 max-w-4xl">
-      <div>
-        <h1 className="font-sora font-extrabold text-2xl sm:text-3xl text-white">Nosotros — Contenido</h1>
-        <p className="font-inter text-sm text-slate-400 mt-1">
-          Administra la historia, misión y las secciones editoriales de la página pública &quot;Nosotros&quot;.
-        </p>
-      </div>
-
       {feedbackMessage && (
         <div
           className={`p-4 rounded-xl text-sm font-medium border ${
