@@ -9,8 +9,6 @@ import {
 } from "@vc/ui";
 import { apiClient } from "@vc/api-client";
 
-export const dynamic = "force-dynamic";
-
 export default async function HomePage() {
   const [
     siteSettings,
@@ -23,15 +21,15 @@ export default async function HomePage() {
     testimonialsSectionConfig,
     faqSectionConfig,
   ] = await Promise.all([
-    apiClient.getSiteSettings(),
-    apiClient.getHomeHero(),
-    apiClient.getFeaturedPromotions(),
-    apiClient.getPublicHomeBlogInspiration(),
-    apiClient.getPublicTrust(),
-    apiClient.getPublicHomePromotionsSection(),
-    apiClient.getPublicHomeConversationalPause(),
-    apiClient.getPublicHomeTestimonialsSection(),
-    apiClient.getPublicHomeFaqSection(),
+    apiClient.getSiteSettings({ revalidate: 3600 }),
+    apiClient.getHomeHero({ revalidate: 3600 }),
+    apiClient.getFeaturedPromotions({ revalidate: 3600 }),
+    apiClient.getPublicHomeBlogInspiration({ revalidate: 3600 }),
+    apiClient.getPublicTrust({ revalidate: 3600 }),
+    apiClient.getPublicHomePromotionsSection({ revalidate: 3600 }),
+    apiClient.getPublicHomeConversationalPause({ revalidate: 3600 }),
+    apiClient.getPublicHomeTestimonialsSection({ revalidate: 3600 }),
+    apiClient.getPublicHomeFaqSection({ revalidate: 3600 }),
   ]);
 
   return (

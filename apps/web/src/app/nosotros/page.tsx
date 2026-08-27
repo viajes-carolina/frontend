@@ -8,8 +8,6 @@ import {
   HumanReplySection,
 } from "@vc/ui";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Nosotros | Viajes Carolina - Agencia Boutique en Miraflores",
   description: "Conoce la historia, la misión y al equipo de asesoras que acompaña cada viaje en Viajes Carolina.",
@@ -17,8 +15,8 @@ export const metadata = {
 
 export default async function NosotrosPage() {
   const [data, settings] = await Promise.all([
-    apiClient.getPublicAbout(),
-    apiClient.getSiteSettings(),
+    apiClient.getPublicAbout({ revalidate: 3600 }),
+    apiClient.getSiteSettings({ revalidate: 3600 }),
   ]);
 
   return (

@@ -1,8 +1,6 @@
 import { apiClient } from "@vc/api-client";
 import { LegalArticleSection } from "@vc/ui";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Términos y condiciones | Viajes Carolina",
   description:
@@ -43,7 +41,7 @@ const SECTIONS = [
 ];
 
 export default async function TerminosPage() {
-  const settings = await apiClient.getSiteSettings();
+  const settings = await apiClient.getSiteSettings({ revalidate: 3600 });
 
   return (
     <LegalArticleSection

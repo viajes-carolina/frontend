@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 
 export interface FocalPoint {
   x: number; // 0..100
@@ -67,29 +68,60 @@ export function ResponsiveImage({
 
   const safeSrc = src.startsWith("http") || src.startsWith("/") || src.startsWith("blob:") || src.startsWith("data:") ? src : `/${src}`;
 
+  // blob:/data: aparecen durante la vista previa local de un archivo recién
+  // elegido (antes de subirlo) en MediaPickerModal — next/image no puede
+  // optimizar esos esquemas y fallaría sin este flag.
+  const isUnoptimizedSrc = safeSrc.startsWith("blob:") || safeSrc.startsWith("data:");
+
+  const imageStyle: React.CSSProperties = {
+    objectFit,
+    objectPosition: objectPositionStyle,
+  };
+
+  const imageClassName = `transition-all duration-300 ease-out ${
+    isLoaded ? "opacity-100 scale-100 blur-0" : "opacity-0 blur-sm"
+  } ${imgClassName}`;
+
+  const handleLoad = () => setIsLoaded(true);
+  const handleError = () => setIsLoaded(true);
+
   return (
     <figure className={`group overflow-hidden ${fill ? "w-full h-full" : "rounded-2xl bg-neutral-surface"} ${className}`} style={containerStyle}>
-      <img
-        ref={imgRef}
-        src={safeSrc}
-        alt={alt}
-        width={width}
-        height={height}
-        sizes={sizes}
-        loading={priority ? "eager" : "lazy"}
-        decoding="async"
-        style={{
-          objectFit,
-          objectPosition: objectPositionStyle,
-          width: fill || aspectRatio ? "100%" : width ? `${width}px` : "100%",
-          height: fill || aspectRatio ? "100%" : height ? `${height}px` : "auto",
-        }}
-        className={`transition-all duration-300 ease-out ${
-          isLoaded ? "opacity-100 scale-100 blur-0" : "opacity-0 blur-sm"
-        } ${imgClassName}`}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setIsLoaded(true)}
-      />
+      {fill ? (
+        <Image
+          ref={imgRef}
+          src={safeSrc}
+          alt={alt}
+          fill
+          sizes={sizes}
+          priority={priority}
+          unoptimized={isUnoptimizedSrc}
+          style={imageStyle}
+          className={imageClassName}
+          onLoad={handleLoad}
+          onError={handleError}
+        />
+      ) : (
+        <Image
+          ref={imgRef}
+          src={safeSrc}
+          alt={alt}
+          // Fuera de `fill`, next/image exige width/height numéricos — ningún
+          // llamador actual de ResponsiveImage usa esta rama sin `fill`
+          // (ver ResponsiveImage sin `fill` ni `width`/`height` era el bug
+          // corregido en SearchResultsView), pero se preserva la interfaz
+          // pública tal cual para no romper integraciones futuras.
+          width={width!}
+          height={height!}
+          sizes={sizes}
+          priority={priority}
+          unoptimized={isUnoptimizedSrc}
+          style={imageStyle}
+          className={imageClassName}
+          onLoad={handleLoad}
+          onError={handleError}
+        />
+      )}
 
       {caption && (
         <figcaption className="text-xs text-neutral-muted mt-1.5 px-1 font-inter">

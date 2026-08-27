@@ -1,15 +1,13 @@
 import { apiClient } from "@vc/api-client";
 import { LegalPage } from "@vc/ui";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Política de cookies | Viajes Carolina",
   description: "Cómo utiliza cookies el sitio web de Viajes Carolina.",
 };
 
 export default async function CookiesPage() {
-  const settings = await apiClient.getSiteSettings();
+  const settings = await apiClient.getSiteSettings({ revalidate: 3600 });
 
   return (
     <LegalPage

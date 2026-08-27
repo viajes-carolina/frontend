@@ -1,7 +1,5 @@
 import { apiClient } from "@vc/api-client";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Compromiso contra la ESNNA | Viajes Carolina",
   description:
@@ -9,7 +7,7 @@ export const metadata = {
 };
 
 export default async function CompromisoEsnnaPage() {
-  const settings = await apiClient.getSiteSettings();
+  const settings = await apiClient.getSiteSettings({ revalidate: 3600 });
 
   return (
     <main className="w-full bg-surface-ivory text-neutral-ink min-h-screen">

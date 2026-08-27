@@ -11,7 +11,7 @@ interface BlogPostPageProps {
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   try {
-    const detail = await apiClient.getBlogPostBySlug(slug);
+    const detail = await apiClient.getBlogPostBySlug(slug, { revalidate: 3600 });
     if (!detail?.post) {
       return { title: "Artículo no encontrado — Viajes Carolina" };
     }
@@ -36,11 +36,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
   try {
-    const detail = await apiClient.getBlogPostBySlug(slug);
+    const [detail, settings] = await Promise.all([
+      apiClient.getBlogPostBySlug(slug, { revalidate: 3600 }),
+      apiClient.getSiteSettings({ revalidate: 3600 }),
+    ]);
     if (!detail?.post) {
       notFound();
     }
-    const settings = await apiClient.getSiteSettings();
 
     return (
       <main className="min-h-screen bg-neutral-50/30">

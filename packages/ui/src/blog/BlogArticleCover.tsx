@@ -36,7 +36,7 @@ export const BlogArticleCover: React.FC<BlogArticleCoverProps> = ({ post }) => {
         <p className="font-inter mt-5 max-w-2xl text-base text-brand-navy/80 sm:text-lg">{post.summary}</p>
 
         <div className="mt-6 flex items-center gap-3">
-          <div className="h-[38px] w-[38px] shrink-0 overflow-hidden rounded-full bg-brand-navy/10">
+          <div className="relative h-[38px] w-[38px] shrink-0 overflow-hidden rounded-full bg-brand-navy/10">
             {post.authorAvatarUrl ? (
               <ResponsiveImage
                 src={post.authorAvatarUrl}

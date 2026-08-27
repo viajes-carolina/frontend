@@ -21,8 +21,8 @@ interface BlogPageProps {
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   const { categoria } = await searchParams;
   const [blogData, trust] = await Promise.all([
-    apiClient.getPublicBlog(categoria, undefined, 0, 6),
-    apiClient.getPublicTrust(),
+    apiClient.getPublicBlog(categoria, undefined, 0, 6, { revalidate: 3600 }),
+    apiClient.getPublicTrust({ revalidate: 3600 }),
   ]);
 
   const heroPost = blogData.featuredPost ?? blogData.items[0];

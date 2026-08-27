@@ -147,6 +147,7 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
                   <ResponsiveImage
                     src={item.imageUrl || "/media/demo-cartagena-caribe.webp"}
                     alt={item.title}
+                    fill
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-3 left-3">

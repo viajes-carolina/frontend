@@ -1,15 +1,13 @@
 import { apiClient } from "@vc/api-client";
 import { LegalPage } from "@vc/ui";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Política de privacidad | Viajes Carolina",
   description: "Cómo Viajes Carolina protege y utiliza los datos personales de sus clientes.",
 };
 
 export default async function PrivacidadPage() {
-  const settings = await apiClient.getSiteSettings();
+  const settings = await apiClient.getSiteSettings({ revalidate: 3600 });
 
   return (
     <LegalPage

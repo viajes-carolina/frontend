@@ -1,8 +1,6 @@
 import { apiClient } from "@vc/api-client";
 import { ContactHeroSection, OfficeMapSection } from "@vc/ui";
 
-export const dynamic = "force-dynamic";
-
 export const metadata = {
   title: "Contacto | Viajes Carolina - Miraflores, Lima",
   description: "Escríbenos por WhatsApp y conversemos sobre tu próximo viaje. Asesoría 100% personalizada, sin formularios impersonales.",
@@ -10,8 +8,8 @@ export const metadata = {
 
 export default async function ContactoPage() {
   const [contactData, siteSettings] = await Promise.all([
-    apiClient.getPublicContact(),
-    apiClient.getSiteSettings(),
+    apiClient.getPublicContact({ revalidate: 3600 }),
+    apiClient.getSiteSettings({ revalidate: 3600 }),
   ]);
 
   return (

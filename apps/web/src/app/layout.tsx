@@ -37,8 +37,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const [siteSettings, office] = await Promise.all([
-    apiClient.getSiteSettings(),
-    apiClient.getOfficeLocation(),
+    apiClient.getSiteSettings({ revalidate: 3600 }),
+    apiClient.getOfficeLocation({ revalidate: 3600 }),
   ]);
 
   return (
