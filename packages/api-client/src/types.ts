@@ -458,11 +458,9 @@ export interface BlogPostDTO {
   coverMediaUrl?: string;
   coverFocalX?: number;
   coverFocalY?: number;
+  authorAdvisorId: number;
   authorName: string;
-  authorAvatarMediaId?: number;
   authorAvatarUrl?: string;
-  authorAvatarFocalX?: number;
-  authorAvatarFocalY?: number;
   readingTimeMinutes: number;
   tags: string[];
   status: string; // 'DRAFT', 'PUBLISHED', 'ARCHIVED'
@@ -483,10 +481,7 @@ export interface CreateOrUpdateBlogPostRequest {
   coverMediaId?: number;
   coverFocalX?: number;
   coverFocalY?: number;
-  authorName?: string;
-  authorAvatarMediaId?: number;
-  authorAvatarFocalX?: number;
-  authorAvatarFocalY?: number;
+  authorAdvisorId: number;
   readingTimeMinutes?: number;
   tags?: string[];
   status?: string;

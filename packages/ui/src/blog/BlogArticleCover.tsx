@@ -42,7 +42,6 @@ export const BlogArticleCover: React.FC<BlogArticleCoverProps> = ({ post }) => {
                 src={post.authorAvatarUrl}
                 alt={post.authorName}
                 fill
-                focalPoint={{ x: post.authorAvatarFocalX ?? 50, y: post.authorAvatarFocalY ?? 50 }}
                 className="rounded-full"
               />
             ) : (

@@ -8,10 +8,15 @@ import {
   MediaAssetDTO,
   apiClient,
 } from "@vc/api-client";
+import { useAdminAdvisors } from "./useAdminAdvisors";
 
 export function useAdminBlog() {
   const [posts, setPosts] = useState<BlogPostDTO[]>([]);
   const [categories, setCategories] = useState<BlogCategoryDTO[]>([]);
+  // El autor del artículo es siempre una asesora real del equipo — mismo
+  // hook que usa la página /nosotros/equipo, ahora centralizado aquí igual
+  // que el resto de datos del formulario (categorías, medios, etc.).
+  const { advisors } = useAdminAdvisors();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
@@ -22,16 +27,15 @@ export function useAdminBlog() {
   const [editingPost, setEditingPost] = useState<BlogPostDTO | null>(null);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 
-  // Foto de portada y foto del autor — mismo patrón (media: MediaAssetDTO) => {...}
+  // Foto de portada — mismo patrón (media: MediaAssetDTO) => {...}
   // usado hoy en useAdminPromotionsCatalog.ts / useAdminTestimonialsSection.ts.
   const [coverMediaId, setCoverMediaId] = useState<number | undefined>(undefined);
   const [coverMediaUrl, setCoverMediaUrl] = useState<string>("/media/demo-cartagena-caribe.webp");
   const [coverFocalX, setCoverFocalX] = useState<number | undefined>(undefined);
   const [coverFocalY, setCoverFocalY] = useState<number | undefined>(undefined);
-  const [authorAvatarMediaId, setAuthorAvatarMediaId] = useState<number | undefined>(undefined);
-  const [authorAvatarUrl, setAuthorAvatarUrl] = useState<string | undefined>(undefined);
-  const [authorAvatarFocalX, setAuthorAvatarFocalX] = useState<number | undefined>(undefined);
-  const [authorAvatarFocalY, setAuthorAvatarFocalY] = useState<number | undefined>(undefined);
+  // El autor ya no es texto/foto libre: es una asesora real seleccionada en
+  // el modal a partir de la lista `advisors` de arriba (ver BlogFormModal.tsx).
+  const [authorAdvisorId, setAuthorAdvisorId] = useState<number | undefined>(undefined);
 
   const loadData = useCallback(async () => {
     try {
@@ -59,10 +63,7 @@ export function useAdminBlog() {
     setCoverMediaUrl("/media/demo-cartagena-caribe.webp");
     setCoverFocalX(undefined);
     setCoverFocalY(undefined);
-    setAuthorAvatarMediaId(undefined);
-    setAuthorAvatarUrl(undefined);
-    setAuthorAvatarFocalX(undefined);
-    setAuthorAvatarFocalY(undefined);
+    setAuthorAdvisorId(undefined);
     setIsPostModalOpen(true);
   };
 
@@ -72,10 +73,7 @@ export function useAdminBlog() {
     setCoverMediaUrl(post.coverMediaUrl || "");
     setCoverFocalX(post.coverFocalX);
     setCoverFocalY(post.coverFocalY);
-    setAuthorAvatarMediaId(post.authorAvatarMediaId);
-    setAuthorAvatarUrl(post.authorAvatarUrl);
-    setAuthorAvatarFocalX(post.authorAvatarFocalX);
-    setAuthorAvatarFocalY(post.authorAvatarFocalY);
+    setAuthorAdvisorId(post.authorAdvisorId);
     setIsPostModalOpen(true);
   };
 
@@ -89,13 +87,6 @@ export function useAdminBlog() {
     setCoverMediaUrl(media.storagePath);
     setCoverFocalX(media.focalX || 50);
     setCoverFocalY(media.focalY || 50);
-  };
-
-  const handleAvatarSelect = (media: MediaAssetDTO) => {
-    setAuthorAvatarMediaId(media.id);
-    setAuthorAvatarUrl(media.storagePath);
-    setAuthorAvatarFocalX(media.focalX || 50);
-    setAuthorAvatarFocalY(media.focalY || 50);
   };
 
   const handleSavePost = async (req: CreateOrUpdateBlogPostRequest) => {
@@ -134,6 +125,7 @@ export function useAdminBlog() {
   return {
     posts,
     categories,
+    advisors,
     loading,
     saving,
     statusFilter,
@@ -148,12 +140,9 @@ export function useAdminBlog() {
     coverMediaUrl,
     coverFocalX,
     coverFocalY,
-    authorAvatarMediaId,
-    authorAvatarUrl,
-    authorAvatarFocalX,
-    authorAvatarFocalY,
+    authorAdvisorId,
+    setAuthorAdvisorId,
     handleCoverSelect,
-    handleAvatarSelect,
     handleOpenCreatePost,
     handleOpenEditPost,
     handleClosePostModal,

@@ -9,6 +9,7 @@ export default function AdminBlogPage() {
   const {
     posts,
     categories,
+    advisors,
     loading,
     saving,
     statusFilter,
@@ -22,12 +23,9 @@ export default function AdminBlogPage() {
     coverMediaUrl,
     coverFocalX,
     coverFocalY,
-    authorAvatarMediaId,
-    authorAvatarUrl,
-    authorAvatarFocalX,
-    authorAvatarFocalY,
+    authorAdvisorId,
+    setAuthorAdvisorId,
     handleCoverSelect,
-    handleAvatarSelect,
     handleOpenCreatePost,
     handleOpenEditPost,
     handleClosePostModal,
@@ -225,17 +223,15 @@ export default function AdminBlogPage() {
         onSave={handleSavePost}
         editingPost={editingPost}
         categories={categories}
+        advisors={advisors}
         saving={saving}
         coverMediaId={coverMediaId}
         coverMediaUrl={coverMediaUrl}
         coverFocalX={coverFocalX}
         coverFocalY={coverFocalY}
-        authorAvatarMediaId={authorAvatarMediaId}
-        authorAvatarUrl={authorAvatarUrl}
-        authorAvatarFocalX={authorAvatarFocalX}
-        authorAvatarFocalY={authorAvatarFocalY}
+        authorAdvisorId={authorAdvisorId}
+        setAuthorAdvisorId={setAuthorAdvisorId}
         handleCoverSelect={handleCoverSelect}
-        handleAvatarSelect={handleAvatarSelect}
       />
     </div>
   );

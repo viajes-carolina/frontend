@@ -797,6 +797,30 @@ export async function handleProxyRequest(
     if (targetPath.includes("blog")) {
       const posts = readStoredJson<BlogPostDTO[]>("blog_posts.json", DEFAULT_BLOG_POSTS);
       const categories = readStoredJson<BlogCategoryDTO[]>("blog_categories.json", DEFAULT_BLOG_CATEGORIES);
+      // El autor de un artículo es siempre una asesora real vinculada por ID —
+      // authorName/authorAvatarUrl se derivan de ella, igual que hará el backend.
+      const advisors = readStoredJson<TravelAdvisorDTO[]>("advisors.json", DEFAULT_ADVISORS);
+
+      // Backfill defensivo: posts persistidos en disco ANTES de introducir la
+      // relación autor→asesora real pueden no tener `authorAdvisorId` (campo
+      // ahora obligatorio en BlogPostDTO). Sin esto, abrir uno de esos posts en
+      // el formulario de edición deja el selector de Autor(a) vacío y el botón
+      // "Guardar Cambios" deshabilitado sin ninguna explicación visible. Se
+      // resuelve en memoria en cada lectura (no se reescribe el archivo aquí):
+      // intenta matchear el authorName de texto libre residual contra el
+      // fullName de una asesora conocida y, si no hay match, cae a la primera
+      // asesora de la lista (mismo criterio de fallback que usa el POST).
+      for (const p of posts) {
+        if (p.authorAdvisorId === undefined || p.authorAdvisorId === null) {
+          const matched = p.authorName
+            ? advisors.find((a) => a.fullName.trim().toLowerCase() === p.authorName.trim().toLowerCase())
+            : undefined;
+          p.authorAdvisorId = matched?.id ?? advisors[0]?.id ?? 1;
+          if (matched && !p.authorAvatarUrl) {
+            p.authorAvatarUrl = matched.photoMediaUrl;
+          }
+        }
+      }
 
       if (targetPath === "public/v1/blog" || (targetPath.includes("blog") && targetPath.includes("public") && !targetPath.includes("categories") && !targetPath.includes("posts"))) {
         const publicPosts = posts.filter((p) => p.status === "PUBLISHED" && p.active);
@@ -874,6 +898,7 @@ export async function handleProxyRequest(
 
       if (method === "POST") {
         const cat = categories.find((c) => c.id === bodyJson?.categoryId) || categories[0];
+        const advisor = advisors.find((a) => a.id === Number(bodyJson?.authorAdvisorId)) || advisors[0];
         const newPost: BlogPostDTO = {
           id: Date.now(),
           slug: String(bodyJson?.slug || `post-${Date.now()}`),
@@ -885,7 +910,9 @@ export async function handleProxyRequest(
           categorySlug: cat.slug,
           coverMediaId: bodyJson?.coverMediaId ? Number(bodyJson.coverMediaId) : undefined,
           coverMediaUrl: "/media/demo-cartagena-caribe.webp",
-          authorName: String(bodyJson?.authorName || "Equipo Viajes Carolina"),
+          authorAdvisorId: advisor?.id ?? advisors[0]?.id ?? 1,
+          authorName: advisor?.fullName || "Equipo Viajes Carolina",
+          authorAvatarUrl: advisor?.photoMediaUrl,
           readingTimeMinutes: Number(bodyJson?.readingTimeMinutes || 5),
           tags: Array.isArray(bodyJson?.tags) ? (bodyJson?.tags as string[]) : [],
           status: String(bodyJson?.status || "PUBLISHED"),
@@ -907,10 +934,25 @@ export async function handleProxyRequest(
         const idx = posts.findIndex((p) => p.id === id);
         if (idx !== -1) {
           const cat = bodyJson?.categoryId ? categories.find((c) => c.id === bodyJson?.categoryId) || categories[0] : null;
+
+          // Invariante: el autor SIEMPRE es una asesora real. Si el body trae un
+          // authorAdvisorId que existe en la lista de asesoras, se usa ese; si no
+          // (falta, es inválido o no matchea ninguna asesora conocida), se conserva
+          // el authorAdvisorId que ya tenía el post. authorName/authorAvatarUrl
+          // NUNCA se toman crudos del body: siempre se derivan de la asesora
+          // resuelta, sobrescribiendo cualquier valor libre que venga en el payload.
+          const requestedAdvisorId = bodyJson?.authorAdvisorId !== undefined ? Number(bodyJson.authorAdvisorId) : NaN;
+          const requestedAdvisor = advisors.find((a) => a.id === requestedAdvisorId);
+          const resolvedAdvisorId = requestedAdvisor ? requestedAdvisor.id : posts[idx].authorAdvisorId;
+          const resolvedAdvisor = requestedAdvisor || advisors.find((a) => a.id === resolvedAdvisorId);
+
           const updatedItem = {
             ...posts[idx],
             ...(bodyJson || {}),
             ...(cat ? { categoryName: cat.name, categorySlug: cat.slug } : {}),
+            authorAdvisorId: resolvedAdvisorId,
+            authorName: resolvedAdvisor?.fullName ?? posts[idx].authorName,
+            authorAvatarUrl: resolvedAdvisor?.photoMediaUrl ?? posts[idx].authorAvatarUrl,
             updatedAt: new Date().toISOString(),
           };
           posts[idx] = updatedItem as BlogPostDTO;

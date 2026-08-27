@@ -1,8 +1,8 @@
 ﻿"use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { BlogPostDTO, BlogCategoryDTO, CreateOrUpdateBlogPostRequest, MediaAssetDTO } from "@vc/api-client";
-import { Button, FormField, FormSelect, ImageIcon, MediaPickerModal, Modal, Toggle } from "@vc/ui";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { BlogPostDTO, BlogCategoryDTO, CreateOrUpdateBlogPostRequest, MediaAssetDTO, TravelAdvisorDTO } from "@vc/api-client";
+import { Button, FormField, FormSelect, ImageIcon, MediaPickerModal, Modal, ResponsiveImage, Toggle } from "@vc/ui";
 import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 import { useMediaPicker } from "../../hooks/useMediaPicker";
 
@@ -12,17 +12,15 @@ export interface BlogFormModalProps {
   onSave: (req: CreateOrUpdateBlogPostRequest) => Promise<void>;
   editingPost: BlogPostDTO | null;
   categories: BlogCategoryDTO[];
+  advisors: TravelAdvisorDTO[];
   saving: boolean;
   coverMediaId?: number;
   coverMediaUrl?: string;
   coverFocalX?: number;
   coverFocalY?: number;
-  authorAvatarMediaId?: number;
-  authorAvatarUrl?: string;
-  authorAvatarFocalX?: number;
-  authorAvatarFocalY?: number;
+  authorAdvisorId?: number;
+  setAuthorAdvisorId: React.Dispatch<React.SetStateAction<number | undefined>>;
   handleCoverSelect: (media: MediaAssetDTO) => void;
-  handleAvatarSelect: (media: MediaAssetDTO) => void;
 }
 
 export const BlogFormModal: React.FC<BlogFormModalProps> = ({
@@ -31,24 +29,21 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
   onSave,
   editingPost,
   categories,
+  advisors,
   saving,
   coverMediaId,
   coverMediaUrl,
   coverFocalX,
   coverFocalY,
-  authorAvatarMediaId,
-  authorAvatarUrl,
-  authorAvatarFocalX,
-  authorAvatarFocalY,
+  authorAdvisorId,
+  setAuthorAdvisorId,
   handleCoverSelect,
-  handleAvatarSelect,
 }) => {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [categoryId, setCategoryId] = useState<number>(1);
   const [summary, setSummary] = useState("");
   const [contentMarkdown, setContentMarkdown] = useState("");
-  const [authorName, setAuthorName] = useState("Carolina Zúñiga");
   const [readingTimeMinutes, setReadingTimeMinutes] = useState(5);
   const [tagsInput, setTagsInput] = useState("");
   const [status, setStatus] = useState("PUBLISHED");
@@ -58,6 +53,26 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const picker = useMediaPicker(isImagePickerOpen);
 
+  // El autor del artículo es siempre una asesora real del equipo (lista
+  // provista por useAdminBlog.ts, mismo patrón que categories). Memoizado para
+  // que el useEffect de preselección más abajo no se dispare en cada render
+  // por una referencia de array nueva.
+  const activeAdvisors = useMemo(() => advisors.filter((a) => a.active), [advisors]);
+  const selectedAdvisor = useMemo(
+    () => advisors.find((a) => a.id === authorAdvisorId),
+    [advisors, authorAdvisorId]
+  );
+  // Si el post fue creado con una asesora que luego se desactivó, el <select>
+  // debe seguir mostrándola como opción (unión de "activas" + "la actualmente
+  // elegida si no está en esa lista") — mismo criterio que el <select> de
+  // Categoría, que no filtra por estado.
+  const selectableAdvisors = useMemo(() => {
+    if (selectedAdvisor && !selectedAdvisor.active) {
+      return [...activeAdvisors, selectedAdvisor];
+    }
+    return activeAdvisors;
+  }, [activeAdvisors, selectedAdvisor]);
+
   useEffect(() => {
     if (editingPost) {
       setTitle(editingPost.title || "");
@@ -65,7 +80,6 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
       setCategoryId(editingPost.categoryId || (categories[0]?.id ?? 1));
       setSummary(editingPost.summary || "");
       setContentMarkdown(editingPost.contentMarkdown || "");
-      setAuthorName(editingPost.authorName || "Carolina Zúñiga");
       setReadingTimeMinutes(editingPost.readingTimeMinutes || 5);
       setTagsInput(editingPost.tags ? editingPost.tags.join(", ") : "");
       setStatus(editingPost.status || "PUBLISHED");
@@ -77,7 +91,6 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
       setCategoryId(categories[0]?.id ?? 1);
       setSummary("");
       setContentMarkdown("# Título Principal del Artículo 🌴\n\nEscribe aquí la introducción...\n\n---\n\n## 1. Primer Subtítulo\nDetalles y recomendaciones prácticas...");
-      setAuthorName("Carolina Zúñiga");
       setReadingTimeMinutes(5);
       setTagsInput("Destinos, Consejos, Playas");
       setStatus("PUBLISHED");
@@ -85,6 +98,14 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
       setActive(true);
     }
   }, [editingPost, categories, isOpen]);
+
+  // Al crear un artículo nuevo, preselecciona la primera asesora activa en
+  // cuanto esté disponible (mismo comportamiento que ya tiene Categoría).
+  useEffect(() => {
+    if (!editingPost && authorAdvisorId === undefined && activeAdvisors.length > 0) {
+      setAuthorAdvisorId(activeAdvisors[0].id);
+    }
+  }, [editingPost, authorAdvisorId, activeAdvisors, setAuthorAdvisorId]);
 
   if (!isOpen) return null;
 
@@ -126,6 +147,8 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!authorAdvisorId) return;
+
     const tags = tagsInput
       .split(",")
       .map((t) => t.trim())
@@ -137,15 +160,12 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
       categoryId,
       summary,
       contentMarkdown,
-      authorName,
+      authorAdvisorId,
       readingTimeMinutes,
       tags,
       coverMediaId,
       coverFocalX,
       coverFocalY,
-      authorAvatarMediaId,
-      authorAvatarFocalX,
-      authorAvatarFocalY,
       status,
       isFeatured,
       active,
@@ -244,13 +264,43 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           {/* Author, Reading Time & Tags */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <FormField
-                label="Autor(a)"
-                type="text"
-                value={authorName}
-                onChange={(e) => setAuthorName(e.target.value)}
-                placeholder="Carolina Zúñiga"
-              />
+              <FormSelect
+                label="Autor(a) *"
+                required
+                value={authorAdvisorId ?? ""}
+                onChange={(e) => setAuthorAdvisorId(Number(e.target.value))}
+              >
+                <option value="" disabled>
+                  Selecciona una asesora
+                </option>
+                {selectableAdvisors.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.fullName}
+                    {!a.active ? " (inactiva)" : ""}
+                  </option>
+                ))}
+              </FormSelect>
+              {selectedAdvisor && (
+                <div className="flex items-center gap-2 mt-2">
+                  {selectedAdvisor.photoMediaUrl ? (
+                    <div className="relative w-10 h-10 shrink-0 rounded-full overflow-hidden border border-neutral-border">
+                      <ResponsiveImage
+                        src={selectedAdvisor.photoMediaUrl}
+                        alt={selectedAdvisor.fullName}
+                        fill
+                        className="rounded-full"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-neutral-100 border border-neutral-border flex items-center justify-center text-xs font-bold text-neutral-500">
+                      {selectedAdvisor.fullName.charAt(0)}
+                    </div>
+                  )}
+                  <span className="text-[11px] text-neutral-400">
+                    Foto publicada junto al artículo
+                  </span>
+                </div>
+              )}
             </div>
 
             <div>
@@ -286,23 +336,6 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
               focalY={coverFocalY}
               onSelect={handleCoverSelect}
               modalTitle="Seleccionar Portada del Artículo"
-            />
-          </div>
-
-          {/* Author Avatar Selector */}
-          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-700 mb-3">
-              Foto del Autor
-            </h4>
-            <HeroPhotoSlot
-              variant="secondary"
-              label="Foto del Autor"
-              mediaId={authorAvatarMediaId}
-              mediaUrl={authorAvatarUrl}
-              focalX={authorAvatarFocalX}
-              focalY={authorAvatarFocalY}
-              onSelect={handleAvatarSelect}
-              modalTitle="Seleccionar Foto del Autor"
             />
           </div>
 
@@ -357,7 +390,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
               variant="primary"
               type="button"
               onClick={handleSubmit}
-              disabled={saving || !title.trim() || !slug.trim()}
+              disabled={saving || !title.trim() || !slug.trim() || !authorAdvisorId}
             >
               {saving ? "Guardando..." : editingPost ? "Guardar Cambios" : "Publicar Artículo"}
             </Button>

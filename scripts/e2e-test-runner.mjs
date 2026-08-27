@@ -556,7 +556,11 @@ async function runE2ETests() {
         categoryId: 1,
         summary: "Resumen de prueba automatizada para verificar el motor de CMS y persistencia.",
         contentMarkdown: "## Introducción al nuevo destino\n\nEste es un artículo creado automáticamente por el runner E2E.\n\n- Punto 1\n- Punto 2",
-        authorName: "Carolina Zúñiga",
+        // authorAdvisorId reemplaza al texto libre authorName: el autor de un
+        // artículo es siempre una asesora real vinculada por ID (mismo id fijo
+        // "1" que ya usa categoryId más arriba, porque este script no consulta
+        // el listado de asesoras).
+        authorAdvisorId: 1,
         readingTimeMinutes: 4,
         tags: ["Test", "E2E", "Aventura"],
         coverMediaId: 1,
@@ -580,7 +584,7 @@ async function runE2ETests() {
         categoryId: 1,
         summary: testArticleSummary,
         contentMarkdown: "# Guía Completa para Viajar a Cartagena 2026\n\nCartagena de Indias es uno de los destinos más vibrantes del Caribe colombiano.",
-        authorName: "Carolina Zúñiga",
+        authorAdvisorId: 1,
         readingTimeMinutes: 6,
         tags: ["Cartagena", "Colombia", "Caribe", "Playas"],
         coverMediaId: 2,

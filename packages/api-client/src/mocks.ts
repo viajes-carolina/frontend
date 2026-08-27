@@ -826,9 +826,9 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
     coverMediaUrl: "/media/demo-cartagena-caribe.webp",
     coverFocalX: 50,
     coverFocalY: 50,
+    authorAdvisorId: 1,
     authorName: "Carolina Zúñiga",
-    authorAvatarFocalX: 50,
-    authorAvatarFocalY: 50,
+    authorAvatarUrl: "/media/demo-cartagena-caribe.webp",
     readingTimeMinutes: 6,
     tags: ["Cartagena", "Caribe", "Colombia", "Playas", "Consejos"],
     status: "PUBLISHED",
@@ -850,9 +850,9 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
     coverMediaUrl: "/media/demo-cusco-machupicchu.webp",
     coverFocalX: 50,
     coverFocalY: 50,
+    authorAdvisorId: 3,
     authorName: "Valeria Gómez",
-    authorAvatarFocalX: 50,
-    authorAvatarFocalY: 50,
+    authorAvatarUrl: "/media/demo-cusco-machupicchu.webp",
     readingTimeMinutes: 8,
     tags: ["Cusco", "Machu Picchu", "Perú", "Aventura", "Historia"],
     status: "PUBLISHED",
@@ -874,9 +874,9 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
     coverMediaUrl: "/media/demo-cartagena-caribe.webp",
     coverFocalX: 50,
     coverFocalY: 50,
+    authorAdvisorId: 2,
     authorName: "Lucía Ramos",
-    authorAvatarFocalX: 50,
-    authorAvatarFocalY: 50,
+    authorAvatarUrl: "/media/demo-cartagena-caribe.webp",
     readingTimeMinutes: 5,
     tags: ["Punta Cana", "All Inclusive", "Caribe", "Lunas de Miel", "Resorts"],
     status: "PUBLISHED",
@@ -898,9 +898,9 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
     coverMediaUrl: "/media/demo-hero-travel.webp",
     coverFocalX: 50,
     coverFocalY: 50,
+    authorAdvisorId: 1,
     authorName: "Carolina Zúñiga",
-    authorAvatarFocalX: 50,
-    authorAvatarFocalY: 50,
+    authorAvatarUrl: "/media/demo-cartagena-caribe.webp",
     readingTimeMinutes: 4,
     tags: ["Documentación", "Seguros", "Tips", "Aeropuertos", "DNI"],
     status: "PUBLISHED",
@@ -976,6 +976,7 @@ export function getMockAdminBlogPosts(status?: string, search?: string): BlogPos
 
 export function createMockBlogPost(req: CreateOrUpdateBlogPostRequest): BlogPostDTO {
   const cat = MOCK_BLOG_CATEGORIES.find((c) => c.id === req.categoryId) || MOCK_BLOG_CATEGORIES[0];
+  const advisor = MOCK_ADVISORS.find((a) => a.id === req.authorAdvisorId);
   const newPost: BlogPostDTO = {
     id: Date.now(),
     slug: req.slug,
@@ -989,11 +990,9 @@ export function createMockBlogPost(req: CreateOrUpdateBlogPostRequest): BlogPost
     coverMediaUrl: "/media/demo-cartagena-caribe.webp",
     coverFocalX: req.coverFocalX ?? 50,
     coverFocalY: req.coverFocalY ?? 50,
-    authorName: req.authorName || "Equipo Viajes Carolina",
-    authorAvatarMediaId: req.authorAvatarMediaId,
-    authorAvatarUrl: req.authorAvatarMediaId ? "/media/demo-hero-travel.webp" : undefined,
-    authorAvatarFocalX: req.authorAvatarFocalX ?? 50,
-    authorAvatarFocalY: req.authorAvatarFocalY ?? 50,
+    authorAdvisorId: req.authorAdvisorId,
+    authorName: advisor?.fullName || "Equipo Viajes Carolina",
+    authorAvatarUrl: advisor?.photoMediaUrl,
     readingTimeMinutes: req.readingTimeMinutes || 5,
     tags: req.tags || [],
     status: req.status || "PUBLISHED",
@@ -1013,6 +1012,7 @@ export function updateMockBlogPost(id: number, req: CreateOrUpdateBlogPostReques
   if (index === -1) throw new Error(`Artículo no encontrado con ID: ${id}`);
   const current = MOCK_BLOG_POSTS[index];
   const cat = req.categoryId ? MOCK_BLOG_CATEGORIES.find((c) => c.id === req.categoryId) : undefined;
+  const advisor = req.authorAdvisorId !== undefined ? MOCK_ADVISORS.find((a) => a.id === req.authorAdvisorId) : undefined;
   const updated: BlogPostDTO = {
     ...current,
     slug: req.slug || current.slug,
@@ -1025,10 +1025,9 @@ export function updateMockBlogPost(id: number, req: CreateOrUpdateBlogPostReques
     coverMediaId: req.coverMediaId !== undefined ? req.coverMediaId : current.coverMediaId,
     coverFocalX: req.coverFocalX ?? current.coverFocalX,
     coverFocalY: req.coverFocalY ?? current.coverFocalY,
-    authorName: req.authorName || current.authorName,
-    authorAvatarMediaId: req.authorAvatarMediaId !== undefined ? req.authorAvatarMediaId : current.authorAvatarMediaId,
-    authorAvatarFocalX: req.authorAvatarFocalX ?? current.authorAvatarFocalX,
-    authorAvatarFocalY: req.authorAvatarFocalY ?? current.authorAvatarFocalY,
+    authorAdvisorId: req.authorAdvisorId ?? current.authorAdvisorId,
+    authorName: advisor?.fullName || current.authorName,
+    authorAvatarUrl: advisor?.photoMediaUrl ?? current.authorAvatarUrl,
     readingTimeMinutes: req.readingTimeMinutes || current.readingTimeMinutes,
     tags: req.tags || current.tags,
     status: req.status || current.status,
