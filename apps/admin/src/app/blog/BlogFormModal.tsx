@@ -145,6 +145,26 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
     });
   };
 
+  // Inserta formato Markdown en la posición del cursor (o envuelve la
+  // selección actual) sin exigir que el personal que redacta artículos
+  // memorice la sintaxis. Mismo patrón que handleInsertImage: actualiza el
+  // estado y reposiciona el cursor/selección con requestAnimationFrame.
+  const insertMarkdown = (before: string, after: string = "", placeholder: string = "") => {
+    const textarea = textareaRef.current;
+    const start = textarea?.selectionStart ?? contentMarkdown.length;
+    const end = textarea?.selectionEnd ?? contentMarkdown.length;
+    const selected = contentMarkdown.slice(start, end);
+    const textToInsert = selected || placeholder;
+    const newValue = contentMarkdown.slice(0, start) + before + textToInsert + after + contentMarkdown.slice(end);
+    setContentMarkdown(newValue);
+    requestAnimationFrame(() => {
+      if (!textarea) return;
+      textarea.focus();
+      const selStart = start + before.length;
+      textarea.setSelectionRange(selStart, selStart + textToInsert.length);
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!authorAdvisorId) return;
@@ -365,9 +385,32 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
               placeholder="# Título del Artículo..."
               className="font-mono"
             />
+            <div className="flex flex-wrap gap-2 mt-1.5">
+              <Button variant="outline" size="sm" type="button" onClick={() => insertMarkdown("## ", "", "Subtítulo")}>
+                Subtítulo
+              </Button>
+              <Button variant="outline" size="sm" type="button" onClick={() => insertMarkdown("> ", "", "Cita del cliente — Nombre")}>
+                Cita
+              </Button>
+              <Button variant="outline" size="sm" type="button" onClick={() => insertMarkdown("- ", "", "Elemento de la lista")}>
+                Lista
+              </Button>
+              <Button variant="outline" size="sm" type="button" onClick={() => insertMarkdown("1. ", "", "Elemento")}>
+                Lista numerada
+              </Button>
+              <Button variant="outline" size="sm" type="button" onClick={() => insertMarkdown("**", "**", "texto en negrita")}>
+                Negrita
+              </Button>
+              <Button variant="outline" size="sm" type="button" onClick={() => insertMarkdown("*", "*", "texto en cursiva")}>
+                Cursiva
+              </Button>
+              <Button variant="outline" size="sm" type="button" onClick={() => insertMarkdown("\n---\n", "", "")}>
+                Separador
+              </Button>
+            </div>
             <div className="flex items-center justify-between gap-3 mt-1.5">
               <span className="block text-[11px] text-neutral-400">
-                Soporta # Títulos, ## Subtítulos, &gt; Citas, - Listas y **Negrita**
+                Usa los botones para dar formato mientras escribes
               </span>
               <Button
                 variant="outline"
