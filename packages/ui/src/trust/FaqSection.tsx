@@ -18,22 +18,6 @@ const DEFAULT_CONFIG: HomeFaqSectionDTO = {
   subtitle: "Es normal tener dudas sobre fechas, pagos o destinos. Aquí respondemos las más frecuentes.",
 };
 
-// Ruta "hacia la llegada" (Desktop/Wide) — Figma node 408:40, un punto por
-// pregunta (el primero relleno, los siguientes huecos) que termina en el
-// CTA de WhatsApp. viewBox 760x390.
-const ROUTE_TALL_PATH = "M54 0C24 72 86 108 54 170C24 230 82 278 54 310C164 374 442 344 708 382";
-const ROUTE_TALL_DOTS = [
-  { cx: 54, cy: 0, hollow: false },
-  { cx: 54, cy: 150, hollow: true },
-  { cx: 54, cy: 228, hollow: true },
-  { cx: 54, cy: 306, hollow: true },
-  { cx: 708, cy: 382, hollow: false },
-];
-
-// Ruta horizontal (Mobile/Tablet) — "Ruta · 05 Aclarar" (nodes 396:928 /
-// 396:693), propia de esta sección.
-const ROUTE_HORIZONTAL_PATH = "M0.96 15.84C47.04 2.4 84.48 21.6 129.6 10.08C175.2 -1.44 212.16 12.48 264 3.84";
-
 function openWhatsApp(phone: string | undefined, message: string) {
   const cleanPhone = (phone || DEFAULT_WHATSAPP_PHONE).replace(/[^0-9]/g, "");
   const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
@@ -96,7 +80,7 @@ function AccordionItem({
           {faq.answer}
         </p>
       )}
-      <div className="h-px w-full bg-brand-navy/[0.08]" aria-hidden="true" />
+      <div className="h-px w-full bg-[rgba(186,184,173,0.45)]" aria-hidden="true" />
     </div>
   );
 }
@@ -115,108 +99,75 @@ export function FaqSection({ faqs, settings, config = DEFAULT_CONFIG, className 
       id="faq"
       className={`relative w-full overflow-hidden bg-surface-ivory py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
     >
+      {/* Atmósfera mínima · FAQ — elipse difusa, ancla abajo-a-la-izquierda,
+          se sale del borde de la sección. Asset exportado de Figma (blur
+          gaussiano complejo, no reconstruible con un <div> + blur-* de
+          Tailwind sin perder fidelidad). El SVG incluye ~100px de margen
+          extra en cada lado para no recortar el degradado del blur — el
+          contenedor usa el tamaño intrínseco real del SVG (no el bounding
+          box "limpio" de la elipse) para que preserveAspectRatio="none" no
+          la deforme. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[-190px] top-[400px] h-[440px] w-[440px] md:left-[-230px] md:top-[290px] md:h-[520px] md:w-[560px] xl:left-[-260px] xl:top-[200px] xl:h-[580px] xl:w-[660px]"
+      >
+        <img src="/decor/faq-atmosphere-mobile.svg" alt="" className="h-full w-full md:hidden" />
+        <img src="/decor/faq-atmosphere-tablet.svg" alt="" className="hidden h-full w-full md:block xl:hidden" />
+        <img src="/decor/faq-atmosphere-desktop.svg" alt="" className="hidden h-full w-full xl:block" />
+      </div>
+
+      {/* Detalle lineal · Topografía — líneas onduladas + punto, ancla
+          arriba-a-la-derecha. `right-*` en vez de `left-*` porque el ancho
+          real de la sección en el navegador es fluido, no el frame fijo de
+          Figma. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[20px] top-[20px] h-[60px] w-[100px] md:right-[44px] md:top-[28px] md:h-[90px] md:w-[200px] xl:right-[60px] xl:top-[28px] xl:h-[100px] xl:w-[260px]"
+      >
+        <img src="/decor/faq-topography-mobile.svg" alt="" className="h-full w-full md:hidden" />
+        <img src="/decor/faq-topography-tablet.svg" alt="" className="hidden h-full w-full md:block xl:hidden" />
+        <img src="/decor/faq-topography-desktop.svg" alt="" className="hidden h-full w-full xl:block" />
+      </div>
+
       <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
-        {/* Mobile — una columna */}
-        <div className="md:hidden">
-          <Reveal>
-            <svg aria-hidden="true" viewBox="0 0 268.8 23.04" className="mb-4 h-4 w-[180px]" fill="none">
-              <path d={ROUTE_HORIZONTAL_PATH} className="stroke-brand-navy" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-              <circle cx="264.5" cy="3.84" r="4" className="fill-brand-accent" />
-            </svg>
-            <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              {config.badgeText}
-            </span>
-            <h2 className="font-display mt-3 text-3xl font-semibold leading-tight text-brand-navy">
-              {config.title}
-            </h2>
-            <p className="font-inter mt-3 text-sm leading-relaxed text-brand-navy">
-              {config.subtitle}
-            </p>
-          </Reveal>
+        {/* Encabezado — ancho completo en los 3 breakpoints. */}
+        <Reveal>
+          <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
+            {config.badgeText}
+          </span>
+          <h2 className="font-display mt-3 text-[32px] font-semibold leading-[36px] text-brand-navy md:text-[38px] md:leading-[43px] xl:text-[42px] xl:leading-[47px]">
+            {config.title}
+          </h2>
+          <p className="font-inter mt-3 text-sm leading-relaxed text-brand-navy md:text-[15px]">
+            {config.subtitle}
+          </p>
+        </Reveal>
 
-          <Reveal delayMs={160} className="mt-10">
-            {faqs.map((faq, idx) => (
-              <AccordionItem key={faq.id || idx} faq={faq} isOpen={openIndex === idx} onToggle={() => toggleIndex(idx)} />
-            ))}
-          </Reveal>
+        {/* Acordeón — ancho completo, mismo margen izquierdo que el encabezado
+            en los 3 breakpoints (sin indentación reservada para la ruta
+            punteada que ya no existe). */}
+        <Reveal delayMs={160} className="mt-10">
+          {faqs.map((faq, idx) => (
+            <AccordionItem
+              key={faq.id || idx}
+              faq={faq}
+              isOpen={openIndex === idx}
+              onToggle={() => toggleIndex(idx)}
+              variant="highlighted"
+            />
+          ))}
+        </Reveal>
 
-          <Reveal delayMs={240}>
-            <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-atmosphere-pale-sky" textClassName="text-[13px]" />
+        {/* "¿Tu pregunta es diferente?" — ancho completo en mobile, ancho
+            fijo alineado a la derecha desde tablet. */}
+        <div className="mt-8 flex md:mt-10 md:justify-end xl:mt-12">
+          <Reveal delayMs={240} className="w-full md:w-[480px]">
+            <AskDifferentBox
+              phone={settings?.whatsappPhone}
+              className="w-full bg-atmosphere-pale-sky xl:bg-atmosphere-honey"
+              textClassName="text-[13px] md:text-sm"
+            />
           </Reveal>
-        </div>
-
-        {/* Tablet — encabezado a la izquierda, acordeón a la derecha */}
-        <div className="hidden md:flex md:gap-16 xl:hidden">
-          <Reveal className="w-[38%]">
-            <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              {config.badgeText}
-            </span>
-            <h2 className="font-display mt-3 text-[32px] font-semibold leading-[1.13] text-brand-navy">
-              {config.title}
-            </h2>
-            <p className="font-inter mt-3 text-[15px] leading-relaxed text-brand-navy">
-              {config.subtitle}
-            </p>
-          </Reveal>
-          <div className="flex-1">
-            <Reveal delayMs={160}>
-              {faqs.map((faq, idx) => (
-                <AccordionItem key={faq.id || idx} faq={faq} isOpen={openIndex === idx} onToggle={() => toggleIndex(idx)} />
-              ))}
-            </Reveal>
-            <Reveal delayMs={240}>
-              <AskDifferentBox phone={settings?.whatsappPhone} className="mt-8 w-full bg-atmosphere-pale-sky" />
-            </Reveal>
-          </div>
-        </div>
-
-        {/* Desktop / Wide — con ruta punteada y respuesta abierta destacada */}
-        <div className="hidden xl:block">
-          <Reveal className="mb-12 max-w-2xl">
-            <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
-              {config.badgeText}
-            </span>
-            <h2 className="font-display mt-3 text-[42px] font-semibold leading-[1.12] text-brand-navy">
-              {config.title}
-            </h2>
-            <p className="font-inter mt-3 text-[15px] leading-relaxed text-brand-navy">
-              {config.subtitle}
-            </p>
-          </Reveal>
-          <div className="relative ml-[14%]">
-            {/* Ruta "hacia la llegada" — un punto por pregunta, aspect ratio real
-                para que los puntos se vean circulares, no ovalados. */}
-            <div aria-hidden="true" className="pointer-events-none absolute -left-16 top-0 h-full w-[70px]">
-              <svg viewBox="0 0 760 390" className="h-full w-full" fill="none" preserveAspectRatio="none">
-                <path d={ROUTE_TALL_PATH} className="stroke-brand-navy" strokeWidth="3.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-              </svg>
-              {ROUTE_TALL_DOTS.map((dot, i) => (
-                <span
-                  key={i}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full ${
-                    dot.hollow ? "h-3.5 w-3.5 border-2 border-brand-navy bg-neutral-white" : "h-4 w-4 bg-brand-accent"
-                  }`}
-                  style={{ left: `${(dot.cx / 760) * 100}%`, top: `${(dot.cy / 390) * 100}%` }}
-                />
-              ))}
-            </div>
-            <Reveal delayMs={160}>
-              {faqs.map((faq, idx) => (
-                <AccordionItem
-                  key={faq.id || idx}
-                  faq={faq}
-                  isOpen={openIndex === idx}
-                  onToggle={() => toggleIndex(idx)}
-                  variant="highlighted"
-                />
-              ))}
-            </Reveal>
-            <div className="mt-12 flex justify-end">
-              <Reveal delayMs={240} className="w-[46%]">
-                <AskDifferentBox phone={settings?.whatsappPhone} className="w-full bg-atmosphere-honey" />
-              </Reveal>
-            </div>
-          </div>
         </div>
       </div>
     </section>
