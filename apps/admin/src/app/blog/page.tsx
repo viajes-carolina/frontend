@@ -3,6 +3,7 @@
 import React from "react";
 import { useAdminBlog } from "../../hooks/useAdminBlog";
 import { BlogFormModal } from "./BlogFormModal";
+import { Button, EditIcon, PlusIcon, TrashIcon } from "@vc/ui";
 
 export default function AdminBlogPage() {
   const {
@@ -39,21 +40,16 @@ export default function AdminBlogPage() {
       {/* Top Actions */}
       <div className="flex items-center justify-end gap-4">
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleOpenCreatePost}
-            className="px-5 py-2.5 rounded-xl bg-brand-accent text-white font-bold text-xs sm:text-sm hover:bg-brand-sunset shadow-md transition flex items-center gap-2"
-          >
-            <span>✍️</span>
-            <span>Nuevo Artículo</span>
-          </button>
+          <Button variant="primary" onClick={handleOpenCreatePost} icon={<PlusIcon size={18} />}>
+            Nuevo Artículo
+          </Button>
         </div>
       </div>
 
       {/* Notifications */}
       {message && (
         <div
-          className={`p-4 rounded-2xl text-sm font-semibold flex items-center justify-between ${
+          className={`p-4 rounded-xl text-sm font-semibold flex items-center justify-between ${
             message.type === "success"
               ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
               : "bg-red-50 text-red-800 border border-red-200"
@@ -64,7 +60,7 @@ export default function AdminBlogPage() {
       )}
 
       {/* Filters and Search Bar */}
-      <div className="p-4 rounded-2xl bg-white border border-neutral-200 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="p-4 rounded-2xl bg-white border border-neutral-border shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         {/* Status Pills */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
           {[
@@ -80,7 +76,7 @@ export default function AdminBlogPage() {
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                 statusFilter === tab.key
                   ? "bg-brand-accent text-white shadow-sm"
-                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                  : "bg-neutral-soft text-neutral-600 hover:bg-neutral-200 border border-neutral-border"
               }`}
             >
               {tab.label}
@@ -95,14 +91,14 @@ export default function AdminBlogPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar por título o slug..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-300 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-brand-accent"
+            className="w-full pl-9 pr-3 py-2 rounded-xl border border-neutral-border text-xs sm:text-sm font-medium focus:ring-2 focus:ring-brand-accent"
           />
           <span className="absolute left-3 top-2.5 text-neutral-400 text-xs">🔍</span>
         </div>
       </div>
 
       {/* Articles Table / List */}
-      <div className="bg-white rounded-3xl border border-neutral-200 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-neutral-border shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-neutral-400 text-sm">
             Cargando artículos del blog...
@@ -111,7 +107,7 @@ export default function AdminBlogPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-neutral-50/80 border-b border-neutral-200 text-[11px] font-bold text-neutral-500 uppercase tracking-wider">
+                <tr className="bg-neutral-50/80 border-b border-neutral-border text-[11px] font-bold text-neutral-500 uppercase tracking-wider">
                   <th className="py-3.5 px-6">Artículo</th>
                   <th className="py-3.5 px-4">Categoría</th>
                   <th className="py-3.5 px-4">Estado</th>
@@ -126,7 +122,7 @@ export default function AdminBlogPage() {
                     {/* Article Title & Cover */}
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3.5 max-w-md">
-                        <div className="w-14 h-12 rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-neutral-200">
+                        <div className="w-14 h-12 rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-neutral-border">
                           <img
                             src={post.coverMediaUrl || "/media/demo-cartagena-caribe.webp"}
                             alt={post.title}
@@ -191,21 +187,22 @@ export default function AdminBlogPage() {
                     {/* Actions */}
                     <td className="py-4 px-6 text-right">
                       <div className="inline-flex items-center gap-2">
-                        <button
-                          type="button"
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          icon={<EditIcon size={14} />}
                           onClick={() => handleOpenEditPost(post)}
-                          className="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-brand-accent hover:text-white text-neutral-700 text-xs font-bold transition shadow-sm"
                         >
                           Editar
-                        </button>
-                        <button
-                          type="button"
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          icon={<TrashIcon size={14} />}
                           onClick={() => handleDeletePost(post.id)}
-                          className="p-1.5 rounded-lg hover:bg-red-50 text-neutral-400 hover:text-red-600 transition text-xs"
-                          title="Archivar artículo"
                         >
-                          🗑️
-                        </button>
+                          Archivar
+                        </Button>
                       </div>
                     </td>
                   </tr>

@@ -137,6 +137,20 @@ export const BlogArticleBody: React.FC<BlogArticleBodyProps> = ({ markdown }) =>
     } else if (trimmed === "---") {
       flushParagraph();
       elements.push(<hr key={`hr-${keyIdx++}`} className="my-8 border-neutral-border" />);
+    } else if (/^!\[(.*)\]\((.*)\)$/.test(trimmed)) {
+      flushParagraph();
+      const match = trimmed.match(/^!\[(.*)\]\((.*)\)$/)!;
+      const [, alt, url] = match;
+      elements.push(
+        <figure key={`img-${keyIdx++}`} className="my-8">
+          <img src={url} alt={alt} className="w-full h-auto rounded-2xl shadow-sm" />
+          {alt && (
+            <figcaption className="mt-2 text-sm text-neutral-muted text-center font-inter">
+              {alt}
+            </figcaption>
+          )}
+        </figure>
+      );
     } else {
       currentParagraph.push(trimmed);
     }

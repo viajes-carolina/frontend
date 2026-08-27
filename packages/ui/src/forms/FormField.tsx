@@ -25,21 +25,30 @@ export type FormFieldProps = FormFieldSingleLineProps | FormFieldMultilineProps;
  *
  * Usa `multiline` para renderizar un `<textarea>` en vez de un `<input>`.
  */
-export const FormField: React.FC<FormFieldProps> = (props) => {
-  const { label, multiline, className, ...rest } = props;
-  const fieldClassName = className ? `${FIELD_CLASSES} ${className}` : FIELD_CLASSES;
+export const FormField = React.forwardRef<HTMLInputElement | HTMLTextAreaElement, FormFieldProps>(
+  (props, ref) => {
+    const { label, multiline, className, ...rest } = props;
+    const fieldClassName = className ? `${FIELD_CLASSES} ${className}` : FIELD_CLASSES;
 
-  return (
-    <>
-      <label className={LABEL_CLASSES}>{label}</label>
-      {multiline ? (
-        <textarea
-          className={fieldClassName}
-          {...(rest as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
-        />
-      ) : (
-        <input className={fieldClassName} {...(rest as React.InputHTMLAttributes<HTMLInputElement>)} />
-      )}
-    </>
-  );
-};
+    return (
+      <>
+        <label className={LABEL_CLASSES}>{label}</label>
+        {multiline ? (
+          <textarea
+            ref={ref as React.Ref<HTMLTextAreaElement>}
+            className={fieldClassName}
+            {...(rest as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+          />
+        ) : (
+          <input
+            ref={ref as React.Ref<HTMLInputElement>}
+            className={fieldClassName}
+            {...(rest as React.InputHTMLAttributes<HTMLInputElement>)}
+          />
+        )}
+      </>
+    );
+  }
+);
+
+FormField.displayName = "FormField";
