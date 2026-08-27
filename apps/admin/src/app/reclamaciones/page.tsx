@@ -1,10 +1,11 @@
 import { apiClient } from "@vc/api-client";
 import { ClaimsInbox } from "./ClaimsInbox";
+import { withAdminAuth } from "../../lib/withAdminAuth";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminClaimsPage() {
-  const claims = await apiClient.getAdminClaims();
+  const claims = await withAdminAuth(apiClient.getAdminClaims(), "/reclamaciones");
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
