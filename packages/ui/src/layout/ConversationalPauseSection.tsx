@@ -4,6 +4,7 @@ import React from "react";
 import { SiteSettingsDTO, HomeConversationalPauseDTO } from "@vc/api-client";
 import { Reveal } from "../primitives/Reveal";
 import { WhatsAppButton } from "../primitives/WhatsAppButton";
+import { BcpMarkIcon, InterbankMarkIcon, ScotiabankMarkIcon, IconProps } from "../icons/icons";
 
 export interface ConversationalPauseSectionProps {
   config?: HomeConversationalPauseDTO;
@@ -16,22 +17,81 @@ export interface ConversationalPauseSectionProps {
 // (arena) no cambia de color por breakpoint, a diferencia de la mayoría.
 const WAVE_TO_EXPERIENCIAS_PATH = "M0 60C180 20 340 92 500 55C660 18 820 88 980 50C1140 12 1300 72 1440 38V120H0V60Z";
 
-// Ruta horizontal (Mobile/Tablet) — Figma "Pausa CTA · Ruta · Mobile"
-// (node 487:85), mismo trazo proporcionalmente escalado en ambos tramos —
-// un solo path, mismo criterio que el resto de rutas horizontales de Inicio.
-const ROUTE_HORIZONTAL_PATH = "M0.461934 16.8137C48.4619 -8.18627 92.4619 38.8137 140.462 11.8137C184.462 -9.18627 228.462 30.8137 270.462 0.813733";
-
-// Ruta diagonal (Desktop/Wide) — Figma "Pausa CTA · Ruta · Wide" (node
-// 484:79). viewBox 680.742x35.6161.
-const ROUTE_WIDE_PATH = "M0.344255 28.9176C120.344 -15.0824 220.344 64.9176 340.344 20.9176C450.344 -19.0824 560.344 52.9176 680.344 0.917556";
-
 const DEFAULT_CONFIG: HomeConversationalPauseDTO = {
   badgeText: "04 · Antes de seguir",
   title: "¿Ya imaginas cómo podría sentirse tu próximo viaje?",
   subtitle: "No necesitas tener todo decidido. Cuéntanos qué te ilusiona y una asesora te ayuda a darle forma.",
   whatsappCtaText: "Conversarlo por WhatsApp",
   whatsappMessageTemplate: "Hola Viajes Carolina, quiero contarles qué tengo en mente para mi próximo viaje.",
+  financingEyebrowText: "VIAJA AHORA, PAGA A TU RITMO",
+  financingInstallmentsCount: 12,
+  financingDisclaimerText: "Válido con tarjetas participantes. Sujeto a condiciones de cada entidad financiera.",
+  financingBanks: ["BCP", "Interbank", "BBVA", "BanBif", "Scotiabank"],
 };
+
+// Mapeo banco → estilo/ícono de marca para la fila de "Bancos Participantes"
+// del panel de financiamiento. Match case-insensitive por nombre (el admin
+// escribe el nombre libremente en `financingBanks`); cualquier nombre no
+// reconocido cae al estilo neutro de FALLBACK_BANK_STYLE.
+interface BankStyle {
+  textClass: string;
+  Icon?: React.ComponentType<IconProps>;
+}
+
+const FALLBACK_BANK_STYLE: BankStyle = { textClass: "text-neutral-ink" };
+
+const BANK_STYLES: Record<string, BankStyle> = {
+  bcp: { textClass: "text-[#0057a8]", Icon: BcpMarkIcon },
+  interbank: { textClass: "text-[#009b4d]", Icon: InterbankMarkIcon },
+  bbva: { textClass: "text-[#004481]" },
+  banbif: { textClass: "text-[#1498e6]" },
+  scotiabank: { textClass: "text-[#e31b23]", Icon: ScotiabankMarkIcon },
+};
+
+function getBankStyle(bankName: string): BankStyle {
+  return BANK_STYLES[bankName.trim().toLowerCase()] ?? FALLBACK_BANK_STYLE;
+}
+
+interface FinancingPanelProps {
+  eyebrowText: string;
+  installmentsCount: number;
+  disclaimerText: string;
+  banks: string[];
+  className?: string;
+}
+
+// Tarjeta de financiamiento (cuotas sin intereses + bancos participantes)
+// mostrada dentro del CTA de "04 · Antes de seguir". Fondo blanco contra el
+// bg-surface-ivory de la sección, mismo radio/borde/sombra que el resto de
+// tarjetas del Home (ver p.ej. LoginCard/UsersTable en @vc/ui).
+function FinancingPanel({ eyebrowText, installmentsCount, disclaimerText, banks, className = "" }: FinancingPanelProps) {
+  return (
+    <div
+      className={`w-full max-w-md rounded-2xl border border-neutral-border bg-white p-6 text-center shadow-sm sm:p-7 ${className}`}
+    >
+      <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
+        {eyebrowText}
+      </span>
+      <p className="font-display mt-2 text-2xl font-semibold leading-tight text-brand-navy sm:text-[28px]">
+        Hasta <span className="text-brand-accent">{installmentsCount}</span> cuotas sin intereses
+      </p>
+
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+        {banks.map((bank, index) => {
+          const { textClass, Icon } = getBankStyle(bank);
+          return (
+            <span key={`${bank}-${index}`} className={`inline-flex items-center gap-1.5 font-sora text-sm font-semibold ${textClass}`}>
+              {Icon ? <Icon size={14} /> : null}
+              {bank}
+            </span>
+          );
+        })}
+      </div>
+
+      <p className="font-inter mt-4 text-xs text-neutral-muted">{disclaimerText}</p>
+    </div>
+  );
+}
 
 export function ConversationalPauseSection({ config = DEFAULT_CONFIG, settings, className = "" }: ConversationalPauseSectionProps) {
   return (
@@ -44,23 +104,6 @@ export function ConversationalPauseSection({ config = DEFAULT_CONFIG, settings, 
         <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
           <path d={WAVE_TO_EXPERIENCIAS_PATH} className="fill-white xl:fill-brand-navy" />
         </svg>
-      </div>
-
-      {/* Ruta decorativa — horizontal en base/md, diagonal en xl. Siempre
-          bajo el contenido real (no interfiere con el layout). */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-[20%] flex justify-center xl:hidden">
-        <svg viewBox="0 0 270.462 21.4849" className="h-4 w-[180px]" fill="none">
-          <path d={ROUTE_HORIZONTAL_PATH} className="stroke-brand-navy" strokeWidth="1.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-      </div>
-      <div aria-hidden="true" className="pointer-events-none absolute right-[8%] top-[14%] hidden w-[28%] xl:block">
-        <svg viewBox="0 0 680.742 35.6161" className="h-auto w-full" fill="none" preserveAspectRatio="none">
-          <path d={ROUTE_WIDE_PATH} className="stroke-brand-navy" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        </svg>
-        <span
-          className="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-accent"
-          style={{ left: `${(680.344 / 680.742) * 100}%`, top: `${(0.917556 / 35.6161) * 100}%` }}
-        />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
@@ -77,14 +120,23 @@ export function ConversationalPauseSection({ config = DEFAULT_CONFIG, settings, 
             </p>
           </div>
 
-          <WhatsAppButton
-            size="lg"
-            phone={settings?.whatsappPhone}
-            message={config.whatsappMessageTemplate}
-            className="shrink-0"
-          >
-            {config.whatsappCtaText}
-          </WhatsAppButton>
+          <div className="flex flex-col items-center gap-6 xl:shrink-0 xl:items-end">
+            <FinancingPanel
+              eyebrowText={config.financingEyebrowText}
+              installmentsCount={config.financingInstallmentsCount}
+              disclaimerText={config.financingDisclaimerText}
+              banks={config.financingBanks}
+            />
+
+            <WhatsAppButton
+              size="lg"
+              phone={settings?.whatsappPhone}
+              message={config.whatsappMessageTemplate}
+              className="shrink-0"
+            >
+              {config.whatsappCtaText}
+            </WhatsAppButton>
+          </div>
         </Reveal>
       </div>
     </section>

@@ -269,3 +269,36 @@ export function LifeBuoyIcon({ size = 20, className = "", ...props }: IconProps)
   );
 }
 
+// Marcas de bancos participantes del panel de financiamiento (sección "04 ·
+// Antes de seguir" del Home) — ver ConversationalPauseSection.tsx.
+export function BcpMarkIcon({ size = 14, className = "", ...props }: IconProps) {
+  // viewBox retrato (13.44×17.76) — a diferencia de los otros marks de banco
+  // (cuadrados), forzar width=height=size dejaba un margen invisible a los
+  // lados ("letterboxing") que lo hacía verse más chico que Interbank/Scotiabank.
+  // Se mantiene la proporción real en vez de forzarlo a un cuadro cuadrado.
+  const width = typeof size === "number" ? (size * 13.4427) / 17.7629 : size;
+  return (
+    <svg width={width} height={size} viewBox="0 0 13.4427 17.7629" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+      <path d="M1.64626 1.88144L9.64626 8.88144L1.64626 15.8814" stroke="#FF6B4A" strokeWidth="5" />
+    </svg>
+  );
+}
+
+export function InterbankMarkIcon({ size = 16, className = "", ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+      <path d="M18 0H2C0.89543 0 0 0.89543 0 2V18C0 19.1046 0.89543 20 2 20H18C19.1046 20 20 19.1046 20 18V2C20 0.89543 19.1046 0 18 0Z" fill="#0077B5" />
+      <path d="M14 5H6V15H14V5Z" fill="#EAF4F7" />
+    </svg>
+  );
+}
+
+export function ScotiabankMarkIcon({ size = 14, className = "", ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
+      <path d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z" fill="#E31B23" />
+      <path d="M3.5 6.5C6 9.5 10 9.5 12.5 6.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
+

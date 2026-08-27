@@ -11,6 +11,15 @@ export function useAdminConversationalPause(initialConfig?: HomeConversationalPa
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  // Texto crudo (separado por coma) del input de "Bancos Participantes" —
+  // mismo criterio que `tagsInput` en BlogFormModal.tsx: se mantiene como
+  // fuente de verdad de lo que el usuario está escribiendo (permite comas y
+  // espacios finales mientras tipea) y solo se normaliza a `financingBanks`
+  // (array trim + filtrado) en cada cambio, sin nunca derivarlo de vuelta
+  // desde el array (eso perdería el texto crudo en cada tecla).
+  const [financingBanksText, setFinancingBanksTextState] = useState<string>(
+    initialConfig?.financingBanks?.join(", ") || ""
+  );
 
   const fetchConfig = useCallback(async () => {
     try {
@@ -18,6 +27,7 @@ export function useAdminConversationalPause(initialConfig?: HomeConversationalPa
       setError(null);
       const data = await apiClient.getAdminHomeConversationalPause();
       setConfig(data);
+      setFinancingBanksTextState(data.financingBanks?.join(", ") || "");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Error al cargar la configuración de Pausa Conversacional";
       setError(msg);
@@ -41,6 +51,18 @@ export function useAdminConversationalPause(initialConfig?: HomeConversationalPa
     []
   );
 
+  // Setter dedicado para el input de texto de "Bancos Participantes":
+  // guarda el texto crudo tal cual lo escribe el usuario y, en paralelo,
+  // normaliza `config.financingBanks` (split por coma + trim + filtrado de
+  // vacíos) para que quede listo para guardar sin pasos adicionales.
+  const setFinancingBanksText = useCallback((text: string) => {
+    setFinancingBanksTextState(text);
+    const banks = text.split(",").map((b) => b.trim()).filter(Boolean);
+    setConfig((prev) => (prev ? { ...prev, financingBanks: banks } : null));
+    setSuccess(false);
+    setError(null);
+  }, []);
+
   const saveConfig = useCallback(
     async (payload?: UpdateHomeConversationalPauseRequest) => {
       const dataToSave = payload || (config ? {
@@ -49,6 +71,10 @@ export function useAdminConversationalPause(initialConfig?: HomeConversationalPa
         subtitle: config.subtitle,
         whatsappCtaText: config.whatsappCtaText,
         whatsappMessageTemplate: config.whatsappMessageTemplate,
+        financingEyebrowText: config.financingEyebrowText,
+        financingInstallmentsCount: config.financingInstallmentsCount,
+        financingDisclaimerText: config.financingDisclaimerText,
+        financingBanks: config.financingBanks,
       } : null);
 
       if (!dataToSave) return;
@@ -59,6 +85,7 @@ export function useAdminConversationalPause(initialConfig?: HomeConversationalPa
         setSuccess(false);
         const updated = await apiClient.updateAdminHomeConversationalPause(dataToSave);
         setConfig(updated);
+        setFinancingBanksTextState(updated.financingBanks?.join(", ") || "");
         setSuccess(true);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "Error al guardar los cambios";
@@ -77,6 +104,8 @@ export function useAdminConversationalPause(initialConfig?: HomeConversationalPa
     error,
     success,
     updateField,
+    financingBanksText,
+    setFinancingBanksText,
     saveConfig,
     refetch: fetchConfig,
   };

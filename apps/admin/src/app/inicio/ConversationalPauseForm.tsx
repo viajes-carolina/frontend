@@ -17,6 +17,8 @@ export const ConversationalPauseForm: React.FC<ConversationalPauseFormProps> = (
     error,
     success,
     updateField,
+    financingBanksText,
+    setFinancingBanksText,
     saveConfig,
   } = useAdminConversationalPause(initialConfig);
 
@@ -121,6 +123,49 @@ export const ConversationalPauseForm: React.FC<ConversationalPauseFormProps> = (
             onChange={(e) => updateField("whatsappMessageTemplate", e.target.value)}
             rows={2}
             placeholder="Hola Viajes Carolina, quiero contarles qué tengo en mente para mi próximo viaje."
+          />
+        </div>
+
+        <div>
+          <FormField
+            label="Texto Superior del Panel de Cuotas"
+            type="text"
+            value={config.financingEyebrowText}
+            onChange={(e) => updateField("financingEyebrowText", e.target.value)}
+            placeholder="VIAJA AHORA, PAGA A TU RITMO"
+            required
+          />
+        </div>
+
+        <div>
+          <FormField
+            label="Número de Cuotas"
+            type="number"
+            value={config.financingInstallmentsCount}
+            onChange={(e) => updateField("financingInstallmentsCount", Number(e.target.value))}
+            min="1"
+            required
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <FormField
+            label="Bancos Participantes (separados por coma)"
+            type="text"
+            value={financingBanksText}
+            onChange={(e) => setFinancingBanksText(e.target.value)}
+            placeholder="BCP, Interbank, BBVA, BanBif, Scotiabank"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <FormField
+            label="Texto Legal / Disclaimer"
+            multiline
+            value={config.financingDisclaimerText}
+            onChange={(e) => updateField("financingDisclaimerText", e.target.value)}
+            rows={2}
+            placeholder="Válido con tarjetas participantes. Sujeto a condiciones de cada entidad financiera."
           />
         </div>
       </div>

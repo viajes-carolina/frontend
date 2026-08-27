@@ -664,6 +664,10 @@ export interface HomeConversationalPauseDTO {
   subtitle: string;
   whatsappCtaText: string;
   whatsappMessageTemplate?: string;
+  financingEyebrowText: string;
+  financingInstallmentsCount: number;
+  financingDisclaimerText: string;
+  financingBanks: string[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -674,6 +678,10 @@ export interface UpdateHomeConversationalPauseRequest {
   subtitle: string;
   whatsappCtaText: string;
   whatsappMessageTemplate?: string;
+  financingEyebrowText: string;
+  financingInstallmentsCount: number;
+  financingDisclaimerText: string;
+  financingBanks: string[];
 }
 
 // Home Promotions Section DTOs — copy de "02 · Promociones" + CTA de cierre

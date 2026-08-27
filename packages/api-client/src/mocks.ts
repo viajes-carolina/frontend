@@ -1340,6 +1340,10 @@ export const DEFAULT_HOME_CONVERSATIONAL_PAUSE: HomeConversationalPauseDTO = {
   subtitle: "No necesitas tener todo decidido. Cuéntanos qué te ilusiona y una asesora te ayuda a darle forma.",
   whatsappCtaText: "Conversarlo por WhatsApp",
   whatsappMessageTemplate: "Hola Viajes Carolina, quiero contarles qué tengo en mente para mi próximo viaje.",
+  financingEyebrowText: "VIAJA AHORA, PAGA A TU RITMO",
+  financingInstallmentsCount: 12,
+  financingDisclaimerText: "Válido con tarjetas participantes. Sujeto a condiciones de cada entidad financiera.",
+  financingBanks: ["BCP", "Interbank", "BBVA", "BanBif", "Scotiabank"],
   createdAt: "2026-08-22T00:00:00.000Z",
   updatedAt: "2026-08-22T00:00:00.000Z",
 };
