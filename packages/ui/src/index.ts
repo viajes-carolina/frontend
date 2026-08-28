@@ -1,4 +1,5 @@
 export * from "./primitives/Button";
+export * from "./primitives/Skeleton";
 export * from "./primitives/WhatsAppButton";
 export * from "./primitives/ResponsiveImage";
 export * from "./primitives/Reveal";

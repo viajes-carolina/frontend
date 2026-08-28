@@ -31,9 +31,9 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
   isLoading = false,
 }) => {
   return (
-    <div className="min-h-screen bg-neutral-soft pb-20">
+    <div className="min-h-screen pb-20">
       {/* Hero Header */}
-      <section className="relative bg-neutral-soft border-b border-neutral-border pt-28 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative border-b border-neutral-border pt-28 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <span className="inline-flex items-center gap-2 px-3 py-1 text-xs font-bold tracking-wider uppercase bg-white text-brand-accent border border-neutral-border shadow-sm rounded-full mb-4">
             Explora Nuestro Catálogo

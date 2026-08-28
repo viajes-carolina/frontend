@@ -13,7 +13,7 @@ export default async function ContactoPage() {
   ]);
 
   return (
-    <main className="w-full bg-surface-ivory text-neutral-ink min-h-screen">
+    <main className="w-full text-neutral-ink min-h-screen">
       {/* 01. Hero conversación */}
       <ContactHeroSection
         page={contactData.page}

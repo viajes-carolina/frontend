@@ -15,7 +15,7 @@ export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
   heroPost,
 }) => {
   return (
-    <section className="relative overflow-hidden bg-surface-ivory pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28">
+    <section className="relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-8">
           <Reveal className="lg:col-span-7">

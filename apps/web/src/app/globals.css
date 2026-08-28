@@ -7,16 +7,58 @@
 @source "../../../../packages/config";
 
 :root {
-  background-color: var(--color-neutral-soft);
+  background-color: var(--color-surface-ivory);
   color: var(--color-neutral-ink);
   font-family: var(--font-inter);
+
+  /* Variante de textura por breakpoint. Un único tile de 1440px escalado hacia
+     abajo deja las curvas de nivel apretadas e ilegibles en pantallas angostas
+     (en móvil desaparecen), así que cada rango tiene su propio lienzo con las
+     islas ancladas a SUS bordes — mismo patrón que los faq-topography-*.svg. */
+  --bg-topography: url("/decor/site-topography-mobile.svg");
+  --bg-topography-size: 100% auto;
 }
 
+@media (min-width: 768px) {
+  :root {
+    --bg-topography: url("/decor/site-topography-tablet.svg");
+    --bg-topography-size: 100% auto;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --bg-topography: url("/decor/site-topography.svg");
+    /* Nunca por debajo de su tamaño natural. Entre 1280 y 1440px el tile es más
+       ancho que el viewport y se recorta por los lados (las islas ya desbordan
+       el viewBox por diseño, así que no se nota); desde 1440px se estira para
+       que sigan pegadas a los bordes reales. */
+    --bg-topography-size: max(1440px, 100%) auto;
+  }
+}
+
+/* Fondo global del sitio público — una sola capa de imagen sobre el crema base.
+   El SVG trae DOS cosas: los washes de color (elipses con degradado radial a
+   transparente) y encima la textura de curvas de nivel.
+
+   Los washes vivían aquí como `radial-gradient` anclados al viewport, pero así
+   solo teñían el primer scroll de una página de ~8000px; dentro del tile se
+   repiten con él y acompañan toda la página. Además evita `background-attachment:
+   fixed`, que en Chrome/Firefox desactiva el scroll compositado (repinta la capa
+   del viewport en cada frame) y que iOS Safari directamente no honra.
+
+   La capa scrollea con el contenido (`attachment` por defecto). */
 body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-color: var(--color-neutral-soft);
+  /* El fallback no es decorativo: sin él, una custom property ausente invalida
+     la declaración entera (invalid at computed-value time). */
+  background-image: var(--bg-topography, none);
+  background-repeat: repeat-y;
+  background-position: top center;
+  background-size: var(--bg-topography-size, auto);
+  background-color: var(--color-surface-ivory);
   color: var(--color-neutral-ink);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;

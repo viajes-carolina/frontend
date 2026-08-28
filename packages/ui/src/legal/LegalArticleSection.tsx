@@ -47,7 +47,7 @@ export function LegalArticleSection({
   };
 
   return (
-    <main className="w-full bg-neutral-soft">
+    <main className="w-full">
       {/* Hero legal */}
       <section className="w-full bg-brand-navy px-6 pb-12 pt-16 sm:px-10 sm:pb-[68px] sm:pt-[72px] lg:px-[192px]">
         <div className="flex flex-col items-start gap-4 sm:gap-5">
@@ -67,7 +67,7 @@ export function LegalArticleSection({
       </section>
 
       {/* Contenido principal */}
-      <section className="w-full bg-neutral-white px-6 pb-14 pt-10 sm:px-10 sm:pb-[90px] sm:pt-[70px] lg:px-[192px]">
+      <section className="w-full px-6 pb-14 pt-10 sm:px-10 sm:pb-[90px] sm:pt-[70px] lg:px-[192px]">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-[58px]">
           {/* Índice de contenidos */}
           <div className="flex w-full flex-col gap-3 rounded-[20px] bg-atmosphere-pale-sky p-5 sm:p-6 lg:sticky lg:top-24 lg:w-[260px] lg:shrink-0">

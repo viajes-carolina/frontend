@@ -14,7 +14,7 @@ export interface AboutHeroSectionProps {
 
 export function AboutHeroSection({ page, whatsappPhone = DEFAULT_WHATSAPP_PHONE, className = "" }: AboutHeroSectionProps) {
   return (
-    <section className={`relative w-full overflow-hidden bg-surface-ivory pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28 ${className}`}>
+    <section className={`relative w-full overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28 ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-6">

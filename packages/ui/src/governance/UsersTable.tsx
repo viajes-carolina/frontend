@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import type { AdminUserDTO, CreateAdminUserRequest, UpdateAdminUserRequest } from "@vc/api-client";
 import { CloseIcon } from "../icons/icons";
+import { TableSkeletonRows } from "../primitives/Skeleton";
 
 export interface UsersTableProps {
   users: AdminUserDTO[];
@@ -157,11 +158,7 @@ export const UsersTable: React.FC<UsersTableProps> = ({
             </thead>
             <tbody className="divide-y divide-stone-100">
               {loading && users.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-stone-500">
-                    Cargando usuarios administrativos...
-                  </td>
-                </tr>
+                <TableSkeletonRows columns={6} />
               ) : users.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-stone-500">

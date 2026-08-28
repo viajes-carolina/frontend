@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, FormField } from "@vc/ui";
+import { Button, FormField, FormSkeleton } from "@vc/ui";
 import { useAdminAbout } from "../../../hooks/useAdminAbout";
 
 export function AcompanamientoForm() {
@@ -21,13 +21,7 @@ export function AcompanamientoForm() {
   } = useAdminAbout();
 
   if (loading) {
-    return (
-      <div className="bg-white rounded-2xl p-8 border border-neutral-border shadow-sm animate-pulse space-y-4 max-w-4xl">
-        <div className="h-6 bg-neutral-border rounded w-1/4"></div>
-        <div className="h-10 bg-neutral-border rounded"></div>
-        <div className="h-20 bg-neutral-border rounded"></div>
-      </div>
-    );
+    return <FormSkeleton className="max-w-4xl" />;
   }
 
   return (

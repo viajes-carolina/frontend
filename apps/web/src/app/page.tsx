@@ -33,7 +33,7 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main className="min-h-screen bg-neutral-soft text-neutral-ink flex flex-col items-center">
+    <main className="min-h-screen text-neutral-ink flex flex-col items-center">
       {/* =========================================================================
           01 · Hero Section Dinámica — Imaginar
           ========================================================================= */}

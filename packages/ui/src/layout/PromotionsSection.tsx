@@ -38,11 +38,6 @@ function whatsappMessageFor(promo: PromotionDTO) {
   );
 }
 
-// Papel continuo hacia Blog — misma ola full-bleed que ya usaba esta sección,
-// se conserva: es continuidad visual entre secciones, independiente del
-// rediseño interno de las tarjetas.
-const WAVE_TO_BLOG_PATH = "M0 60C180 20 340 92 500 55C660 18 820 88 980 50C1140 12 1300 72 1440 38V120H0V60Z";
-
 // Paleta de respaldo cuando la promoción no tiene featuredMediaUrl — en el
 // mismo orden que las tarjetas: protagonista, secundaria 1, secundaria 2.
 // Colores tomados del Figma "Promociones más vendible" (703:4 / 703:6).
@@ -315,16 +310,8 @@ export function PromotionsSection({ promotions, settings, config = DEFAULT_CONFI
   return (
     <section
       id="promociones"
-      className={`relative w-full overflow-hidden bg-atmosphere-sand py-16 sm:py-20 xl:py-24 text-neutral-ink ${className}`}
+      className={`relative w-full overflow-hidden py-16 sm:py-20 xl:py-24 text-neutral-ink ${className}`}
     >
-      {/* Papel continuo hacia Blog — ola full-bleed en la base, con el color
-          real de la siguiente sección. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
-        <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
-          <path d={WAVE_TO_BLOG_PATH} className="fill-atmosphere-fog" />
-        </svg>
-      </div>
-
       <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-[1180px] lg:px-8">
         <Reveal className="max-w-2xl">
           <span className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">

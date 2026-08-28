@@ -12,11 +12,6 @@ export interface ConversationalPauseSectionProps {
   className?: string;
 }
 
-// Papel continuo hacia Experiencias — ola en la base con el color real de
-// la siguiente sección (blanco en base/md, navy en xl). Esta sección en sí
-// (arena) no cambia de color por breakpoint, a diferencia de la mayoría.
-const WAVE_TO_EXPERIENCIAS_PATH = "M0 60C180 20 340 92 500 55C660 18 820 88 980 50C1140 12 1300 72 1440 38V120H0V60Z";
-
 const DEFAULT_CONFIG: HomeConversationalPauseDTO = {
   badgeText: "04 · Antes de seguir",
   title: "¿Ya imaginas cómo podría sentirse tu próximo viaje?",
@@ -62,8 +57,8 @@ interface FinancingPanelProps {
 
 // Tarjeta de financiamiento (cuotas sin intereses + bancos participantes)
 // mostrada dentro del CTA de "04 · Antes de seguir". Fondo blanco contra el
-// bg-surface-ivory de la sección, mismo radio/borde/sombra que el resto de
-// tarjetas del Home (ver p.ej. LoginCard/UsersTable en @vc/ui).
+// fondo global crema del sitio (la sección ya no pinta el suyo), mismo
+// radio/borde/sombra que el resto de tarjetas del Home.
 function FinancingPanel({ eyebrowText, installmentsCount, disclaimerText, banks, className = "" }: FinancingPanelProps) {
   return (
     <div
@@ -97,15 +92,8 @@ export function ConversationalPauseSection({ config = DEFAULT_CONFIG, settings, 
   return (
     <section
       id="antes-de-seguir"
-      className={`relative w-full overflow-hidden bg-surface-ivory py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
+      className={`relative w-full overflow-hidden py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
     >
-      {/* Papel continuo hacia Experiencias — ola full-bleed en la base. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
-        <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
-          <path d={WAVE_TO_EXPERIENCIAS_PATH} className="fill-white xl:fill-brand-navy" />
-        </svg>
-      </div>
-
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 xl:max-w-[1440px] xl:px-16">
         <Reveal className="flex flex-col items-center gap-6 text-center xl:flex-row xl:items-center xl:justify-between xl:gap-10 xl:text-left">
           <div className="max-w-xl xl:max-w-none xl:flex-1">

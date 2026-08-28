@@ -14,7 +14,7 @@ export const ClaimsHeroSection: React.FC<ClaimsHeroSectionProps> = ({
   officeAddress = "Av. Larco 101, Oficina 502, Miraflores, Lima, Perú",
 }) => {
   return (
-    <section className="pt-32 pb-14 bg-neutral-soft relative overflow-hidden border-b border-neutral-border">
+    <section className="pt-32 pb-14 relative overflow-hidden border-b border-neutral-border">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-neutral-border text-brand-accent text-xs font-bold uppercase tracking-wider mb-6 shadow-sm">
           <span>📖</span>

@@ -31,7 +31,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   const faqs = trust.faqs.filter((f) => f.active).slice(0, 4);
 
   return (
-    <main className="min-h-screen bg-surface-ivory">
+    <main className="min-h-screen">
       <BlogHeroSection categories={blogData.categories} selectedCategorySlug={categoria || "all"} heroPost={heroPost} />
 
       {mainStory && (

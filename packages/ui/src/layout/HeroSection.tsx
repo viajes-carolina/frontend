@@ -74,7 +74,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
   const memories = buildMemories(hero);
 
   return (
-    <section className={`relative isolate w-full overflow-hidden bg-surface-ivory ${className}`}>
+    <section className={`relative isolate w-full overflow-hidden ${className}`}>
       {/* Papel continuo: a todo el ancho real de la pantalla — regla madre de
           la guía de Figma ("el papel, las ondas y la atmósfera nunca
           terminan en el borde del contenedor"). Vive FUERA del canvas
@@ -83,7 +83,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
           sección hereda su alto del canvas de abajo. */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <svg
-          className="absolute left-0 top-[86.56%] w-full h-[13.44%] md:top-[79.07%] md:h-[20.93%] xl:top-[72.22%] xl:h-[27.78%]"
+          className="absolute left-0 top-[86.56%] w-full h-[13.44%] lg:top-[79.07%] lg:h-[20.93%] xl:top-[72.22%] xl:h-[27.78%]"
           viewBox="0 0 1440 230"
           preserveAspectRatio="none"
           aria-hidden="true"
@@ -91,7 +91,7 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
           <path d={WAVE_BLUE_PATH} className="fill-atmosphere-sea" />
         </svg>
         <svg
-          className="absolute left-0 top-[91.63%] w-full h-[8.37%] md:top-[84.36%] md:h-[15.64%] xl:top-[78.26%] xl:h-[21.74%]"
+          className="absolute left-0 top-[91.63%] w-full h-[8.37%] lg:top-[84.36%] lg:h-[15.64%] xl:top-[78.26%] xl:h-[21.74%]"
           viewBox="0 0 1440 180"
           preserveAspectRatio="none"
           aria-hidden="true"
@@ -102,11 +102,18 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
 
       {/* Canvas capado: todo lo que sí debe alinearse con el texto (foto
           principal, polaroids, velo, atmósfera, texto) comparte este mismo
-          sistema de coordenadas — se achica un poco pero nunca se corta. */}
+          sistema de coordenadas — se achica un poco pero nunca se corta.
+
+          El tramo "tablet" usa `lg:` (1024px), no el `md:` (768px) que usa el
+          resto del sitio para lo mismo: este layout está calcado del canvas
+          "Tablet 1024" de Figma, y aplicarlo desde 768px dejaba el título en
+          5-6 líneas y el botón de WhatsApp tapado detrás de la foto principal
+          en el tramo 768-1023px. Por debajo de 1024px cae al layout mobile
+          (apilado, ya probado hasta 390px), que escala sin roturas hasta ahí. */}
       <div className="relative w-full h-[calc(100vh-5rem)] min-h-[600px] max-h-[900px] xl:max-w-[1440px] xl:mx-auto">
         {/* Atmósfera: misma elipse a escala, posición/tamaño por breakpoint */}
         <svg
-          className="absolute z-0 pointer-events-none left-[18.46%] top-[47.69%] w-full h-[46.26%] md:left-[38.09%] md:top-[3.52%] md:w-[60.55%] md:h-[71.59%] xl:left-[45.14%] xl:top-[1.45%] xl:w-[52.78%] xl:h-[78.5%]"
+          className="absolute z-0 pointer-events-none left-[18.46%] top-[47.69%] w-full h-[46.26%] lg:left-[38.09%] lg:top-[3.52%] lg:w-[60.55%] lg:h-[71.59%] xl:left-[45.14%] xl:top-[1.45%] xl:w-[52.78%] xl:h-[78.5%]"
           viewBox="0 0 760 650"
           preserveAspectRatio="none"
           aria-hidden="true"
@@ -116,41 +123,50 @@ export function HeroSection({ hero, settings, className = "" }: HeroSectionProps
 
         <TravelMemoriesCollage memories={memories} className="absolute inset-0" />
 
-        {/* Columna de texto: mismo canvas, se reacomoda por breakpoint */}
-        <div className="absolute z-20 flex flex-col animate-hero-fade-up left-[6.15%] top-[3.52%] w-[87.69%] gap-3 md:left-[4.69%] md:top-[6.61%] md:w-[42.97%] md:gap-4 xl:left-[6.39%] xl:top-[10.14%] xl:w-[39.58%] xl:gap-5">
+        {/* Columna de texto: mismo canvas, se reacomoda por breakpoint.
+            `gap` se achica a partir de `lg:` (en vez de crecer, como haría
+            "más ancho, más aire") porque el bloque completo (título+desc+
+            botón+confianza) compite por la misma altura con la ola celeste
+            de abajo (`top-[72.22%]` en xl:): en una laptop real (no un
+            monitor grande), el canvas del Hero cae cerca de su piso de
+            `min-h-[600px]`, y con el gap más generoso original la frase de
+            confianza terminaba solapada con la ola. Verificado con una
+            réplica exacta a distintas alturas: a 680px de canvas pasó de
+            solaparse 19px a tener 25px de margen. */}
+        <div className="absolute z-20 flex flex-col animate-hero-fade-up left-[6.15%] top-[3.52%] w-[87.69%] gap-3 lg:left-[4.69%] lg:top-[6.61%] lg:w-[42.97%] lg:gap-3 xl:left-[6.39%] xl:top-[10.14%] xl:w-[39.58%] xl:gap-3">
           {hero.eyebrowText && (
-            <p className="font-sora font-bold uppercase text-brand-accent text-[11px] tracking-[0.08em] md:text-[12px] xl:text-[13px]">
+            <p className="font-sora font-bold uppercase text-brand-accent text-[11px] tracking-[0.08em] lg:text-[12px] xl:text-[13px]">
               {hero.eyebrowText}
             </p>
           )}
           <div className="flex flex-col gap-2">
             <h1
-              className="font-display font-semibold text-brand-navy leading-[1.07] tracking-[-0.02em] text-[42px] md:text-[54px] xl:text-[62px]"
+              className="font-display font-semibold text-brand-navy leading-[1.07] tracking-[-0.02em] text-[42px] lg:text-[54px] lg:leading-[1.02] xl:text-[62px] xl:leading-[1.02]"
               style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
             >
               {hero.titleHighlight} {hero.titleAccent}
             </h1>
             <svg
               viewBox="0 0 312 14"
-              className="h-3.5 w-[56%] md:w-[62%] xl:w-[58%]"
+              className="h-3.5 w-[56%] lg:w-[62%] xl:w-[58%]"
               preserveAspectRatio="none"
               aria-hidden="true"
             >
               <path d={UNDERLINE_PATH} stroke="var(--color-brand-accent)" strokeWidth="5" strokeLinecap="round" fill="none" vectorEffect="non-scaling-stroke" />
             </svg>
           </div>
-          <p className="font-inter text-brand-navy leading-[1.6] text-[15px] md:text-[16px] xl:text-[17px]">
+          <p className="font-inter text-brand-navy leading-[1.6] text-[15px] lg:text-[16px] lg:leading-[1.5] xl:text-[17px] xl:leading-[1.5]">
             {hero.description}
           </p>
-          <div className="w-full md:w-auto">
-            <WhatsAppButton size="lg" phone={whatsappPhone} message={message} className="w-full justify-center md:w-auto">
+          <div className="w-full lg:w-auto">
+            <WhatsAppButton size="lg" phone={whatsappPhone} message={message} className="w-full justify-center lg:w-auto">
               {hero.whatsappCtaText}
             </WhatsAppButton>
           </div>
           {hero.trustStatText && (
             <div className="flex items-center gap-2.5">
               <HeartIcon size={20} className="text-brand-accent shrink-0" />
-              <p className="font-inter text-brand-navy text-xs md:text-[13px] xl:text-sm">{hero.trustStatText}</p>
+              <p className="font-inter text-brand-navy text-xs lg:text-[13px] xl:text-sm">{hero.trustStatText}</p>
             </div>
           )}
         </div>

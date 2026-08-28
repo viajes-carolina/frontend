@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import type { PublishRequestDTO, PublishResponseDTO } from "@vc/api-client";
+import { FormSkeleton } from "../primitives/Skeleton";
 
 export interface PublishingManagerCardProps {
   lastPublishStatus: PublishResponseDTO | null;
@@ -47,6 +48,13 @@ export const PublishingManagerCard: React.FC<PublishingManagerCardProps> = ({
       setSubmitting(false);
     }
   };
+
+  // Solo mostramos el esqueleto mientras se resuelve la carga inicial (aún sin
+  // `publishResult`) — si `loading` vuelve a activarse con datos ya cargados
+  // (ej. un futuro refresh), no ocultamos el panel ya renderizado.
+  if (loading && !publishResult) {
+    return <FormSkeleton fields={2} />;
+  }
 
   return (
     <div className="space-y-6">

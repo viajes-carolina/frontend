@@ -9,8 +9,11 @@ export interface BlogArticleTOCProps {
 export const BlogArticleTOC: React.FC<BlogArticleTOCProps> = ({ headings, readingTimeMinutes }) => {
   if (headings.length === 0) return null;
 
+  // Token opaco en vez del rgba(...,0.62) que había antes: al 62% dejaba pasar
+  // la textura topográfica del fondo global ahora que la sección del artículo es
+  // transparente, y es una superficie de navegación, no decorativa.
   return (
-    <aside className="rounded-[24px] bg-[rgba(219,237,245,0.62)] p-6 lg:sticky lg:top-24">
+    <aside className="rounded-[24px] bg-atmosphere-pale-sky p-6 lg:sticky lg:top-24">
       <p className="font-sora text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
         En esta guía
       </p>

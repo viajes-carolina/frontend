@@ -3,7 +3,7 @@
 import React from "react";
 import { useAdminBlog } from "../../hooks/useAdminBlog";
 import { BlogFormModal } from "./BlogFormModal";
-import { Button, EditIcon, PlusIcon, TrashIcon } from "@vc/ui";
+import { Button, EditIcon, PlusIcon, TableSkeleton, TrashIcon } from "@vc/ui";
 
 export default function AdminBlogPage() {
   const {
@@ -98,9 +98,7 @@ export default function AdminBlogPage() {
       {/* Articles Table / List */}
       <div className="bg-white rounded-2xl border border-neutral-border shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center text-neutral-400 text-sm">
-            Cargando artículos del blog...
-          </div>
+          <TableSkeleton />
         ) : posts.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">

@@ -10,31 +10,22 @@ export interface ArrivalSectionProps {
   className?: string;
 }
 
-// Trazos reales exportados desde Figma ("Footer · Guía de llegada y
-// responsive", node 317:15, y sus 4 referencias de breakpoint 298:3/67/131/195).
-const ARRIVAL_PAPER_PATH =
-  "M0 0H1440V198C1274 232 1114 246 948 220C764 191 618 228 452 244C284 260 142 244 0 214V0Z";
+// Trazo real exportado desde Figma ("Footer · Guía de llegada y responsive",
+// node 317:15, y sus 4 referencias de breakpoint 298:3/67/131/195).
 const ARRIVAL_ROUTE_PATH = "M10 72C88 20 154 86 236 50C314 16 378 52 472 24";
 
-// Punto de arribo de la ruta narrativa (pregunta final + CTA sobre un papel
-// cálido que se funde hacia el navy) — exclusivo de Inicio, no forma parte
-// del Footer global.
+// Punto de arribo de la ruta narrativa (pregunta final + CTA) — exclusivo de
+// Inicio, no forma parte del Footer global. Se apoya en el fondo global del
+// sitio: antes pintaba un "papel" ivory curvo sobre un fondo navy propio para
+// fundirse hacia el Footer, pero esa era otra transición curva más (con nombre
+// propio, no WAVE_*) y el diseño nuevo pide bordes rectos.
 export function ArrivalSection({
   whatsappPhone = DEFAULT_WHATSAPP_PHONE,
   whatsappMessage = "Hola Viajes Carolina, deseo consultar sobre un viaje.",
   className = "",
 }: ArrivalSectionProps) {
   return (
-    <section className={`relative w-full overflow-hidden bg-brand-navy text-white ${className}`}>
-      <svg
-        className="absolute inset-0 h-full w-full"
-        viewBox="0 0 1440 300"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <path d={ARRIVAL_PAPER_PATH} className="fill-surface-ivory" />
-      </svg>
-
+    <section className={`relative w-full overflow-hidden ${className}`}>
       <div className="relative mx-auto max-w-[1440px] px-6 pb-16 pt-10 sm:pt-12 md:px-10 md:pb-20 xl:px-16">
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between xl:gap-10">
           <div className="flex max-w-[560px] flex-col gap-2.5 xl:max-w-[650px]">

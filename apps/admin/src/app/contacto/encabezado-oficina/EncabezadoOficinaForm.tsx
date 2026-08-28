@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, CheckIcon, FormField } from "@vc/ui";
+import { Button, CheckIcon, FormField, FormSkeleton } from "@vc/ui";
 import { useAdminContact } from "../../../hooks/useAdminContact";
 
 export function EncabezadoOficinaForm() {
@@ -9,11 +9,7 @@ export function EncabezadoOficinaForm() {
     useAdminContact();
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin w-8 h-8 border-4 border-brand-accent border-t-transparent rounded-full" />
-      </div>
-    );
+    return <FormSkeleton fields={8} />;
   }
 
   if (!pageSettings) {

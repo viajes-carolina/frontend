@@ -97,7 +97,7 @@ export function FaqSection({ faqs, settings, config = DEFAULT_CONFIG, className 
   return (
     <section
       id="faq"
-      className={`relative w-full overflow-hidden bg-surface-ivory py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
+      className={`relative w-full overflow-hidden py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
     >
       {/* Atmósfera mínima · FAQ — elipse difusa, ancla abajo-a-la-izquierda,
           se sale del borde de la sección. Asset exportado de Figma (blur

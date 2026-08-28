@@ -32,7 +32,7 @@ function SingleAdvisorEditorial({ advisor, className = "" }: { advisor: TravelAd
   const firstName = advisor.fullName.split(" ")[0];
 
   return (
-    <section className={`relative w-full overflow-hidden bg-[#fffefa] py-16 sm:py-20 lg:py-24 ${className}`}>
+    <section className={`relative w-full overflow-hidden py-16 sm:py-20 lg:py-24 ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="relative lg:col-span-5">
@@ -89,7 +89,7 @@ function SingleAdvisorEditorial({ advisor, className = "" }: { advisor: TravelAd
 
 function AdvisorsGrid({ advisors, className = "" }: { advisors: TravelAdvisorDTO[]; className?: string }) {
   return (
-    <section className={`relative w-full overflow-hidden bg-[#fffefa] py-16 sm:py-20 lg:py-24 ${className}`}>
+    <section className={`relative w-full overflow-hidden py-16 sm:py-20 lg:py-24 ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl">
           <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">

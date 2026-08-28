@@ -12,7 +12,7 @@ export const BlogArticleCover: React.FC<BlogArticleCoverProps> = ({ post }) => {
     : null;
 
   return (
-    <section className="bg-surface-ivory pt-10 pb-16 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24">
+    <section className="pt-10 pb-16 sm:pt-14 sm:pb-20 lg:pt-16 lg:pb-24">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <nav className="font-sora text-[11px] font-semibold uppercase tracking-wider">
           <a href="/blog" className="text-brand-accent hover:underline">

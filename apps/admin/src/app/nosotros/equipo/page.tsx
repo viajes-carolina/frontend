@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { CardsGridSkeleton } from "@vc/ui";
 import { useAdminAdvisors } from "../../../hooks/useAdminAdvisors";
 import { AdvisorList } from "./AdvisorList";
 import { AdvisorFormModal } from "./AdvisorFormModal";
@@ -38,9 +39,7 @@ export default function AdminAdvisorsPage() {
       )}
 
       {loading ? (
-        <div className="p-8 text-center text-slate-400">
-          <p className="font-sora text-sm">Cargando equipo de asesoras...</p>
-        </div>
+        <CardsGridSkeleton cards={6} className="max-w-5xl" />
       ) : (
         <AdvisorList
           advisors={advisors}

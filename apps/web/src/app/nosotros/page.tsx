@@ -20,7 +20,7 @@ export default async function NosotrosPage() {
   ]);
 
   return (
-    <main className="w-full bg-surface-ivory text-neutral-ink min-h-screen">
+    <main className="w-full text-neutral-ink min-h-screen">
       {/* 01. Hero humano */}
       <AboutHeroSection page={data.page} whatsappPhone={settings.whatsappPhone} />
 

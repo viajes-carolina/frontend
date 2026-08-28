@@ -45,7 +45,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     }
 
     return (
-      <main className="min-h-screen bg-neutral-50/30">
+      <main className="min-h-screen">
         <BlogArticleContent
           post={detail.post}
           relatedPosts={detail.relatedPosts || []}

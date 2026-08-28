@@ -14,7 +14,7 @@ export function MomentsSection({ page, className = "" }: MomentsSectionProps) {
   if (!page.momentsTitle && moments.length === 0) return null;
 
   return (
-    <section className={`relative w-full overflow-hidden bg-surface-ivory py-16 sm:py-20 lg:py-24 ${className}`}>
+    <section className={`relative w-full overflow-hidden py-16 sm:py-20 lg:py-24 ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <div className="lg:col-span-6">

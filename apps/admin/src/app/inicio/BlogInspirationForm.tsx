@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { HomeBlogInspirationDTO } from "@vc/api-client";
-import { FormField } from "@vc/ui";
+import { FormField, FormSkeleton } from "@vc/ui";
 import { useAdminBlogInspiration } from "../../hooks/useAdminBlogInspiration";
 
 interface BlogInspirationFormProps {
@@ -21,13 +21,7 @@ export const BlogInspirationForm: React.FC<BlogInspirationFormProps> = ({ initia
   } = useAdminBlogInspiration(initialConfig);
 
   if (loading) {
-    return (
-      <div className="bg-white rounded-2xl p-8 border border-neutral-border shadow-sm animate-pulse space-y-4">
-        <div className="h-6 bg-slate-200 rounded w-1/4"></div>
-        <div className="h-10 bg-slate-200 rounded"></div>
-        <div className="h-20 bg-slate-200 rounded"></div>
-      </div>
-    );
+    return <FormSkeleton />;
   }
 
   if (!config) {

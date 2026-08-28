@@ -21,7 +21,7 @@ export const ClaimsClientView: React.FC<ClaimsClientViewProps> = ({
   const { handleLookupClaim, handleStartClaim } = useClaimsPage();
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen">
       {/* 1. Header con Información Legal */}
       <ClaimsHeroSection
         companyName={settings.legalCompanyName || "VIAJES CAROLINA S.A.C."}

@@ -84,6 +84,9 @@ export interface TravelMemoriesCollageProps {
  * usa `HeroSection` para el texto — mismo sistema de coordenadas en los 3
  * tramos. "Recuerdo 02 · puente" solo existe desde el tramo desktop (≥1280);
  * mobile y tablet muestran únicamente 2 recuerdos, tal como pide la guía.
+ *
+ * El tramo "Tablet 1024" se activa con `lg:` (no `md:`, que en Tailwind es
+ * 768px) — ver el comentario en `HeroSection.tsx` sobre el canvas capado.
  */
 export function TravelMemoriesCollage({ memories, className = "" }: TravelMemoriesCollageProps) {
   const main = memories.find((item) => item.placement === "main");
@@ -93,11 +96,19 @@ export function TravelMemoriesCollage({ memories, className = "" }: TravelMemori
 
   if (!main) return null;
 
+  // Las 4 fotos son contenido above-the-fold (nunca requieren scroll), pero
+  // sin `priority` cada `<PolaroidPhoto>` cae en el `loading="lazy"` por
+  // defecto de next/image. El chequeo nativo de "¿está en viewport?" para
+  // lazy-load es poco fiable con elementos `absolute` posicionados en % sobre
+  // un canvas de alto variable (`h-[calc(100vh-5rem)]`) — en la práctica las
+  // 3 polaroids secundarias podían no dispararse nunca (0 requests de red) y
+  // quedarse en blanco permanentemente, más frecuente cuanto más chico el
+  // viewport (el margen de precarga del navegador escala con él).
   return (
     <div className={`${className} overflow-hidden`}>
       <MainPhoto
         memory={main}
-        className="absolute z-10 left-[6.67%] top-[54.63%] w-[76.92%] h-[35.24%] md:left-[38.09%] md:top-[9.25%] md:w-[48.83%] md:h-[60.35%] xl:left-[35.07%] xl:top-[6.04%] xl:w-[43.06%] xl:h-[77.29%] animate-hero-postal-in animation-delay-100"
+        className="absolute z-10 left-[6.67%] top-[54.63%] w-[76.92%] h-[35.24%] lg:left-[38.09%] lg:top-[9.25%] lg:w-[48.83%] lg:h-[60.35%] xl:left-[35.07%] xl:top-[6.04%] xl:w-[43.06%] xl:h-[77.29%] animate-hero-postal-in animation-delay-100"
       />
 
       {top && (
@@ -107,8 +118,9 @@ export function TravelMemoriesCollage({ memories, className = "" }: TravelMemori
           focalPoint={top.focalPoint}
           rotate={-6}
           tape="top"
+          priority
           colorGrade={top.colorGrade}
-          className="absolute z-30 left-[51.17%] top-[48.96%] w-[44.62%] h-[12.78%] md:left-[69.2%] md:top-[2.37%] md:w-[26.17%] md:h-[19.6%] xl:left-[72.3%] xl:top-[1.82%] xl:w-[24.31%] xl:h-[28.02%] animate-hero-postal-in animation-delay-200"
+          className="absolute z-30 left-[51.17%] top-[48.96%] w-[44.62%] h-[12.78%] lg:left-[69.2%] lg:top-[2.37%] lg:w-[26.17%] lg:h-[19.6%] xl:left-[72.3%] xl:top-[1.82%] xl:w-[24.31%] xl:h-[28.02%] animate-hero-postal-in animation-delay-200"
         />
       )}
 
@@ -119,6 +131,7 @@ export function TravelMemoriesCollage({ memories, className = "" }: TravelMemori
           focalPoint={side.focalPoint}
           rotate={4}
           tape="none"
+          priority
           colorGrade={side.colorGrade}
           className="hidden xl:block absolute z-30 xl:left-[74.41%] xl:top-[34.42%] xl:w-[22.36%] xl:h-[28.02%] animate-hero-postal-in animation-delay-300"
         />
@@ -131,8 +144,9 @@ export function TravelMemoriesCollage({ memories, className = "" }: TravelMemori
           focalPoint={bottom.focalPoint}
           rotate={-5}
           tape="top"
+          priority
           colorGrade={bottom.colorGrade}
-          className="absolute z-30 left-[37.73%] top-[78.87%] w-[56.92%] h-[14.1%] md:left-[59.36%] md:top-[57.58%] md:w-[33.2%] md:h-[21.59%] xl:left-[58.3%] xl:top-[60.59%] xl:w-[28.47%] xl:h-[28.5%] animate-hero-postal-in animation-delay-400"
+          className="absolute z-30 left-[37.73%] top-[78.87%] w-[56.92%] h-[14.1%] lg:left-[59.36%] lg:top-[57.58%] lg:w-[33.2%] lg:h-[21.59%] xl:left-[58.3%] xl:top-[60.59%] xl:w-[28.47%] xl:h-[28.5%] animate-hero-postal-in animation-delay-400"
         />
       )}
     </div>

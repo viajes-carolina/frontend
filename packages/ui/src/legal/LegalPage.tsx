@@ -21,7 +21,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({
   taxId,
 }) => {
   return (
-    <main className="w-full bg-surface-ivory text-neutral-ink min-h-screen">
+    <main className="w-full text-neutral-ink min-h-screen">
       <section className="mx-auto max-w-[760px] px-6 pb-20 pt-28 sm:pt-32">
         <p className="font-inter text-xs font-semibold uppercase tracking-[0.07em] text-brand-accent mb-3">
           {eyebrow}

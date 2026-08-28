@@ -50,7 +50,7 @@ export function ClaimWizardShell({
   children,
 }: ClaimWizardShellProps) {
   return (
-    <main className="min-h-screen bg-neutral-soft">
+    <main className="min-h-screen">
       <header className="border-b border-neutral-border bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <span className="font-sora font-bold text-brand-navy text-sm sm:text-base">

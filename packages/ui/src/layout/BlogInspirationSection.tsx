@@ -9,10 +9,6 @@ export interface BlogInspirationSectionProps {
   posts: BlogPostDTO[];
 }
 
-// Papel continuo hacia Pausa Conversacional — ola en la base con el color
-// real de la siguiente sección.
-const WAVE_TO_PAUSA_PATH = "M0 58C170 16 330 88 495 52C665 14 830 84 995 48C1160 12 1305 68 1440 34V120H0V58Z";
-
 function toFeaturedMeta(post: BlogPostDTO) {
   return `${post.categoryName || "Guía"} · ${post.readingTimeMinutes || 5} min`;
 }
@@ -97,15 +93,8 @@ export const BlogInspirationSection: React.FC<BlogInspirationSectionProps> = ({
   return (
     <section
       id="inspiracion"
-      className="relative w-full overflow-hidden bg-atmosphere-fog text-neutral-ink py-16 sm:py-20 xl:py-28"
+      className="relative w-full overflow-hidden text-neutral-ink py-16 sm:py-20 xl:py-28"
     >
-      {/* Papel continuo hacia Pausa Conversacional — ola full-bleed en la base. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
-        <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
-          <path d={WAVE_TO_PAUSA_PATH} className="fill-surface-ivory" />
-        </svg>
-      </div>
-
       <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-[1180px] lg:px-8">
         {/* Cabecera revista */}
         <Reveal className="mb-8 flex flex-col gap-5 md:mb-12 md:flex-row md:items-start md:justify-between">

@@ -16,10 +16,6 @@ const DEFAULT_CONFIG: HomeTestimonialsSectionDTO = {
   subtitle: "Escucha, claridad y acompañamiento antes, durante y después del viaje.",
 };
 
-// Papel continuo hacia FAQ — ola en la base con el color real de la
-// siguiente sección.
-const WAVE_TO_FAQ_PATH = "M0 62C165 20 325 90 490 54C660 16 825 86 990 50C1155 14 1300 70 1440 36V120H0V62Z";
-
 // "Foto real" — silueta orgánica. `PhotoBlob` recorta `config.blobMediaUrl`
 // contra este mismo path vía `<clipPath>`; sin foto cargada cae a esta
 // ilustración degradada. 2 variantes reales: compacta (mobile/tablet) y
@@ -136,13 +132,6 @@ export function TestimonialsSection({ testimonials, config = DEFAULT_CONFIG, cla
       id="testimonios"
       className={`relative w-full overflow-hidden bg-brand-navy py-16 sm:py-20 xl:py-28 text-neutral-ink ${className}`}
     >
-      {/* Papel continuo hacia FAQ — ola full-bleed en la base. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 xl:h-24">
-        <svg viewBox="0 0 1440 120" className="h-full w-full" preserveAspectRatio="none">
-          <path d={WAVE_TO_FAQ_PATH} className="fill-surface-ivory" />
-        </svg>
-      </div>
-
       <div className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-[1180px] lg:px-8">
         {/* Dos columnas desde lg: izquierda = encabezado + foto (apiladas);
             derecha = testimonio + voces (apiladas), arrancando a la misma

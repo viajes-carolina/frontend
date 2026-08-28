@@ -12,7 +12,7 @@ export const BlogQuestionsPauseSection: React.FC<BlogQuestionsPauseSectionProps>
   if (faqs.length === 0) return null;
 
   return (
-    <section className="relative overflow-hidden bg-surface-ivory py-16 sm:py-20 lg:py-24">
+    <section className="relative overflow-hidden py-16 sm:py-20 lg:py-24">
       <span
         aria-hidden="true"
         className="font-display pointer-events-none absolute -top-6 right-4 select-none text-[140px] font-semibold leading-none text-[rgba(240,229,210,0.7)] sm:text-[170px]"

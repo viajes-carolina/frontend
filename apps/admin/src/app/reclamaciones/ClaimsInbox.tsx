@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { apiClient } from "@vc/api-client";
 import type { ClaimRecordDTO } from "@vc/api-client";
-import { CloseIcon } from "@vc/ui";
+import { CloseIcon, TableSkeleton } from "@vc/ui";
 import { useAdminClaims } from "../../hooks/useAdminClaims";
 import { buildWhatsAppUrl } from "../../lib/whatsapp";
 
@@ -99,7 +99,7 @@ export const ClaimsInbox: React.FC<ClaimsInboxProps> = ({ initialClaims }) => {
       {/* Claims Table */}
       <div className="bg-white rounded-2xl border border-neutral-border shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-sm text-neutral-muted">Cargando registros...</div>
+          <TableSkeleton />
         ) : claims.length === 0 ? (
           <div className="p-12 text-center text-sm text-neutral-muted">
             No se encontraron hojas de reclamación con el filtro seleccionado.

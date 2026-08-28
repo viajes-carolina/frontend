@@ -10,7 +10,7 @@ export const BlogRelatedStoriesSection: React.FC<BlogRelatedStoriesSectionProps>
   if (posts.length === 0) return null;
 
   return (
-    <section className="bg-atmosphere-fog py-16 sm:py-20">
+    <section className="py-16 sm:py-20">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <p className="font-sora text-[10px] font-semibold uppercase tracking-wider text-brand-accent">
           Sigue explorando

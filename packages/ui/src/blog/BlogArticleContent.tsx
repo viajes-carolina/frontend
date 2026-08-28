@@ -25,7 +25,7 @@ export const BlogArticleContent: React.FC<BlogArticleContentProps> = ({
     <>
       <BlogArticleCover post={post} />
 
-      <section className="bg-white py-16 sm:py-20">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-[250px_1fr] lg:gap-16">
             <BlogArticleTOC headings={headings} readingTimeMinutes={post.readingTimeMinutes} />

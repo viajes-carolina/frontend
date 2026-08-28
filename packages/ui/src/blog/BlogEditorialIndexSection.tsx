@@ -16,7 +16,7 @@ export const BlogEditorialIndexSection: React.FC<BlogEditorialIndexSectionProps>
   secondaryStories,
 }) => {
   return (
-    <section className="bg-atmosphere-fog py-16 sm:py-20 lg:py-24">
+    <section className="py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Reveal className="max-w-2xl">
           <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">

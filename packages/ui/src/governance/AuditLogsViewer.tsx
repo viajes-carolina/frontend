@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import type { AuditLogDTO } from "@vc/api-client";
+import { TableSkeletonRows } from "../primitives/Skeleton";
 
 export interface AuditLogsViewerProps {
   logs: AuditLogDTO[];
@@ -112,11 +113,7 @@ export const AuditLogsViewer: React.FC<AuditLogsViewerProps> = ({
             </thead>
             <tbody className="divide-y divide-stone-100">
               {loading && logs.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-stone-500">
-                    Cargando bitácora de auditoría...
-                  </td>
-                </tr>
+                <TableSkeletonRows columns={6} />
               ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-stone-500">
