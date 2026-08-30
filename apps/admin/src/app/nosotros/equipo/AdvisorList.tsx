@@ -32,8 +32,8 @@ export function AdvisorList({ advisors, onEdit, onDelete, onCreate }: AdvisorLis
         {advisors.map((advisor) => (
           <div
             key={advisor.id}
-            className={`bg-white border rounded-2xl p-5 flex flex-col justify-between space-y-4 ${
-              advisor.active ? "border-neutral-border" : "border-rose-200 opacity-70"
+            className={`bg-white border border-neutral-border rounded-2xl p-5 flex flex-col justify-between space-y-4 ${
+              advisor.active ? "" : "opacity-70"
             }`}
           >
             <div className="space-y-3">
@@ -49,7 +49,7 @@ export function AdvisorList({ advisors, onEdit, onDelete, onCreate }: AdvisorLis
                   <h4 className="font-sora font-bold text-sm text-brand-navy flex items-center gap-2">
                     {advisor.fullName}
                     {!advisor.active && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 font-normal">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded border border-neutral-border bg-neutral-soft text-neutral-muted font-normal">
                         Inactiva
                       </span>
                     )}

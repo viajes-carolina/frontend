@@ -44,6 +44,9 @@ export interface CreatePromotionModalProps {
   onSelectFeaturedMedia: (media: MediaAssetDTO) => void;
 }
 
+const SECTION_TITLE_CLASSES =
+  "font-inter text-[11px] font-bold uppercase tracking-[0.55px] text-admin-label";
+
 export function CreatePromotionModal({
   isOpen,
   onClose,
@@ -91,30 +94,21 @@ export function CreatePromotionModal({
       maxWidth="3xl"
       closeLabel="Cerrar formulario de nueva promoción"
     >
-      {/* Form Body */}
-      <form onSubmit={onSubmit} className="space-y-5">
-          {/* Section: Contenido */}
-          <p className="text-xs font-bold text-brand-navy uppercase tracking-wider">Contenido</p>
+      <form onSubmit={onSubmit}>
+        <div className="space-y-5">
+          <h3 className={SECTION_TITLE_CLASSES}>Contenido</h3>
 
-          {/* Title */}
-          <div>
-            <FormField
-              label="Título del Paquete"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ej: Cartagena: Donde el mar te espera"
-              required
-            />
-            {title.trim() && (
-              <p className="font-inter text-[11px] text-neutral-muted mt-1">
-                Vista previa de URL: /{slugify(title)} (el slug final lo genera el sistema)
-              </p>
-            )}
-          </div>
+          <FormField
+            label="Título del Paquete"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Ej: Cartagena: Donde el mar te espera"
+            required
+            hint={title.trim() ? `Vista previa de URL: /${slugify(title)} (el slug final lo genera el sistema)` : undefined}
+          />
 
-          {/* Foto destacada */}
-          <div className="p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border">
+          <div className="rounded-[10px] border border-admin-divider bg-admin-field p-4">
             <HeroPhotoSlot
               variant="secondary"
               label="Foto Destacada"
@@ -127,76 +121,57 @@ export function CreatePromotionModal({
             />
           </div>
 
-          {/* Destino / Ciudad de salida */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <FormField
-                label="Destino (Ciudad, País)"
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="Cartagena de Indias, Colombia"
-                required
-              />
-            </div>
-
-            <div>
-              <FormField
-                label="Ciudad de Salida"
-                type="text"
-                value={departureCity}
-                onChange={(e) => setDepartureCity(e.target.value)}
-                placeholder="Lima"
-              />
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
-              label="Resumen Descriptivo"
-              multiline
-              rows={2}
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="Disfruta del encanto caribeño con playas de arena cálida..."
+              label="Destino (Ciudad, País)"
+              type="text"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              placeholder="Cartagena de Indias, Colombia"
               required
+            />
+            <FormField
+              label="Ciudad de Salida"
+              type="text"
+              value={departureCity}
+              onChange={(e) => setDepartureCity(e.target.value)}
+              placeholder="Lima"
             />
           </div>
 
-          {/* Inclusions & Exclusions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <FormField
-                label="Inclusiones (una por línea)"
-                multiline
-                rows={4}
-                value={inclusionsInput}
-                onChange={(e) => setInclusionsInput(e.target.value)}
-                placeholder={"✈️ Ticket aéreo Lima - Buenos Aires - Lima\n🏨 Hotel 4 estrellas con desayuno\n🚐 Traslados aeropuerto - hotel"}
-              />
-            </div>
+          <FormField
+            label="Resumen Descriptivo"
+            multiline
+            rows={2}
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            placeholder="Disfruta del encanto caribeño con playas de arena cálida..."
+            required
+          />
 
-            <div>
-              <FormField
-                label="Exclusiones (una por línea)"
-                multiline
-                rows={4}
-                value={exclusionsInput}
-                onChange={(e) => setExclusionsInput(e.target.value)}
-                placeholder={"❌ Gastos no especificados\n❌ Tarjeta de asistencia médica opcional"}
-              />
-            </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField
+              label="Inclusiones (una por línea)"
+              multiline
+              rows={4}
+              value={inclusionsInput}
+              onChange={(e) => setInclusionsInput(e.target.value)}
+              placeholder={"Ticket aéreo Lima - Buenos Aires - Lima\nHotel 4 estrellas con desayuno\nTraslados aeropuerto - hotel"}
+            />
+            <FormField
+              label="Exclusiones (una por línea)"
+              multiline
+              rows={4}
+              value={exclusionsInput}
+              onChange={(e) => setExclusionsInput(e.target.value)}
+              placeholder={"Gastos no especificados\nTarjeta de asistencia médica opcional"}
+            />
           </div>
 
-          {/* Section: Precio & Fechas */}
-          <p className="text-xs font-bold text-brand-navy uppercase tracking-wider pt-2 border-t border-neutral-border">
-            Precio & Fechas
-          </p>
+          <div className="space-y-5 border-t border-admin-divider pt-5">
+            <h3 className={SECTION_TITLE_CLASSES}>Precio &amp; Fechas</h3>
 
-          {/* Pricing & Duration */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-neutral-surface/60 border border-neutral-border">
-            <div>
+            <div className="grid grid-cols-2 gap-4 rounded-[10px] border border-admin-divider bg-admin-field p-4 sm:grid-cols-4">
               <FormField
                 label="Precio (USD $)"
                 type="number"
@@ -207,9 +182,6 @@ export function CreatePromotionModal({
                 className="bg-white"
                 required
               />
-            </div>
-
-            <div>
               <FormField
                 label="Precio Aprox. (PEN S/)"
                 type="number"
@@ -219,9 +191,6 @@ export function CreatePromotionModal({
                 min={0}
                 className="bg-white"
               />
-            </div>
-
-            <div>
               <FormField
                 label="Días"
                 type="number"
@@ -231,9 +200,6 @@ export function CreatePromotionModal({
                 className="bg-white"
                 required
               />
-            </div>
-
-            <div>
               <FormField
                 label="Noches"
                 type="number"
@@ -244,20 +210,14 @@ export function CreatePromotionModal({
                 required
               />
             </div>
-          </div>
 
-          {/* Vigencia */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormField
                 label="Vigencia Desde (opcional)"
                 type="date"
                 value={validFrom}
                 onChange={(e) => setValidFrom(e.target.value)}
               />
-            </div>
-
-            <div>
               <FormField
                 label="Vigencia Hasta (opcional)"
                 type="date"
@@ -267,13 +227,9 @@ export function CreatePromotionModal({
             </div>
           </div>
 
-          {/* Section: Mensaje de WhatsApp */}
-          <p className="text-xs font-bold text-brand-navy uppercase tracking-wider pt-2 border-t border-neutral-border">
-            Mensaje de WhatsApp
-          </p>
+          <div className="space-y-5 border-t border-admin-divider pt-5">
+            <h3 className={SECTION_TITLE_CLASSES}>Mensaje de WhatsApp</h3>
 
-          {/* WhatsApp Message Template */}
-          <div>
             <FormField
               label="Plantilla de Mensaje de WhatsApp (opcional)"
               type="text"
@@ -282,17 +238,17 @@ export function CreatePromotionModal({
               placeholder="Hola Viajes Carolina, me interesa la promoción..."
             />
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-neutral-border">
-            <Button variant="outline" size="md" type="button" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button variant="primary" size="md" type="submit" disabled={isSaving}>
-              {isSaving ? "Creando..." : "Crear Promoción"}
-            </Button>
-          </div>
-        </form>
+        <div className="mt-8 flex items-center justify-end gap-3 border-t border-admin-divider pt-6">
+          <Button variant="ghost" type="button" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button variant="primary" type="submit" disabled={isSaving}>
+            {isSaving ? "Creando..." : "Crear Promoción"}
+          </Button>
+        </div>
+      </form>
     </Modal>
   );
 }

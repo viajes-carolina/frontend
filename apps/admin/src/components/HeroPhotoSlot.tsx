@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import Image from "next/image";
 import { MediaAssetDTO } from "@vc/api-client";
 import { Button, ImageIcon, MediaPickerModal } from "@vc/ui";
 import { useMediaPicker } from "../hooks/useMediaPicker";
+import { HeroPhotoRow } from "./HeroPhotoRow";
+import { describeMedia } from "../lib/mediaSummary";
 
 export interface HeroPhotoSlotProps {
   label: string;
@@ -15,7 +17,14 @@ export interface HeroPhotoSlotProps {
   focalY?: number;
   onSelect: (media: MediaAssetDTO) => void;
   modalTitle: string;
-  variant?: "main" | "secondary";
+  /**
+   * `main`/`secondary` son las fichas históricas del panel (miniatura grande y
+   * botón debajo). `row` es la fila compacta de los editores de contenido
+   * (Figma 930:4) y necesita `asset` para poder escribir dimensiones y peso.
+   */
+  variant?: "main" | "secondary" | "row";
+  /** Ficha completa de la imagen, solo para `variant="row"`. */
+  asset?: MediaAssetDTO;
 }
 
 export function HeroPhotoSlot({
@@ -28,15 +37,51 @@ export function HeroPhotoSlot({
   onSelect,
   modalTitle,
   variant = "secondary",
+  asset,
 }: HeroPhotoSlotProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const picker = useMediaPicker(isModalOpen);
+  const labelId = useId();
 
   const imageSrc = mediaUrl
     ? (mediaUrl.startsWith("http") || mediaUrl.startsWith("/") ? mediaUrl : `/${mediaUrl}`)
     : undefined;
 
   const isMain = variant === "main";
+
+  const modal = (
+    <MediaPickerModal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onSelect={onSelect}
+      selectedMediaId={mediaId}
+      title={modalTitle}
+      items={picker.items}
+      loading={picker.loading}
+      onUploadFile={picker.uploadFile}
+      onFocalPointSave={picker.saveFocalPoint}
+    />
+  );
+
+  if (variant === "row") {
+    return (
+      <div>
+        <HeroPhotoRow
+          labelId={labelId}
+          label={label}
+          summary={describeMedia({ asset, mediaId, mediaUrl, focalX, focalY })}
+          imageSrc={imageSrc}
+          focalX={focalX}
+          focalY={focalY}
+          onOpenPicker={() => setIsModalOpen(true)}
+        />
+        {helperText && (
+          <p className="mt-1.5 font-inter text-[10px] text-neutral-muted">{helperText}</p>
+        )}
+        {modal}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -81,17 +126,7 @@ export function HeroPhotoSlot({
         </div>
       </div>
 
-      <MediaPickerModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSelect={onSelect}
-        selectedMediaId={mediaId}
-        title={modalTitle}
-        items={picker.items}
-        loading={picker.loading}
-        onUploadFile={picker.uploadFile}
-        onFocalPointSave={picker.saveFocalPoint}
-      />
+      {modal}
     </div>
   );
 }

@@ -1,15 +1,6 @@
-import { apiClient } from "@vc/api-client";
-import { FaqItemsPanel } from "./FaqItemsPanel";
-import { withAdminAuth } from "../../../../lib/withAdminAuth";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function InicioPreguntasFrecuentesPreguntasPage() {
-  const faqs = await withAdminAuth(apiClient.getFaqs(), "/inicio/preguntas-frecuentes/preguntas");
-
-  return (
-    <div className="space-y-8">
-      <FaqItemsPanel initialFaqs={faqs} />
-    </div>
-  );
+/** El listado de preguntas se fusionó con el encabezado de la sección. */
+export default function LegacyPreguntasPage() {
+  redirect("/inicio/preguntas-frecuentes");
 }

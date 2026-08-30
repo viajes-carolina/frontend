@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { BrandLogo, CloseIcon, MenuIcon } from "@vc/ui";
 import { AdminNav } from "./AdminNav";
+import { AdminSidebarProfile } from "./AdminSidebarProfile";
 import { useAdminSessionGuard } from "../hooks/useAdminSessionGuard";
+import { useAdminSidebar } from "../hooks/useAdminSidebar";
 
 // El login no debe verse dentro del "shell" del panel — sin sidebar, sin
 // nav — es la única ruta pública de apps/admin, antes de que exista sesión.
@@ -13,67 +14,81 @@ const ROUTES_WITHOUT_SHELL = ["/login"];
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   useAdminSessionGuard();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { open, openSidebar, closeSidebar } = useAdminSidebar();
 
   if (ROUTES_WITHOUT_SHELL.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
     return <>{children}</>;
   }
 
   return (
-    <div className="antialiased font-sans bg-neutral-soft text-neutral-ink flex min-h-screen">
+    <div className="flex min-h-screen bg-neutral-soft font-inter text-neutral-ink antialiased">
       {/* Overlay del drawer en mobile/tablet */}
-      {sidebarOpen && (
+      {open && (
         <button
           type="button"
           aria-label="Cerrar menú de navegación"
-          onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={closeSidebar}
+          className="fixed inset-0 z-40 bg-brand-navy/50 lg:hidden"
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar — 248px según el diseño (Figma 930:3), con 8px de respiro
+          lateral: sobre ese origen el punto de estado de cada fila cae en
+          x=16px y su etiqueta en x=32px, que es la retícula del diseño.
+
+          En escritorio el `aside` era `static` y crecía hasta la altura de su
+          contenido (1238px con una sección desplegada), así que su
+          `overflow-y-auto` no llegaba a activarse nunca y el pie quedaba fuera
+          de pantalla: al bloque de perfil y a "Cerrar sesión" solo se llegaba
+          desplazando el documento entero. Con `sticky` + `max-h-screen` la
+          columna se limita al alto de la ventana y desplaza su propio
+          contenido, que es lo que el `overflow-y-auto` ya suponía. */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-brand-navy text-white flex flex-col justify-between shrink-0 p-6 border-r border-white/10 overflow-y-auto transition-transform duration-200 ease-out lg:static lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 z-50 flex w-[248px] shrink-0 flex-col justify-between overflow-y-auto border-r border-white/[0.08] bg-brand-navy px-2 py-6 text-white transition-transform duration-200 ease-out lg:sticky lg:top-0 lg:max-h-screen lg:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div>
-          {/* Brand Logo Oficial */}
-          <div className="flex items-start justify-between gap-2 pb-6 border-b border-white/10">
-            <div className="flex flex-col gap-2">
+          {/* Marca — mismo bloque de identidad que el panel navy del login */}
+          <div className="flex items-start justify-between gap-2 border-b border-white/[0.08] px-2 pb-6">
+            <div className="flex flex-col gap-2.5">
               <BrandLogo variant="light" className="h-7 w-auto" />
-              <span className="font-inter text-[10px] text-atmosphere-pale-sky uppercase tracking-wider font-semibold">
+              <div className="h-[3px] w-[36px] rounded-[2px] bg-brand-accent" />
+              <span className="font-inter text-[10px] font-semibold uppercase tracking-[1.2px] text-admin-on-navy">
                 Panel Administrativo
               </span>
             </div>
             <button
               type="button"
               aria-label="Cerrar menú de navegación"
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden text-white/70 hover:text-white p-1 -mt-1 -mr-1"
+              onClick={closeSidebar}
+              className="-mr-1 -mt-1 rounded-[8px] p-1 text-admin-on-navy transition-colors hover:bg-white/[0.07] hover:text-white lg:hidden"
             >
               <CloseIcon size={20} />
             </button>
           </div>
 
-          {/* Menu */}
-          <AdminNav />
+          <AdminNav onNavigate={closeSidebar} />
         </div>
 
-        <div className="text-xs text-white/50 border-t border-white/10 pt-4">
-          <span>Versión 1.0.0 · Quarkus & Next.js</span>
+        <div className="mt-8 border-t border-white/[0.08] pt-4">
+          <AdminSidebarProfile />
+          <p className="mt-3 px-2 font-inter text-[10px] leading-[1.4] text-admin-on-navy/60">
+            Viajes Carolina · Panel administrativo v1.0.0
+          </p>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Área de contenido */}
+      <div className="flex min-w-0 flex-1 flex-col">
         {/* Header mobile con botón hamburguesa — el sidebar es fijo desde lg: */}
-        <header className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-neutral-border shrink-0">
+        <header className="flex shrink-0 items-center gap-3 border-b border-neutral-border bg-white px-4 py-3 lg:hidden">
           <button
             type="button"
             aria-label="Abrir menú de navegación"
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 -ml-2 rounded-lg text-brand-navy hover:bg-neutral-soft"
+            aria-expanded={open}
+            onClick={openSidebar}
+            className="-ml-2 rounded-[8px] p-2 text-brand-navy transition-colors hover:bg-neutral-surface"
           >
             <MenuIcon size={22} />
           </button>

@@ -1,15 +1,6 @@
-import { apiClient } from "@vc/api-client";
-import { PromotionsCatalogPanel } from "./PromotionsCatalogPanel";
-import { withAdminAuth } from "../../../../lib/withAdminAuth";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function InicioPromocionesCatalogoPage() {
-  const promotions = await withAdminAuth(apiClient.getAdminPromotions(), "/inicio/promociones/catalogo");
-
-  return (
-    <div className="space-y-8">
-      <PromotionsCatalogPanel initialPromotions={promotions} />
-    </div>
-  );
+/** El catálogo se fusionó con el encabezado en una sola pantalla de Promociones. */
+export default function LegacyPromocionesCatalogoPage() {
+  redirect("/inicio/promociones");
 }

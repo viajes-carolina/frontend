@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import type { FormEvent } from "react";
 import { apiClient, ContactPageDTO, UpdateContactPageRequest } from "@vc/api-client";
+import { buildFormFeedback } from "../lib/formFeedback";
 
 const EMPTY_FORM: UpdateContactPageRequest = {
   heroBadge: "",
@@ -119,6 +120,12 @@ export function useAdminContact() {
     if (pageSettings) setFormData(toFormData(pageSettings));
   }, [pageSettings]);
 
+  // Forma única de feedback que consume `FormFeedback`.
+  const feedback = useMemo(
+    () => buildFormFeedback(error, saveSuccess, "Configuración de Contacto actualizada con éxito."),
+    [error, saveSuccess]
+  );
+
   return {
     pageSettings,
     formData,
@@ -127,6 +134,7 @@ export function useAdminContact() {
     saving,
     saveSuccess,
     error,
+    feedback,
     isDirty,
     discardChanges,
     handleSaveSettings,

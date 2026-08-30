@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { FormFeedbackState } from "@vc/ui";
 import {
   apiClient,
   ApiError,
@@ -36,7 +37,11 @@ function defaultValidUntil(): string {
 export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
   const [promotions, setPromotions] = useState<PromotionDTO[]>(initialPromotions);
   const [isLoading, setIsLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  // Antes era un `statusMessage: string` único, así que los rechazos del
+  // backend se pintaban en el banner verde de éxito. El tono los distingue.
+  const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
+  const showSuccess = (message: string) => setFeedback({ tone: "success", message });
+  const showError = (message: string) => setFeedback({ tone: "error", message });
 
   // Create modal — creación estructurada de promociones. El backend publica
   // automáticamente un post en la Página de Facebook con estos mismos campos
@@ -94,16 +99,16 @@ export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
   const handleToggleActive = async (promo: PromotionDTO): Promise<void> => {
     const willHide = promo.active === true;
     if (willHide && !canHide(promo)) {
-      setStatusMessage(
+      showError(
         `No se puede ocultar "${promo.title}": el Home necesita al menos ${MIN_ACTIVE_PROMOTIONS} promociones activas. Activa otra antes de ocultar esta.`
       );
       return;
     }
 
-    setStatusMessage(null);
+    setFeedback(null);
     try {
       await apiClient.setPromotionActive(promo.id, !promo.active);
-      setStatusMessage(
+      showSuccess(
         willHide ? `"${promo.title}" ya no se muestra en Inicio.` : `"${promo.title}" ahora se muestra en Inicio.`
       );
       await refreshList();
@@ -117,14 +122,14 @@ export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
         err instanceof ApiError && err.status === 409
           ? `No se puede ocultar "${promo.title}": el Home necesita al menos ${MIN_ACTIVE_PROMOTIONS} promociones activas.`
           : `No se pudo actualizar el estado de "${promo.title}".`;
-      setStatusMessage(extractErrorMessage(err, fallback));
+      showError(extractErrorMessage(err, fallback));
       await refreshList();
     }
   };
 
   const handleDelete = async (promo: PromotionDTO): Promise<void> => {
     if (promo.active && !canHide(promo)) {
-      setStatusMessage(
+      showError(
         `No se puede borrar "${promo.title}": el Home necesita al menos ${MIN_ACTIVE_PROMOTIONS} promociones activas. Ocúltala o activa otra antes de borrarla.`
       );
       return;
@@ -133,10 +138,10 @@ export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
       return;
     }
 
-    setStatusMessage(null);
+    setFeedback(null);
     try {
       await apiClient.deletePromotion(promo.id);
-      setStatusMessage(`"${promo.title}" se borró definitivamente.`);
+      showSuccess(`"${promo.title}" se borró definitivamente.`);
       await refreshList();
     } catch (err) {
       console.error(err);
@@ -144,7 +149,7 @@ export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
         err instanceof ApiError && err.status === 409
           ? `No se puede borrar "${promo.title}": el Home necesita al menos ${MIN_ACTIVE_PROMOTIONS} promociones activas.`
           : `No se pudo borrar "${promo.title}".`;
-      setStatusMessage(extractErrorMessage(err, fallback));
+      showError(extractErrorMessage(err, fallback));
       await refreshList();
     }
   };
@@ -195,7 +200,7 @@ export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
 
   const handleCreate = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    setStatusMessage(null);
+    setFeedback(null);
     setIsSaving(true);
 
     const inclusions = inclusionsInput
@@ -226,7 +231,7 @@ export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
 
     try {
       const created = await apiClient.createPromotion(payload);
-      setStatusMessage(
+      showSuccess(
         created.facebookPermalinkUrl
           ? `Promoción "${created.title}" creada y publicada en Facebook.`
           : `Promoción "${created.title}" creada correctamente.`
@@ -235,7 +240,7 @@ export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
       await refreshList();
     } catch (err) {
       console.error(err);
-      setStatusMessage(extractErrorMessage(err, "No se pudo crear la promoción."));
+      showError(extractErrorMessage(err, "No se pudo crear la promoción."));
     } finally {
       setIsSaving(false);
     }
@@ -244,7 +249,7 @@ export function useAdminPromotionsCatalog(initialPromotions: PromotionDTO[]) {
   return {
     promotions,
     isLoading,
-    statusMessage,
+    feedback,
     activeCount,
     topThreeIds,
     canHide,

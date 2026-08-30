@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { apiClient, ClaimRecordDTO } from "@vc/api-client";
+import type { FormFeedbackState } from "@vc/ui";
 
 export function useAdminClaims(initialClaims: ClaimRecordDTO[] = []) {
   const [claims, setClaims] = useState<ClaimRecordDTO[]>(initialClaims);
@@ -48,6 +49,15 @@ export function useAdminClaims(initialClaims: ClaimRecordDTO[] = []) {
     }
   };
 
+  // Un único valor para `FormFeedback`. Se deriva en vez de reemplazar los dos
+  // estados porque `fetchClaims` limpia solo el error y deja vivo el mensaje de
+  // éxito anterior: unificarlos en un state cambiaría ese comportamiento.
+  const feedback: FormFeedbackState | null = error
+    ? { tone: "error", message: error }
+    : successMessage
+      ? { tone: "success", message: successMessage }
+      : null;
+
   return {
     claims,
     statusFilter,
@@ -57,6 +67,7 @@ export function useAdminClaims(initialClaims: ClaimRecordDTO[] = []) {
     updating,
     error,
     successMessage,
+    feedback,
     handleFilterChange,
     updateStatus,
     refetch: () => fetchClaims(statusFilter),

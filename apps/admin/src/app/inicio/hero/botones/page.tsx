@@ -1,9 +1,9 @@
-import { apiClient } from "@vc/api-client";
-import { BotonesForm } from "./BotonesForm";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function InicioHeroBotonesPage() {
-  const hero = await apiClient.getHomeHero();
-  return <BotonesForm initialHero={hero} />;
+/**
+ * Ruta absorbida por el editor unificado del Hero principal (Figma 930:4).
+ * Se conserva como redirección para no romper enlaces ni marcadores guardados.
+ */
+export default function LegacyHeroRoutePage() {
+  redirect("/inicio/hero");
 }

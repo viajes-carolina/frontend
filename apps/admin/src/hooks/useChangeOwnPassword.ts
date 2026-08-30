@@ -1,40 +1,71 @@
+"use client";
+
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { apiClient, ApiError } from "@vc/api-client";
+import type { FormFeedbackState } from "@vc/ui";
 
+const MIN_PASSWORD_LENGTH = 6;
+
+/**
+ * Cambio de la propia contraseña: campos, validación local y llamada al API.
+ *
+ * La validación (largo mínimo y confirmación) vivía en `PerfilClientView.tsx`
+ * junto a un `localError` paralelo al `error` del hook, así que la pantalla
+ * tenía que combinar dos fuentes de error. Aquí queda una sola.
+ */
 export function useChangeOwnPassword() {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
 
-  const changePassword = async (currentPassword: string, newPassword: string) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setFeedback(null);
+
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      setFeedback({
+        tone: "error",
+        message: `La nueva contraseña debe tener al menos ${MIN_PASSWORD_LENGTH} caracteres.`,
+      });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setFeedback({ tone: "error", message: "Las contraseñas no coinciden." });
+      return;
+    }
+
     try {
       setSubmitting(true);
-      setError(null);
-      setSuccess(false);
       await apiClient.changeOwnPassword({ currentPassword, newPassword });
-      setSuccess(true);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setFeedback({ tone: "success", message: "Contraseña actualizada exitosamente." });
     } catch (err) {
-      let msg = "No se pudo actualizar la contraseña.";
+      let message = "No se pudo actualizar la contraseña.";
       if (err instanceof ApiError && err.body && typeof err.body === "object" && "message" in err.body) {
-        msg = String((err.body as { message: unknown }).message);
+        message = String((err.body as { message: unknown }).message);
       } else if (err instanceof Error) {
-        msg = err.message;
+        message = err.message;
       }
-      setError(msg);
-      throw err;
+      setFeedback({ tone: "error", message });
     } finally {
       setSubmitting(false);
     }
   };
 
   return {
+    currentPassword,
+    setCurrentPassword,
+    newPassword,
+    setNewPassword,
+    confirmPassword,
+    setConfirmPassword,
     submitting,
-    error,
-    success,
-    changePassword,
-    clearFeedback: () => {
-      setError(null);
-      setSuccess(false);
-    },
+    feedback,
+    handleSubmit,
   };
 }

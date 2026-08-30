@@ -2,7 +2,8 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { LoginCard } from "@vc/ui";
+import type { LoginRequest } from "@vc/api-client";
+import { LoginBrandPanel, LoginCard } from "@vc/ui";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 
 // Solo se acepta una ruta relativa propia del panel (nunca "//host" ni una
@@ -20,7 +21,7 @@ export function LoginClientView() {
   const router = useRouter();
   const { login, submitting, error, clearError } = useAdminAuth();
 
-  const handleLogin = async (req: { usernameOrEmail: string; password: string }) => {
+  const handleLogin = async (req: LoginRequest) => {
     try {
       await login(req);
       router.push(safeRedirectTarget());
@@ -30,17 +31,24 @@ export function LoginClientView() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-blue/40 via-brand-navy to-atmosphere-twilight">
-      <div className="w-full max-w-md">
-        <LoginCard
-          onSubmit={handleLogin}
-          loading={submitting}
-          errorMessage={error}
-          onClearError={clearError}
-          brandName="Viajes Carolina"
-          brandTagline="Control de Acceso & Gobernanza"
-        />
-      </div>
+    <div className="flex min-h-screen flex-col bg-neutral-soft font-inter lg:flex-row">
+      <LoginBrandPanel />
+
+      <main className="flex flex-1 flex-col items-center justify-center px-6 py-8 lg:px-10 lg:py-12">
+        <div className="w-full lg:w-[472px]">
+          <LoginCard
+            onSubmit={handleLogin}
+            loading={submitting}
+            errorMessage={error}
+            onClearError={clearError}
+          />
+
+          <p className="mt-5 text-center font-inter text-[10px] lg:text-[11px] text-admin-footnote">
+            <span className="lg:hidden">Acceso protegido · Ingresos registrados.</span>
+            <span className="hidden lg:inline">Viajes Carolina · Panel administrativo v1.0.0</span>
+          </p>
+        </div>
+      </main>
     </div>
   );
 }

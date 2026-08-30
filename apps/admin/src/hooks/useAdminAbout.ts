@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { AboutPageDTO, UpdateAboutPageRequest, AccompanyStepDTO, apiClient } from "@vc/api-client";
+import type { FormFeedbackState } from "@vc/ui";
 
 const EMPTY_FORM: UpdateAboutPageRequest = {
   heroBadge: "",
@@ -143,12 +144,21 @@ export function useAdminAbout() {
     }
   };
 
+  // Forma única que consume `FormFeedback`. El estado interno sigue siendo
+  // `{text, type}` por comodidad de los `setFeedbackMessage` de arriba, pero
+  // hacia fuera solo se expone `feedback`: ya no queda ningún consumidor del
+  // banner antiguo.
+  const feedback = useMemo<FormFeedbackState | null>(
+    () => (feedbackMessage ? { tone: feedbackMessage.type, message: feedbackMessage.text } : null),
+    [feedbackMessage]
+  );
+
   return {
     aboutPage,
     formData,
     loading,
     saving,
-    feedbackMessage,
+    feedback,
     isDirty,
     discardChanges,
     updateField,

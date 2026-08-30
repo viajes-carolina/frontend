@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { TravelAdvisorDTO, CreateOrUpdateAdvisorRequest, MediaAssetDTO } from "@vc/api-client";
-import { Button, FormField, Modal } from "@vc/ui";
+import React from "react";
+import type { TravelAdvisorDTO, CreateOrUpdateAdvisorRequest, MediaAssetDTO } from "@vc/api-client";
+import { Button, FormField, Modal, Toggle } from "@vc/ui";
 import { HeroPhotoSlot } from "../../../components/HeroPhotoSlot";
+import { useAdvisorFormModal } from "../../../hooks/useAdvisorFormModal";
 
 export interface AdvisorFormModalProps {
   isOpen: boolean;
@@ -16,30 +17,6 @@ export interface AdvisorFormModalProps {
   onSave: (payload: CreateOrUpdateAdvisorRequest) => void;
 }
 
-interface AdvisorTextFields {
-  fullName: string;
-  roleTitle: string;
-  specialty: string;
-  bio: string;
-  quote: string;
-  whatsappPhone: string;
-  whatsappMessageTemplate: string;
-  displayOrder: number;
-  active: boolean;
-}
-
-const EMPTY_ADVISOR: AdvisorTextFields = {
-  fullName: "",
-  roleTitle: "Asesora de Viajes",
-  specialty: "Destinos Internacionales",
-  bio: "",
-  quote: "",
-  whatsappPhone: "+51987654321",
-  whatsappMessageTemplate: "",
-  displayOrder: 1,
-  active: true,
-};
-
 export function AdvisorFormModal({
   isOpen,
   advisor,
@@ -50,66 +27,36 @@ export function AdvisorFormModal({
   onClose,
   onSave,
 }: AdvisorFormModalProps) {
-  const [formData, setFormData] = useState<AdvisorTextFields>(EMPTY_ADVISOR);
-
-  useEffect(() => {
-    if (advisor) {
-      setFormData({
-        fullName: advisor.fullName,
-        roleTitle: advisor.roleTitle,
-        specialty: advisor.specialty,
-        bio: advisor.bio,
-        quote: advisor.quote || "",
-        whatsappPhone: advisor.whatsappPhone || "+51987654321",
-        whatsappMessageTemplate: advisor.whatsappMessageTemplate || "",
-        displayOrder: advisor.displayOrder,
-        active: advisor.active,
-      });
-    } else {
-      setFormData(EMPTY_ADVISOR);
-    }
-  }, [advisor, isOpen]);
+  const { formData, handleChange, setActive, handleSubmit } = useAdvisorFormModal({
+    advisor,
+    isOpen,
+    photoMediaId,
+    onSave,
+  });
 
   if (!isOpen) return null;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    if (type === "checkbox") {
-      const checked = (e.target as HTMLInputElement).checked;
-      setFormData((prev) => ({ ...prev, [name]: checked }));
-    } else if (type === "number") {
-      setFormData((prev) => ({ ...prev, [name]: Number(value) }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave({
-      ...formData,
-      photoMediaId,
-    });
-  };
 
   return (
     <Modal
       title={advisor ? "Editar Asesora de Viajes" : "Nueva Asesora de Viajes"}
       description="Configura los datos del perfil y botón de contacto directo por WhatsApp."
       onClose={onClose}
+      closeLabel="Cerrar formulario de asesora"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <HeroPhotoSlot
-          variant="secondary"
-          label="Foto de Perfil"
-          mediaId={photoMediaId}
-          mediaUrl={photoMediaUrl}
-          onSelect={onSelectPhoto}
-          modalTitle="Seleccionar Foto de Perfil de la Asesora"
-        />
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-5">
+          <div className="rounded-[10px] border border-admin-divider bg-admin-field p-4">
+            <HeroPhotoSlot
+              variant="secondary"
+              label="Foto de Perfil"
+              mediaId={photoMediaId}
+              mediaUrl={photoMediaUrl}
+              onSelect={onSelectPhoto}
+              modalTitle="Seleccionar Foto de Perfil de la Asesora"
+            />
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               label="Nombre Completo"
               type="text"
@@ -119,9 +66,6 @@ export function AdvisorFormModal({
               required
               placeholder="Ej: Carolina Zúñiga"
             />
-          </div>
-
-          <div>
             <FormField
               label="Cargo / Rol"
               type="text"
@@ -132,9 +76,7 @@ export function AdvisorFormModal({
               placeholder="Ej: Fundadora & Asesora Senior"
             />
           </div>
-        </div>
 
-        <div>
           <FormField
             label="Especialidad / Destinos Clave"
             type="text"
@@ -144,9 +86,7 @@ export function AdvisorFormModal({
             required
             placeholder="Ej: Caribe, Lunas de Miel & Europa"
           />
-        </div>
 
-        <div>
           <FormField
             label="Biografía / Reseña Profesional"
             multiline
@@ -157,9 +97,7 @@ export function AdvisorFormModal({
             required
             placeholder="Breve reseña de su experiencia y pasión por asesorar viajeros..."
           />
-        </div>
 
-        <div>
           <FormField
             label="Cita Personal (para el layout de asesora destacada, cuando es la única activa)"
             multiline
@@ -169,10 +107,8 @@ export function AdvisorFormModal({
             onChange={handleChange}
             placeholder="Ej: Cada viaje que diseño lleva un pedacito de la historia de quien lo vive."
           />
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <FormField
               label="Teléfono de WhatsApp"
               type="text"
@@ -181,9 +117,6 @@ export function AdvisorFormModal({
               onChange={handleChange}
               placeholder="+51987654321"
             />
-          </div>
-
-          <div>
             <FormField
               label="Orden de Visualización"
               type="number"
@@ -193,9 +126,7 @@ export function AdvisorFormModal({
               min={1}
             />
           </div>
-        </div>
 
-        <div>
           <FormField
             label="Mensaje Predeterminado de WhatsApp"
             multiline
@@ -205,24 +136,16 @@ export function AdvisorFormModal({
             onChange={handleChange}
             placeholder="Hola, me gustaría una asesoría personalizada..."
           />
-        </div>
 
-        <div className="flex items-center gap-2 pt-2">
-          <input
-            type="checkbox"
-            id="active"
-            name="active"
+          <Toggle
             checked={formData.active}
-            onChange={handleChange}
-            className="w-4 h-4 rounded text-brand-accent focus:ring-brand-accent"
+            onChange={setActive}
+            label="Asesora activa (visible en la página pública)"
           />
-          <label htmlFor="active" className="text-sm font-medium text-neutral-ink">
-            Asesora activa (visible en la página pública)
-          </label>
         </div>
 
-        <div className="flex justify-end gap-3 pt-6 border-t border-neutral-border">
-          <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
+        <div className="mt-8 flex items-center justify-end gap-3 border-t border-admin-divider pt-6">
+          <Button type="button" variant="ghost" onClick={onClose} disabled={saving}>
             Cancelar
           </Button>
           <Button type="submit" variant="primary" disabled={saving}>

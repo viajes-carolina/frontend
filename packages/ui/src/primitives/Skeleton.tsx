@@ -32,11 +32,10 @@ export interface FormSkeletonProps {
 }
 
 /**
- * Skeleton para las páginas de un solo registro (badge/eyebrow, título,
- * campos, un bloque más alto tipo textarea, botón de guardar) — mismo
- * contenedor (`bg-white rounded-2xl p-8 border border-neutral-border
- * shadow-sm`) que ya usan los formularios reales del panel, para que no haya
- * salto de layout entre el esqueleto y el contenido real.
+ * Skeleton para las páginas de un solo registro (título, campos, un bloque más
+ * alto tipo textarea, botón de guardar) — replica el contenedor de `FormCard`
+ * (`rounded-[12px]`, borde `neutral-border`, sombra suave, `p-6 sm:p-8`) para
+ * que no haya salto de layout entre el esqueleto y el formulario real.
  */
 export function FormSkeleton({ fields = 4, className = "" }: FormSkeletonProps) {
   return (
@@ -46,10 +45,12 @@ export function FormSkeleton({ fields = 4, className = "" }: FormSkeletonProps) 
     // `margin-top` extra hacia el primer bloque real.
     <>
       <LoadingAnnouncement />
-      <div className={`space-y-6 rounded-2xl border border-neutral-border bg-white p-8 shadow-sm ${className}`}>
-        <div className="space-y-3 border-b border-neutral-border pb-4">
-          <Skeleton className="h-3 w-32" />
-          <Skeleton className="h-6 w-2/5" />
+      <div
+        className={`space-y-6 rounded-[12px] border border-neutral-border bg-white p-6 shadow-[0_8px_24px_rgba(17,34,48,0.06)] sm:p-8 ${className}`}
+      >
+        <div className="space-y-3 border-b border-admin-divider pb-5">
+          <Skeleton className="h-5 w-2/5" />
+          <Skeleton className="h-3 w-3/5" />
         </div>
         {Array.from({ length: fields }).map((_, i) => (
           <div key={i} className="space-y-2">
@@ -61,7 +62,9 @@ export function FormSkeleton({ fields = 4, className = "" }: FormSkeletonProps) 
           <Skeleton className="h-3 w-28" />
           <Skeleton className="h-24 w-full" />
         </div>
-        <Skeleton className="h-11 w-40" />
+        <div className="flex justify-end border-t border-admin-divider pt-6">
+          <Skeleton className="h-11 w-40" />
+        </div>
       </div>
     </>
   );

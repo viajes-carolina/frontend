@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import type { AuditLogDTO } from "@vc/api-client";
+import { Button } from "../primitives/Button";
+import { RefreshCwIcon } from "../icons/icons";
 import { TableSkeletonRows } from "../primitives/Skeleton";
 
 export interface AuditLogsViewerProps {
@@ -10,6 +12,39 @@ export interface AuditLogsViewerProps {
   selectedEntityType?: string;
   onSelectEntityType: (entityType: string) => void;
   onRefresh?: () => void;
+}
+
+const CATEGORIES = [
+  { label: "Todos", value: "ALL" },
+  { label: "Autenticación", value: "AUTH" },
+  { label: "Usuarios", value: "USER" },
+  { label: "Reclamaciones", value: "CLAIM" },
+  { label: "Promociones", value: "PROMOTION" },
+  { label: "Configuración", value: "SITE_SETTINGS" },
+  { label: "Sistema", value: "SYSTEM" },
+];
+
+const BADGE_BASE = "inline-flex items-center rounded-[6px] border px-2 py-0.5 text-[11px] font-semibold";
+
+/**
+ * Tono del badge de acción, dentro de la paleta del panel.
+ *
+ * Antes usaba `emerald/blue/rose/amber` de la paleta por defecto de Tailwind,
+ * que no participa de la retokenización del admin — los badges se veían de
+ * otra marca. Los cuatro tonos salen ahora de los tres colores disponibles
+ * (navy, azul de marca, naranja de acento) más el neutro.
+ */
+function actionBadgeClasses(action: string): string {
+  if (action.includes("CREATE") || action.includes("PUBLISH")) {
+    return `${BADGE_BASE} border-brand-navy/20 bg-brand-navy/10 text-brand-navy`;
+  }
+  if (action.includes("UPDATE") || action.includes("PATCH")) {
+    return `${BADGE_BASE} border-brand-blue/25 bg-brand-blue/10 text-brand-blue`;
+  }
+  if (action.includes("DELETE") || action.includes("FAILED")) {
+    return `${BADGE_BASE} border-brand-accent/30 bg-brand-accent/10 text-brand-accent`;
+  }
+  return `${BADGE_BASE} border-neutral-border bg-neutral-soft text-neutral-muted`;
 }
 
 export const AuditLogsViewer: React.FC<AuditLogsViewerProps> = ({
@@ -21,75 +56,45 @@ export const AuditLogsViewer: React.FC<AuditLogsViewerProps> = ({
 }) => {
   const [expandedLogId, setExpandedLogId] = useState<number | null>(null);
 
-  const categories = [
-    { label: "Todos", value: "ALL" },
-    { label: "Autenticación", value: "AUTH" },
-    { label: "Usuarios", value: "USER" },
-    { label: "Reclamaciones", value: "CLAIM" },
-    { label: "Promociones", value: "PROMOTION" },
-    { label: "Configuración", value: "SITE_SETTINGS" },
-    { label: "Sistema", value: "SYSTEM" },
-  ];
-
-  const getActionBadge = (action: string) => {
-    if (action.includes("CREATE") || action.includes("PUBLISH")) {
-      return (
-        <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
-          {action}
-        </span>
-      );
-    }
-    if (action.includes("UPDATE") || action.includes("PATCH")) {
-      return (
-        <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-          {action}
-        </span>
-      );
-    }
-    if (action.includes("DELETE") || action.includes("FAILED")) {
-      return (
-        <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-100 text-rose-800 border border-rose-200">
-          {action}
-        </span>
-      );
-    }
-    return (
-      <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-        {action}
-      </span>
-    );
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-inter">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+      <div className="flex flex-col justify-between gap-4 rounded-[12px] border border-neutral-border bg-white p-6 shadow-[0_8px_24px_rgba(17,34,48,0.06)] sm:flex-row sm:items-center">
         <div>
-          <h2 className="text-xl font-bold text-stone-900">Bitácora de Auditoría & Trazabilidad</h2>
-          <p className="text-sm text-stone-500 mt-1">
+          <h2 className="font-inter text-[18px] font-bold leading-tight text-neutral-ink">
+            Bitácora de Auditoría &amp; Trazabilidad
+          </h2>
+          <p className="mt-1.5 max-w-3xl font-inter text-[13px] leading-[1.55] text-neutral-muted">
             Registro cronológico inmutable de mutaciones administrativas, inicios de sesión y cambios de gobernanza.
           </p>
         </div>
         {onRefresh && (
-          <button
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            icon={<RefreshCwIcon size={15} aria-hidden="true" />}
+            iconPosition="left"
             onClick={onRefresh}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-medium text-xs transition-colors self-start sm:self-auto"
+            className="self-start sm:self-auto"
           >
-            <span>🔄 Actualizar Bitácora</span>
-          </button>
+            Actualizar bitácora
+          </Button>
         )}
       </div>
 
       {/* Filtros de Entidad */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        {categories.map((cat) => (
+      <div className="scrollbar-none flex items-center gap-2 overflow-x-auto pb-2">
+        {CATEGORIES.map((cat) => (
           <button
             key={cat.value}
+            type="button"
             onClick={() => onSelectEntityType(cat.value)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+            aria-pressed={selectedEntityType === cat.value}
+            className={`whitespace-nowrap rounded-[7px] px-4 py-2 text-xs font-semibold transition-colors ${
               selectedEntityType === cat.value
-                ? "bg-amber-600 text-white shadow-sm"
-                : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50"
+                ? "bg-brand-accent text-on-accent shadow-sm"
+                : "border border-neutral-border bg-white text-neutral-muted hover:border-admin-checkbox hover:text-neutral-ink"
             }`}
           >
             {cat.label}
@@ -98,66 +103,71 @@ export const AuditLogsViewer: React.FC<AuditLogsViewerProps> = ({
       </div>
 
       {/* Lista de Registros */}
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-[12px] border border-neutral-border bg-white shadow-[0_8px_24px_rgba(17,34,48,0.06)]">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-sm">
+          <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="bg-stone-50/80 border-b border-stone-200 text-stone-600 text-xs font-semibold uppercase tracking-wider">
-                <th className="py-4 px-6">Fecha / Hora</th>
-                <th className="py-4 px-6">Operador</th>
-                <th className="py-4 px-6">Acción</th>
-                <th className="py-4 px-6">Entidad</th>
-                <th className="py-4 px-6">Hash IP</th>
-                <th className="py-4 px-6 text-right">Detalles</th>
+              <tr className="border-b border-admin-divider bg-neutral-soft text-[11px] font-bold uppercase tracking-[0.55px] text-admin-label">
+                <th className="px-6 py-4">Fecha / Hora</th>
+                <th className="px-6 py-4">Operador</th>
+                <th className="px-6 py-4">Acción</th>
+                <th className="px-6 py-4">Entidad</th>
+                <th className="px-6 py-4">Hash IP</th>
+                <th className="px-6 py-4 text-right">Detalles</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-admin-divider">
               {loading && logs.length === 0 ? (
                 <TableSkeletonRows columns={6} />
               ) : logs.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-stone-500">
+                  <td colSpan={6} className="py-12 text-center text-[13px] text-neutral-muted">
                     No se encontraron registros de auditoría para este filtro.
                   </td>
                 </tr>
               ) : (
                 logs.map((l) => (
                   <React.Fragment key={l.id}>
-                    <tr className="hover:bg-stone-50/60 transition-colors">
-                      <td className="py-4 px-6 whitespace-nowrap text-xs text-stone-600">
+                    <tr className="transition-colors hover:bg-neutral-soft">
+                      <td className="whitespace-nowrap px-6 py-4 text-xs text-neutral-muted">
                         {new Date(l.createdAt).toLocaleString("es-PE")}
                       </td>
-                      <td className="py-4 px-6">
-                        <span className="font-semibold text-stone-900 text-xs font-mono">
-                          @{l.username}
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-xs font-semibold text-admin-value">@{l.username}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={actionBadgeClasses(l.action)}>{l.action}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="rounded-[6px] bg-neutral-soft px-2 py-0.5 font-mono text-xs text-admin-label">
+                          {l.entityType}
+                          {l.entityId ? ` #${l.entityId}` : ""}
                         </span>
                       </td>
-                      <td className="py-4 px-6">{getActionBadge(l.action)}</td>
-                      <td className="py-4 px-6">
-                        <span className="text-xs font-mono bg-stone-100 text-stone-700 px-2 py-0.5 rounded">
-                          {l.entityType}{l.entityId ? ` #${l.entityId}` : ""}
-                        </span>
-                      </td>
-                      <td className="py-4 px-6 text-xs text-stone-400 font-mono">
+                      <td className="px-6 py-4 font-mono text-xs text-admin-footnote">
                         {l.ipHash ? `${l.ipHash.slice(0, 10)}...` : "—"}
                       </td>
-                      <td className="py-4 px-6 text-right">
+                      <td className="px-6 py-4 text-right">
                         <button
+                          type="button"
                           onClick={() => setExpandedLogId(expandedLogId === l.id ? null : l.id)}
-                          className="px-2.5 py-1 text-xs text-stone-600 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors font-mono"
+                          aria-expanded={expandedLogId === l.id}
+                          className="rounded-[6px] bg-neutral-soft px-2.5 py-1 font-mono text-xs text-neutral-muted transition-colors hover:bg-neutral-surface hover:text-neutral-ink"
                         >
                           {expandedLogId === l.id ? "Ocultar" : "JSON"}
                         </button>
                       </td>
                     </tr>
                     {expandedLogId === l.id && (
-                      <tr className="bg-stone-900 text-amber-200">
-                        <td colSpan={6} className="p-4 font-mono text-xs overflow-x-auto">
-                          <div className="flex items-center justify-between text-stone-400 text-[10px] mb-2 uppercase tracking-widest border-b border-stone-800 pb-1">
+                      <tr className="bg-brand-navy text-admin-on-navy">
+                        <td colSpan={6} className="overflow-x-auto p-4 font-mono text-xs">
+                          <div className="mb-2 flex items-center justify-between border-b border-white/15 pb-1 text-[10px] uppercase tracking-widest text-admin-on-navy/80">
                             <span>Detalle Estructurado (Payload JSON)</span>
                             <span>ID Evento: {l.id}</span>
                           </div>
-                          <pre className="whitespace-pre-wrap">{JSON.stringify(JSON.parse(l.detailsJson || "{}"), null, 2)}</pre>
+                          <pre className="whitespace-pre-wrap">
+                            {JSON.stringify(JSON.parse(l.detailsJson || "{}"), null, 2)}
+                          </pre>
                         </td>
                       </tr>
                     )}

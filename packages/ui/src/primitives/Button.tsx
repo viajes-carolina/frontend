@@ -35,7 +35,7 @@ export function Button({
 
   const variantStyles = {
     primary:
-      "bg-brand-accent text-brand-navy hover:bg-brand-sunset active:scale-[0.98] shadow-sm focus:ring-brand-accent",
+      "bg-brand-accent text-on-accent hover:bg-brand-sunset active:scale-[0.98] shadow-sm focus:ring-brand-accent",
     secondary:
       "bg-white text-brand-navy hover:bg-neutral-soft active:scale-[0.98] shadow-sm focus:ring-brand-blue",
     whatsapp:
@@ -45,7 +45,7 @@ export function Button({
     ghost:
       "text-brand-navy hover:bg-brand-navy/5 active:scale-[0.98] focus:ring-brand-navy",
     danger:
-      "bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 hover:border-rose-300 active:scale-[0.98] focus:ring-rose-500",
+      "bg-danger-surface text-danger-ink border border-danger-border hover:brightness-[0.97] active:scale-[0.98] focus:ring-danger-ink",
   }[variant];
 
   return (

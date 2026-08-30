@@ -20,19 +20,19 @@ export interface LegalSectionsEditorProps {
 export function LegalSectionsEditor({ sections, onUpdate, onAdd, onRemove }: LegalSectionsEditorProps) {
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <label className="block text-xs font-bold text-neutral-muted uppercase tracking-wider">
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="font-inter text-[11px] font-bold uppercase tracking-[0.55px] text-admin-label">
           Secciones del documento ({sections.length})
-        </label>
+        </h3>
         <Button type="button" variant="outline" size="sm" icon={<PlusIcon size={16} />} iconPosition="left" onClick={onAdd}>
           Agregar sección
         </Button>
       </div>
 
       {sections.map((section, idx) => (
-        <div key={idx} className="space-y-3 rounded-xl border border-neutral-border bg-neutral-soft p-4">
-          <div className="flex items-center justify-between">
-            <span className="font-sora text-xs font-semibold text-brand-accent">
+        <div key={idx} className="space-y-3 rounded-[10px] border border-admin-divider bg-admin-field p-4">
+          <div className="flex items-center justify-between gap-4">
+            <span className="font-inter text-xs font-semibold text-brand-accent">
               Sección {String(idx + 1).padStart(2, "0")}
             </span>
             <Button
@@ -46,25 +46,21 @@ export function LegalSectionsEditor({ sections, onUpdate, onAdd, onRemove }: Leg
               Quitar esta sección
             </Button>
           </div>
-          <div>
-            <FormField
-              label="Título"
-              type="text"
-              value={section.title}
-              onChange={(e) => onUpdate(idx, "title", e.target.value)}
-              placeholder="Título de la sección"
-            />
-          </div>
-          <div>
-            <FormField
-              label="Contenido"
-              multiline
-              rows={3}
-              value={section.body}
-              onChange={(e) => onUpdate(idx, "body", e.target.value)}
-              placeholder="Texto de la sección"
-            />
-          </div>
+          <FormField
+            label="Título"
+            type="text"
+            value={section.title}
+            onChange={(e) => onUpdate(idx, "title", e.target.value)}
+            placeholder="Título de la sección"
+          />
+          <FormField
+            label="Contenido"
+            multiline
+            rows={3}
+            value={section.body}
+            onChange={(e) => onUpdate(idx, "body", e.target.value)}
+            placeholder="Texto de la sección"
+          />
         </div>
       ))}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { FormFeedbackState } from "@vc/ui";
 import {
   FaqItemDTO,
   CreateOrUpdateFaqRequest,
@@ -10,7 +11,12 @@ import {
 export function useAdminFaqItems(initialFaqs: FaqItemDTO[]) {
   const [faqs, setFaqs] = useState<FaqItemDTO[]>(initialFaqs);
   const [isLoading, setIsLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  // Antes era un `statusMessage: string` único, así que los mensajes de error
+  // se pintaban en el banner verde de éxito. El tono los distingue.
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
+  const showSuccess = (message: string) => setFeedback({ tone: "success", message });
+  const showError = (message: string) => setFeedback({ tone: "error", message });
 
   const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState<FaqItemDTO | null>(null);
@@ -58,7 +64,8 @@ export function useAdminFaqItems(initialFaqs: FaqItemDTO[]) {
 
   const handleSaveFaq = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    setFeedback(null);
+    setSaving(true);
 
     const payload: CreateOrUpdateFaqRequest = {
       question: question.trim(),
@@ -71,16 +78,18 @@ export function useAdminFaqItems(initialFaqs: FaqItemDTO[]) {
     try {
       if (editingFaq) {
         await apiClient.updateFaq(editingFaq.id, payload);
-        setStatusMessage(`FAQ actualizada.`);
+        showSuccess("FAQ actualizada.");
       } else {
         await apiClient.createFaq(payload);
-        setStatusMessage(`Pregunta frecuente creada con éxito.`);
+        showSuccess("Pregunta frecuente creada con éxito.");
       }
       setIsFaqModalOpen(false);
       await refreshData();
     } catch (err) {
       console.error(err);
-      setStatusMessage("Error al guardar FAQ.");
+      showError("Error al guardar FAQ.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -88,18 +97,19 @@ export function useAdminFaqItems(initialFaqs: FaqItemDTO[]) {
     if (!confirm("¿Desactivar esta pregunta frecuente?")) return;
     try {
       await apiClient.deleteFaq(id);
-      setStatusMessage("Pregunta frecuente desactivada.");
+      showSuccess("Pregunta frecuente desactivada.");
       await refreshData();
     } catch (err) {
       console.error(err);
-      setStatusMessage("Error al desactivar FAQ.");
+      showError("Error al desactivar FAQ.");
     }
   };
 
   return {
     faqs,
     isLoading,
-    statusMessage,
+    saving,
+    feedback,
     isFaqModalOpen, setIsFaqModalOpen,
     editingFaq,
     question, setQuestion,

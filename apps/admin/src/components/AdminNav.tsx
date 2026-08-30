@@ -3,129 +3,80 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDownIcon, LayoutGridIcon } from "@vc/ui";
-import { ADMIN_NAV, type AdminNavSection } from "./adminNavConfig";
+import { ADMIN_NAV } from "./adminNavConfig";
+import {
+  AdminNavSectionRow,
+  NavDot,
+  ROW_ACTIVE,
+  ROW_BASE,
+  ROW_IDLE,
+  isSectionActive,
+} from "./AdminNavSectionRow";
 
-function isRouteActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function isSectionActive(pathname: string, section: AdminNavSection) {
-  if (section.children) {
-    return section.children.some((child) => isRouteActive(pathname, child.href));
+/** Etiqueta de la sección desplegable que contiene la ruta actual, si la hay. */
+function activeSectionLabel(pathname: string): string | null {
+  for (const category of ADMIN_NAV) {
+    for (const section of category.items) {
+      if (section.children && isSectionActive(pathname, section)) return section.label;
+    }
   }
-  return section.href ? isRouteActive(pathname, section.href) : false;
+  return null;
 }
 
-function NavBadge({ badge }: { badge: NonNullable<AdminNavSection["badge"]> }) {
-  return (
-    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${badge.className}`}>
-      {badge.text}
-    </span>
-  );
+export interface AdminNavProps {
+  /** Cierra el drawer mobile: navegar sin esto dejaba el menú tapando la pantalla. */
+  onNavigate: () => void;
 }
 
-interface AdminNavSectionRowProps {
-  section: AdminNavSection;
-  pathname: string;
-}
-
-function AdminNavSectionRow({ section, pathname }: AdminNavSectionRowProps) {
-  const Icon = section.icon;
-  const active = isSectionActive(pathname, section);
-  // Se inicializa según la ruta activa al montar y se auto-expande cada vez
-  // que el grupo pasa a estar activo (ej. al llegar por un link externo o
-  // por el Dashboard sin haber tocado el sidebar antes) — pero no se fuerza
-  // a colapsar al salir, así el usuario puede colapsar un grupo activo y
-  // no se le vuelve a abrir solo por seguir dentro de esa ruta.
-  const [expanded, setExpanded] = useState(() => active);
-  useEffect(() => {
-    if (active) setExpanded(true);
-  }, [active]);
-
-  if (!section.children) {
-    return (
-      <Link
-        href={section.href ?? "#"}
-        className={`px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center gap-2.5 ${
-          active ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
-        }`}
-      >
-        <Icon size={18} className="shrink-0" />
-        <span className="flex-1">{section.label}</span>
-        {section.badge && <NavBadge badge={section.badge} />}
-      </Link>
-    );
-  }
-
-  return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setExpanded((prev) => !prev)}
-        aria-expanded={expanded}
-        className={`w-full px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center gap-2.5 ${
-          active ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
-        }`}
-      >
-        <Icon size={18} className="shrink-0" />
-        <span className="flex-1 text-left">{section.label}</span>
-        {section.badge && <NavBadge badge={section.badge} />}
-        <ChevronDownIcon
-          size={16}
-          className={`shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {expanded && (
-        <div className="mt-1 ml-3 flex flex-col gap-0.5 border-l border-white/10 pl-3">
-          {section.children.map((child) => {
-            const childActive = pathname === child.href;
-            return (
-              <Link
-                key={child.href}
-                href={child.href}
-                className={`block px-3 py-2 rounded-lg font-sora text-xs transition-colors ${
-                  childActive
-                    ? "bg-white/15 text-white font-semibold"
-                    : "text-white/60 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                {child.label}
-              </Link>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function AdminNav() {
+export function AdminNav({ onNavigate }: AdminNavProps) {
   const pathname = usePathname();
   const dashboardActive = pathname === "/";
+  const activeLabel = activeSectionLabel(pathname);
+
+  // Acordeón: una sola sección desplegada a la vez, y por defecto la que
+  // contiene la ruta actual. Antes un `useEffect` forzaba `expanded=true` al
+  // entrar en la sección pero nada la volvía a cerrar, así que el sidebar
+  // terminaba con todos los grupos abiertos y 30+ enlaces visibles. Al cambiar
+  // de sección se sincroniza con la ruta; dentro de una misma sección manda el
+  // usuario (puede colapsarla y no se le reabre al navegar entre sus hijos,
+  // porque `activeLabel` no cambia y el efecto no se vuelve a disparar).
+  const [openLabel, setOpenLabel] = useState<string | null>(activeLabel);
+  useEffect(() => {
+    setOpenLabel(activeLabel);
+  }, [activeLabel]);
 
   return (
-    <nav className="mt-6 flex flex-col gap-1">
+    <nav aria-label="Secciones del panel" className="mt-6 flex flex-col gap-0.5">
       <Link
         href="/"
-        className={`px-3.5 py-2.5 rounded-xl font-sora text-sm transition-colors flex items-center gap-2.5 ${
-          dashboardActive ? "bg-white/10 text-white" : "text-white/80 hover:text-white hover:bg-white/10"
-        }`}
+        onClick={onNavigate}
+        aria-current={dashboardActive ? "page" : undefined}
+        className={`${ROW_BASE} ${dashboardActive ? ROW_ACTIVE : ROW_IDLE}`}
       >
-        <LayoutGridIcon size={18} className="shrink-0" />
-        <span>Dashboard</span>
+        <NavDot active={dashboardActive} />
+        <span className="flex-1 truncate text-left">Dashboard</span>
       </Link>
 
       {ADMIN_NAV.map((category) => (
         <div key={category.label}>
-          <p className="text-[10px] font-bold uppercase tracking-wider text-white/40 px-3.5 mt-4 mb-1">
+          {/* `pl-6` (24px) sobre los 8px de respiro del sidebar deja la
+              etiqueta de grupo en x=32px, la misma columna que los labels de
+              las filas. */}
+          <p className="mt-5 mb-1.5 pl-6 pr-2.5 font-inter text-[11px] font-semibold uppercase tracking-[0.9px] text-admin-on-navy/55">
             {category.label}
           </p>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-0.5">
             {category.items.map((section) => (
-              <AdminNavSectionRow key={section.label} section={section} pathname={pathname} />
+              <AdminNavSectionRow
+                key={section.label}
+                section={section}
+                pathname={pathname}
+                expanded={openLabel === section.label}
+                onToggle={() =>
+                  setOpenLabel((prev) => (prev === section.label ? null : section.label))
+                }
+                onNavigate={onNavigate}
+              />
             ))}
           </div>
         </div>

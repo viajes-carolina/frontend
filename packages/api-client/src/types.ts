@@ -829,6 +829,12 @@ export interface AdminUserDTO {
 export interface LoginRequest {
   usernameOrEmail: string;
   password: string;
+  /**
+   * "Mantener mi sesión" del formulario de acceso. Cuando es `true` el backend
+   * emite una sesión larga (30 días); si se omite o es `false`, la sesión dura
+   * 1 hora. Opcional para no romper a los llamadores que no lo envían.
+   */
+  rememberMe?: boolean;
 }
 
 export interface LoginResponse {
@@ -885,10 +891,16 @@ export interface PublishRequestDTO {
 }
 
 export interface PublishResponseDTO {
-  status: "SUCCESS" | "READY" | "ERROR" | string;
+  status: "SUCCESS" | "FAILED" | "NEVER_PUBLISHED" | "UNKNOWN" | string;
   revalidatedTags: string[];
-  publishedAt: string;
-  triggeredBy: string;
+  /**
+   * Ausentes cuando el sitio nunca se ha publicado (`status: "NEVER_PUBLISHED"`).
+   * El backend omite los campos nulos del JSON, así que aquí son opcionales:
+   * declararlos obligatorios hacía que `new Date(publishedAt)` produjera
+   * "Invalid Date" sin que TypeScript avisara.
+   */
+  publishedAt?: string;
+  triggeredBy?: string;
   message: string;
 }
 

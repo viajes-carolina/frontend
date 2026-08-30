@@ -8,6 +8,7 @@ import {
   MediaAssetDTO,
   apiClient,
 } from "@vc/api-client";
+import type { FormFeedbackState } from "@vc/ui";
 import { useAdminAdvisors } from "./useAdminAdvisors";
 
 export function useAdminBlog() {
@@ -21,7 +22,9 @@ export function useAdminBlog() {
   const [saving, setSaving] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  // Mismo contrato que el resto de paneles migrados (useAdminFaqItems,
+  // useAdminBlogCategories): un solo valor que consume `FormFeedback`.
+  const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
 
   // Post modal state
   const [editingPost, setEditingPost] = useState<BlogPostDTO | null>(null);
@@ -47,7 +50,7 @@ export function useAdminBlog() {
       setPosts(fetchedPosts);
       setCategories(fetchedCategories);
     } catch {
-      setMessage({ type: "error", text: "Error al cargar los datos del blog." });
+      setFeedback({ tone: "error", message: "Error al cargar los datos del blog." });
     } finally {
       setLoading(false);
     }
@@ -94,15 +97,15 @@ export function useAdminBlog() {
       setSaving(true);
       if (editingPost) {
         await apiClient.updateBlogPost(editingPost.id, req);
-        setMessage({ type: "success", text: "Artículo actualizado con éxito." });
+        setFeedback({ tone: "success", message: "Artículo actualizado con éxito." });
       } else {
         await apiClient.createBlogPost(req);
-        setMessage({ type: "success", text: "Artículo creado con éxito." });
+        setFeedback({ tone: "success", message: "Artículo creado con éxito." });
       }
       handleClosePostModal();
       await loadData();
     } catch {
-      setMessage({ type: "error", text: "Error al guardar el artículo." });
+      setFeedback({ tone: "error", message: "Error al guardar el artículo." });
     } finally {
       setSaving(false);
     }
@@ -113,10 +116,10 @@ export function useAdminBlog() {
     try {
       setSaving(true);
       await apiClient.deleteBlogPost(id);
-      setMessage({ type: "success", text: "Artículo archivado con éxito." });
+      setFeedback({ tone: "success", message: "Artículo archivado con éxito." });
       await loadData();
     } catch {
-      setMessage({ type: "error", text: "Error al archivar el artículo." });
+      setFeedback({ tone: "error", message: "Error al archivar el artículo." });
     } finally {
       setSaving(false);
     }
@@ -132,8 +135,8 @@ export function useAdminBlog() {
     setStatusFilter,
     searchQuery,
     setSearchQuery,
-    message,
-    setMessage,
+    feedback,
+    setFeedback,
     editingPost,
     isPostModalOpen,
     coverMediaId,

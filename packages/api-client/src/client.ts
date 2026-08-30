@@ -1243,16 +1243,24 @@ export class ViajesCarolinaApiClient {
     return await res.json();
   }
 
+  /**
+   * El cuerpo `{}` y su cabecera no son decorativos: el endpoint declara
+   * `@Consumes(application/json)`, así que un POST sin cuerpo devolvía 415 y
+   * la cookie `vc_admin_jwt` sobrevivía. Como el fallo se tragaba abajo, el
+   * panel decía "sesión cerrada" mientras la sesión seguía viva y se podía
+   * volver a entrar escribiendo la URL.
+   *
+   * Un fallo aquí ya no se silencia: si el servidor no confirma el cierre,
+   * quien llama debe saberlo para no dar por cerrada una sesión que sigue abierta.
+   */
   async logoutAdmin(): Promise<{ status: string }> {
-    try {
-      const res = await fetch(this.getEffectiveUrl("admin/v1/auth/logout"), {
-        method: "POST",
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return { status: "LOGGED_OUT" };
+    const res = await fetch(this.getEffectiveUrl("admin/v1/auth/logout"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
   }
 
   async getCurrentAdminUser(): Promise<AdminUserDTO> {
@@ -1325,10 +1333,15 @@ export class ViajesCarolinaApiClient {
     return await res.json();
   }
 
+  // `admin/v1/publishing/status` está bajo @RolesAllowed: sin reenviar la cookie
+  // de sesión, un Server Component (el dashboard) recibía 401 y la lectura
+  // reventaba la página entera. Desde el navegador `withServerAuthCookie`
+  // devuelve el init intacto, así que el camino cliente (useAdminPublishing)
+  // no cambia.
   async getPublishingStatus(): Promise<PublishResponseDTO> {
-    const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/status"), {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/status"), await this.withServerAuthCookie({
       cache: "no-store",
-    });
+    }));
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();
   }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { FormFeedbackState } from "@vc/ui";
 import {
   TestimonialDTO,
   CreateOrUpdateTestimonialRequest,
@@ -11,7 +12,12 @@ import {
 export function useAdminTestimonialItems(initialTestimonials: TestimonialDTO[]) {
   const [testimonials, setTestimonials] = useState<TestimonialDTO[]>(initialTestimonials);
   const [isLoading, setIsLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  // Antes era un `statusMessage: string` único, así que los mensajes de error
+  // se pintaban en el banner verde de éxito. El tono los distingue.
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
+  const showSuccess = (message: string) => setFeedback({ tone: "success", message });
+  const showError = (message: string) => setFeedback({ tone: "error", message });
 
   const [isTestimonialModalOpen, setIsTestimonialModalOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<TestimonialDTO | null>(null);
@@ -80,7 +86,8 @@ export function useAdminTestimonialItems(initialTestimonials: TestimonialDTO[]) 
 
   const handleSaveTestimonial = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    setFeedback(null);
+    setSaving(true);
 
     const payload: CreateOrUpdateTestimonialRequest = {
       clientName: clientName.trim(),
@@ -97,16 +104,18 @@ export function useAdminTestimonialItems(initialTestimonials: TestimonialDTO[]) 
     try {
       if (editingTestimonial) {
         await apiClient.updateTestimonial(editingTestimonial.id, payload);
-        setStatusMessage(`Testimonio de "${clientName}" actualizado.`);
+        showSuccess(`Testimonio de "${clientName}" actualizado.`);
       } else {
         await apiClient.createTestimonial(payload);
-        setStatusMessage(`Testimonio de "${clientName}" creado con éxito.`);
+        showSuccess(`Testimonio de "${clientName}" creado con éxito.`);
       }
       setIsTestimonialModalOpen(false);
       await refreshData();
     } catch (err) {
       console.error(err);
-      setStatusMessage("Error al guardar testimonio.");
+      showError("Error al guardar testimonio.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -114,18 +123,19 @@ export function useAdminTestimonialItems(initialTestimonials: TestimonialDTO[]) 
     if (!confirm("¿Desactivar este testimonio?")) return;
     try {
       await apiClient.deleteTestimonial(id);
-      setStatusMessage("Testimonio desactivado.");
+      showSuccess("Testimonio desactivado.");
       await refreshData();
     } catch (err) {
       console.error(err);
-      setStatusMessage("Error al desactivar testimonio.");
+      showError("Error al desactivar testimonio.");
     }
   };
 
   return {
     testimonials,
     isLoading,
-    statusMessage,
+    saving,
+    feedback,
     isTestimonialModalOpen, setIsTestimonialModalOpen,
     editingTestimonial,
     clientName, setClientName,

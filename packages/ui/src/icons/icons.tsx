@@ -269,6 +269,28 @@ export function LifeBuoyIcon({ size = 20, className = "", ...props }: IconProps)
   );
 }
 
+// Iconografía de seguridad del panel administrativo (pantalla de acceso).
+// El grosor de trazo (1.5 / 1.3) y los viewBox no cuadran con los 24×24 del
+// resto del set: vienen tal cual del diseño, donde se usan a tamaños chicos
+// (14–18px) y un trazo de 2 se vería tosco.
+export function LockIcon({ size = 18, className = "", ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth="1.5" className={className} {...props}>
+      <path d="M12.75 7.5H5.25C4.14543 7.5 3.25 8.39543 3.25 9.5V13.5C3.25 14.6046 4.14543 15.5 5.25 15.5H12.75C13.8546 15.5 14.75 14.6046 14.75 13.5V9.5C14.75 8.39543 13.8546 7.5 12.75 7.5Z" />
+      <path d="M5.75 7.5V5.75C5.75 3.96 7.21 2.5 9 2.5C10.79 2.5 12.25 3.96 12.25 5.75V7.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function ShieldCheckIcon({ size = 16, className = "", ...props }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth="1.3" className={className} {...props}>
+      <path d="M8 1.75L13 3.6V7.42C13 10.6 10.95 12.97 8 14.25C5.05 12.97 3 10.6 3 7.42V3.6L8 1.75Z" />
+      <path d="M5.8 8L7.15 9.35L10.4 6.1" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 // Marcas de bancos participantes del panel de financiamiento (sección "04 ·
 // Antes de seguir" del Home) — ver ConversationalPauseSection.tsx.
 export function BcpMarkIcon({ size = 14, className = "", ...props }: IconProps) {

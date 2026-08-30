@@ -1,148 +1,165 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import type { LoginRequest } from "@vc/api-client";
-import { BRAND_CONFIG } from "@vc/config";
-import { BrandLogo } from "../brand/BrandLogo";
-import { CloseIcon } from "../icons/icons";
+import { CheckIcon, CloseIcon, LockIcon, ShieldCheckIcon } from "../icons/icons";
+import { useLoginForm } from "./useLoginForm";
 
 export interface LoginCardProps {
   onSubmit: (req: LoginRequest) => Promise<void>;
   loading?: boolean;
   errorMessage?: string | null;
   onClearError?: () => void;
-  brandName?: string;
-  brandTagline?: string;
 }
+
+const FIELD_CLASS =
+  "h-[46px] lg:h-[48px] w-full rounded-[7px] border border-admin-field-border bg-admin-field px-3.5 font-inter text-[14px] text-admin-value transition-colors placeholder:text-admin-footnote/70 hover:border-admin-checkbox focus:border-brand-accent";
+
+const LABEL_CLASS =
+  "block font-inter text-[10px] lg:text-[11px] font-bold tracking-[0.4px] lg:tracking-[0.55px] text-admin-label";
 
 export const LoginCard: React.FC<LoginCardProps> = ({
   onSubmit,
   loading = false,
   errorMessage = null,
   onClearError,
-  brandName = BRAND_CONFIG.name,
-  brandTagline = "Panel Administrativo & Gobernanza",
 }) => {
-  const [usernameOrEmail, setUsernameOrEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!usernameOrEmail.trim() || !password) return;
-    await onSubmit({
-      usernameOrEmail: usernameOrEmail.trim(),
-      password,
-    });
-  };
+  const form = useLoginForm({ onSubmit, onClearError, errorMessage, loading });
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl border border-neutral-border overflow-hidden">
-      {/* Header Corporativo */}
-      <div className="bg-brand-navy p-8 text-center text-white relative" role="img" aria-label={brandName}>
-        <BrandLogo variant="light" className="h-8 w-auto mx-auto mb-4" />
-        <p className="font-inter text-xs font-medium text-atmosphere-pale-sky mt-1 uppercase tracking-widest">{brandTagline}</p>
-      </div>
+    <form
+      onSubmit={form.handleSubmit}
+      className="w-full rounded-[12px] border border-neutral-border bg-white p-6 font-inter shadow-[0_8px_24px_rgba(17,34,48,0.08)] lg:p-10 lg:shadow-[0_12px_32px_rgba(17,34,48,0.1)]"
+    >
+      <p className="flex items-center gap-2 font-inter text-[10px] lg:text-[11px] font-bold tracking-[0.7px] lg:tracking-[0.88px] text-brand-accent">
+        <LockIcon aria-hidden="true" className="h-[14px] w-[14px] shrink-0 lg:h-4 lg:w-4" />
+        ACCESO AL PANEL
+      </p>
 
-      {/* Formulario */}
-      <form onSubmit={handleSubmit} className="p-8 space-y-6">
-        {errorMessage && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start justify-between gap-3 animate-fade-in">
-            <div className="flex items-center gap-2">
-              <span className="font-bold">⚠️</span>
-              <span>{errorMessage}</span>
-            </div>
-            {onClearError && (
-              <button
-                type="button"
-                onClick={onClearError}
-                aria-label="Cerrar mensaje de error"
-                className="text-rose-500 hover:text-rose-700 font-bold text-xs"
-              >
-                <CloseIcon size={20} />
-              </button>
-            )}
-          </div>
-        )}
+      <h1 className="mt-3 font-inter text-[26px] lg:text-[30px] font-bold leading-tight text-neutral-ink">
+        Inicia sesión
+      </h1>
 
-        <div className="space-y-1.5">
-          <label className="block font-inter text-xs font-semibold text-neutral-muted uppercase tracking-wider">
-            Usuario o Correo Electrónico
-          </label>
-          <input
-            type="text"
-            required
-            autoComplete="username"
-            value={usernameOrEmail}
-            onChange={(e) => {
-              setUsernameOrEmail(e.target.value);
-              if (errorMessage && onClearError) onClearError();
-            }}
-            placeholder="admin@viajescarolina.com"
-            className="w-full px-4 py-3 rounded-xl border border-neutral-border bg-neutral-soft/50 text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:border-brand-accent transition-all placeholder:text-neutral-subtle"
-          />
-        </div>
+      <p className="mt-2 font-inter text-[13px] lg:text-[14px] leading-[1.55] text-neutral-muted">
+        <span className="lg:hidden">Ingresa con tu cuenta autorizada para administrar el sitio.</span>
+        <span className="hidden lg:inline">
+          Ingresa con tu cuenta autorizada para administrar el sitio y sus contenidos.
+        </span>
+      </p>
 
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <label className="block font-inter text-xs font-semibold text-neutral-muted uppercase tracking-wider">
-              Contraseña
-            </label>
+      <div aria-hidden="true" className="mt-7 mb-7 hidden h-px w-full bg-admin-divider lg:block" />
+
+      {errorMessage && (
+        <div
+          role="alert"
+          className="mt-6 mb-1 flex items-start justify-between gap-3 rounded-[7px] border border-brand-accent/35 bg-brand-accent/8 px-4 py-3 lg:mt-0 lg:mb-6"
+        >
+          <span className="font-inter text-[12px] leading-[1.5] text-neutral-ink">{errorMessage}</span>
+          {onClearError && (
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-xs text-brand-blue hover:text-brand-navy font-medium"
+              onClick={onClearError}
+              aria-label="Cerrar mensaje de error"
+              className="-mr-1 shrink-0 rounded-[4px] text-neutral-muted transition-colors hover:text-neutral-ink"
             >
-              {showPassword ? "Ocultar" : "Mostrar"}
+              <CloseIcon size={16} aria-hidden="true" />
             </button>
-          </div>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (errorMessage && onClearError) onClearError();
-              }}
-              placeholder="••••••••••••"
-              className="w-full px-4 py-3 rounded-xl border border-neutral-border bg-neutral-soft/50 text-brand-navy font-inter text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent/30 focus:border-brand-accent transition-all placeholder:text-neutral-subtle"
-            />
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading || !usernameOrEmail.trim() || !password}
-          className="w-full py-3.5 px-6 rounded-xl bg-brand-accent hover:bg-brand-sunset text-brand-navy font-inter font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {loading ? (
-            <>
-              <svg className="animate-spin h-4 w-4 text-brand-navy" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-              </svg>
-              <span>Verificando credenciales...</span>
-            </>
-          ) : (
-            <span>Ingresar al Panel de Control</span>
           )}
-        </button>
-
-        {/* Indicadores de Seguridad */}
-        <div className="pt-4 border-t border-neutral-border flex items-center justify-center gap-4 text-[11px] font-inter text-neutral-muted">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-            Argon2id Hashing
-          </span>
-          <span className="text-neutral-border">•</span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-brand-blue"></span>
-            Cookie HttpOnly Secure
-          </span>
         </div>
-      </form>
-    </div>
+      )}
+
+      <div className="mt-6 space-y-2 lg:mt-0">
+        <label htmlFor="admin-login-email" className={LABEL_CLASS}>
+          CORREO ELECTRÓNICO
+        </label>
+        {/* `type="text"` y no `email`: el backend acepta usuario **o** correo, y
+            la validación nativa de `type="email"` rechazaría un usuario. */}
+        <input
+          id="admin-login-email"
+          type="text"
+          inputMode="email"
+          required
+          autoComplete="username"
+          value={form.usernameOrEmail}
+          onChange={(e) => form.setUsernameOrEmail(e.target.value)}
+          placeholder="nombre@viajescarolina.pe"
+          className={FIELD_CLASS}
+        />
+      </div>
+
+      <div className="mt-5 space-y-2">
+        <label htmlFor="admin-login-password" className={LABEL_CLASS}>
+          CONTRASEÑA
+        </label>
+        <div className="relative">
+          <input
+            id="admin-login-password"
+            type={form.showPassword ? "text" : "password"}
+            required
+            autoComplete="current-password"
+            value={form.password}
+            onChange={(e) => form.setPassword(e.target.value)}
+            placeholder="••••••••••••"
+            className={`${FIELD_CLASS} pr-[88px]`}
+          />
+          <button
+            type="button"
+            onClick={form.toggleShowPassword}
+            aria-label={form.showPassword ? "Ocultar la contraseña" : "Mostrar la contraseña"}
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 rounded-[4px] font-inter text-[12px] font-semibold text-brand-navy transition-opacity hover:opacity-70"
+          >
+            {form.showPassword ? "Ocultar" : "Mostrar"}
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-5 flex items-center gap-2.5">
+        <span className="relative inline-flex h-4 w-4 shrink-0">
+          <input
+            id="admin-login-remember"
+            type="checkbox"
+            checked={form.rememberMe}
+            onChange={(e) => form.setRememberMe(e.target.checked)}
+            className="peer h-4 w-4 cursor-pointer appearance-none rounded-[4px] border border-admin-checkbox bg-white transition-colors checked:border-brand-accent checked:bg-brand-accent"
+          />
+          <CheckIcon
+            size={10}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-on-accent opacity-0 peer-checked:opacity-100"
+          />
+        </span>
+        <label
+          htmlFor="admin-login-remember"
+          className="cursor-pointer select-none font-inter text-[12px] text-admin-label"
+        >
+          <span className="lg:hidden">Mantener sesión</span>
+          <span className="hidden lg:inline">Mantener mi sesión</span>
+        </label>
+      </div>
+
+      <button
+        type="submit"
+        disabled={!form.canSubmit}
+        className="mt-6 flex h-[48px] lg:h-[50px] w-full items-center justify-center gap-2 rounded-[7px] bg-brand-accent font-inter text-[14px] font-bold text-on-accent transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45"
+      >
+        {loading ? (
+          <>
+            <svg className="h-4 w-4 animate-spin text-on-accent" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            <span>Verificando credenciales...</span>
+          </>
+        ) : (
+          <span>Ingresar al panel</span>
+        )}
+      </button>
+
+      <p className="mt-4 flex items-start justify-center gap-1.5 text-center font-inter text-[11px] leading-[1.45] text-admin-footnote">
+        <ShieldCheckIcon aria-hidden="true" className="mt-px h-[13px] w-[13px] shrink-0" />
+        <span className="lg:hidden">Acceso protegido. Los intentos de ingreso quedan registrados.</span>
+        <span className="hidden lg:inline">Acceso protegido · Los intentos de ingreso quedan registrados.</span>
+      </p>
+    </form>
   );
 };

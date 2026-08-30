@@ -6,6 +6,86 @@
 @source "../../../../packages/ui/src";
 @source "../../../../packages/config";
 
+/* ==========================================================================
+   Paleta del panel administrativo (Figma: node-id 944-3 / 944-4)
+
+   El panel y el sitio público comparten `@vc/config/tailwind/theme.css`, pero
+   NO comparten paleta: la web usa una gama cálida (marfil #f8f5ef, naranja
+   #ff7900) y el panel una gama fría e institucional (gris #f6f7f8, naranja
+   #f95d09). Como cada app compila su propio CSS con sus propios `@source`,
+   redefinir aquí los tokens afecta solo al build del admin — `apps/web`
+   conserva su apariencia intacta.
+
+   Se redefinen los tokens existentes en vez de introducir una familia
+   `admin-*` paralela para que las ~36 pantallas ya escritas (que usan
+   `bg-brand-navy`, `border-neutral-border`, etc.) adopten la paleta sin
+   tener que editarlas una por una.
+   ========================================================================== */
+@theme {
+  /* --- Primitivos redefinidos para el panel --- */
+  --color-brand-navy: #112230;
+  --color-brand-accent: #f95d09;
+  --color-neutral-soft: #f6f7f8;
+  --color-neutral-border: #d6dee3;
+  --color-neutral-ink: #17212b;
+  --color-neutral-muted: #616e7a;
+
+  /* En el panel el CTA naranja lleva texto blanco (en la web, navy). */
+  --color-on-accent: #ffffff;
+
+  /* `bg-neutral-surface` y `animate-fade-in` se usaban en el panel (tablas,
+     modales, banners) sin estar registradas, así que no producían ni color ni
+     animación. Se definen aquí y no en el tema compartido porque el sitio
+     público también las referencia (TravelMaskFrame, ResponsiveImage) y
+     activarlas allí cambiaría su apariencia sin haberlo pedido. */
+  --color-neutral-surface: #eef1f4;
+  --animate-fade-in: hero-fade-in var(--motion-fast) var(--ease-enter);
+
+  /* Rojo desaturado para acciones destructivas: legible como "peligro" y
+     claramente distinto del naranja de acento, que aquí significa "acción
+     principal". */
+  --color-danger-surface: #fdecec;
+  --color-danger-border: #f3c9c9;
+  --color-danger-ink: #a32020;
+
+  /* --- Colores de estado (diseño del dashboard, node-id 930-3) ---
+     Familia semántica para señalar el estado de una pieza de contenido: el
+     punto y la píldora del dashboard (sitio publicado, borradores, pendientes
+     de respuesta) los consumen como `text-state-*` / `bg-state-*-surface`.
+     Antes no existían como token y el diseño los usa en topbar, KPIs y
+     paneles, así que se registran aquí en vez de repetir los hexadecimales.
+     El verde del badge del topbar (#e5f6f0) y el de la píldora del panel
+     (#e8f7f1) se unifican en una sola superficie. */
+  --color-state-published: #138f63;
+  --color-state-published-surface: #e8f7f1;
+  --color-state-draft: #216bb8;
+  --color-state-draft-surface: #ebf2fc;
+  --color-state-pending: #f95d09;
+  --color-state-pending-surface: #fff2e8;
+  --color-state-warning: #e88f14;
+
+  /* --- Tokens propios del panel --- */
+  --color-admin-field: #f9f9fa;
+  --color-admin-field-border: #d1d9e0;
+  --color-admin-divider: #e0e5eb;
+  --color-admin-label: #475766;
+  --color-admin-value: #29333d;
+  --color-admin-footnote: #737d87;
+  --color-admin-on-navy: #bfd1db;
+  --color-admin-checkbox: #b0bac4;
+  /* Riel del conmutador de dispositivo de la vista previa (editores de
+     contenido, node-id 930-4). Un punto más frío que `neutral-surface`, que se
+     usa para superficies de tabla. */
+  --color-admin-switch-track: #ebeef1;
+
+  /* El diseño del panel usa Inter en todas las capas — no hay Sora en
+     ninguna pieza. Se redefine el token en vez de reemplazar la clase
+     `font-sora` en decenas de archivos y en los componentes de
+     `packages/ui` que el sitio público también consume. El nombre del
+     token queda engañoso dentro del admin: aquí `font-sora` es Inter. */
+  --font-sora: "Inter", system-ui, -apple-system, sans-serif;
+}
+
 :root {
   background-color: var(--color-neutral-soft);
   color: var(--color-neutral-ink);
@@ -23,7 +103,7 @@ body {
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-sora);
+    font-family: var(--font-inter);
   }
 
   :focus-visible {

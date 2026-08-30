@@ -1,42 +1,42 @@
 "use client";
 
+import React from "react";
+import type { OfficeLocationDTO } from "@vc/api-client";
+import { FormCard, FormField } from "@vc/ui";
 import { useAdminOffice } from "../../../hooks/useAdminOffice";
-import { OfficeLocationDTO } from "@vc/api-client";
-import { Button, CheckIcon, FormField } from "@vc/ui";
 
 export interface OfficeFormProps {
   initialOffice: OfficeLocationDTO;
 }
 
+const SECTION_TITLE_CLASSES =
+  "font-inter text-[11px] font-bold uppercase tracking-[0.55px] text-admin-label";
+
 export function OfficeForm({ initialOffice }: OfficeFormProps) {
-  const { office, isSaving, saveSuccess, updateField, handleSave } = useAdminOffice(initialOffice);
+  const { office, isSaving, feedback, updateField, updateCityCountry, handleSave } = useAdminOffice(initialOffice);
 
   return (
-    <form onSubmit={handleSave} className="space-y-8 max-w-4xl">
-      {saveSuccess && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3">
-          <CheckIcon size={20} className="text-emerald-600 shrink-0" />
-          <span className="font-medium text-sm">Datos de la oficina física guardados y sincronizados con el footer y página de contacto.</span>
-        </div>
-      )}
+    <FormCard
+      title="Oficina física y horarios"
+      description="Dirección, horarios y ubicación en el mapa. Es el único lugar del panel donde se editan: el pie del sitio y la página pública de Contacto los leen de aquí."
+      feedback={feedback}
+      onSubmit={handleSave}
+      saving={isSaving}
+      submitLabel="Guardar Oficina"
+    >
+      {/* Dirección física */}
+      <div className="space-y-4">
+        <h3 className={SECTION_TITLE_CLASSES}>Dirección de oficina principal</h3>
 
-      {/* Dirección Física */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <h2 className="font-sora font-bold text-lg text-brand-navy">
-          Dirección de Oficina Principal
-        </h2>
+        <FormField
+          label="Dirección Línea 1"
+          type="text"
+          value={office.addressLine}
+          onChange={(e) => updateField("addressLine", e.target.value)}
+          required
+        />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="sm:col-span-2">
-            <FormField
-              label="Dirección Línea 1"
-              type="text"
-              value={office.addressLine}
-              onChange={(e) => updateField("addressLine", e.target.value)}
-              required
-            />
-          </div>
-
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             label="Distrito"
             type="text"
@@ -44,38 +44,29 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
             onChange={(e) => updateField("district", e.target.value)}
             required
           />
-
           <FormField
             label="Ciudad & País"
             type="text"
             value={`${office.city}, ${office.country}`}
-            onChange={(e) => {
-              const parts = e.target.value.split(",");
-              updateField("city", parts[0]?.trim() || office.city);
-              if (parts[1]) updateField("country", parts[1].trim());
-            }}
+            onChange={(e) => updateCityCountry(e.target.value)}
             required
           />
-
-          <div className="sm:col-span-2">
-            <FormField
-              label="Referencia de Ubicación"
-              type="text"
-              value={office.referenceLandmark || ""}
-              onChange={(e) => updateField("referenceLandmark", e.target.value)}
-              placeholder="Ej: A media cuadra del Parque Kennedy"
-            />
-          </div>
         </div>
+
+        <FormField
+          label="Referencia de Ubicación"
+          type="text"
+          value={office.referenceLandmark || ""}
+          onChange={(e) => updateField("referenceLandmark", e.target.value)}
+          placeholder="Ej: A media cuadra del Parque Kennedy"
+        />
       </div>
 
-      {/* Horarios de Atención */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <h2 className="font-sora font-bold text-lg text-brand-navy">
-          Horarios de Atención
-        </h2>
+      {/* Horarios de atención */}
+      <div className="space-y-4 border-t border-admin-divider pt-6">
+        <h3 className={SECTION_TITLE_CLASSES}>Horarios de atención</h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             label="Lunes a Viernes"
             type="text"
@@ -83,7 +74,6 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
             onChange={(e) => updateField("scheduleWeekdays", e.target.value)}
             required
           />
-
           <FormField
             label="Sábados"
             type="text"
@@ -94,14 +84,9 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
         </div>
       </div>
 
-      {/* Google Maps Link */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-neutral-border shadow-sm space-y-6">
-        <h2 className="font-sora font-bold text-lg text-brand-navy">
-          Enlace a Google Maps
-        </h2>
-        <p className="font-inter text-neutral-muted text-xs -mt-3">
-          Este es el único lugar del panel donde se edita la ubicación del mapa — el enlace y las coordenadas se usan tanto en el footer como en el mapa real embebido de la página pública de Contacto.
-        </p>
+      {/* Google Maps */}
+      <div className="space-y-4 border-t border-admin-divider pt-6">
+        <h3 className={SECTION_TITLE_CLASSES}>Enlace a Google Maps</h3>
 
         <FormField
           label="URL de Google Maps"
@@ -111,7 +96,7 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
           placeholder="https://maps.google.com/?q=..."
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField
             label="Latitud"
             type="number"
@@ -127,18 +112,10 @@ export function OfficeForm({ initialOffice }: OfficeFormProps) {
             value={office.longitude ?? ""}
             onChange={(e) => updateField("longitude", parseFloat(e.target.value))}
             placeholder="-77.044225"
+            hint="Consíguelas en Google Maps: clic derecho sobre el punto exacto → copiar coordenadas."
           />
         </div>
-        <p className="font-inter text-neutral-muted text-[11px]">
-          Coordenadas GPS exactas usadas para el mapa real embebido en la página pública de Contacto — más precisas que geocodificar la dirección de texto. Consíguelas en Google Maps: clic derecho sobre el punto exacto → copiar coordenadas.
-        </p>
       </div>
-
-      <div className="flex justify-end gap-4">
-        <Button variant="primary" size="md" disabled={isSaving} type="submit">
-          {isSaving ? "Guardando..." : "Guardar Oficina"}
-        </Button>
-      </div>
-    </form>
+    </FormCard>
   );
 }

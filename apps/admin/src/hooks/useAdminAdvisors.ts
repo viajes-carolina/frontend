@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   TravelAdvisorDTO,
   CreateOrUpdateAdvisorRequest,
   MediaAssetDTO,
   apiClient,
 } from "@vc/api-client";
+import type { FormFeedbackState } from "@vc/ui";
 
 export function useAdminAdvisors() {
   const [advisors, setAdvisors] = useState<TravelAdvisorDTO[]>([]);
@@ -103,11 +104,18 @@ export function useAdminAdvisors() {
     }
   };
 
+  // Forma única que consume `FormFeedback` (aporta el `role="status"` que el
+  // banner anterior no tenía; además usaba tonos oscuros sobre fondo claro).
+  const feedback = useMemo<FormFeedbackState | null>(
+    () => (feedbackMessage ? { tone: feedbackMessage.type, message: feedbackMessage.text } : null),
+    [feedbackMessage]
+  );
+
   return {
     advisors,
     loading,
     saving,
-    feedbackMessage,
+    feedback,
     isModalOpen,
     editingAdvisor,
     photoMediaId,

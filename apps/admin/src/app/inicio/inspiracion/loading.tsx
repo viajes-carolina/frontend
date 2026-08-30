@@ -1,5 +1,10 @@
 import { FormSkeleton } from "@vc/ui";
+import { AdminSectionLoading } from "../../../components/AdminSectionLoading";
 
 export default function Loading() {
-  return <FormSkeleton />;
+  return (
+    <AdminSectionLoading>
+      <FormSkeleton />
+    </AdminSectionLoading>
+  );
 }

@@ -29,17 +29,21 @@ export default function AdminError({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-surface p-6">
-      <div className="max-w-md w-full bg-white rounded-2xl border border-neutral-border shadow-sm p-8 text-center space-y-4">
-        <h1 className="font-sora font-bold text-lg text-brand-navy">
-          Ocurrió un error al cargar esta página
+    <div className="flex min-h-screen items-center justify-center bg-neutral-soft p-6">
+      <div className="w-full max-w-md rounded-[12px] border border-neutral-border bg-white p-8 text-center font-inter shadow-[0_8px_24px_rgba(17,34,48,0.08)]">
+        <p className="font-inter text-[11px] font-bold uppercase tracking-[0.88px] text-brand-accent">
+          Algo salió mal
+        </p>
+        <h1 className="mt-3 font-inter text-[20px] font-bold leading-tight text-neutral-ink">
+          No pudimos cargar esta página
         </h1>
-        <p className="font-inter text-sm text-neutral-muted">
+        <p className="mt-2 font-inter text-[13px] leading-[1.55] text-neutral-muted">
           {error.message || "Error inesperado al comunicarse con el servidor."}
         </p>
         <button
+          type="button"
           onClick={() => reset()}
-          className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-brand-navy text-white font-sora font-bold text-sm hover:bg-brand-navy/90 transition-colors"
+          className="mt-6 inline-flex h-[46px] items-center justify-center rounded-[7px] bg-brand-accent px-6 font-inter text-[14px] font-bold text-on-accent transition-opacity hover:opacity-90"
         >
           Reintentar
         </button>

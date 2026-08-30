@@ -1,5 +1,10 @@
 import { TableSkeleton } from "@vc/ui";
+import { AdminSectionLoading } from "../../../../components/AdminSectionLoading";
 
 export default function Loading() {
-  return <TableSkeleton />;
+  return (
+    <AdminSectionLoading>
+      <TableSkeleton />
+    </AdminSectionLoading>
+  );
 }

@@ -2,14 +2,24 @@
 
 import React from "react";
 import Image from "next/image";
-import { Button, FormField, ImageIcon, MediaPickerModal, Modal, StarIcon } from "@vc/ui";
-import { MediaAssetDTO } from "@vc/api-client";
+import type { MediaAssetDTO } from "@vc/api-client";
+import {
+  Button,
+  FormField,
+  ImageIcon,
+  MediaPickerModal,
+  Modal,
+  StarIcon,
+  Toggle,
+  FORM_LABEL_CLASSES,
+} from "@vc/ui";
 
 export interface TestimonialFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (e: React.FormEvent) => void;
   isEditing: boolean;
+  saving?: boolean;
   clientName: string;
   setClientName: (val: string) => void;
   clientLocation: string;
@@ -42,6 +52,7 @@ export function TestimonialFormModal({
   onClose,
   onSubmit,
   isEditing,
+  saving = false,
   clientName,
   setClientName,
   clientLocation,
@@ -56,8 +67,6 @@ export function TestimonialFormModal({
   avatarMediaUrl,
   consentConfirmed,
   setConsentConfirmed,
-  displayOrder,
-  setDisplayOrder,
   active,
   setActive,
   isAvatarPickerOpen,
@@ -75,94 +84,88 @@ export function TestimonialFormModal({
       title={isEditing ? "Editar Testimonio de Viajero" : "Nuevo Testimonio"}
       description="Registra la experiencia real de un cliente con consentimiento expreso."
       onClose={onClose}
+      closeLabel="Cerrar formulario de testimonio"
     >
-      {/* Form Body */}
-      <form onSubmit={onSubmit} className="space-y-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <FormField
-                label="Nombre del Cliente o Familia"
-                type="text"
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                placeholder="Mariana & Gonzalo Torres"
-                required
-              />
-            </div>
-
-            <div>
-              <FormField
-                label="Ubicación o Procedencia"
-                type="text"
-                value={clientLocation}
-                onChange={(e) => setClientLocation(e.target.value)}
-                placeholder="Lima, Perú"
-              />
-            </div>
+      <form onSubmit={onSubmit}>
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField
+              label="Nombre del Cliente o Familia"
+              type="text"
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
+              placeholder="Mariana & Gonzalo Torres"
+              required
+            />
+            <FormField
+              label="Ubicación o Procedencia"
+              type="text"
+              value={clientLocation}
+              onChange={(e) => setClientLocation(e.target.value)}
+              placeholder="Lima, Perú"
+            />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <FormField
-                label="Destino o Tipo de Viaje"
-                type="text"
-                value={tripDestination}
-                onChange={(e) => setTripDestination(e.target.value)}
-                placeholder="Luna de Miel en Punta Cana"
-                required
-              />
-            </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <FormField
+              label="Destino o Tipo de Viaje"
+              type="text"
+              value={tripDestination}
+              onChange={(e) => setTripDestination(e.target.value)}
+              placeholder="Luna de Miel en Punta Cana"
+              required
+            />
 
-            <div>
-              <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-                Calificación (Estrellas)
-              </label>
-              <div className="flex items-center gap-2 pt-1.5">
+            <fieldset className="space-y-2">
+              <legend className={FORM_LABEL_CLASSES}>Calificación (Estrellas)</legend>
+              <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((val) => (
                   <button
                     key={val}
                     type="button"
                     onClick={() => setRating(val)}
-                    className={`p-1 transition-transform hover:scale-125 ${
-                      val <= rating ? "text-amber-400" : "text-neutral-border"
+                    aria-label={`Calificar con ${val} ${val === 1 ? "estrella" : "estrellas"}`}
+                    aria-pressed={val === rating}
+                    className={`rounded-[4px] p-1 transition-transform hover:scale-125 ${
+                      val <= rating ? "text-brand-accent" : "text-admin-checkbox"
                     }`}
                   >
-                    <StarIcon size={22} />
+                    <StarIcon size={22} aria-hidden="true" />
                   </button>
                 ))}
               </div>
-            </div>
+            </fieldset>
           </div>
 
-          <div>
-            <FormField
-              label="Cita / Testimonio del Cliente"
-              multiline
-              rows={3}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Desde que escribimos por WhatsApp nos atendieron con muchísima paciencia..."
-              required
-            />
-          </div>
+          <FormField
+            label="Cita / Testimonio del Cliente"
+            multiline
+            rows={3}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Desde que escribimos por WhatsApp nos atendieron con muchísima paciencia..."
+            required
+          />
 
-          {/* Avatar Picker */}
-          <div>
-            <label className="block font-inter text-xs font-semibold uppercase tracking-wider text-neutral-muted mb-1.5">
-              Foto del Cliente / Avatar
-            </label>
+          {/* Avatar */}
+          <div className="space-y-2">
+            <span className={FORM_LABEL_CLASSES}>Foto del Cliente / Avatar</span>
             <div className="flex items-center gap-4">
-              <div className="relative w-12 h-12 rounded-full bg-neutral-surface border border-neutral-border overflow-hidden shrink-0">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-neutral-border bg-neutral-surface">
                 {avatarMediaUrl ? (
                   <Image
-                    src={avatarMediaUrl.startsWith("http") || avatarMediaUrl.startsWith("/") ? avatarMediaUrl : `/${avatarMediaUrl}`}
-                    alt="Avatar"
+                    src={
+                      avatarMediaUrl.startsWith("http") || avatarMediaUrl.startsWith("/")
+                        ? avatarMediaUrl
+                        : `/${avatarMediaUrl}`
+                    }
+                    alt="Avatar del cliente"
                     fill
                     style={{ objectFit: "cover" }}
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-neutral-muted font-sora font-bold text-sm">
-                    {clientName ? clientName.charAt(0) : <ImageIcon size={18} />}
+                  <div className="flex h-full w-full items-center justify-center text-sm font-bold text-neutral-muted">
+                    {clientName ? clientName.charAt(0) : <ImageIcon size={18} aria-hidden="true" />}
                   </div>
                 )}
               </div>
@@ -170,66 +173,59 @@ export function TestimonialFormModal({
                 variant="outline"
                 size="sm"
                 type="button"
+                icon={<ImageIcon size={14} aria-hidden="true" />}
+                iconPosition="left"
                 onClick={() => setIsAvatarPickerOpen(true)}
               >
-                🖼️ {avatarMediaId ? "Cambiar Foto" : "Seleccionar de Medios"}
+                {avatarMediaId ? "Cambiar Foto" : "Seleccionar de Medios"}
               </Button>
             </div>
           </div>
 
-          {/* Consent Checkbox & Active */}
-          <div className="space-y-3 pt-2">
-            <div className="flex items-center gap-2">
+          <div className="space-y-3 border-t border-admin-divider pt-5">
+            <div className="flex items-start gap-2.5">
               <input
                 type="checkbox"
                 id="consentCheckbox"
                 checked={consentConfirmed}
                 onChange={(e) => setConsentConfirmed(e.target.checked)}
-                className="w-4 h-4 rounded text-brand-accent focus:ring-brand-accent"
+                className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] accent-brand-accent"
                 required
               />
-              <label htmlFor="consentCheckbox" className="font-inter text-xs text-neutral-muted cursor-pointer">
+              <label htmlFor="consentCheckbox" className="cursor-pointer font-inter text-xs text-neutral-muted">
                 He verificado el consentimiento expreso del cliente para publicar su opinión y datos.
               </label>
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="activeTestimonialCheckbox"
-                checked={active}
-                onChange={(e) => setActive(e.target.checked)}
-                className="w-4 h-4 rounded text-brand-accent focus:ring-brand-accent"
-              />
-              <label htmlFor="activeTestimonialCheckbox" className="font-inter text-sm text-brand-navy font-medium cursor-pointer">
-                Testimonio activo y visible en portada
-              </label>
-            </div>
+            <Toggle
+              checked={active}
+              onChange={setActive}
+              label="Testimonio activo y visible en portada"
+            />
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-neutral-border">
-            <Button variant="outline" size="md" type="button" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button variant="primary" size="md" type="submit">
-              {isEditing ? "Guardar Cambios" : "Crear Testimonio"}
-            </Button>
-          </div>
-        </form>
+        <div className="mt-8 flex items-center justify-end gap-3 border-t border-admin-divider pt-6">
+          <Button variant="ghost" type="button" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button variant="primary" type="submit" disabled={saving}>
+            {saving ? "Guardando..." : isEditing ? "Guardar Cambios" : "Crear Testimonio"}
+          </Button>
+        </div>
+      </form>
 
-        {/* Media Picker Modal */}
-        <MediaPickerModal
-          isOpen={isAvatarPickerOpen}
-          onClose={() => setIsAvatarPickerOpen(false)}
-          onSelect={onSelectAvatar}
-          selectedMediaId={avatarMediaId}
-          items={avatarPickerItems}
-          loading={avatarPickerLoading}
-          onUploadFile={onUploadAvatarFile}
-          onFocalPointSave={onAvatarFocalPointSave}
-          title="Seleccionar Fotografía de Cliente"
-        />
+      <MediaPickerModal
+        isOpen={isAvatarPickerOpen}
+        onClose={() => setIsAvatarPickerOpen(false)}
+        onSelect={onSelectAvatar}
+        selectedMediaId={avatarMediaId}
+        items={avatarPickerItems}
+        loading={avatarPickerLoading}
+        onUploadFile={onUploadAvatarFile}
+        onFocalPointSave={onAvatarFocalPointSave}
+        title="Seleccionar Fotografía de Cliente"
+      />
     </Modal>
   );
 }

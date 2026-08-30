@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { buildFormFeedback } from "../lib/formFeedback";
 import { apiClient, BlogHeroConfigDTO } from "@vc/api-client";
 
 export function useAdminBlogHero(initialConfig?: BlogHeroConfigDTO) {
@@ -55,12 +56,20 @@ export function useAdminBlogHero(initialConfig?: BlogHeroConfigDTO) {
     }
   }, [config]);
 
+  // Forma única de feedback que consume `FormFeedback` (banner con
+  // `role="status"`): un error de guardado gana sobre el éxito previo.
+  const feedback = useMemo(
+    () => buildFormFeedback(error, success, "Configuración guardada exitosamente en el servidor."),
+    [error, success]
+  );
+
   return {
     config,
     loading,
     saving,
     error,
     success,
+    feedback,
     updateField,
     saveConfig,
     refetch: fetchConfig,

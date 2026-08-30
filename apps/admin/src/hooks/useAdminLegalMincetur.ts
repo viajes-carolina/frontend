@@ -1,4 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { buildFormFeedback } from "../lib/formFeedback";
 import { apiClient, LegalMinceturDTO } from "@vc/api-client";
 import { addEmptySection, removeSectionAt, updateSectionField } from "../lib/legalListEditors";
 
@@ -71,12 +72,20 @@ export function useAdminLegalMincetur(initialConfig?: LegalMinceturDTO) {
     }
   }, [config]);
 
+  // Forma única de feedback que consume `FormFeedback` (banner con
+  // `role="status"`): un error de guardado gana sobre el éxito previo.
+  const feedback = useMemo(
+    () => buildFormFeedback(error, success, "Cambios guardados correctamente."),
+    [error, success]
+  );
+
   return {
     config,
     loading,
     saving,
     error,
     success,
+    feedback,
     updateField,
     updateSection,
     addSection,

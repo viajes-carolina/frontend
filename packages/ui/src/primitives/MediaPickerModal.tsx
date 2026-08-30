@@ -141,7 +141,14 @@ export function MediaPickerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    // `data-vc-overlay`: marca este overlay como diálogo abierto. `Modal` lo
+    // busca dentro de su propio panel para no cerrarse con Escape mientras el
+    // selector de imágenes está encima (cerraría el formulario entero y se
+    // perdería lo escrito).
+    <div
+      data-vc-overlay=""
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/70 backdrop-blur-sm animate-in fade-in duration-200"
+    >
       <div className="bg-white w-full max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-neutral-border">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-neutral-border flex items-center justify-between bg-neutral-surface/20">
@@ -204,12 +211,16 @@ export function MediaPickerModal({
         </div>
 
         {errorMessage && (
-          <div className="mx-6 mt-3 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-inter font-medium flex items-center justify-between gap-3">
+          <div
+            role="alert"
+            className="mx-6 mt-3 px-4 py-2.5 rounded-xl bg-brand-accent/10 border border-brand-accent/35 text-neutral-ink text-xs font-inter font-medium flex items-center justify-between gap-3"
+          >
             <span>{errorMessage}</span>
             <button
               type="button"
+              aria-label="Cerrar mensaje de error"
               onClick={() => setErrorMessage(null)}
-              className="text-red-500 hover:text-red-700 shrink-0"
+              className="text-neutral-muted transition-colors hover:text-neutral-ink shrink-0"
             >
               <CloseIcon size={14} />
             </button>
@@ -234,7 +245,7 @@ export function MediaPickerModal({
                     {selected.width}×{selected.height} px • Formato WebP/JPG
                   </span>
                 </div>
-                <span className="text-xs font-bold font-inter text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full shrink-0">
+                <span className="text-xs font-bold font-inter text-brand-navy bg-brand-navy/10 border border-brand-navy/20 px-2.5 py-1 rounded-full shrink-0">
                   Seleccionada por Defecto
                 </span>
               </div>

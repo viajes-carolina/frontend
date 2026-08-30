@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
-import { TestimonialDTO } from "@vc/api-client";
+import type { TestimonialDTO } from "@vc/api-client";
+import { Button, EditIcon, FormFeedback, PlusIcon, StarIcon, TrashIcon } from "@vc/ui";
+import { MediaThumb } from "../../../../components/MediaThumb";
 import { useAdminTestimonialItems } from "../../../../hooks/useAdminTestimonialItems";
 import { useMediaPicker } from "../../../../hooks/useMediaPicker";
-import { Button, PlusIcon, EditIcon, TrashIcon, CheckIcon, StarIcon } from "@vc/ui";
 import { TestimonialFormModal } from "../TestimonialFormModal";
 
 export interface TestimonialItemsPanelProps {
@@ -15,7 +15,8 @@ export interface TestimonialItemsPanelProps {
 export function TestimonialItemsPanel({ initialTestimonials }: TestimonialItemsPanelProps) {
   const {
     testimonials,
-    statusMessage,
+    saving,
+    feedback,
     isTestimonialModalOpen, setIsTestimonialModalOpen,
     editingTestimonial,
     clientName, setClientName,
@@ -35,106 +36,116 @@ export function TestimonialItemsPanel({ initialTestimonials }: TestimonialItemsP
   const avatarPicker = useMediaPicker(isAvatarPickerOpen);
 
   return (
-    <div className="space-y-6">
-      {statusMessage && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center gap-3">
-          <CheckIcon size={20} className="text-emerald-600 shrink-0" />
-          <span className="font-medium text-sm">{statusMessage}</span>
-        </div>
-      )}
+    <div className="font-inter">
+      <FormFeedback feedback={feedback} />
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-brand-navy">Testimonios de Clientes</h2>
-          <p className="font-inter text-xs text-neutral-muted mt-1">
-            {testimonials.length} testimonios · se muestran en la sección de Experiencias del Home.
-          </p>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="font-inter text-[18px] font-bold leading-tight text-neutral-ink">
+              Testimonios de Clientes
+            </h2>
+            <p className="mt-1.5 font-inter text-[13px] text-neutral-muted">
+              {testimonials.length} testimonios · se muestran en la sección de Experiencias del Home.
+            </p>
+          </div>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={<PlusIcon size={16} />}
+            iconPosition="left"
+            onClick={openCreateTestimonial}
+          >
+            Nuevo Testimonio
+          </Button>
         </div>
-        <Button variant="primary" size="sm" icon={<PlusIcon size={18} />} onClick={openCreateTestimonial}>
-          Nuevo Testimonio
-        </Button>
-      </div>
 
-      <div className="bg-white rounded-3xl border border-neutral-border shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-neutral-border bg-neutral-surface/50 text-[11px] font-sora font-bold text-neutral-muted uppercase tracking-wider">
-                <th className="py-4 px-6">Cliente</th>
-                <th className="py-4 px-6">Viaje / Destino</th>
-                <th className="py-4 px-6">Calificación</th>
-                <th className="py-4 px-6">Comentario</th>
-                <th className="py-4 px-6">Estado</th>
-                <th className="py-4 px-6 text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-border">
-              {testimonials.map((item) => (
-                <tr key={item.id} className="hover:bg-neutral-surface/30 transition-colors">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-10 h-10 rounded-full bg-neutral-surface border border-neutral-border overflow-hidden shrink-0 flex items-center justify-center">
-                        {item.avatarMediaUrl ? (
-                          <Image
-                            src={item.avatarMediaUrl.startsWith("http") || item.avatarMediaUrl.startsWith("/") ? item.avatarMediaUrl : `/${item.avatarMediaUrl}`}
-                            alt={item.clientName}
-                            fill
-                            style={{ objectFit: "cover" }}
-                          />
-                        ) : (
-                          <span className="font-sora font-bold text-xs text-brand-navy">
-                            {item.clientName.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div>
-                        <span className="font-sora font-bold text-sm text-brand-navy block">
-                          {item.clientName}
-                        </span>
-                        <span className="font-inter text-xs text-neutral-muted">
-                          {item.clientLocation || "Perú"}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6 font-inter text-xs text-brand-navy font-semibold">
-                    {item.tripDestination}
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-0.5 text-amber-400">
-                      {Array.from({ length: item.rating || 5 }).map((_, i) => (
-                        <StarIcon key={i} size={14} />
-                      ))}
-                    </div>
-                  </td>
-                  <td className="py-4 px-6 max-w-xs font-inter text-xs text-neutral-muted line-clamp-2 italic">
-                    "{item.comment}"
-                  </td>
-                  <td className="py-4 px-6">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        item.active
-                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                          : "bg-neutral-surface text-neutral-muted border border-neutral-border"
-                      }`}
-                    >
-                      {item.active ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button variant="outline" size="sm" icon={<EditIcon size={14} />} onClick={() => openEditTestimonial(item)}>
-                        Editar
-                      </Button>
-                      <Button variant="danger" size="sm" icon={<TrashIcon size={14} />} onClick={() => handleDeleteTestimonial(item.id)}>
-                        Desactivar
-                      </Button>
-                    </div>
-                  </td>
+        <div className="overflow-hidden rounded-[12px] border border-neutral-border bg-white shadow-[0_8px_24px_rgba(17,34,48,0.06)]">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-left">
+              <thead>
+                <tr className="border-b border-admin-divider bg-neutral-soft text-[11px] font-bold uppercase tracking-[0.55px] text-admin-label">
+                  <th className="px-6 py-4">Cliente</th>
+                  <th className="px-6 py-4">Viaje / Destino</th>
+                  <th className="px-6 py-4">Calificación</th>
+                  <th className="px-6 py-4">Comentario</th>
+                  <th className="px-6 py-4">Estado</th>
+                  <th className="px-6 py-4 text-right">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-admin-divider">
+                {testimonials.map((item) => (
+                  <tr key={item.id} className="transition-colors hover:bg-neutral-soft">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <MediaThumb
+                          url={item.avatarMediaUrl}
+                          alt={item.clientName}
+                          sizes="40px"
+                          iconSize={14}
+                          className="h-10 w-10 shrink-0 rounded-full border border-neutral-border"
+                          empty={
+                            <span className="text-xs font-bold text-brand-navy">
+                              {item.clientName.charAt(0)}
+                            </span>
+                          }
+                        />
+                        <div>
+                          <span className="block text-sm font-bold text-admin-value">{item.clientName}</span>
+                          <span className="text-xs text-neutral-muted">{item.clientLocation || "Perú"}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-xs font-semibold text-admin-value">{item.tripDestination}</td>
+                    <td className="px-6 py-4">
+                      <div
+                        className="flex items-center gap-0.5 text-brand-accent"
+                        aria-label={`${item.rating || 5} de 5 estrellas`}
+                      >
+                        {Array.from({ length: item.rating || 5 }).map((_, i) => (
+                          <StarIcon key={i} size={14} aria-hidden="true" />
+                        ))}
+                      </div>
+                    </td>
+                    <td className="line-clamp-2 max-w-xs px-6 py-4 text-xs italic text-neutral-muted">
+                      &ldquo;{item.comment}&rdquo;
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${
+                          item.active
+                            ? "border-brand-navy/20 bg-brand-navy/10 text-brand-navy"
+                            : "border-neutral-border bg-neutral-soft text-neutral-muted"
+                        }`}
+                      >
+                        {item.active ? "Activo" : "Inactivo"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          icon={<EditIcon size={14} />}
+                          onClick={() => openEditTestimonial(item)}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          icon={<TrashIcon size={14} />}
+                          onClick={() => handleDeleteTestimonial(item.id)}
+                        >
+                          Desactivar
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -143,6 +154,7 @@ export function TestimonialItemsPanel({ initialTestimonials }: TestimonialItemsP
         onClose={() => setIsTestimonialModalOpen(false)}
         onSubmit={handleSaveTestimonial}
         isEditing={!!editingTestimonial}
+        saving={saving}
         clientName={clientName}
         setClientName={setClientName}
         clientLocation={clientLocation}

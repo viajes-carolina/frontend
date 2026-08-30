@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CardsGridSkeleton } from "@vc/ui";
+import { CardsGridSkeleton, FormFeedback } from "@vc/ui";
 import { useAdminAdvisors } from "../../../hooks/useAdminAdvisors";
 import { AdvisorList } from "./AdvisorList";
 import { AdvisorFormModal } from "./AdvisorFormModal";
@@ -12,7 +12,7 @@ export default function AdminAdvisorsPage() {
     advisors,
     loading,
     saving,
-    feedbackMessage,
+    feedback,
     isModalOpen,
     editingAdvisor,
     photoMediaId,
@@ -29,28 +29,23 @@ export default function AdminAdvisorsPage() {
     <div className="space-y-8">
       <AdvisorsHighlightsCard />
 
-      {feedbackMessage && (
-        <div
-          className={`p-4 rounded-xl text-sm font-medium border ${
-            feedbackMessage.type === "success"
-              ? "bg-emerald-950/60 border-emerald-800 text-emerald-300"
-              : "bg-red-950/60 border-red-800 text-red-300"
-          }`}
-        >
-          {feedbackMessage.text}
-        </div>
-      )}
+      {/* El banner va agrupado con la lista y no como hijo directo del
+          `space-y-8`: su región live sigue en el DOM aunque esté vacía, así
+          que ahí dentro correría un margen muerto de 32px. */}
+      <div>
+        <FormFeedback feedback={feedback} className="max-w-5xl" />
 
-      {loading ? (
-        <CardsGridSkeleton cards={6} className="max-w-5xl" />
-      ) : (
-        <AdvisorList
-          advisors={advisors}
-          onEdit={openEditAdvisor}
-          onDelete={handleDeleteAdvisor}
-          onCreate={openCreateAdvisor}
-        />
-      )}
+        {loading ? (
+          <CardsGridSkeleton cards={6} className="max-w-5xl" />
+        ) : (
+          <AdvisorList
+            advisors={advisors}
+            onEdit={openEditAdvisor}
+            onDelete={handleDeleteAdvisor}
+            onCreate={openCreateAdvisor}
+          />
+        )}
+      </div>
 
       <AdvisorFormModal
         isOpen={isModalOpen}

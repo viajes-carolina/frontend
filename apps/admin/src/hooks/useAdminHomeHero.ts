@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { HomeHeroDTO, MediaAssetDTO, apiClient } from "@vc/api-client";
+import type { FormFeedbackState } from "@vc/ui";
 
 export function useAdminHomeHero(initialHero: HomeHeroDTO) {
   const [hero, setHero] = useState<HomeHeroDTO>(initialHero);
@@ -68,7 +69,10 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
   const [eyebrowText, setEyebrowText] = useState(initialHero.eyebrowText || "");
 
   const [isSaving, setIsSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  // Antes era un solo `statusMessage: string`, así que el error de guardado se
+  // pintaba en el banner verde de éxito. Con el tono explícito el fallo se ve
+  // como fallo.
+  const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
 
   const [backgroundFocalX, setBackgroundFocalX] = useState<number>(initialHero.backgroundFocalX || 50);
   const [backgroundFocalY, setBackgroundFocalY] = useState<number>(initialHero.backgroundFocalY || 50);
@@ -76,7 +80,12 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
   // Último snapshot guardado/cargado (mismo shape que el `payload` de
   // handleSave), usado solo para comparación de "dirty" — no reemplaza los
   // ~26 useState individuales de arriba.
-  const snapshotRef = useRef<Record<string, unknown> | null>(null);
+  //
+  // Es estado y no un `ref` a propósito: `isDirty` lo compara dentro de un
+  // `useMemo`, y con un ref el guardado actualizaba el snapshot sin invalidar
+  // el memo — el editor seguía anunciando "Cambios sin guardar" después de
+  // guardar con éxito, hasta que se tocaba otro campo.
+  const [snapshot, setSnapshot] = useState<Record<string, unknown> | null>(null);
 
   // Fresh rehydration on mount
   useEffect(() => {
@@ -111,7 +120,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
         setTrustStatText(fresh.trustStatText || "");
         setEyebrowText(fresh.eyebrowText || "");
 
-        snapshotRef.current = {
+        setSnapshot({
           badgeText: fresh.badgeText,
           titleHighlight: fresh.titleHighlight,
           titleAccent: fresh.titleAccent,
@@ -139,8 +148,17 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
           secondaryMedia3FocalY: fresh.secondaryMedia3FocalY || 50,
           trustStatText: fresh.trustStatText || "",
           eyebrowText: fresh.eyebrowText || "",
-        };
+        });
       }
+    });
+  }, []);
+
+  /** Reemplaza un pilar de confianza sin mutar el array en el `.tsx`. */
+  const updateTrustIndicator = useCallback((index: number, value: string) => {
+    setTrustIndicators((prev) => {
+      const next = [...prev];
+      next[index] = value;
+      return next;
     });
   }, []);
 
@@ -205,8 +223,9 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
       trustStatText,
       eyebrowText,
     };
-    return snapshotRef.current != null && JSON.stringify(current) !== JSON.stringify(snapshotRef.current);
+    return snapshot != null && JSON.stringify(current) !== JSON.stringify(snapshot);
   }, [
+    snapshot,
     badgeText,
     titleHighlight,
     titleAccent,
@@ -237,7 +256,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
   ]);
 
   const discardChanges = useCallback(() => {
-    const snap = snapshotRef.current;
+    const snap = snapshot;
     if (!snap) return;
     setBadgeText(snap.badgeText as string);
     setTitleHighlight(snap.titleHighlight as string);
@@ -266,12 +285,21 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     setSecondaryMedia3FocalY(snap.secondaryMedia3FocalY as number);
     setTrustStatText(snap.trustStatText as string);
     setEyebrowText(snap.eyebrowText as string);
-  }, []);
+  }, [snapshot]);
 
-  const handleSave = async (e?: React.FormEvent) => {
+  /**
+   * Guarda el contenido del Hero. Devuelve el DTO actualizado o `null` si el
+   * guardado falló: quien encadene una publicación después TIENE que mirar ese
+   * valor y no publicar sobre un guardado que no llegó a ocurrir.
+   *
+   * El mensaje de éxito habla solo del guardado. Antes decía "actualizada y
+   * publicada", pero este endpoint no revalida nada del sitio público — la
+   * publicación ISR es una llamada aparte.
+   */
+  const handleSave = async (e?: React.FormEvent): Promise<HomeHeroDTO | null> => {
     if (e) e.preventDefault();
     setIsSaving(true);
-    setStatusMessage(null);
+    setFeedback(null);
 
     try {
       const payload: Partial<HomeHeroDTO> = {
@@ -306,11 +334,13 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
 
       const updated = await apiClient.updateHomeHero(payload);
       setHero(updated);
-      snapshotRef.current = { ...payload };
-      setStatusMessage("Sección Hero actualizada y publicada exitosamente.");
+      setSnapshot({ ...payload });
+      setFeedback({ tone: "success", message: "Cambios guardados en el Hero principal." });
+      return updated;
     } catch (err) {
       console.error(err);
-      setStatusMessage("Error al guardar la sección Hero.");
+      setFeedback({ tone: "error", message: "No se pudieron guardar los cambios del Hero principal." });
+      return null;
     } finally {
       setIsSaving(false);
     }
@@ -326,7 +356,7 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     whatsappMessageOverride, setWhatsappMessageOverride,
     secondaryCtaText, setSecondaryCtaText,
     secondaryCtaUrl, setSecondaryCtaUrl,
-    trustIndicators, setTrustIndicators,
+    trustIndicators, setTrustIndicators, updateTrustIndicator,
     backgroundMediaId, backgroundMediaUrl,
     backgroundFocalX, backgroundFocalY,
     secondaryMedia1Id, secondaryMedia1Url, secondaryMedia1FocalX, secondaryMedia1FocalY,
@@ -335,7 +365,10 @@ export function useAdminHomeHero(initialHero: HomeHeroDTO) {
     trustStatText, setTrustStatText,
     eyebrowText, setEyebrowText,
     isSaving,
-    statusMessage,
+    feedback,
+    // `setFeedback` sale del hook para que quien encadene guardado + publicación
+    // pueda reemplazar el mensaje del guardado por el del resultado final.
+    setFeedback,
     isDirty,
     discardChanges,
     handleSelectBgMedia,

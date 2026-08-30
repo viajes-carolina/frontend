@@ -39,13 +39,12 @@ export function useAdminAuth() {
     }
   };
 
+  // Un fallo al cerrar sesión se propaga a propósito: si el servidor no
+  // confirmó el cierre, la cookie sigue viva y dar por buena la salida
+  // llevaría al usuario a /login creyendo que salió cuando no lo hizo.
   const logout = async () => {
-    try {
-      await apiClient.logoutAdmin();
-      setCurrentUser(null);
-    } catch (err) {
-      console.error("Error during logout:", err);
-    }
+    await apiClient.logoutAdmin();
+    setCurrentUser(null);
   };
 
   return {

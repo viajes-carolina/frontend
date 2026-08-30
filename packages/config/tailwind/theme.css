@@ -32,6 +32,19 @@
      valores de arriba con otro nombre. Este sí se consume (globals.css). */
   --color-border-focus: #2389c6;
 
+  /* Color de texto sobre `brand-accent`. Existe como token propio porque el
+     par accent/texto difiere entre productos: el sitio público usa navy
+     sobre naranja cálido, y el panel usa blanco sobre naranja frío (ver el
+     override en apps/admin/src/app/globals.css). */
+  --color-on-accent: #1b2a38;
+
+  /* Acción destructiva (variante `danger` de Button). Vive como token porque
+     el panel usa una gama fría propia; aquí conserva el rosa original para no
+     alterar el sitio público. */
+  --color-danger-surface: #fff1f2;
+  --color-danger-border: #fecdd3;
+  --color-danger-ink: #be123c;
+
   /* --- Tipografía Oficial --- */
   --font-sora: "Sora", system-ui, -apple-system, sans-serif;
   --font-inter: "Inter", system-ui, -apple-system, sans-serif;

@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
+import type { FormFeedbackState } from "@vc/ui";
 import {
   BlogCategoryDTO,
   CreateOrUpdateBlogCategoryRequest,
@@ -11,7 +12,11 @@ export function useAdminBlogCategories(initialCategories: BlogCategoryDTO[]) {
   const [categories, setCategories] = useState<BlogCategoryDTO[]>(initialCategories);
   const [isLoading, setIsLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  // Antes era un `statusMessage: string` único, así que los mensajes de error
+  // se pintaban en el banner verde de éxito. El tono los distingue.
+  const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
+  const showSuccess = (message: string) => setFeedback({ tone: "success", message });
+  const showError = (message: string) => setFeedback({ tone: "error", message });
 
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [name, setNameRaw] = useState("");
@@ -72,7 +77,7 @@ export function useAdminBlogCategories(initialCategories: BlogCategoryDTO[]) {
 
   const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStatusMessage(null);
+    setFeedback(null);
 
     const payload: CreateOrUpdateBlogCategoryRequest = {
       name: name.trim(),
@@ -86,16 +91,16 @@ export function useAdminBlogCategories(initialCategories: BlogCategoryDTO[]) {
       setSaving(true);
       if (editingCategoryId) {
         await apiClient.updateBlogCategory(editingCategoryId, payload);
-        setStatusMessage("Categoría actualizada con éxito.");
+        showSuccess("Categoría actualizada con éxito.");
       } else {
         await apiClient.createBlogCategory(payload);
-        setStatusMessage("Categoría creada con éxito.");
+        showSuccess("Categoría creada con éxito.");
       }
       resetForm();
       await refreshData();
     } catch (err) {
       console.error(err);
-      setStatusMessage("Error al guardar la categoría.");
+      showError("Error al guardar la categoría.");
     } finally {
       setSaving(false);
     }
@@ -106,11 +111,11 @@ export function useAdminBlogCategories(initialCategories: BlogCategoryDTO[]) {
     try {
       setSaving(true);
       await apiClient.deleteBlogCategory(id);
-      setStatusMessage("Categoría desactivada.");
+      showSuccess("Categoría desactivada.");
       await refreshData();
     } catch (err) {
       console.error(err);
-      setStatusMessage("Error al desactivar la categoría.");
+      showError("Error al desactivar la categoría.");
     } finally {
       setSaving(false);
     }
@@ -120,7 +125,7 @@ export function useAdminBlogCategories(initialCategories: BlogCategoryDTO[]) {
     categories,
     isLoading,
     saving,
-    statusMessage,
+    feedback,
     editingCategoryId,
     name, setName,
     slug, setSlug,

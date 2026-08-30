@@ -2,7 +2,17 @@
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { BlogPostDTO, BlogCategoryDTO, CreateOrUpdateBlogPostRequest, MediaAssetDTO, TravelAdvisorDTO } from "@vc/api-client";
-import { Button, FormField, FormSelect, ImageIcon, MediaPickerModal, Modal, ResponsiveImage, Toggle } from "@vc/ui";
+import {
+  Button,
+  FormField,
+  FormSelect,
+  ImageIcon,
+  MediaPickerModal,
+  Modal,
+  ResponsiveImage,
+  Toggle,
+  FORM_LABEL_CLASSES,
+} from "@vc/ui";
 import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
 import { useMediaPicker } from "../../hooks/useMediaPicker";
 
@@ -206,7 +216,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <FormField
-                label="Título del Artículo *"
+                label="Título del Artículo"
                 type="text"
                 required
                 value={title}
@@ -217,7 +227,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
 
             <div>
               <FormField
-                label="Slug URL (Único) *"
+                label="Slug URL (Único)"
                 type="text"
                 required
                 value={slug}
@@ -232,7 +242,8 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <FormSelect
-                label="Categoría *"
+                label="Categoría"
+                required
                 value={categoryId}
                 onChange={(e) => setCategoryId(Number(e.target.value))}
               >
@@ -250,33 +261,33 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <option value="PUBLISHED">🟢 Publicado</option>
-                <option value="DRAFT">🟡 Borrador</option>
-                <option value="ARCHIVED">⚪ Archivado</option>
+                <option value="PUBLISHED">Publicado</option>
+                <option value="DRAFT">Borrador</option>
+                <option value="ARCHIVED">Archivado</option>
               </FormSelect>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-1.5">
-                Destacado en Portada
-              </label>
-              <div className="flex items-center gap-3 pt-2">
-                <Toggle checked={isFeatured} onChange={setIsFeatured} />
-                <span className="text-xs font-bold text-neutral-700">
-                  {isFeatured ? "⭐ Destacado" : "Normal"}
-                </span>
+            <div className="space-y-2">
+              <span className={FORM_LABEL_CLASSES}>Destacado en Portada</span>
+              <div className="pt-1.5">
+                <Toggle
+                  checked={isFeatured}
+                  onChange={setIsFeatured}
+                  label={isFeatured ? "Destacado" : "Normal"}
+                  aria-label="Destacar el artículo en la portada"
+                />
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-neutral-700 uppercase tracking-wider mb-1.5">
-                Publicado en el Sitio
-              </label>
-              <div className="flex items-center gap-3 pt-2">
-                <Toggle checked={active} onChange={setActive} />
-                <span className="text-xs font-bold text-neutral-700">
-                  {active ? "Publicado" : "Oculto"}
-                </span>
+            <div className="space-y-2">
+              <span className={FORM_LABEL_CLASSES}>Publicado en el Sitio</span>
+              <div className="pt-1.5">
+                <Toggle
+                  checked={active}
+                  onChange={setActive}
+                  label={active ? "Publicado" : "Oculto"}
+                  aria-label="Publicar el artículo en el sitio"
+                />
               </div>
             </div>
           </div>
@@ -285,7 +296,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <FormSelect
-                label="Autor(a) *"
+                label="Autor(a)"
                 required
                 value={authorAdvisorId ?? ""}
                 onChange={(e) => setAuthorAdvisorId(Number(e.target.value))}
@@ -312,11 +323,11 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
                       />
                     </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-neutral-100 border border-neutral-border flex items-center justify-center text-xs font-bold text-neutral-500">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-border bg-neutral-soft text-xs font-bold text-neutral-muted">
                       {selectedAdvisor.fullName.charAt(0)}
                     </div>
                   )}
-                  <span className="text-[11px] text-neutral-400">
+                  <span className="text-[11px] text-admin-footnote">
                     Foto publicada junto al artículo
                   </span>
                 </div>
@@ -346,7 +357,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           </div>
 
           {/* Cover Image Selector */}
-          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200">
+          <div className="rounded-[10px] border border-admin-divider bg-admin-field p-4">
             <HeroPhotoSlot
               variant="main"
               label="Imagen de Portada"
@@ -362,7 +373,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           {/* Summary / Lead */}
           <div>
             <FormField
-              label="Resumen / Extracto (Lead) *"
+              label="Resumen / Extracto (Lead)"
               multiline
               required
               rows={2}
@@ -376,7 +387,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           <div>
             <FormField
               ref={textareaRef}
-              label="Cuerpo del Artículo (Formato Markdown) *"
+              label="Cuerpo del Artículo (Formato Markdown)"
               multiline
               required
               rows={12}
@@ -409,7 +420,7 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
               </Button>
             </div>
             <div className="flex items-center justify-between gap-3 mt-1.5">
-              <span className="block text-[11px] text-neutral-400">
+              <span className="block text-[11px] text-admin-footnote">
                 Usa los botones para dar formato mientras escribes
               </span>
               <Button
@@ -425,14 +436,15 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-neutral-border">
-            <Button variant="outline" type="button" onClick={onClose} disabled={saving}>
+          <div className="flex items-center justify-end gap-3 border-t border-admin-divider pt-6">
+            <Button variant="ghost" type="button" onClick={onClose} disabled={saving}>
               Cancelar
             </Button>
+            {/* `type="submit"` y no `type="button"` + onClick: así el formulario
+                también se envía con Enter desde cualquier campo. */}
             <Button
               variant="primary"
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={saving || !title.trim() || !slug.trim() || !authorAdvisorId}
             >
               {saving ? "Guardando..." : editingPost ? "Guardar Cambios" : "Publicar Artículo"}
