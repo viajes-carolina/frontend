@@ -1,18 +1,18 @@
 import React from "react";
-import { BlogCategoryDTO, BlogPostDTO } from "@vc/api-client";
+import { BlogHeroConfigDTO, BlogPostDTO, DEFAULT_BLOG_HERO } from "@vc/api-client";
 import { BlogFeaturedStoryCard } from "./BlogFeaturedStoryCard";
 import { Reveal } from "../primitives/Reveal";
 
 export interface BlogHeroSectionProps {
-  categories: BlogCategoryDTO[];
-  selectedCategorySlug?: string;
   heroPost?: BlogPostDTO;
+  config?: BlogHeroConfigDTO;
 }
 
+const DEFAULT_CONFIG: BlogHeroConfigDTO = DEFAULT_BLOG_HERO;
+
 export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
-  categories,
-  selectedCategorySlug = "all",
   heroPost,
+  config = DEFAULT_CONFIG,
 }) => {
   return (
     <section className="relative overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:pt-24 lg:pb-28">
@@ -20,15 +20,13 @@ export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-8">
           <Reveal className="lg:col-span-7">
             <p className="font-sora text-xs font-semibold uppercase tracking-wider text-brand-accent">
-              Diario de viaje · Preguntas reales
+              {config.eyebrowText}
             </p>
             <h1
               className="font-display mt-4 text-4xl font-semibold leading-[1.05] text-brand-navy sm:text-5xl lg:text-[58px]"
               style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
             >
-              ¿Qué te gustaría saber
-              <br />
-              antes de viajar?
+              {config.title}
             </h1>
             <svg
               aria-hidden="true"
@@ -44,44 +42,19 @@ export const BlogHeroSection: React.FC<BlogHeroSectionProps> = ({
               />
             </svg>
             <p className="font-inter mt-5 max-w-xl text-base text-brand-navy/75 sm:text-lg">
-              Aquí reunimos respuestas, ideas y experiencias que nacieron de conversaciones con viajeros como tú.
+              {config.description}
             </p>
 
             <div className="mt-10">
               <p className="font-sora text-[11px] font-semibold uppercase tracking-wider text-brand-navy/60">
-                Elige por dónde empezar
+                {config.editionLabel}
               </p>
-              <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3">
-                <a
-                  href="/blog"
-                  className={`font-inter text-sm font-semibold pb-1 border-b-2 transition-colors ${
-                    selectedCategorySlug === "all"
-                      ? "border-brand-accent text-brand-navy"
-                      : "border-transparent text-brand-navy/60 hover:text-brand-navy"
-                  }`}
-                >
-                  Todo
-                </a>
-                {categories.map((cat) => (
-                  <a
-                    key={cat.id}
-                    href={`/blog?categoria=${cat.slug}`}
-                    className={`font-inter text-sm font-semibold pb-1 border-b-2 transition-colors ${
-                      selectedCategorySlug === cat.slug
-                        ? "border-brand-accent text-brand-navy"
-                        : "border-transparent text-brand-navy/60 hover:text-brand-navy"
-                    }`}
-                  >
-                    {cat.name}
-                  </a>
-                ))}
-              </div>
             </div>
           </Reveal>
 
           {heroPost && (
             <Reveal delayMs={120} className="lg:col-span-5">
-              <BlogFeaturedStoryCard post={heroPost} size="hero" />
+              <BlogFeaturedStoryCard post={heroPost} />
             </Reveal>
           )}
         </div>

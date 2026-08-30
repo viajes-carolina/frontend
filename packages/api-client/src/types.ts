@@ -27,6 +27,8 @@ export interface SiteSettingsDTO {
   legalCompanyName?: string;
   taxId?: string;
   minceturCertificateUrl?: string;
+  minceturRegistrationNumber?: string;
+  minceturLocation?: string;
   revision?: number;
   updatedAt?: string;
 }
@@ -292,16 +294,7 @@ export interface PublicTrustResponse {
 }
 
 // About Us & Advisors DTOs (Corte 8)
-export interface JourneyStepDTO {
-  label: string;
-}
-
 export interface AccompanyStepDTO {
-  title: string;
-  body: string;
-}
-
-export interface AboutMomentDTO {
   title: string;
   body: string;
 }
@@ -311,42 +304,18 @@ export interface AboutPageDTO {
   heroBadge: string;
   heroTitle: string;
   heroSubtitle: string;
-  heroMediaId?: number;
-  heroMediaUrl?: string;
-  heroFocalX?: number;
-  heroFocalY?: number;
   heroCardBadge?: string;
   heroCardTitle?: string;
+  heroCardLocation?: string;
+  heroCardDetail?: string;
   heroNoteText?: string;
-  storyTitle: string;
-  storyBody: string;
-  storyMediaId?: number;
-  storyMediaUrl?: string;
-  storyFocalX?: number;
-  storyFocalY?: number;
-  missionTitle: string;
-  missionBody: string;
-  missionQuote?: string;
-  journeySteps: JourneyStepDTO[];
-  values: string[];
   accompanyBadge?: string;
   accompanyTitle?: string;
   accompanySubtitle?: string;
   accompanySteps: AccompanyStepDTO[];
   accompanyQuote?: string;
-  accompanyQuoteAttribution?: string;
-  momentsBadge?: string;
-  momentsTitle?: string;
-  momentsSubtitle?: string;
-  momentsMediaId?: number;
-  momentsMediaUrl?: string;
-  momentsFocalX?: number;
-  momentsFocalY?: number;
-  moments: AboutMomentDTO[];
-  humanBadge?: string;
-  humanTitle?: string;
-  humanSubtitle?: string;
-  humanTagline?: string;
+  advisorsBadge?: string;
+  advisorsHighlights: AccompanyStepDTO[];
   revision?: number;
   updatedAt?: string;
 }
@@ -355,39 +324,18 @@ export interface UpdateAboutPageRequest {
   heroBadge: string;
   heroTitle: string;
   heroSubtitle: string;
-  heroMediaId?: number;
-  heroFocalX?: number;
-  heroFocalY?: number;
   heroCardBadge?: string;
   heroCardTitle?: string;
+  heroCardLocation?: string;
+  heroCardDetail?: string;
   heroNoteText?: string;
-  storyTitle: string;
-  storyBody: string;
-  storyMediaId?: number;
-  storyFocalX?: number;
-  storyFocalY?: number;
-  missionTitle: string;
-  missionBody: string;
-  missionQuote?: string;
-  journeySteps: JourneyStepDTO[];
-  values: string[];
   accompanyBadge?: string;
   accompanyTitle?: string;
   accompanySubtitle?: string;
   accompanySteps: AccompanyStepDTO[];
   accompanyQuote?: string;
-  accompanyQuoteAttribution?: string;
-  momentsBadge?: string;
-  momentsTitle?: string;
-  momentsSubtitle?: string;
-  momentsMediaId?: number;
-  momentsFocalX?: number;
-  momentsFocalY?: number;
-  moments: AboutMomentDTO[];
-  humanBadge?: string;
-  humanTitle?: string;
-  humanSubtitle?: string;
-  humanTagline?: string;
+  advisorsBadge?: string;
+  advisorsHighlights: AccompanyStepDTO[];
 }
 
 export interface TravelAdvisorDTO {
@@ -502,6 +450,21 @@ export interface PublicBlogResponse {
 export interface BlogPostDetailResponse {
   post: BlogPostDTO;
   relatedPosts: BlogPostDTO[];
+}
+
+// Blog Public Page Sections DTOs — copy editable desde admin de las
+// secciones de `/blog` (hero e índice editorial).
+export interface BlogHeroConfigDTO {
+  eyebrowText: string;
+  title: string;
+  description: string;
+  editionLabel: string;
+}
+
+export interface BlogLibraryDTO {
+  eyebrowText: string;
+  title: string;
+  description: string;
 }
 
 // Contact Page & Inquiry DTOs (Corte 9)
@@ -929,7 +892,60 @@ export interface PublishResponseDTO {
   message: string;
 }
 
+// ==========================================
+// Legal Pages DTOs (bounded context `legal`) — Términos, Privacidad, Cookies,
+// ESNNA y Constancia MINCETUR. Todas comparten la misma base editorial
+// (eyebrow/título/intro + control de documento + secciones numerables +
+// cierre con CTA de WhatsApp) consumida por `LegalArticleSection` en
+// `@vc/ui`; cada `page.tsx` mapea `sections` (sin número) a
+// `{number, title, body}` antes de pasarlo al componente.
+// ==========================================
 
+export interface LegalSectionDTO {
+  title: string;
+  body: string;
+}
+
+interface LegalPageBaseDTO {
+  eyebrow: string;
+  title: string;
+  introduction: string;
+  documentControlLabel: string;
+  documentControlText: string;
+  sections: LegalSectionDTO[];
+  closingTitle: string;
+  closingBody: string;
+  closingLinkLabel: string;
+}
+
+export type LegalTermsDTO = LegalPageBaseDTO;
+
+export type LegalPrivacyDTO = LegalPageBaseDTO;
+
+export interface CookieCategoryDTO {
+  key: string;
+  name: string;
+  description: string;
+  required: boolean;
+}
+
+export interface LegalCookiesDTO extends LegalPageBaseDTO {
+  cookieCategories: CookieCategoryDTO[];
+  acceptAllLabel: string;
+  savePreferencesLabel: string;
+}
+
+export interface LegalEsnnaDTO extends LegalPageBaseDTO {
+  declarationEyebrow: string;
+  declarationTitle: string;
+  declarationBody: string;
+}
+
+export interface LegalMinceturDTO extends LegalPageBaseDTO {
+  verificationEyebrow: string;
+  verificationButtonLabel: string;
+  verificationNote: string;
+}
 
 
 

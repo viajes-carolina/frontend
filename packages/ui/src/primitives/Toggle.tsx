@@ -7,6 +7,8 @@ export interface ToggleProps {
   onChange: (checked: boolean) => void;
   label?: string;
   disabled?: boolean;
+  /** Nombre accesible para lectores de pantalla cuando no hay `label` visible junto al switch (ej. el nombre ya se muestra en un elemento hermano, como en el panel de preferencias de cookies). */
+  "aria-label"?: string;
 }
 
 /**
@@ -19,7 +21,7 @@ export interface ToggleProps {
  * (ej. "⭐ Destacado" / "Normal"), omite `label` y renderiza ese texto
  * condicional junto al `Toggle` desde el caller.
  */
-export const Toggle: React.FC<ToggleProps> = ({ checked, onChange, label, disabled }) => {
+export const Toggle: React.FC<ToggleProps> = ({ checked, onChange, label, disabled, "aria-label": ariaLabel }) => {
   return (
     <div className="flex items-center gap-3">
       <label className="relative inline-flex items-center cursor-pointer">
@@ -28,9 +30,10 @@ export const Toggle: React.FC<ToggleProps> = ({ checked, onChange, label, disabl
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
           disabled={disabled}
+          aria-label={!label ? ariaLabel : undefined}
           className="sr-only peer"
         />
-        <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-accent"></div>
+        <div className="w-11 h-6 bg-neutral-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-accent peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-accent"></div>
       </label>
       {label && <span className="text-xs font-bold text-neutral-700">{label}</span>}
     </div>

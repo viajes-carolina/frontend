@@ -10,6 +10,7 @@ import {
   RefreshCwIcon,
   SettingsIcon,
   UserCircleIcon,
+  LandmarkIcon,
   type IconProps,
 } from "@vc/ui";
 
@@ -63,11 +64,7 @@ export const ADMIN_NAV: AdminNavCategory[] = [
         icon: CompassIcon,
         children: [
           { label: "Cabecera", href: "/nosotros/cabecera" },
-          { label: "Historia", href: "/nosotros/historia" },
-          { label: "Misión", href: "/nosotros/mision" },
-          { label: "Cómo te acompañamos", href: "/nosotros/acompanamiento" },
-          { label: "Experiencias", href: "/nosotros/experiencias" },
-          { label: "Una persona al otro lado", href: "/nosotros/humano" },
+          { label: "Nuestra forma de trabajar", href: "/nosotros/forma-de-trabajo" },
           { label: "Equipo", href: "/nosotros/equipo" },
         ],
       },
@@ -87,6 +84,8 @@ export const ADMIN_NAV: AdminNavCategory[] = [
         children: [
           { label: "Artículos", href: "/blog" },
           { label: "Categorías", href: "/blog/categorias" },
+          { label: "Portada", href: "/blog/portada" },
+          { label: "Biblioteca", href: "/blog/biblioteca" },
         ],
       },
     ],
@@ -94,6 +93,17 @@ export const ADMIN_NAV: AdminNavCategory[] = [
   {
     label: "Gobernanza & Legal",
     items: [
+      {
+        label: "Legal",
+        icon: LandmarkIcon,
+        children: [
+          { label: "Términos y condiciones", href: "/legal/terminos" },
+          { label: "Política de privacidad", href: "/legal/privacidad" },
+          { label: "Política de cookies", href: "/legal/cookies" },
+          { label: "Compromiso contra la ESNNA", href: "/legal/esnna" },
+          { label: "Constancia MINCETUR", href: "/legal/mincetur" },
+        ],
+      },
       {
         label: "Reclamaciones",
         icon: LifeBuoyIcon,

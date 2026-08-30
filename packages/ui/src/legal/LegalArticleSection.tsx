@@ -9,12 +9,33 @@ export interface LegalArticleSectionItem {
   body: string;
 }
 
+export interface LegalArticleDeclaration {
+  eyebrow: string;
+  title: string;
+  body: string;
+}
+
+export interface LegalArticleVerification {
+  eyebrow: string;
+  buttonLabel: string;
+  note: string;
+  legalCompanyName: string;
+  taxId: string;
+  registrationNumber?: string;
+  location: string;
+  certificateUrl?: string;
+}
+
 export interface LegalArticleSectionProps {
   eyebrow: string;
   title: string;
   intro: string;
   updatedLabel: string;
   tocLabel?: string;
+  /** Bloque de declaración de principios, renderizado antes del índice — usado solo por ESNNA. */
+  declaration?: LegalArticleDeclaration;
+  /** Bloque de verificación de registro MINCETUR, renderizado antes del índice — usado solo por Constancia MINCETUR. */
+  verification?: LegalArticleVerification;
   sections: LegalArticleSectionItem[];
   closingTitle: string;
   closingBody: string;
@@ -32,7 +53,9 @@ export function LegalArticleSection({
   title,
   intro,
   updatedLabel,
-  tocLabel = "EN ESTA PÁGINA",
+  tocLabel = "ÍNDICE DEL DOCUMENTO",
+  declaration,
+  verification,
   sections,
   closingTitle,
   closingBody,
@@ -65,6 +88,74 @@ export function LegalArticleSection({
           </div>
         </div>
       </section>
+
+      {/* Declaración de principios (solo ESNNA) */}
+      {declaration && (
+        <section className="w-full px-6 pt-10 sm:px-10 sm:pt-12 lg:px-[192px]">
+          <div className="flex flex-col items-start gap-3 rounded-[22px] bg-atmosphere-pale-sky p-6 sm:p-[30px]">
+            <p className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
+              {declaration.eyebrow}
+            </p>
+            <h2
+              className="max-w-[760px] font-display text-2xl font-semibold leading-[1.15] text-brand-navy sm:text-[32px]"
+              style={{ fontVariationSettings: '"SOFT" 0, "WONK" 1' }}
+            >
+              {declaration.title}
+            </h2>
+            <p className="max-w-[760px] font-inter text-[15px] leading-[1.65] text-neutral-muted sm:text-base">
+              {declaration.body}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Verificación de registro MINCETUR (solo Constancia MINCETUR) */}
+      {verification && (
+        <section className="w-full px-6 pt-10 sm:px-10 sm:pt-12 lg:px-[192px]">
+          <div className="flex flex-col gap-5 rounded-[22px] border border-neutral-border bg-white p-6 shadow-sm sm:p-[30px]">
+            <p className="font-sora text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-accent">
+              {verification.eyebrow}
+            </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <p className="font-inter text-[11px] font-semibold uppercase tracking-[0.06em] text-neutral-muted">
+                  Razón social
+                </p>
+                <p className="font-inter text-base font-semibold text-brand-navy">{verification.legalCompanyName}</p>
+              </div>
+              <div>
+                <p className="font-inter text-[11px] font-semibold uppercase tracking-[0.06em] text-neutral-muted">RUC</p>
+                <p className="font-inter text-base font-semibold text-brand-navy">{verification.taxId}</p>
+              </div>
+              {verification.registrationNumber && (
+                <div>
+                  <p className="font-inter text-[11px] font-semibold uppercase tracking-[0.06em] text-neutral-muted">
+                    N.° de registro MINCETUR
+                  </p>
+                  <p className="font-inter text-base font-semibold text-brand-navy">{verification.registrationNumber}</p>
+                </div>
+              )}
+              <div>
+                <p className="font-inter text-[11px] font-semibold uppercase tracking-[0.06em] text-neutral-muted">
+                  Ubicación registrada
+                </p>
+                <p className="font-inter text-base font-semibold text-brand-navy">{verification.location}</p>
+              </div>
+            </div>
+            {verification.certificateUrl && (
+              <a
+                href={verification.certificateUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-center rounded-full bg-brand-navy px-[22px] py-[14px] font-inter text-sm font-semibold text-white transition-all hover:brightness-110 active:scale-[0.98] sm:w-auto"
+              >
+                {verification.buttonLabel}
+              </a>
+            )}
+            <p className="max-w-[700px] font-inter text-[13.5px] leading-[1.6] text-neutral-muted">{verification.note}</p>
+          </div>
+        </section>
+      )}
 
       {/* Contenido principal */}
       <section className="w-full px-6 pb-14 pt-10 sm:px-10 sm:pb-[90px] sm:pt-[70px] lg:px-[192px]">

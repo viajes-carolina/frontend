@@ -29,7 +29,12 @@ export interface FooterProps {
   legalCompanyName?: string;
   taxId?: string;
   whatsappDisplayNumber?: string;
-  minceturCertificateUrl?: string;
+  /**
+   * `"full"` (default): footer completo de 4 columnas usado en el resto del sitio.
+   * `"legal"`: variante reducida de 3 columnas (Marca/Oficina y atención/Legal) usada
+   * en las páginas legales/institucionales — omite "Recorre el sitio".
+   */
+  variant?: "full" | "legal";
 }
 
 const SITE_LINKS = [
@@ -54,7 +59,7 @@ export function Footer({
   legalCompanyName,
   taxId,
   whatsappDisplayNumber,
-  minceturCertificateUrl,
+  variant = "full",
 }: FooterProps) {
   return (
     <footer className="relative w-full overflow-hidden bg-brand-navy text-white">
@@ -80,27 +85,29 @@ export function Footer({
             </div>
           </div>
 
-          {/* Recorre el sitio */}
-          <div className="flex flex-col gap-3.5 xl:w-[130px]">
-            <h3 className="font-inter text-xs font-semibold uppercase tracking-[0.07em] text-brand-accent">
-              Recorre el sitio
-            </h3>
-            <ul className="hidden flex-col font-inter text-sm text-white/80 md:flex">
-              {SITE_LINKS.map((item) => (
-                <li key={item.href}>
-                  <a href={item.href} className="inline-block py-1 leading-[1.4] hover:text-white transition-colors">
-                    {item.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            {/* Móvil: enlaces del sitio en dos líneas, no una lista vertical */}
-            <p className="font-inter text-sm leading-relaxed text-white/80 md:hidden">
-              Inicio · Promociones · Nosotros
-              <br />
-              Blog · Contacto
-            </p>
-          </div>
+          {/* Recorre el sitio — omitida en la variante "legal" */}
+          {variant === "full" && (
+            <div className="flex flex-col gap-3.5 xl:w-[130px]">
+              <h3 className="font-inter text-xs font-semibold uppercase tracking-[0.07em] text-brand-accent">
+                Recorre el sitio
+              </h3>
+              <ul className="hidden flex-col font-inter text-sm text-white/80 md:flex">
+                {SITE_LINKS.map((item) => (
+                  <li key={item.href}>
+                    <a href={item.href} className="inline-block py-1 leading-[1.4] hover:text-white transition-colors">
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              {/* Móvil: enlaces del sitio en dos líneas, no una lista vertical */}
+              <p className="font-inter text-sm leading-relaxed text-white/80 md:hidden">
+                Inicio · Promociones · Nosotros
+                <br />
+                Blog · Contacto
+              </p>
+            </div>
+          )}
 
           {/* Oficina y atención */}
           <div className="flex flex-col gap-3.5 xl:w-[260px]">
@@ -142,16 +149,9 @@ export function Footer({
               <a href="/compromiso-esnna" className="hover:text-white transition-colors">
                 Compromiso contra la ESNNA
               </a>
-              {minceturCertificateUrl && (
-                <a
-                  href={minceturCertificateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                >
-                  Constancia MINCETUR ↗
-                </a>
-              )}
+              <a href="/constancia-mincetur" className="hover:text-white transition-colors">
+                Constancia MINCETUR
+              </a>
             </div>
             <p className="font-inter text-[13.5px] text-white/80">
               {[
@@ -176,18 +176,9 @@ export function Footer({
           <p>
             © {new Date().getFullYear()} {siteName}. Todos los derechos reservados.
           </p>
-          {minceturCertificateUrl ? (
-            <a
-              href={minceturCertificateUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
-            >
-              Registro MINCETUR · Ver constancia ↗
-            </a>
-          ) : (
-            <p>Agencia de Viajes y Turismo Registrada · Perú</p>
-          )}
+          <a href="/constancia-mincetur" className="hover:text-white transition-colors">
+            Registro MINCETUR · Ver constancia
+          </a>
         </div>
       </div>
     </footer>

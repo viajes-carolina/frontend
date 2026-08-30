@@ -32,6 +32,8 @@ import {
   CreateOrUpdateBlogCategoryRequest,
   PublicBlogResponse,
   BlogPostDetailResponse,
+  BlogHeroConfigDTO,
+  BlogLibraryDTO,
   GlobalSearchResponse,
   SearchResultType,
   HomeBlogInspirationDTO,
@@ -60,6 +62,11 @@ import {
   AuditLogDTO,
   PublishRequestDTO,
   PublishResponseDTO,
+  LegalTermsDTO,
+  LegalPrivacyDTO,
+  LegalCookiesDTO,
+  LegalEsnnaDTO,
+  LegalMinceturDTO,
 } from "./types";
 // Solo se importan de ./mocks las funciones que siguen siendo un fallback legítimo:
 // lecturas públicas sin muro de auth, para cuando el backend real es genuinamente
@@ -77,6 +84,8 @@ import {
   getMockPublicBlog,
   getMockBlogCategories,
   getMockBlogPostBySlug,
+  getMockBlogHero,
+  getMockBlogLibrary,
   getMockGlobalSearch,
   getMockHomeBlogInspiration,
   getMockHomeConversationalPause,
@@ -88,6 +97,11 @@ import {
   submitMockClaim,
   getMockAdminClaims,
   updateMockClaimStatus,
+  getMockLegalTerminos,
+  getMockLegalPrivacidad,
+  getMockLegalCookies,
+  getMockLegalEsnna,
+  getMockLegalMincetur,
 } from "./mocks";
 
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
@@ -517,9 +531,9 @@ export class ViajesCarolinaApiClient {
   }
 
   async getAdminAbout(): Promise<AboutPageDTO> {
-    const res = await fetch(this.getEffectiveUrl("admin/v1/about"), {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/about"), await this.withServerAuthCookie({
       cache: "no-store",
-    });
+    }));
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();
   }
@@ -750,6 +764,70 @@ export class ViajesCarolinaApiClient {
       if (cacheOptions) throw err;
       return getMockBlogPostBySlug(slug);
     }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  // ==========================================
+  // Blog Public Page Sections API — copy editable de las 4 secciones de `/blog`
+  // ==========================================
+
+  async getPublicBlogHero(cacheOptions?: FetchCacheOptions): Promise<BlogHeroConfigDTO> {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/blog/hero"), this.buildCacheInit(cacheOptions));
+    } catch (err) {
+      if (cacheOptions) throw err;
+      return getMockBlogHero();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminBlogHero(): Promise<BlogHeroConfigDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/blog/hero"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminBlogHero(dto: BlogHeroConfigDTO): Promise<BlogHeroConfigDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/blog/hero"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dto),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getPublicBlogLibrary(cacheOptions?: FetchCacheOptions): Promise<BlogLibraryDTO> {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/blog/library"), this.buildCacheInit(cacheOptions));
+    } catch (err) {
+      if (cacheOptions) throw err;
+      return getMockBlogLibrary();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminBlogLibrary(): Promise<BlogLibraryDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/blog/library"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminBlogLibrary(dto: BlogLibraryDTO): Promise<BlogLibraryDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/blog/library"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dto),
+    });
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();
   }
@@ -1250,6 +1328,161 @@ export class ViajesCarolinaApiClient {
   async getPublishingStatus(): Promise<PublishResponseDTO> {
     const res = await fetch(this.getEffectiveUrl("admin/v1/publishing/status"), {
       cache: "no-store",
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  // ==========================================
+  // Legal Pages API (bounded context `legal`) — Términos, Privacidad, Cookies,
+  // ESNNA y Constancia MINCETUR.
+  // ==========================================
+
+  async getPublicLegalTerminos(cacheOptions?: FetchCacheOptions): Promise<LegalTermsDTO> {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/legal/terminos"), this.buildCacheInit(cacheOptions));
+    } catch (err) {
+      if (cacheOptions) throw err;
+      return getMockLegalTerminos();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminLegalTerminos(): Promise<LegalTermsDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/terminos"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminLegalTerminos(payload: LegalTermsDTO): Promise<LegalTermsDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/terminos"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getPublicLegalPrivacidad(cacheOptions?: FetchCacheOptions): Promise<LegalPrivacyDTO> {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/legal/privacidad"), this.buildCacheInit(cacheOptions));
+    } catch (err) {
+      if (cacheOptions) throw err;
+      return getMockLegalPrivacidad();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminLegalPrivacidad(): Promise<LegalPrivacyDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/privacidad"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminLegalPrivacidad(payload: LegalPrivacyDTO): Promise<LegalPrivacyDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/privacidad"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getPublicLegalCookies(cacheOptions?: FetchCacheOptions): Promise<LegalCookiesDTO> {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/legal/cookies"), this.buildCacheInit(cacheOptions));
+    } catch (err) {
+      if (cacheOptions) throw err;
+      return getMockLegalCookies();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminLegalCookies(): Promise<LegalCookiesDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/cookies"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminLegalCookies(payload: LegalCookiesDTO): Promise<LegalCookiesDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/cookies"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getPublicLegalEsnna(cacheOptions?: FetchCacheOptions): Promise<LegalEsnnaDTO> {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/legal/esnna"), this.buildCacheInit(cacheOptions));
+    } catch (err) {
+      if (cacheOptions) throw err;
+      return getMockLegalEsnna();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminLegalEsnna(): Promise<LegalEsnnaDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/esnna"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminLegalEsnna(payload: LegalEsnnaDTO): Promise<LegalEsnnaDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/esnna"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getPublicLegalMincetur(cacheOptions?: FetchCacheOptions): Promise<LegalMinceturDTO> {
+    let res: Response;
+    try {
+      res = await fetch(this.getEffectiveUrl("public/v1/legal/mincetur"), this.buildCacheInit(cacheOptions));
+    } catch (err) {
+      if (cacheOptions) throw err;
+      return getMockLegalMincetur();
+    }
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async getAdminLegalMincetur(): Promise<LegalMinceturDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/mincetur"), await this.withServerAuthCookie({
+      cache: "no-store",
+    }));
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  async updateAdminLegalMincetur(payload: LegalMinceturDTO): Promise<LegalMinceturDTO> {
+    const res = await fetch(this.getEffectiveUrl("admin/v1/legal/mincetur"), {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
     return await res.json();

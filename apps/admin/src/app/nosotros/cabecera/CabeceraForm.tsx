@@ -3,19 +3,9 @@
 import React from "react";
 import { Button, Disclosure, FormField, FormSkeleton } from "@vc/ui";
 import { useAdminAbout } from "../../../hooks/useAdminAbout";
-import { HeroPhotoSlot } from "../../../components/HeroPhotoSlot";
 
 export function CabeceraForm() {
-  const {
-    formData,
-    heroMediaUrl,
-    loading,
-    saving,
-    feedbackMessage,
-    updateField,
-    handleSelectHeroMedia,
-    handleSave,
-  } = useAdminAbout();
+  const { formData, loading, saving, feedbackMessage, updateField, handleSave } = useAdminAbout();
 
   if (loading) {
     return <FormSkeleton className="max-w-4xl" />;
@@ -36,19 +26,7 @@ export function CabeceraForm() {
       )}
 
       <div className="bg-white border border-neutral-border shadow-sm rounded-2xl p-6 sm:p-8 space-y-6 max-w-4xl">
-        <h2 className="font-sora font-bold text-lg text-brand-navy">1. Cabecera & Foto Principal</h2>
-
-        <HeroPhotoSlot
-          variant="main"
-          label="Foto del Hero"
-          helperText="Foto real de viajeros — reemplaza a las estadísticas del diseño anterior."
-          mediaId={formData.heroMediaId}
-          mediaUrl={heroMediaUrl}
-          focalX={formData.heroFocalX}
-          focalY={formData.heroFocalY}
-          onSelect={handleSelectHeroMedia}
-          modalTitle="Seleccionar Foto del Hero de Nosotros"
-        />
+        <h2 className="font-sora font-bold text-lg text-brand-navy">01 · Cabecera</h2>
 
         <div>
           <FormField
@@ -81,34 +59,56 @@ export function CabeceraForm() {
           />
         </div>
 
-        <Disclosure summary="Opciones adicionales">
+        <div className="pt-2 border-t border-neutral-border">
+          <h3 className="font-sora font-semibold text-sm text-brand-navy mb-4">Ficha institucional flotante</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <FormField
-                label="Badge de la tarjeta flotante"
+                label="Badge de la ficha"
                 type="text"
                 value={formData.heroCardBadge || ""}
                 onChange={(e) => updateField("heroCardBadge", e.target.value)}
+                placeholder="VIAJES CAROLINA"
               />
             </div>
             <div>
               <FormField
-                label="Título de la tarjeta flotante"
+                label="Título de la ficha"
                 type="text"
                 value={formData.heroCardTitle || ""}
                 onChange={(e) => updateField("heroCardTitle", e.target.value)}
+                placeholder="Agencia de viajes"
+              />
+            </div>
+            <div>
+              <FormField
+                label="Ubicación (línea)"
+                type="text"
+                value={formData.heroCardLocation || ""}
+                onChange={(e) => updateField("heroCardLocation", e.target.value)}
+                placeholder="Lima, Perú"
+              />
+            </div>
+            <div>
+              <FormField
+                label="Detalle (2 líneas)"
+                multiline
+                rows={2}
+                value={formData.heroCardDetail || ""}
+                onChange={(e) => updateField("heroCardDetail", e.target.value)}
+                placeholder={"Atención directa con Carolina\nAsesoría · Organización · Seguimiento"}
               />
             </div>
           </div>
+        </div>
 
-          <div className="pt-4">
-            <FormField
-              label="Nota flotante (tarjeta secundaria)"
-              type="text"
-              value={formData.heroNoteText || ""}
-              onChange={(e) => updateField("heroNoteText", e.target.value)}
-            />
-          </div>
+        <Disclosure summary="Opciones adicionales">
+          <FormField
+            label="Nota de confianza (bajo el botón de WhatsApp)"
+            type="text"
+            value={formData.heroNoteText || ""}
+            onChange={(e) => updateField("heroNoteText", e.target.value)}
+          />
         </Disclosure>
 
         <div className="flex justify-end pt-4 border-t border-neutral-border">

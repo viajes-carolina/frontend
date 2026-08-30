@@ -5,6 +5,7 @@ import { CardsGridSkeleton } from "@vc/ui";
 import { useAdminAdvisors } from "../../../hooks/useAdminAdvisors";
 import { AdvisorList } from "./AdvisorList";
 import { AdvisorFormModal } from "./AdvisorFormModal";
+import { AdvisorsHighlightsCard } from "./AdvisorsHighlightsCard";
 
 export default function AdminAdvisorsPage() {
   const {
@@ -26,6 +27,8 @@ export default function AdminAdvisorsPage() {
 
   return (
     <div className="space-y-8">
+      <AdvisorsHighlightsCard />
+
       {feedbackMessage && (
         <div
           className={`p-4 rounded-xl text-sm font-medium border ${

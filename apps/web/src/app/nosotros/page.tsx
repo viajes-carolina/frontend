@@ -1,16 +1,9 @@
 import { apiClient } from "@vc/api-client";
-import {
-  AboutHeroSection,
-  MissionSection,
-  AccompanySection,
-  AdvisorsSection,
-  MomentsSection,
-  HumanReplySection,
-} from "@vc/ui";
+import { AboutHeroSection, AccompanySection, AdvisorsSection } from "@vc/ui";
 
 export const metadata = {
   title: "Nosotros | Viajes Carolina - Agencia Boutique en Miraflores",
-  description: "Conoce la historia, la misión y al equipo de asesoras que acompaña cada viaje en Viajes Carolina.",
+  description: "Conoce nuestra forma de trabajar y al equipo de asesoras que acompaña cada viaje en Viajes Carolina.",
 };
 
 export default async function NosotrosPage() {
@@ -21,23 +14,18 @@ export default async function NosotrosPage() {
 
   return (
     <main className="w-full text-neutral-ink min-h-screen">
-      {/* 01. Hero humano */}
+      {/* 01. Hero institucional */}
       <AboutHeroSection page={data.page} whatsappPhone={settings.whatsappPhone} />
 
-      {/* 02. Misión */}
-      <MissionSection page={data.page} />
-
-      {/* 03. Cómo te acompañamos */}
+      {/* 02. Nuestra forma de trabajar */}
       <AccompanySection page={data.page} />
 
-      {/* 04. Equipo — quién te acompaña */}
-      <AdvisorsSection advisors={data.advisors} />
-
-      {/* 05. Experiencias que humanizan */}
-      <MomentsSection page={data.page} />
-
-      {/* 06. Una persona al otro lado */}
-      <HumanReplySection page={data.page} />
+      {/* 03. Quién está detrás — equipo */}
+      <AdvisorsSection
+        advisors={data.advisors}
+        advisorsBadge={data.page.advisorsBadge ?? ""}
+        advisorsHighlights={data.page.advisorsHighlights}
+      />
     </main>
   );
 }

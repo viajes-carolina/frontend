@@ -62,6 +62,11 @@ export function FooterWrapper({ settings: initialSettings, office: initialOffice
     return null;
   }
 
+  // Páginas legales/institucionales: footer reducido de 3 columnas, sin
+  // "Recorre el sitio" — el resto del sitio usa el footer completo.
+  const LEGAL_PAGE_PATHS = ["/terminos", "/privacidad", "/cookies", "/compromiso-esnna", "/constancia-mincetur"];
+  const variant = LEGAL_PAGE_PATHS.includes(pathname || "/") ? "legal" : "full";
+
   return (
     <Footer
       siteName={settings.siteName}
@@ -77,7 +82,7 @@ export function FooterWrapper({ settings: initialSettings, office: initialOffice
       legalCompanyName={settings.legalCompanyName}
       taxId={settings.taxId}
       whatsappDisplayNumber={settings.whatsappDisplayNumber}
-      minceturCertificateUrl={settings.minceturCertificateUrl}
+      variant={variant}
     />
   );
 }

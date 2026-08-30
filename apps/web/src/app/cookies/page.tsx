@@ -1,5 +1,6 @@
 import { apiClient } from "@vc/api-client";
-import { LegalPage } from "@vc/ui";
+import { LegalArticleSection, CookiePreferencesPanel } from "@vc/ui";
+import { toLegalArticleSectionProps } from "../../lib/legalArticleMapper";
 
 export const metadata = {
   title: "Política de cookies | Viajes Carolina",
@@ -7,16 +8,23 @@ export const metadata = {
 };
 
 export default async function CookiesPage() {
-  const settings = await apiClient.getSiteSettings({ revalidate: 3600 });
+  const [legal, settings] = await Promise.all([
+    apiClient.getPublicLegalCookies({ revalidate: 3600 }),
+    apiClient.getSiteSettings({ revalidate: 3600 }),
+  ]);
 
   return (
-    <LegalPage
-      eyebrow="Legal"
-      title="Política de cookies"
-      intro="Este sitio utiliza cookies para mejorar tu experiencia de navegación y entender cómo se usa el sitio."
-      contactEmail={settings.contactEmail}
-      legalCompanyName={settings.legalCompanyName}
-      taxId={settings.taxId}
-    />
+    <>
+      <LegalArticleSection
+        {...toLegalArticleSectionProps(legal)}
+        whatsappPhone={settings.whatsappPhone}
+        whatsappMessage="Hola Viajes Carolina, tengo una consulta sobre la política de cookies."
+      />
+      <CookiePreferencesPanel
+        categories={legal.cookieCategories}
+        acceptAllLabel={legal.acceptAllLabel}
+        savePreferencesLabel={legal.savePreferencesLabel}
+      />
+    </>
   );
 }

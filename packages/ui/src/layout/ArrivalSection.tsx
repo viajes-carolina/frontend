@@ -8,6 +8,10 @@ export interface ArrivalSectionProps {
   whatsappPhone?: string;
   whatsappMessage?: string;
   className?: string;
+  eyebrow?: string;
+  title?: React.ReactNode;
+  subtitle?: string;
+  ctaText?: string;
 }
 
 // Trazo real exportado desde Figma ("Footer · Guía de llegada y responsive",
@@ -23,6 +27,16 @@ export function ArrivalSection({
   whatsappPhone = DEFAULT_WHATSAPP_PHONE,
   whatsappMessage = "Hola Viajes Carolina, deseo consultar sobre un viaje.",
   className = "",
+  eyebrow = "Llegaste hasta aquí",
+  title = (
+    <>
+      Llegaste hasta aquí.
+      <br />
+      ¿Hacia dónde seguimos?
+    </>
+  ),
+  subtitle = "Cuéntanos qué imaginas. Te escuchamos y pensamos contigo el siguiente paso.",
+  ctaText = "Conversemos por WhatsApp",
 }: ArrivalSectionProps) {
   return (
     <section className={`relative w-full overflow-hidden ${className}`}>
@@ -30,15 +44,13 @@ export function ArrivalSection({
         <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between xl:gap-10">
           <div className="flex max-w-[560px] flex-col gap-2.5 xl:max-w-[650px]">
             <p className="font-inter text-[10px] font-semibold uppercase tracking-[0.08em] text-brand-accent sm:text-xs">
-              Llegaste hasta aquí
+              {eyebrow}
             </p>
             <h2 className="font-display font-semibold leading-[1.08] tracking-[-0.02em] text-brand-navy text-[32px] sm:text-[38px] xl:text-[44px]">
-              Llegaste hasta aquí.
-              <br />
-              ¿Hacia dónde seguimos?
+              {title}
             </h2>
             <p className="max-w-[500px] font-inter text-sm leading-[1.5] text-brand-navy/80">
-              Cuéntanos qué imaginas. Te escuchamos y pensamos contigo el siguiente paso.
+              {subtitle}
             </p>
           </div>
 
@@ -54,7 +66,7 @@ export function ArrivalSection({
               <circle cx="480" cy="22" r="10" className="fill-brand-accent" />
             </svg>
             <WhatsAppButton size="md" phone={whatsappPhone} message={whatsappMessage} className="w-full sm:w-auto">
-              Conversemos por WhatsApp
+              {ctaText}
             </WhatsAppButton>
           </div>
         </div>

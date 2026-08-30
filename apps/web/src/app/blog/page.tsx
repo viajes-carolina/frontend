@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { apiClient } from "@vc/api-client";
-import { BlogHeroSection, BlogEditorialIndexSection, BlogQuestionsPauseSection } from "@vc/ui";
+import { BlogHeroSection, BlogLibrarySection } from "@vc/ui";
 
 export const metadata: Metadata = {
   title: "Blog de Viajes | Guías, Consejos e Inspiración — Viajes Carolina",
@@ -15,30 +15,36 @@ export const metadata: Metadata = {
 };
 
 interface BlogPageProps {
-  searchParams: Promise<{ categoria?: string }>;
+  searchParams: Promise<{ categoria?: string; q?: string; pagina?: string }>;
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const { categoria } = await searchParams;
-  const [blogData, trust] = await Promise.all([
-    apiClient.getPublicBlog(categoria, undefined, 0, 6, { revalidate: 3600 }),
-    apiClient.getPublicTrust({ revalidate: 3600 }),
+  const { categoria, q, pagina } = await searchParams;
+  const parsedPagina = Number.parseInt(pagina ?? "", 10);
+  const page = Number.isFinite(parsedPagina) && parsedPagina > 0 ? parsedPagina - 1 : 0;
+
+  const [blogData, blogHero, blogLibrary] = await Promise.all([
+    apiClient.getPublicBlog(categoria, q, page, 6, { revalidate: 3600 }),
+    apiClient.getPublicBlogHero({ revalidate: 3600 }),
+    apiClient.getPublicBlogLibrary({ revalidate: 3600 }),
   ]);
 
   const heroPost = blogData.featuredPost ?? blogData.items[0];
-  const secondaryStories = blogData.items.filter((p) => p.id !== heroPost?.id);
-  const [mainStory, ...restStories] = secondaryStories;
-  const faqs = trust.faqs.filter((f) => f.active).slice(0, 4);
 
   return (
     <main className="min-h-screen">
-      <BlogHeroSection categories={blogData.categories} selectedCategorySlug={categoria || "all"} heroPost={heroPost} />
+      <BlogHeroSection heroPost={heroPost} config={blogHero} />
 
-      {mainStory && (
-        <BlogEditorialIndexSection mainStory={mainStory} secondaryStories={restStories.slice(0, 2)} />
-      )}
-
-      <BlogQuestionsPauseSection faqs={faqs} />
+      <BlogLibrarySection
+        posts={blogData.items}
+        categories={blogData.categories}
+        selectedCategorySlug={categoria || "all"}
+        searchQuery={q || ""}
+        total={blogData.total}
+        page={blogData.page}
+        totalPages={blogData.totalPages}
+        config={blogLibrary}
+      />
     </main>
   );
 }

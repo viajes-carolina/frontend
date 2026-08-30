@@ -64,10 +64,35 @@ export function LegalForm({ initialSettings }: LegalFormProps) {
             placeholder="https://..."
           />
           <span className="text-xs text-neutral-muted mt-1 block">
-            Si se configura, el footer del sitio muestra el enlace a la constancia de registro MINCETUR. Si se
-            deja vacío, no se muestra.
+            Se muestra como botón en la página pública /constancia-mincetur. Si se deja vacío, la página muestra el
+            resto del contenido sin el botón.
           </span>
         </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <FormField
+              label="N.° de registro MINCETUR"
+              type="text"
+              value={settings.minceturRegistrationNumber || ""}
+              onChange={(e) => updateField("minceturRegistrationNumber", e.target.value)}
+              placeholder="RNT N.° 012345"
+            />
+          </div>
+
+          <div>
+            <FormField
+              label="Ubicación registrada"
+              type="text"
+              value={settings.minceturLocation || ""}
+              onChange={(e) => updateField("minceturLocation", e.target.value)}
+              placeholder="Lima, Perú"
+            />
+          </div>
+        </div>
+        <span className="text-xs text-neutral-muted -mt-4 block">
+          Ambos campos se muestran en el bloque de verificación de la página pública /constancia-mincetur.
+        </span>
 
         <div className="flex justify-end pt-4 border-t border-neutral-border">
           <Button variant="primary" type="button" onClick={() => handleSave()} disabled={isSaving}>

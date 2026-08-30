@@ -1,5 +1,6 @@
 import { apiClient } from "@vc/api-client";
-import { LegalPage } from "@vc/ui";
+import { LegalArticleSection } from "@vc/ui";
+import { toLegalArticleSectionProps } from "../../lib/legalArticleMapper";
 
 export const metadata = {
   title: "Política de privacidad | Viajes Carolina",
@@ -7,16 +8,16 @@ export const metadata = {
 };
 
 export default async function PrivacidadPage() {
-  const settings = await apiClient.getSiteSettings({ revalidate: 3600 });
+  const [legal, settings] = await Promise.all([
+    apiClient.getPublicLegalPrivacidad({ revalidate: 3600 }),
+    apiClient.getSiteSettings({ revalidate: 3600 }),
+  ]);
 
   return (
-    <LegalPage
-      eyebrow="Legal"
-      title="Política de privacidad"
-      intro="En Viajes Carolina protegemos los datos personales que nos confías para asesorarte y gestionar tu viaje."
-      contactEmail={settings.contactEmail}
-      legalCompanyName={settings.legalCompanyName}
-      taxId={settings.taxId}
+    <LegalArticleSection
+      {...toLegalArticleSectionProps(legal)}
+      whatsappPhone={settings.whatsappPhone}
+      whatsappMessage="Hola Viajes Carolina, tengo una consulta sobre la política de privacidad."
     />
   );
 }

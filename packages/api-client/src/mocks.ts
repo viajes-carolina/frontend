@@ -30,6 +30,8 @@ import {
   CreateOrUpdateBlogPostRequest,
   PublicBlogResponse,
   BlogPostDetailResponse,
+  BlogHeroConfigDTO,
+  BlogLibraryDTO,
   SearchResultItemDTO,
   GlobalSearchResponse,
   SearchResultType,
@@ -57,6 +59,11 @@ import {
   AuditLogDTO,
   PublishRequestDTO,
   PublishResponseDTO,
+  LegalTermsDTO,
+  LegalPrivacyDTO,
+  LegalCookiesDTO,
+  LegalEsnnaDTO,
+  LegalMinceturDTO,
 } from "./types";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
@@ -73,6 +80,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettingsDTO = {
   tiktokUrl: "https://tiktok.com/@viajescarolina",
   legalCompanyName: "VIAJES CAROLINA S.A.C.",
   taxId: "20601234567",
+  minceturRegistrationNumber: "RNT N.° 012345",
+  minceturLocation: "Lima, Perú",
 };
 
 export const DEFAULT_OFFICE_LOCATION: OfficeLocationDTO = {
@@ -330,58 +339,28 @@ export const DEFAULT_FAQS: FaqItemDTO[] = [
 
 export const DEFAULT_ABOUT_PAGE: AboutPageDTO = {
   id: 1,
-  heroBadge: "Detrás de cada viaje",
-  heroTitle: "¿Qué cambia cuando alguien realmente te escucha?",
-  heroSubtitle: "No empezamos por venderte un destino. Empezamos por entender qué quieres vivir, qué necesitas cuidar y cómo te gustaría recordarlo.",
-  heroMediaId: 1,
-  heroMediaUrl: "/media/demo-hero-travel.webp",
-  heroFocalX: 50,
-  heroFocalY: 50,
-  heroCardBadge: "Lo primero es escuchar",
-  heroCardTitle: "No necesitas tener el destino decidido para empezar.",
-  heroNoteText: "Seguimos contigo hasta el regreso.",
-  storyTitle: "Nuestra Historia",
-  storyBody: "Viajes Carolina nació con el propósito de devolver la calidez humana y la tranquilidad a la planificación de viajes. Lo que comenzó como un sueño familiar hoy es una agencia boutique consolidada en Miraflores, Lima, con un equipo de asesoras especializadas que cuidan cada detalle de tu itinerario.",
-  storyMediaId: 3,
-  storyMediaUrl: "/media/demo-cusco-machupicchu.webp",
-  storyFocalX: 50,
-  storyFocalY: 50,
-  missionTitle: "Que viajar se sienta posible, claro y tuyo.",
-  missionBody: "Nuestra misión es ayudarte a convertir una idea —por pequeña o incompleta que parezca— en una experiencia que haga sentido con tu tiempo, tu presupuesto y tu manera de viajar.",
-  missionQuote: "Por eso empezamos escuchando: una buena recomendación no se impone, se construye contigo.",
-  journeySteps: [
-    { label: "Una idea" },
-    { label: "Decisiones claras" },
-    { label: "Un viaje a tu ritmo" },
-    { label: "Un recuerdo propio" },
-  ],
-  values: ["Atención humana y cálida", "Transparencia sin letra chica", "Acompañamiento 24/7", "Pasión por los detalles"],
-  accompanyBadge: "03 · Cómo te acompañamos",
-  accompanyTitle: "Acompañarte no es darte un itinerario y desaparecer.",
-  accompanySubtitle: "Es permanecer disponible cuando aparecen dudas, cambios o nuevas ideas.",
+  heroBadge: "NOSOTROS · VIAJES CAROLINA",
+  heroTitle: "Una agencia cercana. Un viaje bien acompañado.",
+  heroSubtitle: "Somos una agencia de viajes que orienta, organiza y acompaña cada proceso con información clara y atención directa.",
+  heroCardBadge: "VIAJES CAROLINA",
+  heroCardTitle: "Agencia de viajes",
+  heroCardLocation: "Lima, Perú",
+  heroCardDetail: "Atención directa con Carolina\nAsesoría · Organización · Seguimiento",
+  heroNoteText: "Lima, Perú · Atención directa con Carolina",
+  accompanyBadge: "02 · NUESTRA FORMA DE TRABAJAR",
+  accompanyTitle: "Tres principios para acompañarte mejor",
+  accompanySubtitle: "Una forma de trabajar clara, cercana y sin complicaciones.",
   accompanySteps: [
-    { title: "Escucharte", body: "Partimos de tu ritmo, tus prioridades y lo que realmente quieres vivir." },
-    { title: "Dar forma contigo", body: "Ordenamos destinos, tiempos y decisiones para que el plan se sienta posible." },
-    { title: "Permanecer presente", body: "Si algo cambia, sabes que hay una persona al otro lado del mensaje." },
+    { title: "01 · Escuchar primero", body: "Entendemos tus fechas, presupuesto y prioridades." },
+    { title: "02 · Explicar con claridad", body: "Comparamos opciones y explicamos cada diferencia." },
+    { title: "03 · Acompañar de verdad", body: "Seguimos disponibles antes, durante y después." },
   ],
-  accompanyQuote: "No queremos que sientas que compraste un viaje. Queremos que sientas que alguien lo pensó contigo.",
-  accompanyQuoteAttribution: "— La forma Viajes Carolina",
-  momentsBadge: "04 · Lo que queda del viaje",
-  momentsTitle: "Una agencia también se conoce por lo que sus viajeros recuerdan.",
-  momentsSubtitle: "Estas escenas representan historias reales que luego podrán mostrarse con las fotografías de clientes administradas desde el panel.",
-  momentsMediaId: 2,
-  momentsMediaUrl: "/media/demo-cartagena-caribe.webp",
-  momentsFocalX: 50,
-  momentsFocalY: 50,
-  moments: [
-    { title: "Una familia que necesitaba ir sin prisa", body: "El viaje se diseñó pensando en pausas, compañía y tiempo para disfrutar juntos." },
-    { title: "Una pareja que aún no tenía destino", body: "La conversación empezó por lo que querían sentir, no por una lista de lugares." },
-    { title: "Un grupo que quería sentirse acompañado", body: "Cada decisión quedó clara y siempre supieron dónde escribir si algo cambiaba." },
+  accompanyQuote: "Una sola asesora. Una conversación continua.",
+  advisorsBadge: "03 · QUIÉN ESTÁ DETRÁS",
+  advisorsHighlights: [
+    { title: "Orientación personalizada", body: "Basada en tus fechas, presupuesto y prioridades." },
+    { title: "Seguimiento responsable", body: "Comunicación clara durante todo el proceso." },
   ],
-  humanBadge: "05 · Quién te acompaña",
-  humanTitle: "Al otro lado no hay respuestas automáticas.",
-  humanSubtitle: "Hay una persona que lee tu mensaje, entiende el contexto y piensa contigo el siguiente paso.",
-  humanTagline: "Te lee · Te orienta · Permanece",
   revision: 1,
   updatedAt: "2026-08-18T00:00:00.000Z",
 };
@@ -958,6 +937,42 @@ export function getMockBlogPostBySlug(slug: string): BlogPostDetailResponse {
     (p) => p.categoryId === post.categoryId && p.id !== post.id && p.active && p.status === "PUBLISHED"
   ).slice(0, 3);
   return { post, relatedPosts };
+}
+
+// Blog Public Page Sections Mocks — copy de las 4 secciones editables de `/blog`
+export const DEFAULT_BLOG_HERO: BlogHeroConfigDTO = {
+  eyebrowText: "BITÁCORA · VIAJES CAROLINA",
+  title: "El diario de Viajes Carolina",
+  description: "Guías claras, ideas y respuestas para preparar el viaje con más confianza y menos ruido.",
+  editionLabel: "EDICIÓN 01 · AGOSTO 2026",
+};
+
+export let MOCK_BLOG_HERO: BlogHeroConfigDTO = { ...DEFAULT_BLOG_HERO };
+
+export function getMockBlogHero(): BlogHeroConfigDTO {
+  return MOCK_BLOG_HERO;
+}
+
+export function updateMockBlogHero(req: BlogHeroConfigDTO): BlogHeroConfigDTO {
+  MOCK_BLOG_HERO = { ...MOCK_BLOG_HERO, ...req };
+  return MOCK_BLOG_HERO;
+}
+
+export const DEFAULT_BLOG_LIBRARY: BlogLibraryDTO = {
+  eyebrowText: "01 · TODAS LAS HISTORIAS",
+  title: "Explora la bitácora",
+  description: "Busca por tema, filtra por categoría y recorre el archivo a tu ritmo.",
+};
+
+export let MOCK_BLOG_LIBRARY: BlogLibraryDTO = { ...DEFAULT_BLOG_LIBRARY };
+
+export function getMockBlogLibrary(): BlogLibraryDTO {
+  return MOCK_BLOG_LIBRARY;
+}
+
+export function updateMockBlogLibrary(req: BlogLibraryDTO): BlogLibraryDTO {
+  MOCK_BLOG_LIBRARY = { ...MOCK_BLOG_LIBRARY, ...req };
+  return MOCK_BLOG_LIBRARY;
 }
 
 export function getMockAdminBlogPosts(status?: string, search?: string): BlogPostDTO[] {
@@ -1801,6 +1816,254 @@ export function publishMockContent(req: PublishRequestDTO): PublishResponseDTO {
   return response;
 }
 
+// ==========================================
+// Legal Pages Mocks (fallback offline de las 5 páginas legales/institucionales)
+// ==========================================
+
+export const DEFAULT_LEGAL_TERMINOS: LegalTermsDTO = {
+  eyebrow: "CENTRO LEGAL / TÉRMINOS Y CONDICIONES",
+  title: "Términos y condiciones",
+  introduction:
+    "El presente documento establece las condiciones generales aplicables a la orientación, cotización y gestión de servicios turísticos realizados por Viajes Carolina.",
+  documentControlLabel: "CONTROL DOCUMENTAL",
+  documentControlText:
+    "DOCUMENTO: TÉRMINOS Y CONDICIONES · CÓDIGO: VC-LEG-01 · VERSIÓN: 1.0 · VIGENCIA: AGOSTO 2026 · RESPONSABLE: VIAJES CAROLINA",
+  sections: [
+    {
+      title: "Alcance de nuestros servicios",
+      body: "Viajes Carolina brinda orientación, cotización, intermediación y gestión de servicios turísticos según el alcance indicado en cada propuesta. Solo forman parte del servicio los vuelos, alojamientos, traslados, actividades, seguros u otros conceptos descritos expresamente. Los servicios son prestados directamente por los proveedores identificados en la documentación de viaje.",
+    },
+    {
+      title: "Cotizaciones y disponibilidad",
+      body: "Las cotizaciones son informativas y tienen la vigencia indicada en la propuesta. Tarifas, impuestos, tipo de cambio, cupos, horarios y condiciones pueden modificarse hasta que la reserva y el pago sean confirmados. Cualquier variación será comunicada antes de solicitar la aceptación del cliente.",
+    },
+    {
+      title: "Reservas y pagos",
+      body: "La reserva queda confirmada cuando el cliente acepta la propuesta, entrega los datos requeridos y realiza el pago acordado. El cliente debe revisar nombres, fechas, destinos e inclusiones antes de autorizar la emisión. Los comprobantes y condiciones particulares se entregan por los canales acordados.",
+    },
+    {
+      title: "Cambios, cancelaciones y reembolsos",
+      body: "Los cambios, cancelaciones, no presentación y reembolsos se sujetan a las reglas de cada aerolínea, hotel u operador. Pueden existir penalidades, diferencias tarifarias o servicios no reembolsables. Antes del pago, Viajes Carolina informará las restricciones relevantes disponibles.",
+    },
+    {
+      title: "Responsabilidades del viajero",
+      body: "El viajero debe proporcionar información correcta, revisar la vigencia de documentos y cumplir requisitos migratorios, sanitarios, de equipaje y de ingreso al destino. También debe presentarse dentro de los horarios informados y comunicar oportunamente cualquier condición especial que afecte el viaje.",
+    },
+    {
+      title: "Atención y contacto",
+      body: "Las consultas y solicitudes se atienden por los canales oficiales publicados en esta web. Antes de confirmar una reserva, el cliente puede solicitar aclaraciones sobre precios, inclusiones, restricciones o responsabilidades. Las condiciones específicas de cada propuesta prevalecen sobre la información general de esta página.",
+    },
+  ],
+  closingTitle: "Consulta previa a la aceptación",
+  closingBody:
+    "Antes de confirmar una reserva, el cliente puede solicitar aclaraciones sobre precios, inclusiones, restricciones, responsabilidades y condiciones particulares. La aceptación debe realizarse únicamente después de comprender el alcance de la propuesta.",
+  closingLinkLabel: "Acceder al canal de consultas",
+};
+
+export const DEFAULT_LEGAL_PRIVACIDAD: LegalPrivacyDTO = {
+  eyebrow: "CENTRO LEGAL / POLÍTICA DE PRIVACIDAD",
+  title: "Política de privacidad",
+  introduction:
+    "El presente documento describe el tratamiento de los datos personales recibidos por Viajes Carolina, las finalidades aplicables y los mecanismos disponibles para el ejercicio de derechos.",
+  documentControlLabel: "CONTROL DOCUMENTAL",
+  documentControlText:
+    "DOCUMENTO: POLÍTICA DE PRIVACIDAD · CÓDIGO: VC-LEG-02 · VERSIÓN: 1.0 · VIGENCIA: AGOSTO 2026 · RESPONSABLE: VIAJES CAROLINA",
+  sections: [
+    {
+      title: "Quién es responsable",
+      body: "Viajes Carolina es responsable del tratamiento de los datos personales recibidos mediante la web, WhatsApp, correo u otros canales oficiales. La atención se realiza conforme a las finalidades informadas y a la normativa peruana aplicable de protección de datos personales.",
+    },
+    {
+      title: "Qué datos podemos recopilar",
+      body: "Podemos solicitar nombres, documento de identidad, fecha de nacimiento, datos de contacto e información necesaria para cotizar o gestionar servicios turísticos. También tratamos los datos que compartas voluntariamente y los estrictamente requeridos por aerolíneas, hoteles u operadores.",
+    },
+    {
+      title: "Para qué utilizamos la información",
+      body: "Usamos la información para responder consultas, preparar cotizaciones, gestionar reservas y pagos, emitir documentación, brindar asistencia y cumplir obligaciones legales o contractuales. No utilizamos los datos para finalidades incompatibles sin informar o solicitar la autorización correspondiente.",
+    },
+    {
+      title: "Con quién puede compartirse",
+      body: "Compartimos únicamente la información necesaria con aerolíneas, alojamientos, operadores, aseguradoras, procesadores de pago u otros proveedores vinculados al servicio. También podemos comunicarla a autoridades cuando exista obligación legal. No vendemos bases de datos personales.",
+    },
+    {
+      title: "Conservación y seguridad",
+      body: "Conservamos la información durante el tiempo necesario para atender la finalidad, las obligaciones legales y eventuales reclamos. Aplicamos controles razonables de acceso, almacenamiento y confidencialidad; ningún sistema ofrece seguridad absoluta, por lo que revisamos periódicamente nuestras medidas.",
+    },
+    {
+      title: "Tus derechos",
+      body: "Puedes ejercer los derechos de acceso, rectificación, cancelación y oposición, así como revocar el consentimiento cuando corresponda. La solicitud debe permitir identificar al titular y describir el pedido; responderemos dentro de los plazos aplicables.",
+    },
+    {
+      title: "Contacto sobre privacidad",
+      body: "Para consultas o solicitudes relacionadas con privacidad, escribe a contacto@viajescarolina.com indicando el asunto «Protección de datos». Podemos solicitar información adicional para verificar tu identidad antes de entregar o modificar datos.",
+    },
+  ],
+  closingTitle: "Ejercicio de derechos sobre datos personales",
+  closingBody:
+    "El titular puede solicitar información sobre el tratamiento de sus datos personales y ejercer los derechos de acceso, rectificación, cancelación u oposición mediante los canales oficiales. La atención estará sujeta a la verificación de identidad y a los plazos aplicables.",
+  closingLinkLabel: "Acceder al canal de privacidad",
+};
+
+export const DEFAULT_LEGAL_COOKIES: LegalCookiesDTO = {
+  eyebrow: "CENTRO LEGAL / POLÍTICA DE COOKIES",
+  title: "Política de cookies",
+  introduction:
+    "El presente documento informa sobre el uso de cookies y tecnologías similares, sus finalidades y las opciones disponibles para administrar el consentimiento.",
+  documentControlLabel: "CONTROL DOCUMENTAL",
+  documentControlText:
+    "DOCUMENTO: POLÍTICA DE COOKIES · CÓDIGO: VC-LEG-03 · VERSIÓN: 1.0 · VIGENCIA: AGOSTO 2026 · RESPONSABLE: VIAJES CAROLINA",
+  sections: [
+    {
+      title: "Qué son las cookies",
+      body: "Las cookies son pequeños archivos que el navegador almacena para recordar información técnica, mantener funciones de navegación o conservar preferencias. También pueden utilizarse tecnologías similares, como almacenamiento local o identificadores de sesión.",
+    },
+    {
+      title: "Cookies necesarias",
+      body: "Las cookies necesarias permiten seguridad, funcionamiento básico, gestión de sesión y conservación de la elección de privacidad. Se activan porque el sitio no podría operar correctamente sin ellas y no se utilizan para publicidad personalizada.",
+    },
+    {
+      title: "Cookies de analítica",
+      body: "Las cookies de analítica permiten conocer de forma agregada qué secciones se visitan, posibles errores y rendimiento del sitio. Solo se activan con tu consentimiento y procuramos configurar la medición para reducir la identificación individual.",
+    },
+    {
+      title: "Cookies de preferencias",
+      body: "Las cookies de preferencias recuerdan decisiones como idioma, región o configuración del sitio cuando estas funciones estén disponibles. Su rechazo puede hacer que algunas preferencias deban seleccionarse nuevamente.",
+    },
+    {
+      title: "Cómo cambiar tu decisión",
+      body: "Puedes aceptar, rechazar o actualizar las categorías no esenciales desde «Configurar cookies» en el footer. El retiro del consentimiento no afecta el tratamiento realizado previamente y la nueva elección se aplicará en visitas posteriores.",
+    },
+    {
+      title: "Cookies de terceros",
+      body: "Mapas, videos, redes sociales u otros contenidos externos pueden instalar cookies o solicitar datos antes de cargarse. Estos proveedores aplican sus propias políticas. Cuando sea posible, bloqueamos el contenido no esencial hasta obtener tu autorización.",
+    },
+  ],
+  closingTitle: "Gestión del consentimiento",
+  closingBody:
+    "El consentimiento para categorías no esenciales puede otorgarse, rechazarse o modificarse en cualquier momento. La nueva elección se aplicará en las visitas posteriores sin afectar el tratamiento realizado previamente.",
+  closingLinkLabel: "Configurar preferencias",
+  cookieCategories: [
+    {
+      key: "essential",
+      name: "Esenciales",
+      description: "Necesarias para seguridad, funcionamiento básico y gestión de sesión. No pueden desactivarse.",
+      required: true,
+    },
+    {
+      key: "analytics",
+      name: "Analítica",
+      description: "Nos permiten conocer de forma agregada qué secciones se visitan y el rendimiento del sitio.",
+      required: false,
+    },
+    {
+      key: "preferences",
+      name: "Preferencias",
+      description: "Recuerdan decisiones como idioma, región u otras configuraciones del sitio.",
+      required: false,
+    },
+  ],
+  acceptAllLabel: "Aceptar todas",
+  savePreferencesLabel: "Guardar preferencias",
+};
+
+export const DEFAULT_LEGAL_ESNNA: LegalEsnnaDTO = {
+  eyebrow: "COMPROMISO INSTITUCIONAL / PROTECCIÓN DE LA NIÑEZ",
+  title: "Compromiso contra la ESNNA",
+  introduction:
+    "La presente declaración establece el compromiso de Viajes Carolina frente a la explotación sexual de niñas, niños y adolescentes en el ámbito de los servicios turísticos.",
+  documentControlLabel: "CONTROL DOCUMENTAL",
+  documentControlText:
+    "DOCUMENTO: COMPROMISO CONTRA LA ESNNA · CÓDIGO: VC-COMP-01 · VERSIÓN: 1.0 · VIGENCIA: AGOSTO 2026 · RESPONSABLE: VIAJES CAROLINA",
+  declarationEyebrow: "TOLERANCIA CERO",
+  declarationTitle: "La protección de niñas, niños y adolescentes no es negociable.",
+  declarationBody:
+    "Este compromiso orienta nuestras decisiones, la relación con proveedores y la manera en que acompañamos a cada viajero.",
+  sections: [
+    {
+      title: "Tolerancia cero",
+      body: "Viajes Carolina mantiene tolerancia cero frente a cualquier conducta que implique explotación sexual de niñas, niños o adolescentes. No promovemos, facilitamos ni encubrimos actividades que vulneren sus derechos, incluso cuando involucren clientes, proveedores o terceros vinculados al servicio.",
+    },
+    {
+      title: "Prevención",
+      body: "Orientamos al equipo y comunicamos criterios básicos para reconocer señales de riesgo, evitar la normalización de conductas indebidas y actuar sin exponer a la posible víctima. La prevención forma parte de la planificación y del acompañamiento del viaje.",
+    },
+    {
+      title: "Proveedores responsables",
+      body: "Priorizamos proveedores que respeten la normativa, mantengan prácticas de protección y colaboren ante alertas. Si conocemos incumplimientos graves, revisamos la relación comercial y adoptamos medidas dentro de nuestras competencias.",
+    },
+    {
+      title: "Actuación ante una alerta",
+      body: "Ante una situación sospechosa, protegemos la confidencialidad, evitamos confrontaciones que aumenten el riesgo y comunicamos la información a las autoridades competentes. No realizamos investigaciones por cuenta propia ni difundimos datos sensibles.",
+    },
+    {
+      title: "Comunicación responsable",
+      body: "No publicamos ni compartimos imágenes, datos o mensajes que sexualicen, identifiquen o vulneren la dignidad de niñas, niños y adolescentes. La comunicación sobre una alerta debe ser reservada y dirigida a los canales autorizados.",
+    },
+    {
+      title: "Compromiso compartido",
+      body: "Viajar también implica cuidar. Invitamos a clientes, proveedores y colaboradores a informarse, observar y reportar responsablemente. La protección de la niñez requiere una actuación conjunta y sostenida.",
+    },
+  ],
+  closingTitle: "Canal de actuación responsable",
+  closingBody:
+    "Toda alerta debe comunicarse de manera responsable, preservando la identidad y seguridad de la posible víctima. Viajes Carolina actuará dentro de sus competencias y colaborará con las autoridades correspondientes.",
+  closingLinkLabel: "Consultar compromiso institucional",
+};
+
+export const DEFAULT_LEGAL_MINCETUR: LegalMinceturDTO = {
+  eyebrow: "INFORMACIÓN INSTITUCIONAL / REGISTRO OFICIAL",
+  title: "Constancia MINCETUR",
+  introduction:
+    "Esta página presenta la referencia institucional de Viajes Carolina y permite contrastar sus datos con el canal oficial administrado por MINCETUR.",
+  documentControlLabel: "CONTROL DOCUMENTAL",
+  documentControlText:
+    "DOCUMENTO: CONSTANCIA MINCETUR · CÓDIGO: VC-REG-01 · VERSIÓN: 1.0 · VIGENCIA: AGOSTO 2026 · RESPONSABLE: VIAJES CAROLINA",
+  verificationEyebrow: "DATOS OFICIALES DE LA AGENCIA",
+  verificationButtonLabel: "Ver constancia en MINCETUR ↗",
+  verificationNote: "Este enlace dirige a una fuente oficial externa.",
+  sections: [
+    {
+      title: "Por qué mostramos esta constancia",
+      body: "Publicamos esta referencia para que el viajero pueda identificar a la empresa con la que coordina, contrastar la información institucional y tomar una decisión informada antes de reservar o efectuar un pago.",
+    },
+    {
+      title: "Qué debes revisar",
+      body: "Verifica que el nombre comercial, razón social, número de registro, actividad autorizada y ubicación coincidan con la información entregada durante la atención. Si el portal muestra una fecha de actualización, considera también ese dato.",
+    },
+    {
+      title: "Fuente oficial",
+      body: "La consulta se realiza en una plataforma externa administrada por MINCETUR. Viajes Carolina no puede modificar el contenido, la disponibilidad ni los tiempos de actualización del portal oficial.",
+    },
+    {
+      title: "Si encuentras una diferencia",
+      body: "Si observas una diferencia, conserva una captura o anota el dato y comunícate con nosotros por los canales publicados en esta web. Solicita la aclaración antes de realizar pagos o entregar documentación personal.",
+    },
+  ],
+  closingTitle: "Verificación de información oficial",
+  closingBody:
+    "Antes de efectuar una reserva o pago, el viajero debe contrastar la identificación de la agencia con la fuente oficial administrada por MINCETUR. Cualquier diferencia debe aclararse mediante los canales publicados.",
+  closingLinkLabel: "Consultar registro en MINCETUR",
+};
+
+export function getMockLegalTerminos(): LegalTermsDTO {
+  return DEFAULT_LEGAL_TERMINOS;
+}
+
+export function getMockLegalPrivacidad(): LegalPrivacyDTO {
+  return DEFAULT_LEGAL_PRIVACIDAD;
+}
+
+export function getMockLegalCookies(): LegalCookiesDTO {
+  return DEFAULT_LEGAL_COOKIES;
+}
+
+export function getMockLegalEsnna(): LegalEsnnaDTO {
+  return DEFAULT_LEGAL_ESNNA;
+}
+
+export function getMockLegalMincetur(): LegalMinceturDTO {
+  return DEFAULT_LEGAL_MINCETUR;
+}
 
 
 

@@ -1,0 +1,115 @@
+import { useState, useCallback, useEffect } from "react";
+import { apiClient, LegalCookiesDTO, CookieCategoryDTO } from "@vc/api-client";
+import {
+  addEmptySection,
+  removeSectionAt,
+  updateSectionField,
+  addEmptyCookieCategory,
+  removeCookieCategoryAt,
+  updateCookieCategoryField,
+} from "../lib/legalListEditors";
+
+export function useAdminLegalCookies(initialConfig?: LegalCookiesDTO) {
+  const [config, setConfig] = useState<LegalCookiesDTO | null>(initialConfig || null);
+  const [loading, setLoading] = useState(!initialConfig);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const fetchConfig = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await apiClient.getAdminLegalCookies();
+      setConfig(data);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error al cargar la política de cookies";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!initialConfig) {
+      fetchConfig();
+    }
+  }, [initialConfig, fetchConfig]);
+
+  const updateField = useCallback(
+    <K extends keyof LegalCookiesDTO>(field: K, value: LegalCookiesDTO[K]) => {
+      setConfig((prev) => (prev ? { ...prev, [field]: value } : null));
+      setSuccess(false);
+      setError(null);
+    },
+    []
+  );
+
+  const updateSection = useCallback((index: number, field: "title" | "body", value: string) => {
+    setConfig((prev) => (prev ? updateSectionField(prev, index, field, value) : null));
+    setSuccess(false);
+  }, []);
+
+  const addSection = useCallback(() => {
+    setConfig((prev) => (prev ? addEmptySection(prev) : null));
+    setSuccess(false);
+  }, []);
+
+  const removeSection = useCallback((index: number) => {
+    setConfig((prev) => (prev ? removeSectionAt(prev, index) : null));
+    setSuccess(false);
+  }, []);
+
+  const updateCookieCategory = useCallback(
+    (index: number, field: keyof CookieCategoryDTO, value: string | boolean) => {
+      setConfig((prev) => (prev ? updateCookieCategoryField(prev, index, field, value) : null));
+      setSuccess(false);
+    },
+    []
+  );
+
+  const addCookieCategory = useCallback(() => {
+    setConfig((prev) => (prev ? addEmptyCookieCategory(prev) : null));
+    setSuccess(false);
+  }, []);
+
+  const removeCookieCategory = useCallback((index: number) => {
+    setConfig((prev) => (prev ? removeCookieCategoryAt(prev, index) : null));
+    setSuccess(false);
+  }, []);
+
+  const saveConfig = useCallback(async () => {
+    if (!config) return;
+
+    try {
+      setSaving(true);
+      setError(null);
+      setSuccess(false);
+      const updated = await apiClient.updateAdminLegalCookies(config);
+      setConfig(updated);
+      setSuccess(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error al guardar los cambios";
+      setError(msg);
+    } finally {
+      setSaving(false);
+    }
+  }, [config]);
+
+  return {
+    config,
+    loading,
+    saving,
+    error,
+    success,
+    updateField,
+    updateSection,
+    addSection,
+    removeSection,
+    updateCookieCategory,
+    addCookieCategory,
+    removeCookieCategory,
+    saveConfig,
+    refetch: fetchConfig,
+  };
+}
