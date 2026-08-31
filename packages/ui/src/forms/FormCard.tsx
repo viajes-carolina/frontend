@@ -22,6 +22,19 @@ export interface FormCardProps {
   footerAside?: React.ReactNode;
   /** Clases extra del `<form>`. El ancho máximo por defecto es `max-w-4xl`. */
   className?: string;
+  /**
+   * `id` del `<form>`. Sirve para que un botón situado FUERA de la tarjeta la
+   * envíe con el atributo `form="…"` — el caso de una barra de guardado
+   * persistente que vive al pie de la pantalla, no dentro del formulario.
+   */
+  id?: string;
+  /**
+   * Oculta el pie con el botón de guardado. Se usa cuando esa acción ya vive en
+   * una barra persistente: sin esto la pantalla mostraba **el mismo botón dos
+   * veces**, que contradice la regla de la guía "una acción principal por
+   * bloque". Al ocultarlo, el envío debe quedar garantizado desde fuera (ver `id`).
+   */
+  hideFooter?: boolean;
   children: React.ReactNode;
 }
 
@@ -55,10 +68,13 @@ export function FormCard({
   submitDisabled = false,
   footerAside,
   className = "",
+  id,
+  hideFooter = false,
   children,
 }: FormCardProps) {
   return (
     <form
+      id={id}
       onSubmit={onSubmit}
       className={`w-full max-w-4xl rounded-[12px] border border-neutral-border bg-white p-6 font-inter shadow-[0_8px_24px_rgba(17,34,48,0.06)] sm:p-8 ${className}`}
     >
@@ -81,12 +97,14 @@ export function FormCard({
 
       <div className="space-y-6">{children}</div>
 
-      <div className="mt-8 flex items-center justify-end gap-3 border-t border-admin-divider pt-6">
-        {footerAside}
-        <Button variant="primary" type="submit" disabled={saving || submitDisabled}>
-          {saving ? savingLabel : submitLabel}
-        </Button>
-      </div>
+      {!hideFooter && (
+        <div className="mt-8 flex items-center justify-end gap-3 border-t border-admin-divider pt-6">
+          {footerAside}
+          <Button variant="primary" type="submit" disabled={saving || submitDisabled}>
+            {saving ? savingLabel : submitLabel}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

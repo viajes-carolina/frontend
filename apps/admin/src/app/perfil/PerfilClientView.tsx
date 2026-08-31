@@ -1,14 +1,20 @@
 "use client";
 
 import React from "react";
-import { FormCard, FormField } from "@vc/ui";
+import { Badge, FormCard, FormField, type BadgeTone } from "@vc/ui";
 import { useAdminAuth } from "../../hooks/useAdminAuth";
 import { useChangeOwnPassword } from "../../hooks/useChangeOwnPassword";
 
-const ROLE_LABELS: Record<string, string> = {
-  SUPER_ADMIN: "Super Administrador",
-  CONTENT_EDITOR: "Editor de Contenido",
-  ADVISOR: "Asesora",
+/**
+ * Mismo criterio de tono que la tabla de usuarios: `accent` para el control
+ * total, `info` para el rol operativo y `neutral` para el de alcance acotado.
+ * La píldora naranja sólida de antes daba a cualquier rol el peso visual de la
+ * acción principal de la pantalla.
+ */
+const ROLE_BADGES: Record<string, { label: string; tone: BadgeTone }> = {
+  SUPER_ADMIN: { label: "Super Administrador", tone: "accent" },
+  CONTENT_EDITOR: { label: "Editor de Contenido", tone: "info" },
+  ADVISOR: { label: "Asesora", tone: "neutral" },
 };
 
 export function PerfilClientView() {
@@ -32,9 +38,9 @@ export function PerfilClientView() {
               @{currentUser.username} · {currentUser.email}
             </p>
           </div>
-          <span className="rounded-[6px] bg-brand-accent px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-on-accent">
-            {ROLE_LABELS[currentUser.role] || currentUser.role}
-          </span>
+          <Badge tone={ROLE_BADGES[currentUser.role]?.tone ?? "neutral"}>
+            {ROLE_BADGES[currentUser.role]?.label ?? currentUser.role}
+          </Badge>
         </div>
       )}
 

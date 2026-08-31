@@ -7,7 +7,6 @@ import {
   MediaPageResponse,
   UpdateMediaFocalPointRequest,
   HomeHeroDTO,
-  UpdateHomeHeroRequest,
   TestimonialDTO,
   CreateOrUpdateTestimonialRequest,
   FaqItemDTO,
@@ -22,7 +21,6 @@ import {
   UpdateContactPageRequest,
   SubmitContactInquiryRequest,
   ContactInquiryDTO,
-  UpdateInquiryStatusRequest,
   PublicContactResponse,
   BlogCategoryDTO,
   CreateOrUpdateBlogCategoryRequest,
@@ -48,9 +46,7 @@ import {
   UpdateHomeFaqSectionRequest,
   ClaimRecordDTO,
   SubmitClaimRequest,
-  UpdateClaimStatusRequest,
   ContactExploreLinkDTO,
-  CreateOrUpdateContactExploreLinkRequest,
   AdminUserDTO,
   LoginRequest,
   LoginResponse,
@@ -491,13 +487,13 @@ export const DEFAULT_MEDIA_ASSETS: MediaAssetDTO[] = [
 
 export let MOCK_SITE_SETTINGS: SiteSettingsDTO = { ...DEFAULT_SITE_SETTINGS };
 export let MOCK_OFFICE_LOCATION: OfficeLocationDTO = { ...DEFAULT_OFFICE_LOCATION };
-export let MOCK_MEDIA_ASSETS: MediaAssetDTO[] = [...DEFAULT_MEDIA_ASSETS];
+export const MOCK_MEDIA_ASSETS: MediaAssetDTO[] = [...DEFAULT_MEDIA_ASSETS];
 export let MOCK_HOME_HERO: HomeHeroDTO = { ...DEFAULT_HOME_HERO };
-export let MOCK_PROMOTIONS: PromotionDTO[] = [...DEFAULT_PROMOTIONS];
-export let MOCK_TESTIMONIALS: TestimonialDTO[] = [...DEFAULT_TESTIMONIALS];
-export let MOCK_FAQS: FaqItemDTO[] = [...DEFAULT_FAQS];
+export const MOCK_PROMOTIONS: PromotionDTO[] = [...DEFAULT_PROMOTIONS];
+export const MOCK_TESTIMONIALS: TestimonialDTO[] = [...DEFAULT_TESTIMONIALS];
+export const MOCK_FAQS: FaqItemDTO[] = [...DEFAULT_FAQS];
 export let MOCK_ABOUT_PAGE: AboutPageDTO = { ...DEFAULT_ABOUT_PAGE };
-export let MOCK_ADVISORS: TravelAdvisorDTO[] = [...DEFAULT_ADVISORS];
+export const MOCK_ADVISORS: TravelAdvisorDTO[] = [...DEFAULT_ADVISORS];
 
 export function getMockSiteSettings(): SiteSettingsDTO {
   return MOCK_SITE_SETTINGS;
@@ -890,8 +886,8 @@ export const DEFAULT_BLOG_POSTS: BlogPostDTO[] = [
   },
 ];
 
-export let MOCK_BLOG_CATEGORIES: BlogCategoryDTO[] = [...DEFAULT_BLOG_CATEGORIES];
-export let MOCK_BLOG_POSTS: BlogPostDTO[] = [...DEFAULT_BLOG_POSTS];
+export const MOCK_BLOG_CATEGORIES: BlogCategoryDTO[] = [...DEFAULT_BLOG_CATEGORIES];
+export const MOCK_BLOG_POSTS: BlogPostDTO[] = [...DEFAULT_BLOG_POSTS];
 
 export function getMockPublicBlog(categorySlug?: string, search?: string, page = 0, size = 9): PublicBlogResponse {
   let filtered = MOCK_BLOG_POSTS.filter((p) => p.active && p.status === "PUBLISHED");
@@ -1162,7 +1158,7 @@ export const DEFAULT_INQUIRIES: ContactInquiryDTO[] = [
 ];
 
 export let MOCK_CONTACT_PAGE: ContactPageDTO = { ...DEFAULT_CONTACT_PAGE };
-export let MOCK_INQUIRIES: ContactInquiryDTO[] = [...DEFAULT_INQUIRIES];
+export const MOCK_INQUIRIES: ContactInquiryDTO[] = [...DEFAULT_INQUIRIES];
 
 export function getMockPublicContact(): PublicContactResponse {
   return {
@@ -1510,8 +1506,8 @@ export const DEFAULT_CLAIM_RECORDS: ClaimRecordDTO[] = [
   },
 ];
 
-export let MOCK_CONTACT_EXPLORE_LINKS: ContactExploreLinkDTO[] = [...DEFAULT_CONTACT_EXPLORE_LINKS];
-export let MOCK_CLAIM_RECORDS: ClaimRecordDTO[] = [...DEFAULT_CLAIM_RECORDS];
+export const MOCK_CONTACT_EXPLORE_LINKS: ContactExploreLinkDTO[] = [...DEFAULT_CONTACT_EXPLORE_LINKS];
+export const MOCK_CLAIM_RECORDS: ClaimRecordDTO[] = [...DEFAULT_CLAIM_RECORDS];
 
 export function getMockContactExploreLinks(): ContactExploreLinkDTO[] {
   return MOCK_CONTACT_EXPLORE_LINKS.filter((l) => l.active);
@@ -1664,8 +1660,8 @@ export const DEFAULT_AUDIT_LOGS: AuditLogDTO[] = [
   },
 ];
 
-export let MOCK_ADMIN_USERS: AdminUserDTO[] = [...DEFAULT_ADMIN_USERS];
-export let MOCK_AUDIT_LOGS: AuditLogDTO[] = [...DEFAULT_AUDIT_LOGS];
+export const MOCK_ADMIN_USERS: AdminUserDTO[] = [...DEFAULT_ADMIN_USERS];
+export const MOCK_AUDIT_LOGS: AuditLogDTO[] = [...DEFAULT_AUDIT_LOGS];
 
 export function loginMockAdmin(req: LoginRequest): LoginResponse {
   const ident = req.usernameOrEmail.trim().toLowerCase();

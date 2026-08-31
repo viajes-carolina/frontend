@@ -7,7 +7,9 @@ import type { HomeHeroDTO, MediaAssetDTO } from "@vc/api-client";
 import { useAdminHomeHero } from "./useAdminHomeHero";
 import { useAdminPublishing } from "./useAdminPublishing";
 import { useMediaMetadata } from "./useMediaMetadata";
+import { buildEditorActionBar } from "../lib/editorActionBar";
 import { buildLastSavedLabel } from "../lib/editorSaveState";
+import { describeHeroContentStatus } from "../lib/heroContentStatus";
 import type { PreviewDevice } from "../components/editor/EditorDeviceSwitch";
 
 /**
@@ -136,8 +138,42 @@ export function useHeroEditor({ initialHero, initialLastSavedLabel }: UseHeroEdi
     [hero],
   );
 
+  /**
+   * Estado del bloque "Contenido principal" (Figma 958:459, punto 3). Se compara
+   * contra `hero.hero`, que es el último DTO guardado/cargado — no contra las
+   * props iniciales, que quedan obsoletas en cuanto se guarda una vez.
+   */
+  const contentStatus = useMemo(
+    () =>
+      describeHeroContentStatus(
+        {
+          eyebrowText: hero.eyebrowText,
+          titleHighlight: hero.titleHighlight,
+          titleAccent: hero.titleAccent,
+          description: hero.description,
+        },
+        hero.hero,
+      ),
+    [hero.eyebrowText, hero.titleHighlight, hero.titleAccent, hero.description, hero.hero],
+  );
+
+  const actionBar = useMemo(
+    () =>
+      buildEditorActionBar({
+        dirty: hero.isDirty,
+        saving: hero.isSaving,
+        publishing: isPublishing,
+        savedAtLabel: lastSavedLabel,
+        onCancel: cancel,
+        onSaveAndPublish: saveAndPublish,
+      }),
+    [hero.isDirty, hero.isSaving, isPublishing, lastSavedLabel, cancel, saveAndPublish],
+  );
+
   return {
     hero,
+    actionBar,
+    contentStatus,
     assets: media.assets,
     selectMain: withRegister(hero.handleSelectBgMedia),
     selectSupport1: withRegister(hero.handleSelectSecondary1Media),

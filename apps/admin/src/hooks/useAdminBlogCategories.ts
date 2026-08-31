@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import type { FormFeedbackState } from "@vc/ui";
+import { useConfirmDialog, type FormFeedbackState } from "@vc/ui";
 import {
   BlogCategoryDTO,
   CreateOrUpdateBlogCategoryRequest,
@@ -17,6 +17,7 @@ export function useAdminBlogCategories(initialCategories: BlogCategoryDTO[]) {
   const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
   const showSuccess = (message: string) => setFeedback({ tone: "success", message });
   const showError = (message: string) => setFeedback({ tone: "error", message });
+  const deactivateConfirmation = useConfirmDialog();
 
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
   const [name, setNameRaw] = useState("");
@@ -106,23 +107,42 @@ export function useAdminBlogCategories(initialCategories: BlogCategoryDTO[]) {
     }
   };
 
-  const handleDeleteCategory = async (id: number) => {
-    if (!confirm("¿Estás seguro de desactivar esta categoría?")) return;
+  const deactivateCategory = async (category: BlogCategoryDTO) => {
     try {
       setSaving(true);
-      await apiClient.deleteBlogCategory(id);
-      showSuccess("Categoría desactivada.");
+      await apiClient.deleteBlogCategory(category.id);
+      showSuccess(`La categoría "${category.name}" quedó desactivada.`);
       await refreshData();
     } catch (err) {
       console.error(err);
-      showError("Error al desactivar la categoría.");
+      showError(`No se pudo desactivar "${category.name}". Sigue activa.`);
     } finally {
       setSaving(false);
     }
   };
 
+  /**
+   * Antes preguntaba con `confirm("¿Estás seguro de desactivar esta
+   * categoría?")`, sin decir cuál ni qué implicaba. La guía exige nombrar el
+   * objeto y su consecuencia: desactivar no borra la categoría ni los
+   * artículos que cuelgan de ella, solo la retira del sitio público, y eso es
+   * lo que el cuerpo cuenta.
+   */
+  const handleDeleteCategory = (category: BlogCategoryDTO) => {
+    deactivateConfirmation.ask({
+      title: `¿Desactivar la categoría "${category.name}"?`,
+      description:
+        "Dejará de ofrecerse como filtro en el blog público. Los artículos que ya la usan no se borran, pero quedarán sin categoría visible hasta que la reactives.",
+      confirmLabel: "Sí, desactivar",
+      busyLabel: "Desactivando…",
+      onConfirm: () => deactivateCategory(category),
+    });
+  };
+
   return {
     categories,
+    /** Props para `<ConfirmDialog {...deactivateConfirmation} />`. */
+    deactivateConfirmation: deactivateConfirmation.dialogProps,
     isLoading,
     saving,
     feedback,

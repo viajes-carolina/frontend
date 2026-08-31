@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { FormFeedbackState } from "@vc/ui";
+import { useConfirmDialog, type FormFeedbackState } from "@vc/ui";
 import {
   FaqItemDTO,
   CreateOrUpdateFaqRequest,
   apiClient,
 } from "@vc/api-client";
+import { confirmSubject } from "../lib/confirmSubject";
 
 export function useAdminFaqItems(initialFaqs: FaqItemDTO[]) {
   const [faqs, setFaqs] = useState<FaqItemDTO[]>(initialFaqs);
@@ -17,6 +18,7 @@ export function useAdminFaqItems(initialFaqs: FaqItemDTO[]) {
   const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
   const showSuccess = (message: string) => setFeedback({ tone: "success", message });
   const showError = (message: string) => setFeedback({ tone: "error", message });
+  const deactivateConfirmation = useConfirmDialog();
 
   const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState<FaqItemDTO | null>(null);
@@ -93,21 +95,50 @@ export function useAdminFaqItems(initialFaqs: FaqItemDTO[]) {
     }
   };
 
-  const handleDeleteFaq = async (id: number) => {
-    if (!confirm("¿Desactivar esta pregunta frecuente?")) return;
+  const deactivateFaq = async (faq: FaqItemDTO) => {
     try {
-      await apiClient.deleteFaq(id);
-      showSuccess("Pregunta frecuente desactivada.");
+      setSaving(true);
+      await apiClient.deleteFaq(faq.id);
+      showSuccess("La pregunta quedó desactivada y ya no aparece en el acordeón.");
       await refreshData();
     } catch (err) {
       console.error(err);
-      showError("Error al desactivar FAQ.");
+      showError("No se pudo desactivar la pregunta. Sigue publicada en el acordeón.");
+    } finally {
+      setSaving(false);
     }
+  };
+
+  /**
+   * Antes preguntaba con `confirm("¿Desactivar esta pregunta frecuente?")`:
+   * "esta" no identificaba nada en una tabla de veinte filas. El título cita
+   * ahora la pregunta —recortada, porque son frases largas— y el cuerpo dice
+   * que se retira del acordeón sin borrarse.
+   */
+  const handleDeleteFaq = (faq: FaqItemDTO) => {
+    deactivateConfirmation.ask({
+      title: `¿Desactivar "${confirmSubject(faq.question)}"?`,
+      description:
+        "La pregunta dejará de mostrarse en el acordeón del sitio público. No se borra: sigue en esta tabla y puedes reactivarla cuando quieras.",
+      confirmLabel: "Sí, desactivar",
+      busyLabel: "Desactivando…",
+      onConfirm: () => deactivateFaq(faq),
+    });
   };
 
   return {
     faqs,
+    /** Props para `<ConfirmDialog {...deactivateConfirmation} />`. */
+    deactivateConfirmation: deactivateConfirmation.dialogProps,
     isLoading,
+    /**
+     * Cuándo pintar el esqueleto de la tabla. NO es `isLoading` a secas: la
+     * pantalla llega con las preguntas ya renderizadas desde el servidor y el
+     * refresco de montaje volvería a poner `isLoading` en `true`, tapando con
+     * un esqueleto una tabla que ya se estaba leyendo. Solo hay esqueleto
+     * cuando de verdad no hay nada que mostrar.
+     */
+    loading: isLoading && faqs.length === 0,
     saving,
     feedback,
     isFaqModalOpen, setIsFaqModalOpen,

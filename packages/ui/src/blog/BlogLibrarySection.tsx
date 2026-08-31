@@ -174,18 +174,17 @@ export const BlogLibrarySection: React.FC<BlogLibrarySectionProps> = ({
   const leftColumn = posts.slice(0, half);
   const rightColumn = posts.slice(half);
 
-  return (
-    <section className="relative overflow-hidden bg-[#fbfaf6] py-16 sm:py-20 lg:py-24">
-      {/* Numeral gigante ambiental de fondo con el total de artículos — solo
-          decorativo, se omite del árbol de accesibilidad. */}
-      <p
-        aria-hidden="true"
-        className="pointer-events-none absolute top-0 right-2 select-none font-display text-[90px] font-semibold leading-none text-[#b8d1db] sm:right-4 sm:text-[130px] lg:top-2 lg:right-8 lg:text-[170px]"
-      >
-        {total}
-      </p>
+  /* Aquí había un numeral gigante de fondo con el total de artículos: un «4» en
+     gris azulado, de hasta 170px, detrás del encabezado. Era el único número de
+     fondo del sitio y se retiró — el total ya se lee en el antetítulo
+     («… · 4 ARTÍCULOS»), así que solo repetía el dato compitiendo con el título.
 
-      <div className="relative mx-auto max-w-[1440px] px-6 md:px-10 xl:px-16">
+     Con él se fue el `relative` de la sección, que existía solo para anclarlo.
+     `overflow-hidden` se conserva: las animaciones de entrada de `Reveal`
+     desplazan sus bloques antes de asentarlos. */
+  return (
+    <section className="overflow-hidden bg-[#fbfaf6] py-16 sm:py-20 lg:py-24">
+      <div className="mx-auto max-w-[1440px] px-6 md:px-10 xl:px-16">
         <Reveal>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
             <div className="max-w-2xl">

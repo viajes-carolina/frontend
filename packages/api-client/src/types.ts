@@ -212,10 +212,70 @@ export interface PromotionDTO {
   source?: "MANUAL" | "FACEBOOK" | string;
   facebookPostId?: string;
   facebookPermalinkUrl?: string;
+  /**
+   * `true` si esta promoción es una de las 3 que el Home muestra ahora mismo.
+   *
+   * Lo calcula el SERVIDOR, que es el único que ve el catálogo entero. Con la
+   * lista paginada, el navegador solo tiene 15 filas y no puede saber si la que
+   * está mirando entra en el podio — deducirlo aquí pintaría "★ En portada"
+   * sobre filas que no lo están.
+   *
+   * Opcional porque este DTO sirve a dos endpoints y solo uno lo manda: el
+   * listado del panel (`GET /admin/v1/promotions`) sí, y el público
+   * (`GET /public/v1/promotions/featured`) no — allí la pregunta no tiene
+   * sentido, porque las 3 que devuelve SON la portada.
+   */
+  featuredInHome?: boolean;
 }
 
 export interface SetPromotionActiveRequest {
   active: boolean;
+}
+
+/* ── Catálogo de promociones del panel: listado paginado ───────────────────── */
+
+/** `""` = sin filtrar. `VENCIDA` mira `validUntil`, no `active`. */
+export type PromotionStatusFilter = "" | "VISIBLE" | "OCULTA" | "VENCIDA";
+/** `""` = todas. `FACEBOOK` es legado del ingestor retirado. */
+export type PromotionSourceFilter = "" | "MANUAL" | "FACEBOOK";
+/** `""` = todas. `SI`/`NO` según `featuredInHome`. */
+export type PromotionFeaturedFilter = "" | "SI" | "NO";
+
+/** Los parámetros de `GET /api/admin/v1/promotions`. `page` es base 0. */
+export interface AdminPromotionsQuery {
+  page: number;
+  size: number;
+  search?: string;
+  status?: PromotionStatusFilter;
+  source?: PromotionSourceFilter;
+  featured?: PromotionFeaturedFilter;
+}
+
+/**
+ * Contadores del catálogo COMPLETO, sin aplicar búsqueda ni filtros.
+ *
+ * Es lo que alimenta las cuatro tarjetas de la cabecera: describen todo el
+ * catálogo también mientras hay un filtro puesto. Si se calcularan sobre las
+ * filas devueltas dirían "3 promociones totales" con 32 en la base de datos.
+ */
+export interface PromotionsCatalogSummaryDTO {
+  total: number;
+  /** Cuántas están en el podio del Home (siempre 3 si hay suficientes activas). */
+  featuredInHome: number;
+  /** Las que tienen `facebookPermalinkUrl`: tienen post en la Página. */
+  publishedOnFacebook: number;
+  /** `active === false`. */
+  hidden: number;
+}
+
+export interface AdminPromotionsPageResponse {
+  items: PromotionDTO[];
+  /** Filas que cumplen los filtros. Alimenta la paginación, no el resumen. */
+  total: number;
+  /** Página devuelta, base 0. */
+  page: number;
+  size: number;
+  summary: PromotionsCatalogSummaryDTO;
 }
 
 // El slug se autogenera en el backend a partir del título — no se envía aquí.

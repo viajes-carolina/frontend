@@ -1,5 +1,15 @@
 [
   {
+    "id": 1788140884179,
+    "username": "admin",
+    "action": "PUBLISH_ON_DEMAND_ISR",
+    "entityType": "PUBLISHING",
+    "entityId": "HOME",
+    "ipHash": "a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0",
+    "detailsJson": "{\"target\":\"HOME\",\"tags\":[\"home\",\"/\"],\"reason\":\"Publicación del Hero principal desde el editor de Inicio\"}",
+    "createdAt": "2026-08-31T01:48:04.179Z"
+  },
+  {
     "id": 1787160676479,
     "username": "admin",
     "action": "PUBLISH_ON_DEMAND_ISR",

@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { MediaAssetDTO } from "@vc/api-client";
 import {
   Button,
+  Checkbox,
   FormField,
   ImageIcon,
   MediaPickerModal,
@@ -183,19 +184,16 @@ export function TestimonialFormModal({
           </div>
 
           <div className="space-y-3 border-t border-admin-divider pt-5">
-            <div className="flex items-start gap-2.5">
-              <input
-                type="checkbox"
-                id="consentCheckbox"
-                checked={consentConfirmed}
-                onChange={(e) => setConsentConfirmed(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] accent-brand-accent"
-                required
-              />
-              <label htmlFor="consentCheckbox" className="cursor-pointer font-inter text-xs text-neutral-muted">
-                He verificado el consentimiento expreso del cliente para publicar su opinión y datos.
-              </label>
-            </div>
+            {/* Casilla del kit: la de antes era un `<input>` suelto con
+                `accent-brand-accent`, fuera de la anatomía 18x18/radio 4 y sin
+                el anillo de foco que la guía exige. */}
+            <Checkbox
+              checked={consentConfirmed}
+              onChange={(e) => setConsentConfirmed(e.target.checked)}
+              required
+              wrapperClassName="items-start"
+              label="He verificado el consentimiento expreso del cliente para publicar su opinión y datos."
+            />
 
             <Toggle
               checked={active}

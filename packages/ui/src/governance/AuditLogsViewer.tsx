@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import type { AuditLogDTO } from "@vc/api-client";
+import { Badge, type BadgeTone } from "../primitives/Badge";
 import { Button } from "../primitives/Button";
-import { RefreshCwIcon } from "../icons/icons";
+import { ClipboardListIcon, RefreshCwIcon } from "../icons/icons";
 import { TableSkeletonRows } from "../primitives/Skeleton";
+import { EmptyState } from "../states/EmptyState";
 
 export interface AuditLogsViewerProps {
   logs: AuditLogDTO[];
@@ -24,27 +26,23 @@ const CATEGORIES = [
   { label: "Sistema", value: "SYSTEM" },
 ];
 
-const BADGE_BASE = "inline-flex items-center rounded-[6px] border px-2 py-0.5 text-[11px] font-semibold";
-
 /**
- * Tono del badge de acción, dentro de la paleta del panel.
+ * Tono SEMÁNTICO de la acción registrada. La bitácora se lee buscando lo que
+ * salió mal, así que el tono clasifica por CONSECUENCIA y no por color previo:
  *
- * Antes usaba `emerald/blue/rose/amber` de la paleta por defecto de Tailwind,
- * que no participa de la retokenización del admin — los badges se veían de
- * otra marca. Los cuatro tonos salen ahora de los tres colores disponibles
- * (navy, azul de marca, naranja de acento) más el neutro.
+ *   CREATE / PUBLISH   success  algo entró en producción y salió bien.
+ *   UPDATE / PATCH     info     cambio ordinario sobre algo que ya existía.
+ *   DELETE / FAILED    danger   se destruyó algo o el intento falló.
+ *   resto              neutral  lecturas, inicios de sesión, eventos de sistema.
+ *
+ * El código de la acción (`USER_DELETE`, `AUTH_LOGIN_FAILED`…) va escrito
+ * dentro del badge: el tono acompaña, nunca sustituye al texto.
  */
-function actionBadgeClasses(action: string): string {
-  if (action.includes("CREATE") || action.includes("PUBLISH")) {
-    return `${BADGE_BASE} border-brand-navy/20 bg-brand-navy/10 text-brand-navy`;
-  }
-  if (action.includes("UPDATE") || action.includes("PATCH")) {
-    return `${BADGE_BASE} border-brand-blue/25 bg-brand-blue/10 text-brand-blue`;
-  }
-  if (action.includes("DELETE") || action.includes("FAILED")) {
-    return `${BADGE_BASE} border-brand-accent/30 bg-brand-accent/10 text-brand-accent`;
-  }
-  return `${BADGE_BASE} border-neutral-border bg-neutral-soft text-neutral-muted`;
+function actionBadgeTone(action: string): BadgeTone {
+  if (action.includes("DELETE") || action.includes("FAILED")) return "danger";
+  if (action.includes("CREATE") || action.includes("PUBLISH")) return "success";
+  if (action.includes("UPDATE") || action.includes("PATCH")) return "info";
+  return "neutral";
 }
 
 export const AuditLogsViewer: React.FC<AuditLogsViewerProps> = ({
@@ -55,6 +53,7 @@ export const AuditLogsViewer: React.FC<AuditLogsViewerProps> = ({
   onRefresh,
 }) => {
   const [expandedLogId, setExpandedLogId] = useState<number | null>(null);
+  const isFiltered = selectedEntityType !== "ALL";
 
   return (
     <div className="space-y-6 font-inter">
@@ -121,8 +120,29 @@ export const AuditLogsViewer: React.FC<AuditLogsViewerProps> = ({
                 <TableSkeletonRows columns={6} />
               ) : logs.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-[13px] text-neutral-muted">
-                    No se encontraron registros de auditoría para este filtro.
+                  {/* Dos vacíos distintos, y la diferencia importa en una
+                      bitácora: "todavía no hay nada registrado" es una
+                      afirmación sobre el sistema; "ningún registro pasa este
+                      filtro" es una afirmación sobre el filtro. Confundirlos
+                      hace creer que no ocurrió nada cuando sí ocurrió. */}
+                  <td colSpan={6} className="p-0">
+                    {isFiltered ? (
+                      <EmptyState
+                        title="Ningún registro coincide"
+                        message="No hay eventos de esta categoría en los últimos registros. Los demás siguen guardados."
+                        icon={<ClipboardListIcon size={28} aria-hidden="true" />}
+                        action={{
+                          label: "Ver todas las categorías",
+                          onClick: () => onSelectEntityType("ALL"),
+                        }}
+                      />
+                    ) : (
+                      <EmptyState
+                        title="Aún no hay registros de auditoría"
+                        message="En cuanto alguien inicie sesión o modifique contenido, el evento quedará anotado aquí."
+                        icon={<ClipboardListIcon size={28} aria-hidden="true" />}
+                      />
+                    )}
                   </td>
                 </tr>
               ) : (
@@ -136,7 +156,7 @@ export const AuditLogsViewer: React.FC<AuditLogsViewerProps> = ({
                         <span className="font-mono text-xs font-semibold text-admin-value">@{l.username}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={actionBadgeClasses(l.action)}>{l.action}</span>
+                        <Badge tone={actionBadgeTone(l.action)}>{l.action}</Badge>
                       </td>
                       <td className="px-6 py-4">
                         <span className="rounded-[6px] bg-neutral-soft px-2 py-0.5 font-mono text-xs text-admin-label">

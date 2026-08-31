@@ -1,7 +1,9 @@
 "use client";
 
-import { Disclosure, FormField } from "@vc/ui";
+import { Badge, Disclosure, FormField } from "@vc/ui";
 import { EditorSection } from "../../../components/editor/EditorSection";
+import { HeroActionFields } from "./HeroActionFields";
+import { HeroAdvancedFields } from "./HeroAdvancedFields";
 import { HeroCollageFields } from "./HeroCollageFields";
 import type { HeroEditorState } from "../../../hooks/useHeroEditor";
 
@@ -12,22 +14,27 @@ export interface HeroEditorFormProps {
 const TWO_COLUMNS = "grid grid-cols-1 gap-4 sm:grid-cols-2";
 
 /**
- * Tarjeta de edición del Hero principal.
+ * Tarjeta de edición del Hero principal (Figma 958:459).
  *
- * Sigue la anatomía del diseño (secciones con encabezado + ayuda, separadores,
- * campos compactos) pero cubre TODO lo que el Hero real guarda, que es más de
- * lo que el mockup dibuja: además del mensaje, la acción y la imagen, hay una
- * acción secundaria y una línea de confianza. Ninguna se elimina para
- * parecerse al mockup.
+ * Dos bloques siempre visibles — el mensaje y el collage, que es lo que
+ * cualquiera viene a cambiar — y tres acordeones cerrados para el resto:
+ * "Acciones y enlaces", "Línea de confianza" y "Opciones avanzadas". Ninguna
+ * de las cuatro pantallas antiguas del Hero pierde campos por el camino; solo
+ * cambian de sitio.
  */
 export function HeroEditorForm({ editor }: HeroEditorFormProps) {
-  const { hero } = editor;
+  const { hero, contentStatus } = editor;
 
   return (
     <div className="rounded-[8px] border border-neutral-border bg-white p-5">
       <EditorSection
         title="Contenido principal"
         help="Define el mensaje y el tono del primer bloque de la portada."
+        status={
+          <Badge tone={contentStatus.tone} title={contentStatus.detail}>
+            {contentStatus.label}
+          </Badge>
+        }
       >
         <FormField
           density="compact"
@@ -80,91 +87,27 @@ export function HeroEditorForm({ editor }: HeroEditorFormProps) {
         <HeroCollageFields editor={editor} />
       </EditorSection>
 
-      <EditorSection
-        divider
-        title="Acción principal"
-        help="Configura el botón de WhatsApp visible debajo del mensaje."
-      >
-        <div className={TWO_COLUMNS}>
-          <FormField
-            density="compact"
-            id="hero-whatsapp-cta"
-            label="Texto del botón"
-            value={hero.whatsappCtaText}
-            onChange={(e) => hero.setWhatsappCtaText(e.target.value)}
-            placeholder="Cuéntanos qué imaginas"
-            required
-          />
-          <FormField
-            density="compact"
-            id="hero-whatsapp-message"
-            label="Mensaje prefijado"
-            value={hero.whatsappMessageOverride}
-            onChange={(e) => hero.setWhatsappMessageOverride(e.target.value)}
-            placeholder="Hola Viajes Carolina, quiero empezar a planear mi próximo viaje."
-          />
-        </div>
-      </EditorSection>
-
-      <EditorSection
-        divider
-        title="Acción secundaria"
-        help="Botón opcional junto al de WhatsApp. Si dejas el texto vacío, no se muestra."
-      >
-        <div className={TWO_COLUMNS}>
-          <FormField
-            density="compact"
-            id="hero-secondary-cta"
-            label="Texto del botón"
-            value={hero.secondaryCtaText}
-            onChange={(e) => hero.setSecondaryCtaText(e.target.value)}
-            placeholder="Explorar promociones"
-          />
-          <FormField
-            density="compact"
-            id="hero-secondary-url"
-            label="Destino"
-            value={hero.secondaryCtaUrl}
-            onChange={(e) => hero.setSecondaryCtaUrl(e.target.value)}
-            placeholder="#promociones"
-          />
-        </div>
-      </EditorSection>
-
-      <EditorSection
-        divider
-        title="Línea de confianza"
-        help="Frase con corazón bajo el botón. Solo cifras reales, nunca estimadas."
-      >
-        <FormField
-          density="compact"
-          id="hero-trust-stat"
-          label="Texto de confianza"
-          value={hero.trustStatText}
-          onChange={(e) => hero.setTrustStatText(e.target.value)}
-          placeholder="Más de 1,000 viajeros han confiado en nosotros."
-        />
-
-        <Disclosure summary="Campos heredados (sin uso actual en el Hero)">
-          <p className="mb-3 font-inter text-[10px] leading-[1.5] text-neutral-muted">
-            Estos tres pilares se siguen guardando pero el Hero actual no los muestra: venían de un
-            diseño anterior y se conservan por si otra sección los necesita.
-          </p>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {[0, 1, 2].map((index) => (
-              <FormField
-                key={index}
-                density="compact"
-                id={`hero-trust-indicator-${index}`}
-                label={`Pilar ${index + 1}`}
-                value={hero.trustIndicators[index] || ""}
-                onChange={(e) => hero.updateTrustIndicator(index, e.target.value)}
-                placeholder={`Pilar ${index + 1}`}
-              />
-            ))}
-          </div>
+      <div className="mt-5">
+        <Disclosure summary="Acciones y enlaces" variant="panel" className="mb-2">
+          <HeroActionFields hero={hero} />
         </Disclosure>
-      </EditorSection>
+
+        <Disclosure summary="Línea de confianza" variant="panel" className="mb-2">
+          <FormField
+            density="compact"
+            id="hero-trust-stat"
+            label="Texto de confianza"
+            value={hero.trustStatText}
+            onChange={(e) => hero.setTrustStatText(e.target.value)}
+            placeholder="Más de 1,000 viajeros han confiado en nosotros."
+            hint="Aparece con un corazón bajo el botón. Solo cifras reales, nunca estimadas."
+          />
+        </Disclosure>
+
+        <Disclosure summary="Opciones avanzadas" variant="panel">
+          <HeroAdvancedFields hero={hero} />
+        </Disclosure>
+      </div>
     </div>
   );
 }

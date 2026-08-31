@@ -5,8 +5,22 @@ import type { PublishRequestDTO, PublishResponseDTO } from "@vc/api-client";
 import { FormCard } from "../forms/FormCard";
 import { FormField } from "../forms/FormField";
 import { ArrowUpRightIcon, CheckIcon, PlaneIcon } from "../icons/icons";
+import { Badge, type BadgeTone } from "../primitives/Badge";
 import { FormSkeleton } from "../primitives/Skeleton";
 import { usePublishingManager } from "./usePublishingManager";
+
+/**
+ * Resultado de la última publicación, en tono semántico y con etiqueta legible.
+ * Antes se pintaba el enum crudo (`SUCCESS`, `NEVER_PUBLISHED`) en una única
+ * píldora navy, así que una publicación FALLIDA se anunciaba con el mismo color
+ * que una correcta.
+ */
+const PUBLISH_STATUS_BADGES: Record<string, { label: string; tone: BadgeTone }> = {
+  SUCCESS: { label: "Publicado", tone: "success" },
+  FAILED: { label: "Falló", tone: "danger" },
+  NEVER_PUBLISHED: { label: "Nunca publicado", tone: "neutral" },
+  UNKNOWN: { label: "Estado desconocido", tone: "neutral" },
+};
 
 export interface PublishingManagerCardProps {
   lastPublishStatus: PublishResponseDTO | null;
@@ -22,6 +36,12 @@ export const PublishingManagerCard: React.FC<PublishingManagerCardProps> = ({
   draftUrl,
 }) => {
   const manager = usePublishingManager({ lastPublishStatus, onPublish });
+  const statusBadge = manager.publishResult
+    ? (PUBLISH_STATUS_BADGES[manager.publishResult.status] ?? {
+        label: manager.publishResult.status,
+        tone: "neutral" as BadgeTone,
+      })
+    : null;
 
   // Solo mostramos el esqueleto mientras se resuelve la carga inicial (aún sin
   // `publishResult`) — si `loading` vuelve a activarse con datos ya cargados
@@ -120,9 +140,7 @@ export const PublishingManagerCard: React.FC<PublishingManagerCardProps> = ({
               <CheckIcon size={16} aria-hidden="true" className="shrink-0 text-brand-accent" />
               <span>Estado de la última publicación</span>
             </h3>
-            <span className="rounded-full border border-brand-navy/20 bg-brand-navy/10 px-2.5 py-0.5 text-xs font-semibold text-brand-navy">
-              {manager.publishResult.status}
-            </span>
+            {statusBadge && <Badge tone={statusBadge.tone}>{statusBadge.label}</Badge>}
           </div>
 
           <div className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-3">

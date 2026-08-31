@@ -12,9 +12,16 @@ import {
   ResponsiveImage,
   Toggle,
   FORM_LABEL_CLASSES,
+  type FormFeedbackState,
 } from "@vc/ui";
 import { HeroPhotoSlot } from "../../components/HeroPhotoSlot";
+import { TemplateExchangeBar } from "../../components/TemplateExchangeBar";
 import { useMediaPicker } from "../../hooks/useMediaPicker";
+import {
+  blogPostTemplateFilename,
+  parseBlogPostTemplate,
+  serializeBlogPostTemplate,
+} from "../../lib/blogPostTemplate";
 
 export interface BlogFormModalProps {
   isOpen: boolean;
@@ -175,6 +182,54 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
     });
   };
 
+  /* ── Intercambio por archivo .md ────────────────────────────────────────────
+     A diferencia de promociones, cuyo estado vive en el hook, este modal guarda
+     el suyo en `useState` propios: la aplicación del archivo se escribe aquí,
+     llamando a esos mismos setters. Solo se toca lo que el archivo trae con
+     valor, para que una plantilla a medio rellenar no vacíe un artículo. */
+
+  const buildTemplateFile = () => ({
+    filename: blogPostTemplateFilename(slug, title),
+    content: serializeBlogPostTemplate(
+      {
+        title,
+        slug,
+        summary,
+        categoryId,
+        authorAdvisorId,
+        status,
+        isFeatured,
+        active,
+        readingTimeMinutes,
+        tagsInput,
+        contentMarkdown,
+      },
+      categories,
+      advisors
+    ),
+  });
+
+  const applyTemplateFile = (text: string): FormFeedbackState => {
+    const { draft, feedback } = parseBlogPostTemplate(text, categories, advisors);
+
+    if (draft.title !== undefined) setTitle(draft.title);
+    /* El slug se escribe DESPUÉS del título a propósito: `handleTitleChange`
+       lo regenera al teclear, pero aquí se aplica el que trae el archivo, que
+       es el que ya está compartido si el artículo existe. */
+    if (draft.slug !== undefined) setSlug(draft.slug);
+    if (draft.summary !== undefined) setSummary(draft.summary);
+    if (draft.categoryId !== undefined) setCategoryId(draft.categoryId);
+    if (draft.authorAdvisorId !== undefined) setAuthorAdvisorId(draft.authorAdvisorId);
+    if (draft.status !== undefined) setStatus(draft.status);
+    if (draft.isFeatured !== undefined) setIsFeatured(draft.isFeatured);
+    if (draft.active !== undefined) setActive(draft.active);
+    if (draft.readingTimeMinutes !== undefined) setReadingTimeMinutes(draft.readingTimeMinutes);
+    if (draft.tagsInput !== undefined) setTagsInput(draft.tagsInput);
+    if (draft.contentMarkdown !== undefined) setContentMarkdown(draft.contentMarkdown);
+
+    return feedback;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!authorAdvisorId) return;
@@ -212,6 +267,12 @@ export const BlogFormModal: React.FC<BlogFormModalProps> = ({
         closeLabel="Cerrar formulario de artículo del blog"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
+          <TemplateExchangeBar
+            hint="¿Prefieres redactar el artículo fuera del panel? Descarga la plantilla, escríbela en tu editor y súbela aquí. La portada se elige abajo."
+            buildFile={buildTemplateFile}
+            applyFile={applyTemplateFile}
+          />
+
           {/* Title & Slug */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

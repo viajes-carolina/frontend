@@ -2,7 +2,16 @@
 
 import React from "react";
 import type { BlogCategoryDTO } from "@vc/api-client";
-import { Button, FormFeedback, FormField, Toggle } from "@vc/ui";
+import {
+  Badge,
+  Button,
+  ConfirmDialog,
+  EmptyState,
+  FormFeedback,
+  FormField,
+  Toggle,
+} from "@vc/ui";
+import { TableEmptyIcon } from "../../../components/table";
 import { useAdminBlogCategories } from "../../../hooks/useAdminBlogCategories";
 
 export interface CategoriesPanelProps {
@@ -29,6 +38,7 @@ export function CategoriesPanel({ initialCategories }: CategoriesPanelProps) {
     resetForm,
     handleSaveCategory,
     handleDeleteCategory,
+    deactivateConfirmation,
   } = useAdminBlogCategories(initialCategories);
 
   return (
@@ -130,15 +140,10 @@ export function CategoriesPanel({ initialCategories }: CategoriesPanelProps) {
                       <span className="rounded-[6px] bg-neutral-soft px-1.5 py-0.5 font-mono text-[11px] text-neutral-muted">
                         /{cat.slug}
                       </span>
-                      <span
-                        className={`rounded-[6px] border px-1.5 py-0.5 text-[10px] font-bold ${
-                          cat.active
-                            ? "border-brand-navy/20 bg-brand-navy/10 text-brand-navy"
-                            : "border-neutral-border bg-neutral-soft text-neutral-muted"
-                        }`}
-                      >
+                      {/* Ofrecida en el blog público = éxito; retirada = neutro. */}
+                      <Badge tone={cat.active ? "success" : "neutral"}>
                         {cat.active ? "Activa" : "Inactiva"}
-                      </span>
+                      </Badge>
                     </div>
                     {cat.description && (
                       <p className="mt-0.5 line-clamp-1 text-xs text-neutral-muted">{cat.description}</p>
@@ -149,7 +154,7 @@ export function CategoriesPanel({ initialCategories }: CategoriesPanelProps) {
                     <Button variant="outline" size="sm" onClick={() => startEditCategory(cat)}>
                       Editar
                     </Button>
-                    <Button variant="danger" size="sm" onClick={() => handleDeleteCategory(cat.id)}>
+                    <Button variant="danger" size="sm" onClick={() => handleDeleteCategory(cat)}>
                       Desactivar
                     </Button>
                   </div>
@@ -157,12 +162,20 @@ export function CategoriesPanel({ initialCategories }: CategoriesPanelProps) {
               ))}
             </div>
           ) : (
-            <div className="p-12 text-center text-sm text-neutral-muted">
-              Aún no hay categorías registradas.
-            </div>
+            /* "Explica qué falta y ofrece una acción útil." La acción vive en
+               el formulario de arriba, en esta misma pantalla, así que el
+               mensaje apunta a él en vez de repetir un botón que duplicaría
+               el envío. */
+            <EmptyState
+              title="Aún no hay categorías"
+              message="Crea la primera con el formulario de arriba para poder clasificar los artículos del blog."
+              icon={<TableEmptyIcon size={28} />}
+            />
           )}
         </div>
       </div>
+
+      <ConfirmDialog {...deactivateConfirmation} />
     </div>
   );
 }

@@ -5,10 +5,12 @@ import type { AdminUserDTO, CreateAdminUserRequest, UpdateAdminUserRequest } fro
 import { FormFeedback } from "../forms/FormFeedback";
 import { FormField } from "../forms/FormField";
 import { FormSelect } from "../primitives/FormSelect";
+import { Badge, type BadgeTone } from "../primitives/Badge";
 import { Button } from "../primitives/Button";
 import { Modal } from "../primitives/Modal";
-import { PlusIcon } from "../icons/icons";
+import { PlusIcon, UsersIcon } from "../icons/icons";
 import { TableSkeletonRows } from "../primitives/Skeleton";
+import { EmptyState } from "../states/EmptyState";
 import { useUsersTableForm } from "./useUsersTableForm";
 
 export interface UsersTableProps {
@@ -18,30 +20,21 @@ export interface UsersTableProps {
   onUpdateUser: (id: number, req: UpdateAdminUserRequest) => Promise<AdminUserDTO>;
 }
 
-const BADGE_BASE =
-  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold";
-
 /**
- * Tono del badge de rol dentro de la paleta del panel. Antes usaba
- * `purple/amber/teal` de la paleta por defecto de Tailwind, ajena a la
- * retokenización del admin.
+ * Rol de acceso en los tonos SEMÁNTICOS del kit, no en un color propio.
+ *
+ *   SUPER_ADMIN     accent   control total: es el rol que debe saltar a la vista.
+ *   CONTENT_EDITOR  info     rol operativo ordinario.
+ *   ADVISOR         neutral  alcance más acotado; nada que destacar.
+ *
+ * Los puntos de color que acompañaban a cada píldora desaparecen: no añadían
+ * información — el nombre del rol ya está escrito — y eran justo la señal
+ * "solo color" que la guía desaconseja.
  */
-const ROLE_BADGES: Record<string, { label: string; classes: string; dot: string }> = {
-  SUPER_ADMIN: {
-    label: "Super Admin",
-    classes: `${BADGE_BASE} border-brand-accent/30 bg-brand-accent/10 text-brand-accent`,
-    dot: "bg-brand-accent",
-  },
-  CONTENT_EDITOR: {
-    label: "Editor de Contenidos",
-    classes: `${BADGE_BASE} border-brand-navy/20 bg-brand-navy/10 text-brand-navy`,
-    dot: "bg-brand-navy",
-  },
-  ADVISOR: {
-    label: "Asesora de Viajes",
-    classes: `${BADGE_BASE} border-brand-blue/25 bg-brand-blue/10 text-brand-blue`,
-    dot: "bg-brand-blue",
-  },
+const ROLE_BADGES: Record<string, { label: string; tone: BadgeTone }> = {
+  SUPER_ADMIN: { label: "Super Admin", tone: "accent" },
+  CONTENT_EDITOR: { label: "Editor de Contenidos", tone: "info" },
+  ADVISOR: { label: "Asesora de Viajes", tone: "neutral" },
 };
 
 export const UsersTable: React.FC<UsersTableProps> = ({
@@ -96,8 +89,15 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                 <TableSkeletonRows columns={6} />
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-[13px] text-neutral-muted">
-                    No se encontraron usuarios registrados.
+                  {/* "Explica qué falta y ofrece una acción útil": el texto
+                      suelto de antes no hacía ninguna de las dos cosas. */}
+                  <td colSpan={6} className="p-0">
+                    <EmptyState
+                      title="Aún no hay usuarios"
+                      message="Crea la primera cuenta de operador para que alguien más pueda entrar al panel con su propio rol."
+                      icon={<UsersIcon size={28} aria-hidden="true" />}
+                      action={{ label: "Nuevo usuario", onClick: form.openCreateModal }}
+                    />
                   </td>
                 </tr>
               ) : (
@@ -118,31 +118,15 @@ export const UsersTable: React.FC<UsersTableProps> = ({
                       </td>
                       <td className="px-6 py-4 text-admin-label">{u.email}</td>
                       <td className="px-6 py-4">
-                        {badge ? (
-                          <span className={badge.classes}>
-                            <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${badge.dot}`} />
-                            {badge.label}
-                          </span>
-                        ) : (
-                          <span
-                            className={`${BADGE_BASE} border-neutral-border bg-neutral-soft text-neutral-muted`}
-                          >
-                            {u.role}
-                          </span>
-                        )}
+                        <Badge tone={badge ? badge.tone : "neutral"}>
+                          {badge ? badge.label : u.role}
+                        </Badge>
                       </td>
                       <td className="px-6 py-4">
-                        {u.active ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-navy/20 bg-brand-navy/[0.06] px-2.5 py-0.5 text-xs font-medium text-brand-navy">
-                            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-brand-navy" />
-                            Activo
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-border bg-neutral-soft px-2.5 py-0.5 text-xs font-medium text-neutral-muted">
-                            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-admin-checkbox" />
-                            Inactivo
-                          </span>
-                        )}
+                        {/* Cuenta habilitada = éxito; bloqueada = neutro. */}
+                        <Badge tone={u.active ? "success" : "neutral"}>
+                          {u.active ? "Activo" : "Inactivo"}
+                        </Badge>
                       </td>
                       <td className="px-6 py-4 text-xs text-neutral-muted">
                         {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("es-PE") : "Sin ingresos aún"}

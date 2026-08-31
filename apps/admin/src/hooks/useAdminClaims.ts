@@ -1,75 +1,74 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { apiClient, ClaimRecordDTO } from "@vc/api-client";
 import type { FormFeedbackState } from "@vc/ui";
 
 export function useAdminClaims(initialClaims: ClaimRecordDTO[] = []) {
   const [claims, setClaims] = useState<ClaimRecordDTO[]>(initialClaims);
-  const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [loading, setLoading] = useState(false);
   const [selectedClaim, setSelectedClaim] = useState<ClaimRecordDTO | null>(null);
   const [updating, setUpdating] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  /**
+   * El fallo de CARGA es el estado de la región, no el resultado de una acción:
+   * lo pinta `RetryableError` y persiste hasta que un reintento lo resuelva. El
+   * banner efímero de `FormFeedback` queda solo para el resultado de responder
+   * un reclamo. Antes ambos compartían `error` y un fallo de red dejaba la
+   * bandeja vacía con un mensaje que se borraba solo.
+   */
+  const [loadError, setLoadError] = useState(false);
+  const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
 
-  const fetchClaims = useCallback(async (status?: string) => {
+  /**
+   * Trae la bandeja ENTERA. El filtro por estado lo resuelve ahora el kit de
+   * tabla en el cliente: pedirlo al servidor obligaba a recargar —y a vaciar la
+   * tabla— cada vez que alguien cambiaba de pestaña, y dejaba al kit creyendo
+   * que "no hay reclamos" cuando lo que no había era reclamos DE ESE estado.
+   */
+  const fetchClaims = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
-      const data = await apiClient.getAdminClaims(status);
+      setLoadError(false);
+      const data = await apiClient.getAdminClaims();
       setClaims(data);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Error al cargar las hojas de reclamación";
-      setError(msg);
+    } catch {
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const handleFilterChange = (newStatus: string) => {
-    setStatusFilter(newStatus);
-    fetchClaims(newStatus);
-  };
-
   const updateStatus = async (id: number, newStatus: string, responseNotes?: string) => {
     try {
       setUpdating(true);
-      setError(null);
-      setSuccessMessage(null);
+      setFeedback(null);
       const updated = await apiClient.updateClaimStatus(id, newStatus, responseNotes);
       setClaims((prev) => prev.map((c) => (c.id === id ? updated : c)));
       if (selectedClaim?.id === id) {
         setSelectedClaim(updated);
       }
-      setSuccessMessage(`Reclamo ${updated.claimCode} actualizado a ${newStatus}`);
+      setFeedback({
+        tone: "success",
+        message: `El reclamo ${updated.claimCode} quedó registrado con su respuesta.`,
+      });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Error al actualizar estado del reclamo";
-      setError(msg);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : "No se pudo actualizar el reclamo. Su estado sigue como estaba.";
+      setFeedback({ tone: "error", message: msg });
     } finally {
       setUpdating(false);
     }
   };
 
-  // Un único valor para `FormFeedback`. Se deriva en vez de reemplazar los dos
-  // estados porque `fetchClaims` limpia solo el error y deja vivo el mensaje de
-  // éxito anterior: unificarlos en un state cambiaría ese comportamiento.
-  const feedback: FormFeedbackState | null = error
-    ? { tone: "error", message: error }
-    : successMessage
-      ? { tone: "success", message: successMessage }
-      : null;
-
   return {
     claims,
-    statusFilter,
     loading,
+    loadError,
     selectedClaim,
     setSelectedClaim,
     updating,
-    error,
-    successMessage,
     feedback,
-    handleFilterChange,
     updateStatus,
-    refetch: () => fetchClaims(statusFilter),
+    reload: fetchClaims,
   };
 }

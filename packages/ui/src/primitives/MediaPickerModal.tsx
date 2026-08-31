@@ -75,6 +75,22 @@ export function MediaPickerModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, loading, selectedMediaId, items]);
 
+  // `Modal` le cede el Escape a este overlay cuando está encima (busca
+  // `[data-vc-overlay]` para no cerrar el formulario entero), pero el selector
+  // no lo manejaba: con él abierto, Escape no hacía nada y el teclado quedaba
+  // sin salida. Aquí se cierra el selector y se detiene la propagación, de modo
+  // que un solo Escape cierra una sola capa.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      onClose();
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

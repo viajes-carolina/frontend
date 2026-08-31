@@ -2,13 +2,20 @@
 
 import React from "react";
 import { CloseIcon } from "../icons/icons";
+import { useDialogFocusTrap } from "./useDialogFocusTrap";
 
 export interface ModalProps {
   title: string;
   description?: string;
   onClose: () => void;
-  /** Ancho máximo del panel del modal. Por defecto "2xl". */
-  maxWidth?: "2xl" | "3xl";
+  /**
+   * Ancho máximo del panel del modal. Por defecto "2xl".
+   *
+   * Los tamaños grandes son para formularios que se reparten en varias
+   * columnas en pantallas anchas; en un formulario de una sola columna
+   * estirar el panel solo alarga las líneas y se lee peor.
+   */
+  maxWidth?: "2xl" | "3xl" | "5xl";
   closeLabel?: string;
   children: React.ReactNode;
 }
@@ -16,10 +23,8 @@ export interface ModalProps {
 const MAX_WIDTH_CLASSES: Record<NonNullable<ModalProps["maxWidth"]>, string> = {
   "2xl": "max-w-2xl",
   "3xl": "max-w-3xl",
+  "5xl": "max-w-5xl",
 };
-
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
  * Chrome visual compartido (overlay + panel + header) para los modales de
@@ -30,6 +35,8 @@ const FOCUSABLE_SELECTOR =
  * El diálogo atrapa el foco mientras está abierto, se cierra con `Escape` y
  * devuelve el foco al elemento que lo abrió: sin eso, tabular dentro del modal
  * se escapaba a la página de atrás y no había forma de salir con el teclado.
+ * Ese comportamiento vive ahora en `useDialogFocusTrap`, compartido con
+ * `ConfirmDialog`.
  */
 export function Modal({
   title,
@@ -39,63 +46,9 @@ export function Modal({
   closeLabel = "Cerrar",
   children,
 }: ModalProps) {
-  const panelRef = React.useRef<HTMLDivElement>(null);
+  const panelRef = useDialogFocusTrap<HTMLDivElement>({ onClose });
   const titleId = React.useId();
   const descriptionId = `${titleId}-description`;
-
-  // `onClose` suele ser una lambda nueva en cada render del caller; guardarla
-  // en un ref evita re-suscribir el listener (y perder el foco previo) en cada
-  // pulsación de tecla del formulario.
-  const onCloseRef = React.useRef(onClose);
-  onCloseRef.current = onClose;
-
-  React.useEffect(() => {
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-
-    const panel = panelRef.current;
-    const firstFocusable = panel?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
-    (firstFocusable ?? panel)?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        // Si hay otro diálogo abierto DENTRO de este (el selector de imágenes),
-        // Escape le pertenece a él: cerrar el modal exterior descartaría el
-        // formulario completo.
-        if (panelRef.current?.querySelector("[data-vc-overlay]")) return;
-        event.stopPropagation();
-        onCloseRef.current();
-        return;
-      }
-
-      if (event.key !== "Tab" || !panelRef.current) return;
-
-      const focusables = Array.from(
-        panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
-      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
-
-      if (focusables.length === 0) {
-        event.preventDefault();
-        return;
-      }
-
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      previouslyFocused?.focus?.();
-    };
-  }, []);
 
   return (
     <div

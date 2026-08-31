@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { FormFeedbackState } from "@vc/ui";
+import { useConfirmDialog, type FormFeedbackState } from "@vc/ui";
 import {
   TestimonialDTO,
   CreateOrUpdateTestimonialRequest,
@@ -18,6 +18,7 @@ export function useAdminTestimonialItems(initialTestimonials: TestimonialDTO[]) 
   const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
   const showSuccess = (message: string) => setFeedback({ tone: "success", message });
   const showError = (message: string) => setFeedback({ tone: "error", message });
+  const deactivateConfirmation = useConfirmDialog();
 
   const [isTestimonialModalOpen, setIsTestimonialModalOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<TestimonialDTO | null>(null);
@@ -119,21 +120,50 @@ export function useAdminTestimonialItems(initialTestimonials: TestimonialDTO[]) 
     }
   };
 
-  const handleDeleteTestimonial = async (id: number) => {
-    if (!confirm("¿Desactivar este testimonio?")) return;
+  const deactivateTestimonial = async (testimonial: TestimonialDTO) => {
     try {
-      await apiClient.deleteTestimonial(id);
-      showSuccess("Testimonio desactivado.");
+      setSaving(true);
+      await apiClient.deleteTestimonial(testimonial.id);
+      showSuccess(`El testimonio de "${testimonial.clientName}" quedó desactivado.`);
       await refreshData();
     } catch (err) {
       console.error(err);
-      showError("Error al desactivar testimonio.");
+      showError(
+        `No se pudo desactivar el testimonio de "${testimonial.clientName}". Sigue visible en el sitio.`
+      );
+    } finally {
+      setSaving(false);
     }
+  };
+
+  /**
+   * Antes preguntaba con `confirm("¿Desactivar este testimonio?")`, que no
+   * decía de quién. Ahora el título nombra al cliente —lo único que identifica
+   * una fila de esa tabla de un vistazo— y el cuerpo aclara que se retira de
+   * la sección de Experiencias sin borrarse.
+   */
+  const handleDeleteTestimonial = (testimonial: TestimonialDTO) => {
+    deactivateConfirmation.ask({
+      title: `¿Desactivar el testimonio de "${testimonial.clientName}"?`,
+      description:
+        "Dejará de mostrarse en la sección de Experiencias del sitio público. No se borra: sigue en esta tabla y puedes reactivarlo cuando quieras.",
+      confirmLabel: "Sí, desactivar",
+      busyLabel: "Desactivando…",
+      onConfirm: () => deactivateTestimonial(testimonial),
+    });
   };
 
   return {
     testimonials,
+    /** Props para `<ConfirmDialog {...deactivateConfirmation} />`. */
+    deactivateConfirmation: deactivateConfirmation.dialogProps,
     isLoading,
+    /**
+     * Cuándo pintar el esqueleto. NO es `isLoading` a secas: la pantalla llega
+     * con los testimonios ya renderizados desde el servidor y el refresco de
+     * montaje taparía con un esqueleto una tabla que ya se estaba leyendo.
+     */
+    loading: isLoading && testimonials.length === 0,
     saving,
     feedback,
     isTestimonialModalOpen, setIsTestimonialModalOpen,

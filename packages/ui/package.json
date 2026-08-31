@@ -8,7 +8,11 @@
     ".": "./src/index.ts",
     "./*": "./src/*"
   },
+  "scripts": {
+    "lint": "eslint . --max-warnings=0"
+  },
   "dependencies": {
+    "@vc/api-client": "workspace:*",
     "@vc/config": "workspace:*"
   },
   "peerDependencies": {

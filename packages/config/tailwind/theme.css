@@ -68,6 +68,80 @@
 }
 
 /* ==========================================================================
+   Geometría de los controles compartidos (contrato entre productos)
+
+   `packages/ui` es un solo paquete para dos productos con geometrías
+   distintas: el sitio público usa píldoras y cápsulas anchas; el panel usa la
+   caja compacta de su guía de estilo (botón de 44px, radio de 7px). La paleta
+   ya se separa sola porque cada app compila su propio CSS y el panel redefine
+   los tokens de color en su `@theme` — pero el radio, el alto y el padding
+   viven en la cadena de clases del componente, que SÍ es compartida.
+
+   Estas variables son ese punto de articulación: aquí quedan los valores
+   ACTUALES del sitio público (cambiarlos altera apps/web), y
+   `apps/admin/src/app/globals.css` los redefine con los del diseño. Los
+   componentes de `packages/ui` las consumen con `rounded-[var(--…)]` y
+   equivalentes, de modo que una sola cadena de clases sirve a los dos.
+
+   No van dentro de `@theme` a propósito: no pertenecen a ningún namespace de
+   Tailwind (no son `--color-*` ni `--spacing-*`), y como declaraciones sueltas
+   en `:root` se emiten siempre, sin depender del tree-shaking de tokens.
+
+   `--vc-focus-ring` NO se declara aquí: es la excepción deliberada. El anillo
+   de foco del sitio público cambia de color según la variante del botón
+   (naranja en `primary`, navy en `outline`, verde en `whatsapp`), así que una
+   sola variable no puede describirlo. `Button` lo lee como
+   `var(--vc-focus-ring, var(--vc-btn-ring))`: mientras nadie defina
+   `--vc-focus-ring`, gana el color por variante (web, sin cambios); el panel
+   la define una vez en su `globals.css` y todas las variantes pasan al azul
+   de foco que pide su guía de accesibilidad.
+   ========================================================================== */
+:root {
+  /* Radio de botones (tamaños `md`/`lg`) y de campos. Hoy en la web es
+     `rounded-xl`. */
+  --vc-control-radius: 0.75rem;
+  /* Radio del botón `sm`. Hoy en la web es `rounded-lg`. */
+  --vc-control-radius-sm: 0.5rem;
+
+  /* Caja del botón `md` — el tamaño por defecto y el único que la guía del
+     panel especifica. `auto` reproduce exactamente el comportamiento actual de
+     la web, donde el alto lo dicta el contenido más el padding. */
+  --vc-btn-md-height: auto;
+  --vc-btn-md-padding-x: 1.25rem; /* px-5 */
+  --vc-btn-md-padding-y: 0.625rem; /* py-2.5 */
+  --vc-btn-md-font-size: 0.875rem; /* text-sm */
+  --vc-btn-md-line-height: 1.25rem; /* line-height de text-sm */
+
+  /* Switch (`Toggle`). El sitio público lo usa en /cookies con el riel de
+     44x24 y el thumb de 20px; `--vc-switch-travel` es el desplazamiento del
+     thumb al activarse (antes era `translate-x-full`, es decir, su propio
+     ancho — que solo cuadra si riel = 2·margen + 2·thumb). */
+  --vc-switch-width: 2.75rem; /* w-11 */
+  --vc-switch-height: 1.5rem; /* h-6 */
+  --vc-switch-thumb: 1.25rem; /* h-5 w-5 */
+  --vc-switch-travel: 1.25rem;
+}
+
+/* Estado deshabilitado de los controles compartidos.
+   Vive como regla CSS y no como utilidades `disabled:*` en el componente
+   porque el panel no lo atenúa, lo repinta: su guía pide una superficie plana
+   propia (#edf0f2 sobre #8c96a1, sin borde), y eso no se puede expresar con
+   una variable de color cuyo valor por defecto tendría que ser "el color que
+   ya tenía la variante".
+
+   Reproduce exactamente lo que hacían `disabled:opacity-50` y
+   `disabled:cursor-not-allowed` (misma especificidad, 0-2-0), así que el sitio
+   público no cambia. `apps/admin/src/app/globals.css` la redefine más
+   adelante en la misma capa. */
+@layer utilities {
+  .vc-control:disabled,
+  .vc-control[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* ==========================================================================
    Animaciones Escalonadas de Entrada (Hero & Interacciones)
    ========================================================================== */
 

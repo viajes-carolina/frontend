@@ -2,6 +2,8 @@ import {
   SiteSettingsDTO,
   OfficeLocationDTO,
   PromotionDTO,
+  AdminPromotionsQuery,
+  AdminPromotionsPageResponse,
   SetPromotionActiveRequest,
   CreateOrUpdatePromotionRequest,
   BlogPostDTO,
@@ -10,7 +12,6 @@ import {
   MediaPageResponse,
   UpdateMediaFocalPointRequest,
   HomeHeroDTO,
-  UpdateHomeHeroRequest,
   TestimonialDTO,
   CreateOrUpdateTestimonialRequest,
   FaqItemDTO,
@@ -25,7 +26,6 @@ import {
   UpdateContactPageRequest,
   SubmitContactInquiryRequest,
   ContactInquiryDTO,
-  UpdateInquiryStatusRequest,
   PublicContactResponse,
   BlogCategoryDTO,
   CreateOrUpdateBlogPostRequest,
@@ -49,7 +49,6 @@ import {
   UpdateHomeFaqSectionRequest,
   ClaimRecordDTO,
   SubmitClaimRequest,
-  UpdateClaimStatusRequest,
   ClaimAttachmentDTO,
   ContactExploreLinkDTO,
   AdminUserDTO,
@@ -107,9 +106,6 @@ import {
 const STORAGE_KEY_SETTINGS = "vc_site_settings";
 const STORAGE_KEY_OFFICE = "vc_office_location";
 const STORAGE_KEY_HERO = "vc_home_hero";
-const STORAGE_KEY_PROMOTIONS = "vc_promotions";
-const STORAGE_KEY_TRUST = "vc_trust_data";
-const STORAGE_KEY_ABOUT = "vc_about_page";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -380,12 +376,59 @@ export class ViajesCarolinaApiClient {
     return await res.json();
   }
 
-  async getAdminPromotions(): Promise<PromotionDTO[]> {
-    const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), await this.withServerAuthCookie({
-      cache: "no-store",
-    }));
+  /* `getAdminPromotions()` — el listado sin paginar — se eliminó a propósito.
+     El endpoint ya no devuelve un array sino `{items,total,page,size,summary}`,
+     así que ese método habría entregado el objeto tipado como `PromotionDTO[]`:
+     un fallo silencioso, no un error. Y su sola existencia invitaba a volver a
+     descargar el catálogo entero, que es justo lo que se quiso evitar (en el
+     backend se retiró `findAllPromotions()` por la misma razón).
+     Usa `getAdminPromotionsPage(query)`. */
+
+  /**
+   * Una página del catálogo de promociones del panel, ya buscada y filtrada por
+   * el servidor.
+   *
+   *   GET /api/admin/v1/promotions?page=0&size=15&search=&status=&source=&featured=
+   *   → { items, total, page, size, summary }
+   *
+   * `total` cuenta las filas que cumplen los filtros (alimenta la paginación) y
+   * `summary` cuenta el catálogo entero SIN filtros (alimenta las métricas de la
+   * cabecera, que siguen describiendo todo aunque se esté filtrando).
+   *
+   * ── Por qué se comprueba la forma de la respuesta ────────────────────────
+   * Este endpoint respondía antes con un array pelado de TODAS las promociones.
+   * Si un despliegue vuelve a esa versión, `data.items` sería `undefined` y la
+   * pantalla se quedaría en blanco sin decir por qué. Se comprueba y se lanza un
+   * error que nombra el problema, en vez de recortar el array aquí y seguir
+   * como si nada: el objetivo del cambio es no descargar el catálogo entero, y
+   * disimular que se está descargando sería vaciar el cambio por dentro.
+   */
+  async getAdminPromotionsPage(query: AdminPromotionsQuery): Promise<AdminPromotionsPageResponse> {
+    const params = new URLSearchParams({
+      page: String(query.page),
+      size: String(query.size),
+      search: query.search ?? "",
+      status: query.status ?? "",
+      source: query.source ?? "",
+      featured: query.featured ?? "",
+    });
+    const res = await fetch(
+      this.getEffectiveUrl(`admin/v1/promotions?${params.toString()}`),
+      await this.withServerAuthCookie({ cache: "no-store" })
+    );
     if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
-    return await res.json();
+
+    const body = (await res.json()) as Partial<AdminPromotionsPageResponse> | null;
+    if (!body || !Array.isArray(body.items) || !body.summary) {
+      /* Sin `items` no hay página; sin `summary` no hay contadores del catálogo,
+         y rellenarlos con ceros pintaría "0 promociones totales" y el vacío de
+         "aún no hay ninguna" sobre un catálogo lleno. Es preferible un error que
+         nombra el problema a una pantalla que miente con aplomo. */
+      throw new Error(
+        "GET /admin/v1/promotions respondió sin `items` o sin `summary`: el backend no está sirviendo el listado paginado."
+      );
+    }
+    return body as AdminPromotionsPageResponse;
   }
 
   async setPromotionActive(id: number, active: boolean): Promise<PromotionDTO> {
@@ -402,6 +445,26 @@ export class ViajesCarolinaApiClient {
   async createPromotion(payload: CreateOrUpdatePromotionRequest): Promise<PromotionDTO> {
     const res = await fetch(this.getEffectiveUrl("admin/v1/promotions"), {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new ApiError(res.status, await parseErrorBody(res));
+    return await res.json();
+  }
+
+  /**
+   * Corrige el contenido de una promoción existente (PUT .../promotions/{id}).
+   *
+   * Es el MISMO payload que la creación, pero el backend trata cuatro campos
+   * como no editables y los conserva: `slug` (es la URL pública y ya hay posts
+   * de Facebook apuntando a ella), `active`, `source` y el post asociado
+   * (`facebookPostId` / `facebookPermalinkUrl`). Editar tampoco republica en
+   * Facebook — la Graph API crearía un post nuevo en vez de editar el que ya
+   * existe. La visibilidad sigue cambiándose solo con `setPromotionActive`.
+   */
+  async updatePromotion(id: number, payload: CreateOrUpdatePromotionRequest): Promise<PromotionDTO> {
+    const res = await fetch(this.getEffectiveUrl(`admin/v1/promotions/${id}`), {
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });

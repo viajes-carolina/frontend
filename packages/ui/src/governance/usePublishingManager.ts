@@ -59,7 +59,17 @@ export interface UsePublishingManagerOptions {
 export function usePublishingManager({ lastPublishStatus, onPublish }: UsePublishingManagerOptions) {
   const [selectedTarget, setSelectedTarget] = useState<string>("ALL");
   const [reason, setReason] = useState<string>("");
-  const [publishResult, setPublishResult] = useState<PublishResponseDTO | null>(lastPublishStatus);
+  /**
+   * Resultado de la publicación disparada EN ESTA SESIÓN. Antes el estado se
+   * inicializaba con `lastPublishStatus` y ahí se quedaba: la pantalla monta
+   * con `null` (la petición del estado va en vuelo) y `useState` solo lee su
+   * valor inicial una vez, así que el bloque "Estado de la última publicación"
+   * no aparecía jamás hasta publicar a mano. Guardando solo lo propio y
+   * cayendo en la prop, el estado servido se ve en cuanto llega y el resultado
+   * recién disparado lo sustituye.
+   */
+  const [ownResult, setOwnResult] = useState<PublishResponseDTO | null>(null);
+  const publishResult = ownResult ?? lastPublishStatus;
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<FormFeedbackState | null>(null);
 
@@ -72,7 +82,7 @@ export function usePublishingManager({ lastPublishStatus, onPublish }: UsePublis
         target: selectedTarget,
         reason: reason.trim() || "Actualización de contenidos desde panel de gobernanza",
       });
-      setPublishResult(res);
+      setOwnResult(res);
       setReason("");
       setFeedback({ tone: "success", message: res.message || "Publicación disparada correctamente." });
     } catch (err) {

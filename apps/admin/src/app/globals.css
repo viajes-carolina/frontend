@@ -41,12 +41,21 @@
   --color-neutral-surface: #eef1f4;
   --animate-fade-in: hero-fade-in var(--motion-fast) var(--ease-enter);
 
-  /* Rojo desaturado para acciones destructivas: legible como "peligro" y
-     claramente distinto del naranja de acento, que aquí significa "acción
-     principal". */
-  --color-danger-surface: #fdecec;
-  --color-danger-border: #f3c9c9;
-  --color-danger-ink: #a32020;
+  /* --- Acción destructiva (guía de estilo del panel) ---
+     Los tres tonos vienen del diseño: son los del botón "Eliminar" (superficie
+     #fff0f0, borde #edb8b8, texto #b82929). Antes estaban fijados a
+     #fdecec / #f3c9c9 / #a32020, que no salían de ninguna pantalla del diseño
+     sino de una aproximación hecha a ojo; se corrigen aquí.
+
+     Siguen viviendo en el `@theme` del panel y no en el tema compartido porque
+     `apps/web` conserva su propia gama rosa para la variante `danger`. */
+  --color-danger-surface: #fff0f0;
+  --color-danger-border: #edb8b8;
+  --color-danger-ink: #b82929;
+  /* Borde del campo en error. Es un rojo más saturado que el del botón: sobre
+     el gris del formulario un borde de 1px necesita más contraste que una
+     superficie completa. */
+  --color-danger-field: #d14040;
 
   /* --- Colores de estado (diseño del dashboard, node-id 930-3) ---
      Familia semántica para señalar el estado de una pieza de contenido: el
@@ -63,6 +72,60 @@
   --color-state-pending: #f95d09;
   --color-state-pending-surface: #fff2e8;
   --color-state-warning: #e88f14;
+
+  /* --- Informativo y foco (guía de estilo del panel) ---
+     El mismo azul cumple dos papeles en el diseño: es el tono del badge
+     "Publicado"/informativo y es el color con el que TODO control marca el
+     foco. Un único token para que no se separen: si el azul de marca del panel
+     cambia, el anillo de foco cambia con él. */
+  --color-info: #2980ba;
+  --color-info-surface: #e5f2fa;
+  /* Borde de un control apoyado SOBRE `info-surface`. La guía lo lista en su
+     paleta como "#ccdbe5 (botón sobre superficie info)" y lo usan los botones
+     blancos de la barra de acciones masivas: `neutral-border` (#d6dee3) es un
+     gris neutro que sobre el azul claro se ve sucio. */
+  --color-info-border: #ccdbe5;
+
+  /* --- Neutro apagado (guía de estilo del panel) ---
+     Superficie y texto del badge neutro ("Borrador"). La superficie es además
+     la del campo deshabilitado, por eso el token no se llama `badge-*`. */
+  --color-neutral-quiet-surface: #f0f2f5;
+  --color-neutral-quiet-ink: #5b6b79;
+
+  /* --- Control deshabilitado (guía de estilo del panel) ---
+     Superficie plana del botón deshabilitado ("Acción no disponible"), sin
+     borde. El texto sirve también al campo deshabilitado. */
+  --color-control-disabled-surface: #edf0f2;
+  --color-control-disabled-ink: #8c96a1;
+
+  /* Superficie del badge de acento ("En portada"). El texto es el
+     `brand-accent` #f95d09 que ya existe. */
+  --color-accent-soft-surface: #fff0e3;
+
+  /* Superficie del badge de WhatsApp. El texto es `state-published` #138f63,
+     que ya existe. */
+  --color-whatsapp-surface: #e0faeb;
+
+  /* Borde del checkbox de selección sin marcar. */
+  --color-checkbox-border: #bfc9d1;
+
+  /* Fondo de la fila seleccionada de una tabla ("Fila seleccionada" en la
+     paleta de la guía). Es más claro que `info-surface` (#e5f2fa, el de la
+     barra de acciones masivas) a propósito: la barra es un bloque que reclama
+     atención, la fila solo confirma que está marcada y tiene que dejar leer su
+     contenido encima. El separador de fila que la guía cita junto a él (#f0f2f5)
+     ya existe como `neutral-quiet-surface`. */
+  --color-row-selected-surface: #f2faff;
+
+  /* "Tinta de título" de la guía. Un paso más oscura que `neutral-ink`
+     (#17212b): es el tono del título de una fila de tabla, que necesita
+     separarse de su línea de meta en `neutral-quiet-ink`. */
+  --color-admin-heading: #0d1e2a;
+
+  /* Divisoria de la guía de estilo. Más clara que `admin-divider` (#e0e5eb),
+     que separa bloques dentro de una tarjeta; esta separa secciones de la
+     propia guía. */
+  --color-divider-soft: #e5ebf0;
 
   /* --- Tokens propios del panel --- */
   --color-admin-field: #f9f9fa;
@@ -86,10 +149,70 @@
   --font-sora: "Inter", system-ui, -apple-system, sans-serif;
 }
 
+/* ==========================================================================
+   Geometría de los controles compartidos — lado del panel
+
+   Contraparte de las variables `--vc-*` que `@vc/config/tailwind/theme.css`
+   declara con los valores del sitio público. Los componentes de `packages/ui`
+   son los mismos en los dos productos; lo que cambia es lo que estas variables
+   valen en el CSS de cada app.
+
+   Al redefinirlas aquí, `Button` y `Toggle` adoptan la caja de la guía de
+   estilo del panel sin que `apps/web` se entere: su bundle nunca ve este
+   archivo.
+   ========================================================================== */
 :root {
   background-color: var(--color-neutral-soft);
   color: var(--color-neutral-ink);
   font-family: var(--font-inter);
+
+  /* Botones y campos: radio de 7px en todos los tamaños. */
+  --vc-control-radius: 7px;
+  --vc-control-radius-sm: 7px;
+
+  /* Botón del diseño: alto 44px, padding 16/12, texto de 12px. El alto fijo
+     y el padding conviven porque `box-sizing: border-box` hace que el alto
+     mande; el padding define el respiro horizontal y el mínimo vertical. */
+  --vc-btn-md-height: 44px;
+  --vc-btn-md-padding-x: 16px;
+  --vc-btn-md-padding-y: 12px;
+  --vc-btn-md-font-size: 12px;
+  --vc-btn-md-line-height: 20px;
+
+  /* Switch del diseño: 38x22 con thumb de 18px y 2px de margen a cada lado,
+     de donde sale un recorrido de 38 − 18 − 2·2 = 16px. */
+  --vc-switch-width: 38px;
+  --vc-switch-height: 22px;
+  --vc-switch-thumb: 18px;
+  --vc-switch-travel: 16px;
+
+  /* "Todos los controles interactivos deben mostrar un borde azul claramente
+     visible al recibir foco." — regla de accesibilidad de la guía de estilo.
+     Definirla aquí hace que TODAS las variantes de `Button` y el `Toggle`
+     pasen al azul informativo. En `apps/web` queda sin definir, y cada
+     variante conserva su propio color de anillo. */
+  --vc-focus-ring: var(--color-info);
+}
+
+/* Botón deshabilitado: el panel no atenúa, repinta. "Acción no disponible" del
+   diseño = superficie #edf0f2, texto #8c96a1 y SIN borde (el borde se vuelve
+   transparente en vez de desaparecer para no alterar el alto de 44px).
+
+   Redefine la regla que `@vc/config/tailwind/theme.css` deja con el
+   `opacity: 0.5` del sitio público; como este archivo la importa antes, esta
+   versión gana por orden dentro de la misma capa. La especificidad (0-2-0)
+   también le gana a las utilidades de color de la variante (0-1-0), que son
+   las que pintan el fondo naranja o el borde rojo. */
+@layer utilities {
+  .vc-control:disabled,
+  .vc-control[aria-disabled="true"] {
+    opacity: 1;
+    cursor: not-allowed;
+    background-color: var(--color-control-disabled-surface);
+    color: var(--color-control-disabled-ink);
+    border-color: transparent;
+    box-shadow: none;
+  }
 }
 
 body {

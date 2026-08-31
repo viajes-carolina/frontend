@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { StatusPill } from "../dashboard/DashboardStatus";
 import type { DashboardTone } from "../../lib/dashboardActivity";
 
@@ -13,6 +14,13 @@ export interface ContentEditorHeaderProps {
   description: string;
   /** Distintivos de la derecha (estado de publicación, cambios sin guardar). */
   pills: EditorHeaderPill[];
+  /**
+   * Acción de la esquina superior derecha, a la derecha de las píldoras
+   * ("Ver web pública" en el Hero, "Editar encabezado" en Promociones).
+   * Es un `ReactNode` y no una descripción de botón porque unas veces es un
+   * enlace y otras un botón, y el encabezado no debe decidir cuál.
+   */
+  action?: ReactNode;
 }
 
 /**
@@ -30,6 +38,7 @@ export function ContentEditorHeader({
   title,
   description,
   pills,
+  action,
 }: ContentEditorHeaderProps) {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -43,8 +52,8 @@ export function ContentEditorHeader({
         </p>
       </div>
 
-      {pills.length > 0 && (
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+      {(pills.length > 0 || action) && (
+        <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
           {pills.map((pill) => (
             <StatusPill
               key={pill.label}
@@ -53,6 +62,7 @@ export function ContentEditorHeader({
               textClassName="text-[10px] font-semibold"
             />
           ))}
+          {action}
         </div>
       )}
     </header>

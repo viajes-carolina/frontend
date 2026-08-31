@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FORM_CONTROL_CLASSES, FORM_LABEL_CLASSES } from "../forms/FormField";
+import { FORM_CONTROL_SINGLE_LINE_CLASSES, FORM_LABEL_CLASSES } from "../forms/FormField";
 
 export interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
@@ -30,10 +30,12 @@ export const FormSelect: React.FC<FormSelectProps> = ({
   const fieldId = id ?? generatedId;
   const hintId = `${fieldId}-hint`;
 
-  const selectClassName = className ? `${FORM_CONTROL_CLASSES} ${className}` : FORM_CONTROL_CLASSES;
+  const selectClassName = className
+    ? `${FORM_CONTROL_SINGLE_LINE_CLASSES} ${className}`
+    : FORM_CONTROL_SINGLE_LINE_CLASSES;
 
   return (
-    <div className={`space-y-2 ${wrapperClassName}`}>
+    <div className={`space-y-[7px] ${wrapperClassName}`}>
       <label htmlFor={fieldId} className={FORM_LABEL_CLASSES}>
         {label}
         {rest.required && (
@@ -53,7 +55,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
       </select>
 
       {hint && (
-        <p id={hintId} className="font-inter text-[12px] leading-[1.45] text-admin-footnote">
+        <p id={hintId} className="font-inter text-[10px] leading-[1.45] text-admin-footnote">
           {hint}
         </p>
       )}

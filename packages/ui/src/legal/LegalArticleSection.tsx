@@ -177,7 +177,7 @@ export function LegalArticleSection({
 
           {/* Secciones numeradas */}
           <div className="flex min-w-0 flex-1 flex-col gap-7 lg:gap-[34px]">
-            {sections.map((s, idx) => (
+            {sections.map((s) => (
               <React.Fragment key={s.number}>
                 <div id={`seccion-${s.number}`} className="flex scroll-mt-24 flex-col gap-3">
                   <div className="flex items-center gap-3">

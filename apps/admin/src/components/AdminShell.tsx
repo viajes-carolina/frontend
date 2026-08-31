@@ -95,7 +95,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <BrandLogo variant="dark" className="h-6 w-auto" />
         </header>
 
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        {/* Sin `overflow-y-auto`: el `main` no tiene altura acotada (el shell
+            es `min-h-screen`, no `h-screen`), así que crecía con su contenido y
+            ese scroll propio no llegaba a activarse nunca — lo que desplaza es
+            el documento, como demuestra el `lg:sticky` del sidebar. Pero un
+            `overflow` distinto de `visible` SÍ convierte al elemento en
+            contenedor de scroll, y `position: sticky` se resuelve contra el
+            contenedor de scroll más cercano: cualquier barra pegajosa de una
+            pantalla se anclaba al borde inferior del `main` (o sea, al final
+            del documento) en vez de al de la ventana. Quitarlo devuelve la
+            ventana como contenedor de scroll y no cambia nada más, porque aquí
+            no había scroll que quitar. */}
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );

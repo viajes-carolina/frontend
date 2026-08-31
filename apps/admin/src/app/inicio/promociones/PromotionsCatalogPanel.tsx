@@ -1,253 +1,129 @@
 "use client";
 
 import React from "react";
-import type { PromotionDTO } from "@vc/api-client";
-import { ArrowUpRightIcon, Button, FormFeedback, PlusIcon, StarIcon, TrashIcon } from "@vc/ui";
-import { MediaThumb } from "../../../components/MediaThumb";
+import type { AdminPromotionsPageResponse } from "@vc/api-client";
+import { ConfirmDialog, FormFeedback, RetryableError } from "@vc/ui";
+import { AdminDataTable, type DataTableBulkAction } from "../../../components/table";
 import { useAdminPromotionsCatalog } from "../../../hooks/useAdminPromotionsCatalog";
+import type { PromotionBulkOperation } from "../../../lib/promotionsCatalog";
 import { CreatePromotionModal } from "./CreatePromotionModal";
+import { PromotionsMetrics } from "./PromotionsMetrics";
+import { buildPromotionColumns } from "./promotionsTable";
 
 export interface PromotionsCatalogPanelProps {
-  initialPromotions: PromotionDTO[];
+  /** La primera página, ya servida desde el servidor por `page.tsx`. */
+  initialPage: AdminPromotionsPageResponse;
 }
 
-export function PromotionsCatalogPanel({ initialPromotions }: PromotionsCatalogPanelProps) {
-  const {
-    promotions,
-    feedback,
-    topThreeIds,
-    canHide,
-    handleToggleActive,
-    handleDelete,
-    isCreateModalOpen,
-    openCreateModal,
-    closeCreateModal,
-    isSaving,
-    title,
-    setTitle,
-    destination,
-    setDestination,
-    departureCity,
-    setDepartureCity,
-    priceUsd,
-    setPriceUsd,
-    pricePen,
-    setPricePen,
-    durationDays,
-    setDurationDays,
-    durationNights,
-    setDurationNights,
-    validFrom,
-    setValidFrom,
-    validUntil,
-    setValidUntil,
-    summary,
-    setSummary,
-    inclusionsInput,
-    setInclusionsInput,
-    exclusionsInput,
-    setExclusionsInput,
-    whatsappTemplate,
-    setWhatsappTemplate,
-    featuredMediaId,
-    featuredMediaUrl,
-    featuredMediaFocalX,
-    featuredMediaFocalY,
-    handleSelectFeaturedMedia,
-    handleCreate,
-  } = useAdminPromotionsCatalog(initialPromotions);
+export function PromotionsCatalogPanel({ initialPage }: PromotionsCatalogPanelProps) {
+  const catalog = useAdminPromotionsCatalog(initialPage);
+  const table = catalog.table;
+
+  /* Las columnas se declaran en cada render y no con `useMemo`: dependen de
+     todos los manejadores del hook, que son funciones nuevas cada vez, así que
+     el memo se invalidaría igual. El kit no las usa como dependencia de nada. */
+  const columns = buildPromotionColumns({
+    onToggleActive: catalog.handleToggleActive,
+    onEdit: catalog.openEditModal,
+    onDelete: catalog.handleDelete,
+    onOpenFacebookPost: catalog.openFacebookPost,
+    hideBlockedReason: catalog.hideBlockedReason,
+    busy: catalog.isBulkRunning,
+  });
+
+  /* Una tanda termina soltando la selección: dejar marcadas las filas que ya se
+     aplicaron invita a repetir la acción sobre ellas. */
+  const clearSelection = () => table.selection?.clear();
+  const bulk = (operation: PromotionBulkOperation) => (ids: readonly string[]) => {
+    void catalog.runBulk(ids, operation, clearSelection);
+  };
+
+  const bulkActions: DataTableBulkAction[] = [
+    {
+      id: "show",
+      label: "Mostrar en portada",
+      disabled: catalog.isBulkRunning,
+      onSelect: bulk("show"),
+    },
+    {
+      id: "hide",
+      label: "Ocultar",
+      disabled: catalog.isBulkRunning,
+      onSelect: bulk("hide"),
+    },
+    {
+      id: "delete",
+      label: "Eliminar",
+      tone: "danger",
+      disabled: catalog.isBulkRunning,
+      onSelect: (ids) => catalog.confirmBulkDelete(ids, clearSelection),
+    },
+  ];
 
   return (
     <div className="font-inter">
-      <FormFeedback feedback={feedback} />
+      <PromotionsMetrics summary={catalog.summary} />
 
-      <div className="space-y-6">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h2 className="font-inter text-[18px] font-bold leading-tight text-neutral-ink">
-              Catálogo de Promociones
-            </h2>
-            <p className="mt-1.5 font-inter text-[13px] text-neutral-muted">
-              {promotions.length} promociones en catálogo · elige cuáles mostrar u ocultar en Inicio.
-            </p>
-          </div>
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<PlusIcon size={16} />}
-            iconPosition="left"
-            onClick={openCreateModal}
-          >
-            Nueva Promoción
-          </Button>
-        </div>
+      {/* Sin `space-y-*` aquí: la región live de `FormFeedback` está siempre en
+          el DOM aunque no haya mensaje, y como hermana de un `space-y` correría
+          un margen muerto entre el resumen y la tabla. Cada banner aporta su
+          propia separación inferior solo cuando se ve. */}
+      <div className="mt-6">
+        <FormFeedback feedback={catalog.feedback} />
 
-        <div className="overflow-hidden rounded-[12px] border border-neutral-border bg-white shadow-[0_8px_24px_rgba(17,34,48,0.06)]">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left">
-              <thead>
-                <tr className="border-b border-admin-divider bg-neutral-soft text-[11px] font-bold uppercase tracking-[0.55px] text-admin-label">
-                  <th className="px-6 py-4">Foto</th>
-                  <th className="px-6 py-4">Título</th>
-                  <th className="px-6 py-4">Fuente</th>
-                  <th className="px-6 py-4">Portada</th>
-                  <th className="px-6 py-4">Publicado en Facebook</th>
-                  <th className="px-6 py-4 text-right">Mostrar / Ocultar</th>
-                  <th className="px-6 py-4 text-right">Borrar</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-admin-divider">
-                {promotions.map((item) => {
-                  const willHide = item.active;
-                  const disabled = willHide && !canHide(item);
-                  const toggleTitle = disabled
-                    ? "No se puede ocultar: el Home necesita al menos 3 promociones activas."
-                    : willHide
-                      ? "Ocultar esta promoción del Home"
-                      : "Mostrar esta promoción en el Home";
+        {catalog.listError && (
+          <RetryableError
+            message={catalog.listError}
+            onRetry={() => void catalog.retryLoad()}
+            retrying={catalog.isRefreshing}
+            className="mb-6"
+          />
+        )}
 
-                  return (
-                    <tr key={item.id} className="transition-colors hover:bg-neutral-soft">
-                      <td className="px-6 py-4">
-                        <MediaThumb
-                          url={item.featuredMediaUrl}
-                          alt={item.title}
-                          sizes="64px"
-                          iconSize={16}
-                          className="aspect-video w-16 rounded-[6px] border border-neutral-border"
-                        />
-                      </td>
-                      <td className="max-w-xs px-6 py-4">
-                        <span className="line-clamp-2 block text-sm font-bold text-admin-value">
-                          {item.title}
-                        </span>
-                        <span className="font-mono text-[10px] text-neutral-muted">/{item.slug}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {item.source === "FACEBOOK" ? (
-                          <span className="inline-flex items-center rounded-[6px] border border-brand-blue/25 bg-brand-blue/10 px-2 py-0.5 text-xs font-semibold text-brand-blue">
-                            Facebook
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center rounded-[6px] border border-neutral-border bg-neutral-soft px-2 py-0.5 text-xs font-semibold text-neutral-muted">
-                            Manual
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        {topThreeIds.has(item.id) ? (
-                          <span className="inline-flex items-center gap-1 rounded-[6px] border border-brand-accent/30 bg-brand-accent/10 px-2 py-0.5 text-xs font-semibold text-brand-accent">
-                            <StarIcon size={12} aria-hidden="true" />
-                            En portada ahora
-                          </span>
-                        ) : (
-                          <span className="text-xs text-neutral-muted">
-                            {item.active ? "Activa" : "Oculta"}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        {item.facebookPermalinkUrl ? (
-                          <a
-                            href={item.facebookPermalinkUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-brand-navy hover:underline"
-                          >
-                            Ver post
-                            <ArrowUpRightIcon size={12} aria-hidden="true" />
-                          </a>
-                        ) : (
-                          <span className="text-xs text-neutral-muted">—</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-3">
-                          <span className="text-xs text-neutral-muted">
-                            {item.active ? "Visible" : "Oculta"}
-                          </span>
-                          <button
-                            type="button"
-                            role="switch"
-                            aria-checked={item.active}
-                            aria-label={`${item.active ? "Ocultar" : "Mostrar"} "${item.title}" en Inicio`}
-                            title={toggleTitle}
-                            disabled={disabled}
-                            onClick={() => handleToggleActive(item)}
-                            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
-                              item.active ? "bg-brand-accent" : "bg-admin-checkbox"
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-                                item.active ? "translate-x-6" : "translate-x-1"
-                              }`}
-                            />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          type="button"
-                          aria-label={`Borrar "${item.title}" definitivamente`}
-                          title={
-                            item.active && !canHide(item)
-                              ? "No se puede borrar: el Home necesita al menos 3 promociones activas."
-                              : "Borrar esta promoción definitivamente"
-                          }
-                          disabled={item.active && !canHide(item)}
-                          onClick={() => handleDelete(item)}
-                          className="rounded-[6px] p-2 text-brand-accent transition-colors hover:bg-brand-accent/10 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
-                        >
-                          <TrashIcon size={16} aria-hidden="true" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <AdminDataTable
+          controller={table}
+          columns={columns}
+          caption="Catálogo de promociones"
+          searchPlaceholder="Buscar por título o destino…"
+          searchLabel="Buscar promociones por título o destino"
+          createAction={{ label: "Nueva promoción", onSelect: catalog.openCreateModal }}
+          bulkActions={bulkActions}
+          getRowLabel={(promo) => `«${promo.title}»`}
+          itemNoun="promociones"
+          minWidthClassName="min-w-[1040px]"
+          /* `busy` y no `loading`: cambiar de página o teclear abre una petición
+             y el esqueleto desmontaría el buscador con el cursor dentro. */
+          busy={catalog.isStale}
+          emptyState={{
+            title: "Aún no hay promociones",
+            description: "Crea la primera promoción para comenzar a construir el catálogo.",
+            action: { label: "Nueva promoción", onSelect: catalog.openCreateModal },
+          }}
+          noResultsState={{
+            title: "Ninguna promoción coincide",
+            description:
+              "La búsqueda o los filtros activos dejan la tabla vacía. Prueba con otras palabras o vuelve a verlas todas.",
+          }}
+        />
       </div>
 
       <CreatePromotionModal
-        isOpen={isCreateModalOpen}
-        onClose={closeCreateModal}
-        onSubmit={handleCreate}
-        isSaving={isSaving}
-        title={title}
-        setTitle={setTitle}
-        destination={destination}
-        setDestination={setDestination}
-        departureCity={departureCity}
-        setDepartureCity={setDepartureCity}
-        priceUsd={priceUsd}
-        setPriceUsd={setPriceUsd}
-        pricePen={pricePen}
-        setPricePen={setPricePen}
-        durationDays={durationDays}
-        setDurationDays={setDurationDays}
-        durationNights={durationNights}
-        setDurationNights={setDurationNights}
-        validFrom={validFrom}
-        setValidFrom={setValidFrom}
-        validUntil={validUntil}
-        setValidUntil={setValidUntil}
-        summary={summary}
-        setSummary={setSummary}
-        inclusionsInput={inclusionsInput}
-        setInclusionsInput={setInclusionsInput}
-        exclusionsInput={exclusionsInput}
-        setExclusionsInput={setExclusionsInput}
-        whatsappTemplate={whatsappTemplate}
-        setWhatsappTemplate={setWhatsappTemplate}
-        featuredMediaId={featuredMediaId}
-        featuredMediaUrl={featuredMediaUrl}
-        featuredMediaFocalX={featuredMediaFocalX}
-        featuredMediaFocalY={featuredMediaFocalY}
-        onSelectFeaturedMedia={handleSelectFeaturedMedia}
+        mode={catalog.modalMode}
+        currentSlug={catalog.editingPromotion?.slug}
+        legacyImportNotice={
+          catalog.modalMode === "edit" && catalog.editingPromotion?.source === "FACEBOOK"
+            ? "Esta promoción llegó del importador de Facebook que ya se retiró y puede traer campos vacíos o de relleno. Complétalos antes de guardar: el post original de Facebook no se toca."
+            : undefined
+        }
+        isOpen={catalog.isModalOpen}
+        onClose={catalog.closeModal}
+        onSubmit={catalog.handleSubmit}
+        isSaving={catalog.isSaving}
+        form={catalog.form}
+        onApplyTemplate={catalog.applyTemplateDraft}
       />
+
+      <ConfirmDialog {...catalog.confirmDialog} />
     </div>
   );
 }

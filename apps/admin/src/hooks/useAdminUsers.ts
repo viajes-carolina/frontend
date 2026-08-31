@@ -4,16 +4,24 @@ import { apiClient, AdminUserDTO, CreateAdminUserRequest, UpdateAdminUserRequest
 export function useAdminUsers() {
   const [users, setUsers] = useState<AdminUserDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  /**
+   * El fallo de carga se guardaba en un `error` que NINGUNA pantalla pintaba:
+   * cuando la petición fallaba, la tabla se quedaba con su fila de "No se
+   * encontraron usuarios registrados" — información falsa, porque usuarios hay,
+   * lo que no hubo fue respuesta. Ahora es un booleano que la vista traduce a
+   * `RetryableError`, con salida.
+   */
+  const [loadError, setLoadError] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
+      setLoadError(false);
       const data = await apiClient.getAdminUsers();
       setUsers(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar usuarios.");
+      console.error("Error loading admin users:", err);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -38,7 +46,7 @@ export function useAdminUsers() {
   return {
     users,
     loading,
-    error,
+    loadError,
     createUser,
     updateUser,
     refreshUsers: fetchUsers,

@@ -33,8 +33,14 @@ export function OfficeMapSection({
       ? `${officeLatitude},${officeLongitude}`
       : officeAddress || page.officeMapPinSubtitle || "";
 
+  /* La sección no pinta fondo propio a propósito: el sitio público pinta en el
+     `body` el marfil con la textura de curvas de nivel, y aquí se tapaba a
+     sangre con el celeste `atmosphere-pale-sky`. Ese tono se sigue usando —en
+     esta misma página y en el resto del sitio— pero como superficie de tarjeta
+     o panel redondeado, nunca como fondo de sección a ancho completo. Era lo
+     que hacía que Contacto se viera distinta de las demás páginas. */
   return (
-    <section className={`relative w-full overflow-hidden bg-atmosphere-pale-sky py-16 sm:py-20 lg:py-24 ${className}`}>
+    <section className={`relative w-full overflow-hidden py-16 sm:py-20 lg:py-24 ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <div className="lg:col-span-6">

@@ -56,6 +56,70 @@ export type ProxyMode = "admin" | "web";
 
 const BACKEND_URL = process.env.BACKEND_INTERNAL_URL || "http://127.0.0.1:8080";
 
+/* ==========================================================================
+   Publicación automática al sitio público.
+
+   Las páginas de `apps/web` se sirven con caché de Next (`revalidate: 3600`),
+   así que guardar en el panel cambiaba la base de datos y el visitante seguía
+   viendo lo anterior hasta una hora después. El panel decía "guardado" y no
+   mentía; simplemente nadie avisaba al sitio.
+
+   Se resuelve AQUÍ, y no en cada hook del panel, porque este proxy es el único
+   sitio por el que pasan las ~50 escrituras del admin (`getEffectiveUrl` manda
+   todo el tráfico del navegador a /api/proxy). Cablearlo pantalla por pantalla
+   significaba olvidarse de alguna hoy, y de todas las que se añadan mañana.
+   ========================================================================== */
+
+/**
+ * Escrituras que NO tocan el sitio público y no deben disparar una publicación.
+ *
+ * `publishing` está en la lista por un motivo distinto a las demás: publicar es
+ * a su vez un POST del admin, y sin excluirlo cada publicación se llamaría a sí
+ * misma.
+ */
+const SIN_EFECTO_PUBLICO = /^admin\/v1\/(auth|users|audit-logs|publishing|inquiries|claims)\b/;
+
+const METODOS_DE_ESCRITURA = ["POST", "PUT", "PATCH", "DELETE"];
+
+function cambiaElSitioPublico(targetPath: string, method: string): boolean {
+  if (!targetPath.startsWith("admin/v1/")) return false;
+  if (!METODOS_DE_ESCRITURA.includes(method)) return false;
+  return !SIN_EFECTO_PUBLICO.test(targetPath);
+}
+
+/**
+ * Revalida el sitio público reutilizando el mecanismo que ya existía.
+ *
+ * Delega en `admin/v1/publishing/publish` en vez de llamar al webhook de
+ * `apps/web` por su cuenta: así hay UNA sola implementación de "cómo se
+ * publica", y cada publicación automática queda en la bitácora igual que las
+ * manuales — incluidas las que fallan, que la pantalla de Publicación muestra
+ * como FAILED.
+ *
+ * Nunca lanza ni bloquea: el guardado ya se completó en el backend y un fallo
+ * al revalidar no debe convertirlo en un error para quien está editando. Si
+ * falla, queda el registro y el respaldo de `revalidate` por tiempo.
+ */
+async function publicarSitioPublico(cookie: string | null, targetPath: string): Promise<void> {
+  try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (cookie) headers["cookie"] = cookie;
+
+    const res = await fetch(`${BACKEND_URL}/api/admin/v1/publishing/publish`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ target: "ALL", reason: `Cambio en ${targetPath}` }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) {
+      console.error(`[proxy] La publicación automática tras ${targetPath} falló con HTTP ${res.status}.`);
+    }
+  } catch (err) {
+    console.error(`[proxy] No se pudo publicar automáticamente tras ${targetPath}:`, err);
+  }
+}
+
 // Siempre resuelve contra la raíz del monorepo (marcador package.json.name) ANTES de
 // aceptar cualquier carpeta ".data" local — así admin y web comparten siempre el mismo
 // almacén de fallback, sin importar cuál de las dos ya tenga una carpeta ".data" creada.
@@ -239,6 +303,26 @@ export async function handleProxyRequest(
       clearTimeout(timeoutId);
 
       if (response.ok) {
+        /* El guardado ya está hecho en el backend: ahora se avisa al sitio
+           público, antes de contestar. Se espera a propósito — si se dejara
+           suelto, recargar la web justo después de guardar podría adelantar a
+           la revalidación y seguir enseñando lo viejo. */
+        if (cambiaElSitioPublico(targetPath, method)) {
+          await publicarSitioPublico(req.headers.get("cookie"), targetPath);
+        }
+
+        /* 204/205 no llevan cuerpo POR DEFINICIÓN, y el constructor de `Response`
+           lanza `TypeError` si se le pasa uno — incluido un `ArrayBuffer` vacío.
+           Sin este caso, la rama binaria de más abajo hacía `new NextResponse(buffer,
+           { status: 204 })`, reventaba, y el `catch` de "backend offline" mandaba la
+           petición al mock local: el DELETE ya se había ejecutado en el backend real,
+           pero el navegador recibía el 404 del mock ("Promoción no encontrada"). Es
+           decir, cada borrado funcionaba y se reportaba como fallido. Afecta a todos
+           los DELETE del panel, no solo a los de promociones. */
+        if (response.status === 204 || response.status === 205) {
+          return new NextResponse(null, { status: response.status });
+        }
+
         const responseContentType = response.headers.get("content-type") || "";
         if (!responseContentType.includes("application/json")) {
           // Passthrough binario (ej. constancia.pdf, adjuntos de reclamos): no se puede

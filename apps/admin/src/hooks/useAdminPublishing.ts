@@ -6,30 +6,30 @@ import { apiClient, type PublishRequestDTO, type PublishResponseDTO } from "@vc/
 export function useAdminPublishing() {
   const [status, setStatus] = useState<PublishResponseDTO | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  /* El error de CARGA del estado de publicación tampoco se pintaba: la tarjeta
+     se quedaba en su esqueleto para siempre. Ahora lo cuenta `RetryableError`.
+     El fallo de la PUBLICACIÓN es otra cosa y ya lo reporta el propio
+     `PublishingManagerCard` en su banner, así que no se toca aquí. */
+  const [loadError, setLoadError] = useState(false);
 
   const fetchStatus = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
+      setLoadError(false);
       const res = await apiClient.getPublishingStatus();
       setStatus(res);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al cargar estado de publicación");
+      console.error("Error loading publishing status:", err);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
   }, []);
 
   const triggerPublish = useCallback(async (req: PublishRequestDTO) => {
-    try {
-      const res = await apiClient.triggerPublish(req);
-      setStatus(res);
-      return res;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al publicar contenidos");
-      throw err;
-    }
+    const res = await apiClient.triggerPublish(req);
+    setStatus(res);
+    return res;
   }, []);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function useAdminPublishing() {
   return {
     status,
     loading,
-    error,
+    loadError,
     refreshStatus: fetchStatus,
     triggerPublish,
   };

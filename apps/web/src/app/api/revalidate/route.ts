@@ -43,7 +43,9 @@ export async function POST(req: NextRequest) {
         try {
           revalidatePath(mappedPath);
           revalidated.push(mappedPath);
-        } catch {}
+        } catch (e) {
+          console.error(`Error revalidating path ${mappedPath}:`, e);
+        }
       }
     }
 
