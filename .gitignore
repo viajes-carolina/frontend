@@ -32,3 +32,9 @@ Thumbs.db
 
 # Artefactos de build de TypeScript
 *.tsbuildinfo
+
+# Almacen del modo sin backend (packages/next-proxy). Es estado de ejecucion, no
+# codigo: cada guardado del panel y cada imagen subida en local lo reescriben, asi
+# que versionarlo llenaba los commits de ruido y de conflictos entre maquinas.
+# Se puede borrar sin miedo — el proxy trae valores por defecto para cada archivo.
+.data/
